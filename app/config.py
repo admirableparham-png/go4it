@@ -26,3 +26,20 @@ BASE_URL = os.getenv("BASE_URL", "http://localhost:8400").rstrip("/")
 _PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INBOX_DIR = os.getenv("INBOX_DIR", os.path.join(_PROJECT_ROOT, "inbox"))
 INGEST_INTERVAL = int(os.getenv("INGEST_INTERVAL", "120"))
+DEBUG_DIR = os.path.join(_PROJECT_ROOT, "debug")
+
+# --- go4worldbusiness authenticated portal scraper (browser bot) ---
+# Credentials for YOUR OWN paid account. Set in .env (gitignored) — never in code.
+# Automated access may conflict with go4worldbusiness Terms / risk the account.
+# The source is disabled unless both email and password are present.
+GO4WORLD_EMAIL = os.getenv("GO4WORLD_EMAIL", "").strip()
+GO4WORLD_PASSWORD = os.getenv("GO4WORLD_PASSWORD", "").strip()
+GO4WORLD_LOGIN_URL = os.getenv("GO4WORLD_LOGIN_URL", "https://www.go4worldbusiness.com/login")
+GO4WORLD_LEAD_URLS = [u.strip() for u in os.getenv(
+    "GO4WORLD_LEAD_URLS",
+    "https://www.go4worldbusiness.com/buyers/georgia/ceramic-tiles.html,"
+    "https://www.go4worldbusiness.com/buyers/georgia/bricks.html",
+).split(",") if u.strip()]
+GO4WORLD_HEADLESS = os.getenv("GO4WORLD_HEADLESS", "true").lower() != "false"
+GO4WORLD_INTERVAL = int(os.getenv("GO4WORLD_INTERVAL", "3600"))   # hourly
+GO4WORLD_ENABLED = bool(GO4WORLD_EMAIL and GO4WORLD_PASSWORD)

@@ -27,6 +27,9 @@ credentials.json
 inbox/*.csv
 inbox/processed/
 
+# Scraper debug dumps (page HTML/screenshots may contain buyer data)
+debug/
+
 # OS / editor
 .DS_Store
 .idea/

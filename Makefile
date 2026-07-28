@@ -1,4 +1,4 @@
-.PHONY: install run seed test save clean worker ingest
+.PHONY: install run seed test save clean worker ingest ingest-portal
 
 # One-time setup: create a virtualenv and install dependencies.
 install:
@@ -23,9 +23,14 @@ test:
 ingest:
 	./.venv/bin/python -m app.worker --once
 
-# Run the background ingestion worker (polls ./inbox continuously).
+# Run the background ingestion worker (inbox often + go4world portal hourly).
 worker:
 	./.venv/bin/python -m app.worker
+
+# Portal-only pass: log into go4worldbusiness and capture the pages to ./debug
+# (needs GO4WORLD_EMAIL/PASSWORD in .env). Use this for first-run selector tuning.
+ingest-portal:
+	./.venv/bin/python -m app.worker --portal
 
 # End-of-day save: commit everything and push to GitHub with a status report.
 save:

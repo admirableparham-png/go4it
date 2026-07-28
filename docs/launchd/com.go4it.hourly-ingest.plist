@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Hourly go4it ingestion via launchd (macOS).
+  Runs one pass (CSV inbox + go4worldbusiness portal) every hour.
+
+  Install:
+    1. Edit the two ABSOLUTE paths below if your repo lives elsewhere.
+    2. cp docs/launchd/com.go4it.hourly-ingest.plist ~/Library/LaunchAgents/
+    3. launchctl load ~/Library/LaunchAgents/com.go4it.hourly-ingest.plist
+    4. launchctl start com.go4it.hourly-ingest     # run once now to test
+  Logs: ./debug/ingest.out.log and ingest.err.log
+  Stop/remove:
+    launchctl unload ~/Library/LaunchAgents/com.go4it.hourly-ingest.plist
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.go4it.hourly-ingest</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/pstudio/go4it/.venv/bin/python</string>
+    <string>-m</string>
+    <string>app.worker</string>
+    <string>--once</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>/Users/pstudio/go4it</string>
+
+  <key>StartInterval</key>
+  <integer>3600</integer>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>StandardOutPath</key>
+  <string>/Users/pstudio/go4it/debug/ingest.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/pstudio/go4it/debug/ingest.err.log</string>
+</dict>
+</plist>
