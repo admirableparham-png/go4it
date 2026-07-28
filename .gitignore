@@ -3,11 +3,25 @@
 __pycache__/
 *.pyc
 *.egg-info/
+.pytest_cache/
 
 # Local data & secrets (never commit these)
 data.db
 data.db-journal
+data.db-wal
+data.db-shm
 .env
+.env.*
+!.env.example
+
+# Keys / credentials / editor backups (defense against an accidental `git add -A`)
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+*.swp
+*~
 
 # OS / editor
 .DS_Store

@@ -1,4 +1,5 @@
 """go4it web app — add demands & offers, auto-match, alert the team."""
+from enum import Enum
 from pathlib import Path
 
 from fastapi import FastAPI, Form, Request
@@ -19,6 +20,15 @@ templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 
 
+class MatchStatus(str, Enum):
+    """Allowed match statuses. Typing the path param as this makes FastAPI return
+    422 for anything else, instead of a silent no-op."""
+    new = "new"
+    contacted = "contacted"
+    won = "won"
+    lost = "lost"
+
+
 @app.on_event("startup")
 def on_startup() -> None:
     init_db()
@@ -27,6 +37,21 @@ def on_startup() -> None:
 def _open(session, model):
     """All rows of `model` still open for matching."""
     return session.exec(select(model).where(model.status == "open")).all()
+
+
+# Fields used to detect a duplicate re-submission of the same demand/offer.
+_DEMAND_KEYS = ("product", "category", "spec", "quantity", "unit",
+                "target_price", "currency", "location", "contact")
+_OFFER_KEYS = ("product", "category", "spec", "quantity", "unit",
+               "price", "currency", "location", "contact")
+
+
+def _find_duplicate(session, model, keys, row):
+    """Return an existing OPEN row with identical content, if any."""
+    stmt = select(model).where(model.status == "open")
+    for k in keys:
+        stmt = stmt.where(getattr(model, k) == getattr(row, k))
+    return session.exec(stmt).first()
 
 
 def _run_match(session, *, demand=None, offer=None):
@@ -85,9 +110,9 @@ def add_demand(
     product: str = Form(...),
     category: str = Form(""),
     spec: str = Form(""),
-    quantity: float = Form(0),
+    quantity: float = Form(0, ge=0),
     unit: str = Form(""),
-    target_price: float = Form(0),
+    target_price: float = Form(0, ge=0),
     currency: str = Form("USD"),
     location: str = Form(""),
     contact: str = Form(""),
@@ -99,10 +124,13 @@ def add_demand(
             unit=unit, target_price=target_price, currency=currency,
             location=location, contact=contact, notes=notes,
         )
-        session.add(d)
-        session.commit()
-        session.refresh(d)
-        _run_match(session, demand=d)
+        # Skip an identical re-submission (double-click, browser retry) so we don't
+        # create duplicate rows + duplicate matches/alerts.
+        if _find_duplicate(session, Demand, _DEMAND_KEYS, d) is None:
+            session.add(d)
+            session.commit()
+            session.refresh(d)
+            _run_match(session, demand=d)
     return RedirectResponse("/", status_code=303)
 
 
@@ -111,9 +139,9 @@ def add_offer(
     product: str = Form(...),
     category: str = Form(""),
     spec: str = Form(""),
-    quantity: float = Form(0),
+    quantity: float = Form(0, ge=0),
     unit: str = Form(""),
-    price: float = Form(0),
+    price: float = Form(0, ge=0),
     currency: str = Form("USD"),
     location: str = Form(""),
     contact: str = Form(""),
@@ -125,24 +153,35 @@ def add_offer(
             unit=unit, price=price, currency=currency,
             location=location, contact=contact, notes=notes,
         )
-        session.add(o)
-        session.commit()
-        session.refresh(o)
-        _run_match(session, offer=o)
+        if _find_duplicate(session, Offer, _OFFER_KEYS, o) is None:
+            session.add(o)
+            session.commit()
+            session.refresh(o)
+            _run_match(session, offer=o)
     return RedirectResponse("/", status_code=303)
 
 
 @app.post("/matches/{match_id}/status/{status}", response_class=HTMLResponse)
-def set_match_status(request: Request, match_id: int, status: str):
+def set_match_status(request: Request, match_id: int, status: MatchStatus):
     with Session(engine) as session:
         m = session.get(Match, match_id)
         if not m:
             return HTMLResponse("", status_code=404)
-        if status in {"new", "contacted", "won", "lost"}:
-            m.status = status
-            session.add(m)
-            session.commit()
-            session.refresh(m)
+        m.status = status.value
+        session.add(m)
+        # A won deal closes both sides so they leave the matching pool and stop
+        # re-matching / re-alerting against every future counterparty.
+        if status == MatchStatus.won:
+            demand = session.get(Demand, m.demand_id)
+            offer = session.get(Offer, m.offer_id)
+            if demand:
+                demand.status = "closed"
+                session.add(demand)
+            if offer:
+                offer.status = "closed"
+                session.add(offer)
+        session.commit()
+        session.refresh(m)
         demand = session.get(Demand, m.demand_id)
         offer = session.get(Offer, m.offer_id)
     return templates.TemplateResponse(

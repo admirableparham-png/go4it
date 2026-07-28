@@ -1,8 +1,14 @@
-fastapi>=0.110,<0.116
-uvicorn[standard]>=0.27
-sqlmodel>=0.0.16
-jinja2>=3.1
-python-multipart>=0.0.9
-httpx>=0.26
-rapidfuzz>=3.6
-python-dotenv>=1.0
+# Pinned for reproducible installs (tested on Python 3.9.6).
+# Lower bound = tested version; upper bound = next breaking release.
+fastapi>=0.115.14,<0.116
+uvicorn[standard]>=0.39,<0.40
+sqlmodel>=0.0.34,<0.0.35
+pydantic>=2.13,<3
+jinja2>=3.1.6,<4
+python-multipart>=0.0.20,<0.1
+httpx>=0.28.1,<0.29
+rapidfuzz>=3.13,<4
+python-dotenv>=1.2,<2
+
+# Dev / test
+pytest>=8.0,<9

@@ -1,8 +1,13 @@
 """Load a few realistic demands & offers so you can see matching work.
 
 Run with:  make seed   (or:  python -m app.seed)
-This wipes existing rows first — it's for demo/testing, not production data.
+
+SAFETY: this WIPES existing rows, so it refuses to run when the database already
+has data unless you explicitly opt in with SEED_FORCE=1. That prevents an
+accidental `make seed` from destroying real operator-entered demands/offers.
 """
+import os
+
 from sqlmodel import Session, select
 
 from .config import MATCH_THRESHOLD
@@ -35,9 +40,24 @@ SAMPLE_OFFERS = [
 ]
 
 
+def _has_data(session) -> bool:
+    for table in (Demand, Offer, Match):
+        if session.exec(select(table)).first() is not None:
+            return True
+    return False
+
+
 def run() -> None:
     init_db()
     with Session(engine) as s:
+        if _has_data(s) and os.getenv("SEED_FORCE") != "1":
+            print(
+                "Refusing to seed: the database already contains data.\n"
+                "Seeding would DELETE it. Re-run with SEED_FORCE=1 to overwrite:\n"
+                "    SEED_FORCE=1 make seed"
+            )
+            return
+
         for table in (Match, Demand, Offer):
             for row in s.exec(select(table)).all():
                 s.delete(row)
