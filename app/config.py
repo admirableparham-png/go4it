@@ -42,4 +42,7 @@ GO4WORLD_LEAD_URLS = [u.strip() for u in os.getenv(
 ).split(",") if u.strip()]
 GO4WORLD_HEADLESS = os.getenv("GO4WORLD_HEADLESS", "true").lower() != "false"
 GO4WORLD_INTERVAL = int(os.getenv("GO4WORLD_INTERVAL", "3600"))   # hourly
-GO4WORLD_ENABLED = bool(GO4WORLD_EMAIL and GO4WORLD_PASSWORD)
+# SAFETY: the portal scraper stays OFF unless explicitly enabled. go4worldbusiness
+# actively blocks bots ("Too many requests"); auto-running it can flag the account.
+GO4WORLD_PORTAL_ENABLED = os.getenv("GO4WORLD_PORTAL_ENABLED", "false").strip().lower() == "true"
+GO4WORLD_ENABLED = bool(GO4WORLD_EMAIL and GO4WORLD_PASSWORD and GO4WORLD_PORTAL_ENABLED)
