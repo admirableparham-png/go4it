@@ -1,0 +1,15 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+
+# Local data & secrets (never commit these)
+data.db
+data.db-journal
+.env
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block content %}
+{% set ic = "w-full bg-slate-800 border border-slate-700 rounded px-2 py-1.5 text-sm placeholder-slate-500 focus:outline-none focus:border-slate-500" %}
+
+<!-- Matches -->
+<section class="mb-10">
+  <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
+    <span>&#127919; Matches</span>
+    <span class="text-sm text-slate-500">{{ rows|length }}</span>
+  </h2>
+  {% if rows %}
+    <div class="grid md:grid-cols-2 gap-4">
+      {% for row in rows %}
+        {% with m = row.m %}{% with demand = row.demand %}{% with offer = row.offer %}
+          {% include "partials/match_card.html" %}
+        {% endwith %}{% endwith %}{% endwith %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-slate-500 text-sm">No matches yet. Add a demand and an offer that fit each other.</p>
+  {% endif %}
+</section>
+
+<div class="grid md:grid-cols-2 gap-8">
+
+  <!-- Demands (buyers) -->
+  <section>
+    <h2 class="text-lg font-semibold mb-4 text-emerald-400">&#128994; Buyer demands</h2>
+    <form method="post" action="/demands" class="space-y-2 mb-5 rounded-xl border border-slate-800 bg-slate-900 p-4">
+      <input name="product" required placeholder="Product (e.g. Steel rebar 12mm)" class="{{ ic }}">
+      <div class="grid grid-cols-2 gap-2">
+        <input name="category" placeholder="Category" class="{{ ic }}">
+        <input name="spec" placeholder="Spec / grade" class="{{ ic }}">
+      </div>
+      <div class="grid grid-cols-3 gap-2">
+        <input name="quantity" type="number" step="any" placeholder="Qty" class="{{ ic }}">
+        <input name="unit" placeholder="Unit" class="{{ ic }}">
+        <input name="target_price" type="number" step="any" placeholder="Max price" class="{{ ic }}">
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <input name="location" placeholder="Location" class="{{ ic }}">
+        <input name="contact" placeholder="Contact" class="{{ ic }}">
+      </div>
+      <button class="w-full bg-emerald-600 hover:bg-emerald-500 text-white rounded py-2 text-sm font-medium">Add demand</button>
+    </form>
+    <div class="space-y-2">
+      {% for d in demands %}
+        <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-3 text-sm">
+          <div class="font-medium">{{ d.product }} <span class="text-slate-500 font-normal">{{ d.spec }}</span></div>
+          <div class="text-slate-400">{{ d.quantity }} {{ d.unit }} · &le; {{ d.target_price }} {{ d.currency }} · {{ d.location }}</div>
+        </div>
+      {% else %}
+        <p class="text-slate-600 text-sm">No demands yet.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Offers (sellers) -->
+  <section>
+    <h2 class="text-lg font-semibold mb-4 text-sky-400">&#128309; Seller offers</h2>
+    <form method="post" action="/offers" class="space-y-2 mb-5 rounded-xl border border-slate-800 bg-slate-900 p-4">
+      <input name="product" required placeholder="Product (e.g. Rebar steel 12mm)" class="{{ ic }}">
+      <div class="grid grid-cols-2 gap-2">
+        <input name="category" placeholder="Category" class="{{ ic }}">
+        <input name="spec" placeholder="Spec / grade" class="{{ ic }}">
+      </div>
+      <div class="grid grid-cols-3 gap-2">
+        <input name="quantity" type="number" step="any" placeholder="Qty" class="{{ ic }}">
+        <input name="unit" placeholder="Unit" class="{{ ic }}">
+        <input name="price" type="number" step="any" placeholder="Price" class="{{ ic }}">
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <input name="location" placeholder="Location" class="{{ ic }}">
+        <input name="contact" placeholder="Contact" class="{{ ic }}">
+      </div>
+      <button class="w-full bg-sky-600 hover:bg-sky-500 text-white rounded py-2 text-sm font-medium">Add offer</button>
+    </form>
+    <div class="space-y-2">
+      {% for o in offers %}
+        <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-3 text-sm">
+          <div class="font-medium">{{ o.product }} <span class="text-slate-500 font-normal">{{ o.spec }}</span></div>
+          <div class="text-slate-400">{{ o.quantity }} {{ o.unit }} · {{ o.price }} {{ o.currency }} · {{ o.location }}</div>
+        </div>
+      {% else %}
+        <p class="text-slate-600 text-sm">No offers yet.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+</div>
+{% endblock %}

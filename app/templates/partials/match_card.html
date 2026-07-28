@@ -1,0 +1,42 @@
+<div id="match-{{ m.id }}" class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+  <div class="flex items-center justify-between mb-3">
+    <span class="text-emerald-400 font-semibold">{{ m.score }}% match</span>
+    <span class="text-xs px-2 py-1 rounded-full
+      {% if m.status == 'won' %}bg-emerald-500/20 text-emerald-300
+      {% elif m.status == 'lost' %}bg-rose-500/20 text-rose-300
+      {% elif m.status == 'contacted' %}bg-amber-500/20 text-amber-300
+      {% else %}bg-slate-700 text-slate-300{% endif %}">{{ m.status }}</span>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4 text-sm">
+    <div>
+      <div class="text-emerald-400 text-[11px] uppercase tracking-wide mb-1">Buyer wants</div>
+      {% if demand %}
+        <div class="font-medium">{{ demand.product }}</div>
+        <div class="text-slate-400">{{ demand.quantity }} {{ demand.unit }} · &le; {{ demand.target_price }} {{ demand.currency }}</div>
+        <div class="text-slate-400">{{ demand.location }}</div>
+        <div class="text-slate-500 text-xs mt-1">{{ demand.contact }}</div>
+      {% else %}<div class="text-slate-600">—</div>{% endif %}
+    </div>
+    <div>
+      <div class="text-sky-400 text-[11px] uppercase tracking-wide mb-1">Seller has</div>
+      {% if offer %}
+        <div class="font-medium">{{ offer.product }}</div>
+        <div class="text-slate-400">{{ offer.quantity }} {{ offer.unit }} · {{ offer.price }} {{ offer.currency }}</div>
+        <div class="text-slate-400">{{ offer.location }}</div>
+        <div class="text-slate-500 text-xs mt-1">{{ offer.contact }}</div>
+      {% else %}<div class="text-slate-600">—</div>{% endif %}
+    </div>
+  </div>
+
+  <div class="text-xs text-slate-500 mt-3">why: {{ m.reasons }}</div>
+
+  <div class="flex gap-2 mt-3">
+    <button hx-post="/matches/{{ m.id }}/status/contacted" hx-target="#match-{{ m.id }}" hx-swap="outerHTML"
+            class="text-xs px-3 py-1 rounded bg-amber-500/20 text-amber-300 hover:bg-amber-500/30">Contacted</button>
+    <button hx-post="/matches/{{ m.id }}/status/won" hx-target="#match-{{ m.id }}" hx-swap="outerHTML"
+            class="text-xs px-3 py-1 rounded bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30">Won</button>
+    <button hx-post="/matches/{{ m.id }}/status/lost" hx-target="#match-{{ m.id }}" hx-swap="outerHTML"
+            class="text-xs px-3 py-1 rounded bg-rose-500/20 text-rose-300 hover:bg-rose-500/30">Lost</button>
+  </div>
+</div>
