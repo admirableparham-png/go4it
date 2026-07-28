@@ -1,8 +1,13 @@
-"""Load a demo catalog + rates + a lead (with an auto-drafted quote).
+"""Load demo team + catalog + rates + a lead (with matches & an auto quote).
 
 Run with:  make seed   (or:  python -m app.seed)
 
 SAFETY: refuses to wipe an existing database unless SEED_FORCE=1.
+
+Demo logins (change before production!):
+    admin@go4it.local / admin123      (admin)
+    sara@go4it.local  / manager123    (manager)
+    ali@go4it.local   / agent123      (agent)
 """
 import hashlib
 import os
@@ -10,12 +15,19 @@ from datetime import datetime
 
 from sqlmodel import Session, select
 
+from .auth import hash_password
 from .config import MATCH_THRESHOLD
 from .db import engine, init_db
 from .matching import score_lead_product
-from .models import (CostParam, FxRate, Lead, Match, Product, Quote, RateCard,
-                     Supplier)
+from .models import (Activity, CostParam, FxRate, Lead, Match, Product, Quote,
+                     RateCard, Supplier, User)
 from .quote_service import create_quote
+
+USERS = [
+    dict(email="admin@go4it.local", name="Owner", role="admin", password="admin123"),
+    dict(email="sara@go4it.local", name="Sara (manager)", role="manager", password="manager123"),
+    dict(email="ali@go4it.local", name="Ali (agent)", role="agent", password="agent123"),
+]
 
 SUPPLIERS = [
     dict(name="Isfahan Steel Co", city="Isfahan", reliability=4, payment_terms="30% advance"),
@@ -42,7 +54,6 @@ PRODUCTS = [
          origin_region="Kerman", supplier="Kerman Agro"),
 ]
 
-# placeholder Iran -> Georgia cost model (edit at /rates)
 COST_PARAMS = [
     ("export_clearance", 250, "USD/shipment"),
     ("coo_fee", 80, "USD/shipment"),
@@ -64,7 +75,7 @@ LEAD = dict(product="Steel rebar 12mm", category="metals", spec="grade B500B",
 
 
 def _has_data(session) -> bool:
-    for table in (Supplier, Product, Lead, Match, Quote, RateCard, CostParam, FxRate):
+    for table in (User, Supplier, Product, Lead, Match, Quote, RateCard, CostParam, FxRate):
         if session.exec(select(table)).first() is not None:
             return True
     return False
@@ -84,10 +95,20 @@ def run() -> None:
             print("Refusing to seed: database already has data. Use SEED_FORCE=1 to overwrite.")
             return
 
-        for table in (Quote, Match, Lead, Product, Supplier, RateCard, CostParam, FxRate):
+        for table in (Quote, Activity, Match, Lead, Product, Supplier, RateCard, CostParam, FxRate, User):
             for row in s.exec(select(table)).all():
                 s.delete(row)
         s.commit()
+
+        # users
+        users = {}
+        for spec in USERS:
+            u = User(email=spec["email"], name=spec["name"], role=spec["role"],
+                     password_hash=hash_password(spec["password"]))
+            s.add(u)
+            s.commit()
+            s.refresh(u)
+            users[spec["role"]] = u
 
         # rates
         for key, value, unit in COST_PARAMS:
@@ -110,8 +131,9 @@ def run() -> None:
             s.add(Product(supplier_id=sup.id if sup else None, **data))
         s.commit()
 
-        # lead + matches + auto-draft quote
+        # lead (owned by the agent) + matches + auto quote
         lead = Lead(**LEAD)
+        lead.owner_id = users["agent"].id
         lead.content_hash = _content_hash(lead)
         s.add(lead)
         s.commit()
@@ -129,14 +151,13 @@ def run() -> None:
                 matches.append((product, score))
         s.commit()
 
-        n_quotes = 0
         if matches:
             matches.sort(key=lambda t: t[1], reverse=True)
             create_quote(s, lead, matches[0][0])
-            n_quotes = 1
 
-    print(f"Seeded {len(SUPPLIERS)} suppliers, {len(PRODUCTS)} products, "
-          f"1 lead, {len(matches)} matches, {n_quotes} quote.")
+    print(f"Seeded {len(USERS)} users, {len(SUPPLIERS)} suppliers, {len(PRODUCTS)} products, "
+          f"1 lead, {len(matches)} matches, 1 quote.")
+    print("Login: admin@go4it.local/admin123 · sara@go4it.local/manager123 · ali@go4it.local/agent123")
 
 
 if __name__ == "__main__":

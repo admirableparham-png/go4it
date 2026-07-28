@@ -78,9 +78,11 @@ class Lead(SQLModel, table=True):
     dest_country: str = ""         # GE | TR | ...
     dest_city: str = ""
 
-    # workflow (the 5-stage CRM pipeline is formalized in Phase 3)
+    # workflow — the 5-stage CRM pipeline
     status: str = "new"            # new | quoted | negotiating | won | lost
-    assigned_to: str = ""
+    owner_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    lost_reason: str = ""
+    first_response_at: Optional[datetime] = None
     notes: str = ""
     posted_at: Optional[datetime] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -132,6 +134,30 @@ class FxRate(SQLModel, table=True):
     quote: str = "USD"
     rate: float = 1
     note: str = ""
+
+
+# --------------------------------------------------------------------------- team & activity
+
+class User(SQLModel, table=True):
+    """A member of the trading team."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    email: str = Field(index=True, unique=True)
+    name: str = ""
+    password_hash: str = ""
+    role: str = "agent"            # admin | manager | agent | viewer
+    active: bool = True
+    telegram_user_id: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class Activity(SQLModel, table=True):
+    """One entry in a lead's timeline (note, call, status change, quote sent…)."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    lead_id: int = Field(foreign_key="lead.id", index=True)
+    user_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    kind: str = "note"             # note | call | status_change | quote_sent | assignment
+    body: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
 class Quote(SQLModel, table=True):

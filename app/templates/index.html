@@ -53,7 +53,7 @@
           <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
             <div class="flex items-start justify-between mb-3">
               <div>
-                <div class="font-medium">{{ lead.product }} <span class="text-slate-500 font-normal">{{ lead.spec }}</span></div>
+                <div class="font-medium"><a href="/leads/{{ lead.id }}" class="hover:text-sky-300">{{ lead.product }}</a> <span class="text-slate-500 font-normal">{{ lead.spec }}</span></div>
                 <div class="text-slate-400 text-sm">
                   {{ lead.quantity }} {{ lead.unit }} &middot; &le; {{ lead.target_price }} {{ lead.currency }}
                   {% if lead.dest_country %}&middot; <span class="text-sky-300">{{ lead.dest_country }}</span>{% endif %}
@@ -62,7 +62,11 @@
                   {{ lead.buyer_company or 'unknown buyer' }}{% if lead.contact_name %} · {{ lead.contact_name }}{% endif %}
                 </div>
               </div>
-              <span class="text-[11px] font-mono text-slate-500 whitespace-nowrap">{{ lead.tracking_code }}</span>
+              <div class="text-right">
+                <span class="text-xs px-2 py-0.5 rounded-full {{ {'new':'bg-slate-700 text-slate-300','quoted':'bg-sky-500/20 text-sky-300','negotiating':'bg-amber-500/20 text-amber-300','won':'bg-emerald-500/20 text-emerald-300','lost':'bg-rose-500/20 text-rose-300'}.get(lead.status,'bg-slate-700') }}">{{ lead.status }}</span>
+                <div class="text-[11px] font-mono text-slate-500 mt-1">{{ lead.tracking_code }}</div>
+                {% if row.owner %}<div class="text-[11px] text-slate-500">{{ row.owner.name or row.owner.email }}</div>{% endif %}
+              </div>
             </div>
             {% if row.quotes %}
               <div class="flex flex-wrap gap-2 mb-3">

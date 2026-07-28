@@ -14,12 +14,21 @@
         <h1 class="text-2xl font-bold tracking-tight">go4it</h1>
         <p class="text-slate-400 text-sm">buyer leads &rarr; Iranian catalog &rarr; act fast</p>
       </div>
-      <nav class="flex gap-1 text-sm">
-        <a href="/" class="px-3 py-1.5 rounded hover:bg-slate-800 {% if active == 'dashboard' %}bg-slate-800 text-white{% else %}text-slate-400{% endif %}">Dashboard</a>
-        <a href="/quotes" class="px-3 py-1.5 rounded hover:bg-slate-800 {% if active == 'quotes' %}bg-slate-800 text-white{% else %}text-slate-400{% endif %}">Quotes</a>
-        <a href="/catalog" class="px-3 py-1.5 rounded hover:bg-slate-800 {% if active == 'catalog' %}bg-slate-800 text-white{% else %}text-slate-400{% endif %}">Catalog</a>
-        <a href="/rates" class="px-3 py-1.5 rounded hover:bg-slate-800 {% if active == 'rates' %}bg-slate-800 text-white{% else %}text-slate-400{% endif %}">Rates</a>
-      </nav>
+      <div class="flex items-center gap-4">
+        <nav class="flex gap-1 text-sm">
+          <a href="/" class="px-3 py-1.5 rounded hover:bg-slate-800 {% if active == 'dashboard' %}bg-slate-800 text-white{% else %}text-slate-400{% endif %}">Dashboard</a>
+          <a href="/quotes" class="px-3 py-1.5 rounded hover:bg-slate-800 {% if active == 'quotes' %}bg-slate-800 text-white{% else %}text-slate-400{% endif %}">Quotes</a>
+          <a href="/catalog" class="px-3 py-1.5 rounded hover:bg-slate-800 {% if active == 'catalog' %}bg-slate-800 text-white{% else %}text-slate-400{% endif %}">Catalog</a>
+          <a href="/rates" class="px-3 py-1.5 rounded hover:bg-slate-800 {% if active == 'rates' %}bg-slate-800 text-white{% else %}text-slate-400{% endif %}">Rates</a>
+        </nav>
+        {% if user %}
+          <div class="flex items-center gap-2 text-sm border-l border-slate-800 pl-4">
+            <span class="text-slate-300">{{ user.name or user.email }}</span>
+            <span class="text-[10px] uppercase px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">{{ user.role }}</span>
+            <a href="/logout" class="text-slate-500 hover:text-slate-300">Logout</a>
+          </div>
+        {% endif %}
+      </div>
     </header>
     {% block content %}{% endblock %}
   </div>

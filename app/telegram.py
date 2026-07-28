@@ -13,7 +13,7 @@ import re
 
 import httpx
 
-from .config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+from .config import BASE_URL, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 
 logger = logging.getLogger("go4it.telegram")
 
@@ -75,4 +75,28 @@ def notify_lead_matches(lead, matches) -> bool:
             f"  • {score}% {_esc(product.name)} — EXW {_esc(product.exw_price)} "
             f"{_esc(product.currency)}/{_esc(product.unit)}  <i>({_esc(reasons)})</i>"
         )
+    lines.append(f"\n{BASE_URL}/leads/{lead.id}")
     return send_message("\n".join(lines))
+
+
+def notify_quote_ready(quote, lead, product) -> bool:
+    """Tell the team a draft quote is ready for a manager to review/approve."""
+    text = (
+        f"\U0001F9FE <b>Quote ready for review</b>\n"
+        f"{_esc(quote.tracking_code)} · {_esc(product.name)}\n"
+        f"delivered {_esc(quote.delivered_unit)} {_esc(quote.quote_currency)}/"
+        f"{_esc(product.unit)} · buyer {_esc(lead.buyer_company) or '-'} "
+        f"→ {_esc(lead.dest_country) or '-'}\n"
+        f"{BASE_URL}/quotes/{quote.id}"
+    )
+    return send_message(text)
+
+
+def notify_status_change(lead, old, new, actor_name) -> bool:
+    """Tell the team a lead moved stage in the pipeline."""
+    text = (
+        f"\U0001F501 <b>Lead {_esc(lead.tracking_code)}: {_esc(old)} → {_esc(new)}</b>\n"
+        f"{_esc(lead.product)} · buyer {_esc(lead.buyer_company) or '-'}\n"
+        f"by {_esc(actor_name)}\n{BASE_URL}/leads/{lead.id}"
+    )
+    return send_message(text)

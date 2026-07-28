@@ -14,5 +14,10 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "").strip()
 
 # Matching sensitivity (0-100). A demand/offer pair scoring >= this is a match.
-# Lower it to surface more (looser) matches; raise it for only tight matches.
 MATCH_THRESHOLD = float(os.getenv("MATCH_THRESHOLD", "60"))
+
+# Signed-cookie session secret. CHANGE THIS in production (set SECRET_KEY in .env).
+SECRET_KEY = os.getenv("SECRET_KEY", "dev-insecure-change-me")
+
+# Base URL used to build deep links in Telegram alerts.
+BASE_URL = os.getenv("BASE_URL", "http://localhost:8400").rstrip("/")
