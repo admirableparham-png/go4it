@@ -7,6 +7,7 @@ Shows every field per lead — company, contact, email, phone, website, source,
 the Clay-enriched procurement contacts (with LinkedIn), and the indicative quote.
 All websites / emails / phones / LinkedIn are clickable.
 """
+import csv
 import html
 import os
 import re
@@ -61,13 +62,8 @@ def card(lead, notes, quote):
     if contact:
         out.append('<div class="contact">' + " &middot; ".join(contact) + "</div>")
 
-    links = []
     if web:
-        links.append(f'<a class="lnk" href="{html.escape(web)}" target="_blank" rel="noopener">&#127760; website</a>')
-    if lead.source_url:
-        links.append(f'<a class="lnk" href="{html.escape(as_url(lead.source_url))}" target="_blank" rel="noopener">&#128270; source</a>')
-    if links:
-        out.append('<div class="links">' + "".join(links) + "</div>")
+        out.append('<div class="links"><a class="lnk" href="{}" target="_blank" rel="noopener">&#127760; website</a></div>'.format(html.escape(web)))
 
     if notes:
         body = "".join(f'<div class="note">{linkify(n)}</div>' for n in notes)
@@ -147,11 +143,24 @@ def run():
         + "".join(sections) +
         "</div></body></html>"
     )
-    dest = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "docs", "prospects", "go4it_leads.html")
-    os.makedirs(os.path.dirname(dest), exist_ok=True)
+    prospects_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "docs", "prospects")
+    os.makedirs(prospects_dir, exist_ok=True)
+    dest = os.path.join(prospects_dir, "go4it_leads.html")
     with open(dest, "w", encoding="utf-8") as f:
         f.write(out)
+
+    # CSV — the real prospects only, clean columns, NO source/provenance.
+    csv_dest = os.path.join(prospects_dir, "georgia_prospects.csv")
+    prospects = [l for l in leads if l.source in ("research", "research-tile")]
+    with open(csv_dest, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["Company", "Contact Person", "Email", "Phone", "Country", "Product", "Type", "Website"])
+        for l in prospects:
+            kind = "tile" if l.source == "research-tile" else "brick"
+            w.writerow([l.buyer_company, l.contact_name, l.email, l.phone,
+                        l.dest_country, l.product, kind, as_url(l.website)])
     print(f"exported {total} leads -> {dest}")
+    print(f"exported {len(prospects)} prospects (no source) -> {csv_dest}")
 
 
 if __name__ == "__main__":
