@@ -64,6 +64,16 @@
               </div>
               <span class="text-[11px] font-mono text-slate-500 whitespace-nowrap">{{ lead.tracking_code }}</span>
             </div>
+            {% if row.quotes %}
+              <div class="flex flex-wrap gap-2 mb-3">
+                {% for q in row.quotes %}
+                  <a href="/quotes/{{ q.id }}" class="text-xs px-2 py-1 rounded bg-slate-800 hover:bg-slate-700">
+                    {{ q.tracking_code }} · {{ q.incoterm }} {{ '%.2f'|format(q.delivered_unit) }}/{{ q.quote_currency }}
+                    <span class="text-slate-500">· {{ q.status }}</span>
+                  </a>
+                {% endfor %}
+              </div>
+            {% endif %}
             {% if row.matches %}
               <div class="text-[11px] uppercase tracking-wide text-slate-500 mb-2">{{ row.matches|length }} match(es)</div>
               <div class="grid sm:grid-cols-2 gap-2">

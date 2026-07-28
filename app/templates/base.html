@@ -16,7 +16,9 @@
       </div>
       <nav class="flex gap-1 text-sm">
         <a href="/" class="px-3 py-1.5 rounded hover:bg-slate-800 {% if active == 'dashboard' %}bg-slate-800 text-white{% else %}text-slate-400{% endif %}">Dashboard</a>
+        <a href="/quotes" class="px-3 py-1.5 rounded hover:bg-slate-800 {% if active == 'quotes' %}bg-slate-800 text-white{% else %}text-slate-400{% endif %}">Quotes</a>
         <a href="/catalog" class="px-3 py-1.5 rounded hover:bg-slate-800 {% if active == 'catalog' %}bg-slate-800 text-white{% else %}text-slate-400{% endif %}">Catalog</a>
+        <a href="/rates" class="px-3 py-1.5 rounded hover:bg-slate-800 {% if active == 'rates' %}bg-slate-800 text-white{% else %}text-slate-400{% endif %}">Rates</a>
       </nav>
     </header>
     {% block content %}{% endblock %}

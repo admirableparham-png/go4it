@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% set active = 'quotes' %}
+{% block content %}
+<style>
+  @media print {
+    body { background: #fff !important; }
+    .no-print { display: none !important; }
+    #proforma { box-shadow: none !important; border: none !important; }
+  }
+</style>
+
+<div class="flex items-center justify-between mb-4 no-print">
+  <a href="/quotes" class="text-sm text-slate-400 hover:text-slate-200">&larr; All quotes</a>
+  <div class="flex items-center gap-2">
+    <span class="text-xs px-2 py-1 rounded-full
+      {% if q.status == 'sent' %}bg-emerald-500/20 text-emerald-300
+      {% elif q.status == 'approved' %}bg-sky-500/20 text-sky-300
+      {% else %}bg-slate-700 text-slate-300{% endif %}">{{ q.status }}</span>
+    {% if q.status == 'draft' %}
+      <form method="post" action="/quotes/{{ q.id }}/approve"><button class="text-sm px-3 py-1.5 rounded bg-sky-600 hover:bg-sky-500 text-white">Approve</button></form>
+    {% elif q.status == 'approved' %}
+      <form method="post" action="/quotes/{{ q.id }}/send"><button class="text-sm px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white">Mark sent</button></form>
+    {% endif %}
+    <button onclick="window.print()" class="text-sm px-3 py-1.5 rounded bg-slate-700 hover:bg-slate-600 text-white">Print / PDF</button>
+  </div>
+</div>
+
+<!-- Pro-forma document (white, so it prints like a real invoice) -->
+<div id="proforma" class="mx-auto max-w-3xl bg-white text-slate-900 rounded-xl shadow p-8">
+  <div class="flex items-start justify-between border-b border-slate-200 pb-4 mb-6">
+    <div>
+      <div class="text-2xl font-bold tracking-tight">go4it</div>
+      <div class="text-slate-500 text-sm">Pro-forma quotation</div>
+    </div>
+    <div class="text-right text-sm">
+      <div class="font-mono font-semibold">{{ q.tracking_code }}</div>
+      <div class="text-slate-500">{{ q.created_at.strftime('%Y-%m-%d') }}</div>
+      <div class="text-slate-500">valid {{ q.validity_days }} days</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-6 mb-6 text-sm">
+    <div>
+      <div class="text-[11px] uppercase tracking-wide text-slate-400 mb-1">Buyer</div>
+      {% if lead %}
+        <div class="font-medium">{{ lead.buyer_company or '-' }}</div>
+        <div class="text-slate-600">{{ lead.contact_name }}{% if lead.email %} &middot; {{ lead.email }}{% endif %}</div>
+        <div class="text-slate-600">{{ lead.dest_city }}{% if lead.dest_country %}, {{ lead.dest_country }}{% endif %}</div>
+        <div class="text-slate-400 text-xs mt-1">ref {{ lead.tracking_code }}</div>
+      {% endif %}
+    </div>
+    <div>
+      <div class="text-[11px] uppercase tracking-wide text-slate-400 mb-1">Terms</div>
+      <div><span class="text-slate-500">Incoterm:</span> <b>{{ q.incoterm }}</b>{% if q.dest_border %} {{ q.dest_border }}{% endif %}</div>
+      <div><span class="text-slate-500">Currency:</span> {{ q.quote_currency }}</div>
+      <div><span class="text-slate-500">Quantity:</span> {{ q.quantity }}{% if product %} {{ product.unit }}{% endif %}</div>
+      {% if fx.base and fx.base != fx.quote %}<div class="text-slate-400 text-xs mt-1">FX {{ fx.base }}â†’{{ fx.quote }} @ {{ fx.rate }}</div>{% endif %}
+    </div>
+  </div>
+
+  {% if product %}
+  <div class="mb-4">
+    <div class="text-[11px] uppercase tracking-wide text-slate-400 mb-1">Product</div>
+    <div class="font-medium">{{ product.name }} <span class="text-slate-500 font-normal">{{ product.spec }}</span></div>
+    <div class="text-slate-500 text-sm">{% if product.hs_code %}HS {{ product.hs_code }} &middot; {% endif %}origin {{ product.origin_region or 'Iran' }}</div>
+  </div>
+  {% endif %}
+
+  <table class="w-full text-sm mb-6">
+    <thead>
+      <tr class="text-left text-[11px] uppercase text-slate-400 border-b border-slate-200">
+        <th class="py-2 font-medium">Cost component</th>
+        <th class="py-2 font-medium">Basis</th>
+        <th class="py-2 font-medium text-right">Per {{ product.unit if product else 'unit' }}</th>
+        <th class="py-2 font-medium text-right">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in breakdown %}
+        <tr class="border-b border-slate-100">
+          <td class="py-1.5">{{ row.label }}</td>
+          <td class="py-1.5 text-slate-500">{{ row.basis }}</td>
+          <td class="py-1.5 text-right text-slate-600">{{ row.per_unit }}</td>
+          <td class="py-1.5 text-right">{{ row.amount }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div class="rounded-lg border border-slate-200 p-4">
+      <div class="text-[11px] uppercase tracking-wide text-slate-400">EXW (factory gate)</div>
+      <div class="text-2xl font-bold">{{ '%.2f'|format(q.exw_unit) }} <span class="text-sm font-normal text-slate-500">/{{ product.unit if product else 'unit' }}</span></div>
+      <div class="text-slate-500 text-sm">total {{ '%.2f'|format(q.exw_total) }} {{ q.quote_currency }}</div>
+    </div>
+    <div class="rounded-lg border-2 border-emerald-500 p-4">
+      <div class="text-[11px] uppercase tracking-wide text-emerald-600">Delivered {{ q.incoterm }}</div>
+      <div class="text-2xl font-bold text-emerald-700">{{ '%.2f'|format(q.delivered_unit) }} <span class="text-sm font-normal text-slate-500">/{{ product.unit if product else 'unit' }}</span></div>
+      <div class="text-slate-500 text-sm">total {{ '%.2f'|format(q.delivered_total) }} {{ q.quote_currency }}</div>
+    </div>
+  </div>
+
+  <div class="text-xs text-slate-400 mt-6 border-t border-slate-200 pt-3">
+    Includes {{ '%g'|format(q.margin_pct) }}% margin. Prices are indicative and valid for {{ q.validity_days }} days
+    from {{ q.created_at.strftime('%Y-%m-%d') }}. Duty/VAT at destination are the buyer's account unless stated.
+  </div>
+</div>
+{% endblock %}

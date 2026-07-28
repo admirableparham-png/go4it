@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% set active = 'quotes' %}
+{% block content %}
+<h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
+  <span>Quotes</span><span class="text-sm text-slate-500">{{ rows|length }}</span>
+</h2>
+
+{% if rows %}
+  <div class="overflow-x-auto rounded-xl border border-slate-800">
+    <table class="w-full text-sm">
+      <thead class="bg-slate-900 text-slate-400 text-xs uppercase">
+        <tr>
+          <th class="text-left font-medium px-3 py-2">Quote</th>
+          <th class="text-left font-medium px-3 py-2">Buyer</th>
+          <th class="text-left font-medium px-3 py-2">Product</th>
+          <th class="text-right font-medium px-3 py-2">Qty</th>
+          <th class="text-left font-medium px-3 py-2">Incoterm</th>
+          <th class="text-right font-medium px-3 py-2">Delivered/unit</th>
+          <th class="text-right font-medium px-3 py-2">Total</th>
+          <th class="text-left font-medium px-3 py-2">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+          {% set q = row.q %}
+          <tr class="border-t border-slate-800 hover:bg-slate-900/60">
+            <td class="px-3 py-2"><a href="/quotes/{{ q.id }}" class="font-mono text-sky-400 hover:underline">{{ q.tracking_code }}</a></td>
+            <td class="px-3 py-2 text-slate-300">{{ row.lead.buyer_company if row.lead else '' }}</td>
+            <td class="px-3 py-2">{{ row.product.name if row.product else '' }}</td>
+            <td class="px-3 py-2 text-right text-slate-400">{{ q.quantity }}</td>
+            <td class="px-3 py-2 text-slate-400">{{ q.incoterm }}</td>
+            <td class="px-3 py-2 text-right">{{ '%.2f'|format(q.delivered_unit) }} {{ q.quote_currency }}</td>
+            <td class="px-3 py-2 text-right text-slate-300">{{ '%.2f'|format(q.delivered_total) }}</td>
+            <td class="px-3 py-2">
+              <span class="text-xs px-2 py-0.5 rounded-full
+                {% if q.status == 'sent' %}bg-emerald-500/20 text-emerald-300
+                {% elif q.status == 'approved' %}bg-sky-500/20 text-sky-300
+                {% else %}bg-slate-700 text-slate-300{% endif %}">{{ q.status }}</span>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p class="text-slate-500 text-sm">No quotes yet. Add a lead (a draft quote is auto-created for the best match) or click &ldquo;Quote this&rdquo; on any match.</p>
+{% endif %}
+{% endblock %}
