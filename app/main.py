@@ -1,5 +1,4 @@
 """go4it web app — catalog + leads + matching + quotation + team CRM."""
-import hashlib
 import json
 import logging
 from datetime import datetime
@@ -13,15 +12,16 @@ from sqlmodel import Session, select
 from starlette.middleware.sessions import SessionMiddleware
 
 from .auth import current_user, role_at_least, verify_password
-from .config import MATCH_THRESHOLD, SECRET_KEY
+from .config import INBOX_DIR, SECRET_KEY
 from .csv_import import parse_products
 from .db import engine, init_db
-from .matching import score_lead_product
-from .models import (Activity, CostParam, FxRate, Lead, Match, Product, Quote,
-                     RateCard, Supplier, User)
+from .ingest import ingest_source
+from .lead_service import create_lead
+from .models import (Activity, CostParam, FxRate, IngestionRun, Lead, Match,
+                     Product, Quote, RateCard, Supplier, User)
 from .quote_service import create_quote
-from .telegram import (notify_lead_matches, notify_quote_ready,
-                       notify_status_change)
+from .sources.go4world_csv import Go4WorldCsvSource
+from .telegram import notify_quote_ready, notify_status_change
 
 logger = logging.getLogger("go4it")
 BASE_DIR = Path(__file__).parent
@@ -74,13 +74,6 @@ def _forbidden():
     return HTMLResponse("Forbidden", status_code=403)
 
 
-def _content_hash(lead: Lead) -> str:
-    parts = [lead.product, lead.category, lead.spec, lead.quantity, lead.unit,
-             lead.target_price, lead.currency, lead.dest_country,
-             lead.buyer_company, lead.contact_name, lead.email]
-    return hashlib.sha1("|".join(str(p).strip().lower() for p in parts).encode()).hexdigest()
-
-
 def _log(session, lead: Lead, user, kind: str, body: str = ""):
     """Append a timeline entry; stamp first_response_at on the first real action."""
     session.add(Activity(lead_id=lead.id, user_id=user.id if user else None,
@@ -88,25 +81,6 @@ def _log(session, lead: Lead, user, kind: str, body: str = ""):
     if kind in ("note", "call", "status_change", "quote_sent") and lead.first_response_at is None:
         lead.first_response_at = datetime.utcnow()
         session.add(lead)
-
-
-def _match_lead(session, lead: Lead):
-    saved = []
-    for product in session.exec(select(Product).where(Product.active == True)).all():  # noqa: E712
-        score, reasons = score_lead_product(lead, product)
-        if score >= MATCH_THRESHOLD:
-            session.add(Match(lead_id=lead.id, product_id=product.id, score=score, reasons=reasons))
-            saved.append((product, score, reasons))
-    session.commit()
-    if saved:
-        saved.sort(key=lambda t: t[1], reverse=True)
-        notify_lead_matches(lead, saved[:5])
-        try:
-            quote = create_quote(session, lead, saved[0][0])
-            notify_quote_ready(quote, lead, saved[0][0])
-        except Exception:
-            logger.warning("auto-quote failed for lead %s", lead.id, exc_info=True)
-    return saved
 
 
 def _get_or_create_supplier(session, name: str):
@@ -227,17 +201,7 @@ def add_lead(
             email=email, phone=phone, notes=notes, source="manual",
             owner_id=user.id,
         )
-        lead.content_hash = _content_hash(lead)
-        dup = session.exec(select(Lead).where(Lead.content_hash == lead.content_hash)).first()
-        if dup is None:
-            session.add(lead)
-            session.commit()
-            session.refresh(lead)
-            lead.tracking_code = f"G4-{datetime.utcnow():%Y%m}-{lead.id:04d}"
-            session.add(lead)
-            session.commit()
-            session.refresh(lead)
-            _match_lead(session, lead)
+        create_lead(session, lead)   # dedup + tracking code + match/quote/alert
     return RedirectResponse("/", status_code=303)
 
 
@@ -493,6 +457,30 @@ def send_quote(request: Request, quote_id: int):
                 _log(session, lead, user, "quote_sent", f"sent {q.tracking_code}")
             session.commit()
     return RedirectResponse(f"/quotes/{quote_id}", status_code=303)
+
+
+# ----------------------------------------------------------------------------- ingestion
+
+@app.get("/ingest", response_class=HTMLResponse)
+def ingest_page(request: Request):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        runs = session.exec(
+            select(IngestionRun).order_by(IngestionRun.id.desc()).limit(20)
+        ).all()
+    pending = len(list(Path(INBOX_DIR).glob("*.csv"))) if Path(INBOX_DIR).exists() else 0
+    return templates.TemplateResponse(
+        "ingest.html",
+        {"request": request, "user": user, "runs": runs, "pending": pending, "inbox": INBOX_DIR})
+
+
+@app.post("/ingest/run")
+def ingest_run(request: Request):
+    with Session(engine) as session:
+        if not role_at_least(current_user(request, session), "manager"):
+            return _forbidden()
+    ingest_source(Go4WorldCsvSource(INBOX_DIR))   # opens its own session
+    return RedirectResponse("/ingest", status_code=303)
 
 
 # ----------------------------------------------------------------------------- rates admin

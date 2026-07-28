@@ -1,0 +1,4 @@
+Inquiry ID,Company,Contact Person,Email,Phone,Country,Product,Quantity,Unit,Budget,Currency,Details
+GW-1001,Tbilisi Steel Traders,N. Gogoladze,buyer1@example.ge,+995322000001,Georgia,Steel rebar 12mm,250,ton,690,USD,B500B grade required
+GW-1002,Batumi Build LLC,M. Kvirikashvili,buyer2@example.ge,,Georgia,Portland cement,800,ton,85,USD,Type II bagged
+GW-1003,Istanbul Import Co,A. Yilmaz,buyer3@example.tr,,Turkey,Bitumen 60/70,400,ton,500,USD,penetration 60/70

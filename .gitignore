@@ -23,6 +23,10 @@ credentials.json
 *.swp
 *~
 
+# Ingestion inbox (buyer-lead data — never commit)
+inbox/*.csv
+inbox/processed/
+
 # OS / editor
 .DS_Store
 .idea/

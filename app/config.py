@@ -21,3 +21,8 @@ SECRET_KEY = os.getenv("SECRET_KEY", "dev-insecure-change-me")
 
 # Base URL used to build deep links in Telegram alerts.
 BASE_URL = os.getenv("BASE_URL", "http://localhost:8400").rstrip("/")
+
+# Lead ingestion: folder watched for go4worldbusiness CSV exports, and poll interval.
+_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+INBOX_DIR = os.getenv("INBOX_DIR", os.path.join(_PROJECT_ROOT, "inbox"))
+INGEST_INTERVAL = int(os.getenv("INGEST_INTERVAL", "120"))

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% set active = 'ingest' %}
+{% set can_run = user and user.role in ['manager', 'admin'] %}
+{% block content %}
+
+<div class="flex items-start justify-between mb-6">
+  <div>
+    <h2 class="text-lg font-semibold">Lead ingestion</h2>
+    <p class="text-slate-500 text-sm">Export buyer leads from go4worldbusiness and drop the CSV into the inbox. Re-runs skip duplicates automatically.</p>
+  </div>
+  {% if can_run %}
+    <form method="post" action="/ingest/run">
+      <button class="text-sm px-4 py-2 rounded bg-sky-600 hover:bg-sky-500 text-white font-medium">Run ingest now</button>
+    </form>
+  {% endif %}
+</div>
+
+<div class="rounded-lg border border-slate-800 bg-slate-900 p-4 mb-6 text-sm">
+  <div class="text-slate-400">Inbox folder</div>
+  <div class="font-mono text-slate-300 break-all">{{ inbox }}</div>
+  <div class="mt-2 text-slate-400">Files waiting: <span class="text-slate-200">{{ pending }}</span>
+    <span class="text-slate-600">(the worker also polls this folder automatically)</span></div>
+</div>
+
+<h3 class="text-sm font-semibold text-slate-400 mb-2">Recent runs</h3>
+{% if runs %}
+  <div class="overflow-x-auto rounded-xl border border-slate-800">
+    <table class="w-full text-sm">
+      <thead class="bg-slate-900 text-slate-400 text-xs uppercase">
+        <tr>
+          <th class="text-left font-medium px-3 py-2">When</th>
+          <th class="text-left font-medium px-3 py-2">Source</th>
+          <th class="text-right font-medium px-3 py-2">Seen</th>
+          <th class="text-right font-medium px-3 py-2">New</th>
+          <th class="text-right font-medium px-3 py-2">Duplicate</th>
+          <th class="text-left font-medium px-3 py-2">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in runs %}
+          <tr class="border-t border-slate-800">
+            <td class="px-3 py-2 text-slate-400">{{ r.started_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td class="px-3 py-2">{{ r.source }}</td>
+            <td class="px-3 py-2 text-right text-slate-400">{{ r.leads_seen }}</td>
+            <td class="px-3 py-2 text-right text-emerald-400">{{ r.leads_new }}</td>
+            <td class="px-3 py-2 text-right text-slate-500">{{ r.leads_duplicate }}</td>
+            <td class="px-3 py-2">
+              <span class="text-xs px-2 py-0.5 rounded-full {% if r.status == 'ok' %}bg-emerald-500/20 text-emerald-300{% elif r.status == 'error' %}bg-rose-500/20 text-rose-300{% else %}bg-slate-700 text-slate-300{% endif %}">{{ r.status }}</span>
+              {% if r.error %}<span class="text-rose-400 text-xs ml-1">{{ r.error }}</span>{% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p class="text-slate-500 text-sm">No ingestion runs yet.</p>
+{% endif %}
+{% endblock %}

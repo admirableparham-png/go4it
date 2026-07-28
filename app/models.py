@@ -160,6 +160,19 @@ class Activity(SQLModel, table=True):
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
+class IngestionRun(SQLModel, table=True):
+    """One pass of a lead source (for observability / no-silent-caps)."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    source: str = ""
+    started_at: datetime = Field(default_factory=datetime.utcnow)
+    finished_at: Optional[datetime] = None
+    leads_seen: int = 0
+    leads_new: int = 0
+    leads_duplicate: int = 0
+    status: str = "running"        # running | ok | error
+    error: str = ""
+
+
 class Quote(SQLModel, table=True):
     """A priced offer for a Lead: EXW + delivered, with a frozen breakdown so it
     reproduces identically months later."""

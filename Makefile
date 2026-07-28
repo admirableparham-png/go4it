@@ -1,4 +1,4 @@
-.PHONY: install run seed test save clean
+.PHONY: install run seed test save clean worker ingest
 
 # One-time setup: create a virtualenv and install dependencies.
 install:
@@ -18,6 +18,14 @@ seed:
 # Run the test suite.
 test:
 	./.venv/bin/python -m pytest -q
+
+# Ingest go4worldbusiness CSVs once (drop exports into ./inbox first).
+ingest:
+	./.venv/bin/python -m app.worker --once
+
+# Run the background ingestion worker (polls ./inbox continuously).
+worker:
+	./.venv/bin/python -m app.worker
 
 # End-of-day save: commit everything and push to GitHub with a status report.
 save:
