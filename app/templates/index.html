@@ -59,7 +59,7 @@
                   {% if lead.dest_country %}&middot; <span class="text-sky-300">{{ lead.dest_country }}</span>{% endif %}
                 </div>
                 <div class="text-slate-500 text-xs mt-0.5">
-                  {{ lead.buyer_company or 'unknown buyer' }}{% if lead.contact_name %} · {{ lead.contact_name }}{% endif %}
+                  {{ lead.buyer_company or 'unknown buyer' }}{% if lead.contact_name %} · {{ lead.contact_name }}{% endif %}{% if lead.website %} · <a href="{{ lead.website if '://' in lead.website else 'https://' + lead.website }}" target="_blank" rel="noopener" class="text-sky-400 hover:underline">site&#8599;</a>{% endif %}
                 </div>
               </div>
               <div class="text-right">

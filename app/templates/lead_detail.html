@@ -20,7 +20,13 @@
       {{ lead.quantity }} {{ lead.unit }} &middot; &le; {{ lead.target_price }} {{ lead.currency }}
       {% if lead.dest_country %}&middot; <span class="text-sky-300">{{ lead.dest_country }}{% if lead.dest_city %} / {{ lead.dest_city }}{% endif %}</span>{% endif %}
     </div>
-    <div class="text-slate-500 text-sm mt-0.5">{{ lead.buyer_company or 'unknown buyer' }}{% if lead.contact_name %} &middot; {{ lead.contact_name }}{% endif %}{% if lead.email %} &middot; {{ lead.email }}{% endif %}</div>
+    <div class="text-slate-500 text-sm mt-0.5">{{ lead.buyer_company or 'unknown buyer' }}{% if lead.contact_name %} &middot; {{ lead.contact_name }}{% endif %}{% if lead.email %} &middot; {{ lead.email }}{% endif %}{% if lead.phone %} &middot; {{ lead.phone }}{% endif %}</div>
+    {% if lead.website or lead.source_url %}
+      <div class="text-xs mt-1 flex gap-4">
+        {% if lead.website %}<a href="{{ lead.website if '://' in lead.website else 'https://' + lead.website }}" target="_blank" rel="noopener" class="text-sky-400 hover:underline">&#128279; {{ lead.website }}</a>{% endif %}
+        {% if lead.source_url %}<a href="{{ lead.source_url }}" target="_blank" rel="noopener" class="text-slate-500 hover:underline">found via source</a>{% endif %}
+      </div>
+    {% endif %}
   </div>
   <div class="text-right">
     <span class="text-xs px-2 py-1 rounded-full {{ stage_colors.get(lead.status, 'bg-slate-700') }}">{{ lead.status }}</span>

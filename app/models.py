@@ -57,9 +57,11 @@ class Lead(SQLModel, table=True):
     """A buyer request (from go4worldbusiness, CSV, or manual entry)."""
     id: Optional[int] = Field(default=None, primary_key=True)
     tracking_code: str = Field(default="", index=True)      # G4-YYYYMM-####
-    source: str = "manual"         # manual | csv | go4world | ...
+    source: str = "manual"         # manual | csv | go4world | research | ...
     external_id: str = ""          # id at the source, for dedup
     content_hash: str = Field(default="", index=True)       # dedup identical leads
+    website: str = ""              # the buyer's own website (clickable)
+    source_url: str = ""           # where this lead was found (provenance)
 
     # buyer
     buyer_company: str = ""
