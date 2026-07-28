@@ -9,8 +9,8 @@ from typing import List
 
 from fastapi import (BackgroundTasks, FastAPI, File, Form, Header, Request,
                      UploadFile)
-from fastapi.responses import (HTMLResponse, JSONResponse, PlainTextResponse,
-                               RedirectResponse)
+from fastapi.responses import (FileResponse, HTMLResponse, JSONResponse,
+                               PlainTextResponse, RedirectResponse)
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
@@ -38,7 +38,7 @@ app = FastAPI(title="go4it")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 
-PUBLIC_PREFIXES = ("/login", "/logout", "/static", "/api")
+PUBLIC_PREFIXES = ("/login", "/logout", "/static", "/api", "/go4it-capture.user.js")
 
 # Allowed pipeline transitions. Lost requires a reason (enforced in the route).
 TRANSITIONS = {
@@ -733,6 +733,14 @@ def _ingest_browser_leads(items):
 @app.get("/api/health")
 def api_health():
     return {"ok": True, "service": "go4it"}
+
+
+@app.get("/go4it-capture.user.js", include_in_schema=False)
+def userscript_file():
+    """Serve the capture userscript so Tampermonkey offers a one-click install
+    when you open this URL in the browser."""
+    return FileResponse(BASE_DIR.parent / "docs" / "userscript" / "go4it-capture.user.js",
+                        media_type="text/javascript")
 
 
 @app.post("/api/leads/raw")
