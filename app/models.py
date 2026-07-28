@@ -173,6 +173,45 @@ class IngestionRun(SQLModel, table=True):
     error: str = ""
 
 
+# --------------------------------------------------------------------------- post-win
+
+class Deal(SQLModel, table=True):
+    """A won lead being executed: sourcing -> logistics -> customs -> delivery ->
+    settlement, with planned-vs-realized margin."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    tracking_code: str = Field(default="", index=True)      # G4-YYYYMM-####-D
+    lead_id: int = Field(foreign_key="lead.id", index=True)
+    quote_id: Optional[int] = Field(default=None, foreign_key="quote.id")
+    owner_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    stage: str = "won"             # see deal_service.DEAL_STAGES
+    planned_revenue: float = 0
+    planned_cost: float = 0
+    planned_margin: float = 0
+    actual_revenue: float = 0
+    actual_cost: float = 0
+    realized_margin: float = 0
+    payment_received: float = 0
+    freight_ref: str = ""
+    notes: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    closed_at: Optional[datetime] = None
+
+
+class ComplianceDoc(SQLModel, table=True):
+    """A trade document attached to a deal (CoO, invoice, packing list…)."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    deal_id: int = Field(foreign_key="deal.id", index=True)
+    doc_type: str = ""             # certificate_of_origin, commercial_invoice, ...
+    reference_no: str = ""
+    issued_by: str = ""
+    issued_at: Optional[datetime] = None
+    expires_at: Optional[datetime] = None
+    file_path: str = ""
+    status: str = "received"       # pending | received | verified | expired
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
 class Quote(SQLModel, table=True):
     """A priced offer for a Lead: EXW + delivered, with a frozen breakdown so it
     reproduces identically months later."""

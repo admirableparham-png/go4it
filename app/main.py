@@ -15,10 +15,13 @@ from .auth import current_user, role_at_least, verify_password
 from .config import INBOX_DIR, SECRET_KEY
 from .csv_import import parse_products
 from .db import engine, init_db
+from .deal_service import (DEAL_STAGES, DOC_TYPES, REQUIRED_DOCS, create_deal,
+                           missing_docs_for, next_stage)
 from .ingest import ingest_source
 from .lead_service import create_lead
-from .models import (Activity, CostParam, FxRate, IngestionRun, Lead, Match,
-                     Product, Quote, RateCard, Supplier, User)
+from .models import (Activity, ComplianceDoc, CostParam, Deal, FxRate,
+                     IngestionRun, Lead, Match, Product, Quote, RateCard,
+                     Supplier, User)
 from .quote_service import create_quote
 from .sources.go4world_csv import Go4WorldCsvSource
 from .telegram import notify_quote_ready, notify_status_change
@@ -276,6 +279,15 @@ def change_stage(request: Request, lead_id: int, status: str = Form(...), reason
              f"{old} -> {status}" + (f" ({reason.strip()})" if reason.strip() else ""))
         session.commit()
         session.refresh(lead)
+        # A won lead becomes a Deal (once), seeded from its accepted quote.
+        if status == "won" and not session.exec(select(Deal).where(Deal.lead_id == lead.id)).first():
+            quote = (session.exec(select(Quote).where(Quote.lead_id == lead.id, Quote.status == "sent")
+                                  .order_by(Quote.id.desc())).first()
+                     or session.exec(select(Quote).where(Quote.lead_id == lead.id)
+                                     .order_by(Quote.id.desc())).first())
+            deal = create_deal(session, lead, quote)
+            _log(session, lead, user, "note", f"deal {deal.tracking_code} opened")
+            session.commit()
         notify_status_change(lead, old, status, user.name or user.email)
     return RedirectResponse(f"/leads/{lead_id}", status_code=303)
 
@@ -457,6 +469,117 @@ def send_quote(request: Request, quote_id: int):
                 _log(session, lead, user, "quote_sent", f"sent {q.tracking_code}")
             session.commit()
     return RedirectResponse(f"/quotes/{quote_id}", status_code=303)
+
+
+# ----------------------------------------------------------------------------- deals (post-win)
+
+@app.get("/deals", response_class=HTMLResponse)
+def deals_list(request: Request):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        deals = session.exec(select(Deal).order_by(Deal.id.desc())).all()
+        leads = {l.id: l for l in session.exec(select(Lead)).all()}
+        rows = [{"d": d, "lead": leads.get(d.lead_id)} for d in deals]
+    return templates.TemplateResponse("deals_list.html", {"request": request, "user": user, "rows": rows})
+
+
+@app.get("/deals/{deal_id}", response_class=HTMLResponse)
+def deal_detail(request: Request, deal_id: int):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        deal = session.get(Deal, deal_id)
+        if not deal:
+            return HTMLResponse("Not found", status_code=404)
+        lead = session.get(Lead, deal.lead_id)
+        docs = session.exec(
+            select(ComplianceDoc).where(ComplianceDoc.deal_id == deal_id).order_by(ComplianceDoc.id.desc())
+        ).all()
+        nxt = next_stage(deal.stage)
+        missing = missing_docs_for(session, deal, nxt) if nxt else []
+    return templates.TemplateResponse(
+        "deal_detail.html",
+        {"request": request, "user": user, "deal": deal, "lead": lead, "docs": docs,
+         "stages": DEAL_STAGES, "next": nxt, "missing": missing,
+         "required_for": REQUIRED_DOCS, "doc_types": DOC_TYPES,
+         "can_settle": role_at_least(user, "manager"), "today": datetime.utcnow()},
+    )
+
+
+@app.post("/deals/{deal_id}/advance")
+def advance_deal(request: Request, deal_id: int):
+    with Session(engine) as session:
+        if not role_at_least(current_user(request, session), "agent"):
+            return _forbidden()
+        deal = session.get(Deal, deal_id)
+        if not deal:
+            return HTMLResponse("Not found", status_code=404)
+        nxt = next_stage(deal.stage)
+        if not nxt:
+            return RedirectResponse(f"/deals/{deal_id}", status_code=303)
+        missing = missing_docs_for(session, deal, nxt)
+        if missing:      # non-bypassable compliance gate
+            return RedirectResponse(f"/deals/{deal_id}?error=docs&need={','.join(missing)}", status_code=303)
+        deal.stage = nxt
+        deal.updated_at = datetime.utcnow()
+        if nxt == "closed":
+            deal.closed_at = datetime.utcnow()
+        session.add(deal)
+        lead = session.get(Lead, deal.lead_id)
+        user = current_user(request, session)
+        if lead:
+            _log(session, lead, user, "status_change", f"deal -> {nxt}")
+        session.commit()
+    return RedirectResponse(f"/deals/{deal_id}", status_code=303)
+
+
+@app.post("/deals/{deal_id}/docs")
+def add_doc(request: Request, deal_id: int, doc_type: str = Form(...),
+            reference_no: str = Form(""), issued_by: str = Form(""), expires_at: str = Form("")):
+    with Session(engine) as session:
+        if not role_at_least(current_user(request, session), "agent"):
+            return _forbidden()
+        if not session.get(Deal, deal_id):
+            return HTMLResponse("Not found", status_code=404)
+        exp = None
+        if expires_at.strip():
+            try:
+                exp = datetime.strptime(expires_at.strip(), "%Y-%m-%d")
+            except ValueError:
+                exp = None
+        session.add(ComplianceDoc(deal_id=deal_id, doc_type=doc_type, reference_no=reference_no,
+                                  issued_by=issued_by, expires_at=exp, status="received"))
+        session.commit()
+    return RedirectResponse(f"/deals/{deal_id}", status_code=303)
+
+
+@app.post("/deals/{deal_id}/docs/{doc_id}/verify")
+def verify_doc(request: Request, deal_id: int, doc_id: int):
+    with Session(engine) as session:
+        if not role_at_least(current_user(request, session), "agent"):
+            return _forbidden()
+        doc = session.get(ComplianceDoc, doc_id)
+        if doc and doc.deal_id == deal_id:
+            doc.status = "verified"
+            session.add(doc)
+            session.commit()
+    return RedirectResponse(f"/deals/{deal_id}", status_code=303)
+
+
+@app.post("/deals/{deal_id}/settle")
+def settle_deal(request: Request, deal_id: int,
+                actual_revenue: float = Form(0, ge=0), actual_cost: float = Form(0, ge=0)):
+    with Session(engine) as session:
+        if not role_at_least(current_user(request, session), "manager"):
+            return _forbidden()
+        deal = session.get(Deal, deal_id)
+        if deal:
+            deal.actual_revenue = actual_revenue
+            deal.actual_cost = actual_cost
+            deal.realized_margin = round(actual_revenue - actual_cost, 2)
+            deal.updated_at = datetime.utcnow()
+            session.add(deal)
+            session.commit()
+    return RedirectResponse(f"/deals/{deal_id}", status_code=303)
 
 
 # ----------------------------------------------------------------------------- ingestion

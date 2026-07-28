@@ -18,9 +18,11 @@ from sqlmodel import Session, select
 from .auth import hash_password
 from .config import MATCH_THRESHOLD
 from .db import engine, init_db
+from .deal_service import create_deal
 from .matching import score_lead_product
-from .models import (Activity, CostParam, FxRate, Lead, Match, Product, Quote,
-                     RateCard, Supplier, User)
+from .models import (Activity, ComplianceDoc, CostParam, Deal, FxRate,
+                     IngestionRun, Lead, Match, Product, Quote, RateCard,
+                     Supplier, User)
 from .quote_service import create_quote
 
 USERS = [
@@ -95,7 +97,8 @@ def run() -> None:
             print("Refusing to seed: database already has data. Use SEED_FORCE=1 to overwrite.")
             return
 
-        for table in (Quote, Activity, Match, Lead, Product, Supplier, RateCard, CostParam, FxRate, User):
+        for table in (ComplianceDoc, Deal, Quote, Activity, Match, Lead, Product,
+                      Supplier, RateCard, CostParam, FxRate, IngestionRun, User):
             for row in s.exec(select(table)).all():
                 s.delete(row)
         s.commit()
@@ -155,8 +158,45 @@ def run() -> None:
             matches.sort(key=lambda t: t[1], reverse=True)
             create_quote(s, lead, matches[0][0])
 
+        # A second, WON lead -> open Deal + compliance docs (demonstrates the gate:
+        # certificate of origin is verified but the commercial invoice is not, so
+        # advancing to 'export_cleared' is blocked).
+        won = Lead(product="Bitumen 60/70", category="petrochemicals", spec="penetration 60/70",
+                   quantity=400, unit="ton", target_price=500, currency="USD",
+                   dest_country="TR", dest_city="Istanbul", buyer_company="Istanbul Import Co",
+                   contact_name="A. Yilmaz", email="buyer3@example.tr", source="manual",
+                   status="won", owner_id=users["agent"].id)
+        won.content_hash = _content_hash(won)
+        s.add(won)
+        s.commit()
+        s.refresh(won)
+        won.tracking_code = f"G4-{datetime.utcnow():%Y%m}-{won.id:04d}"
+        s.add(won)
+        s.commit()
+        s.refresh(won)
+        for product in s.exec(select(Product).where(Product.active == True)).all():  # noqa: E712
+            score, reasons = score_lead_product(won, product)
+            if score >= MATCH_THRESHOLD:
+                s.add(Match(lead_id=won.id, product_id=product.id, score=score, reasons=reasons))
+        s.commit()
+        bitumen = s.exec(select(Product).where(Product.name == "Bitumen 60/70")).first()
+        wq = create_quote(s, won, bitumen) if bitumen else None
+        if wq:
+            wq.status = "sent"
+            s.add(wq)
+            s.commit()
+            s.refresh(wq)
+        deal = create_deal(s, won, wq)
+        deal.stage = "supplier_confirmed"
+        s.add(deal)
+        s.add(ComplianceDoc(deal_id=deal.id, doc_type="certificate_of_origin",
+                            reference_no="CoO-TR-9001", issued_by="Tabriz CoC", status="verified"))
+        s.add(ComplianceDoc(deal_id=deal.id, doc_type="commercial_invoice",
+                            reference_no="INV-2207", status="received"))
+        s.commit()
+
     print(f"Seeded {len(USERS)} users, {len(SUPPLIERS)} suppliers, {len(PRODUCTS)} products, "
-          f"1 lead, {len(matches)} matches, 1 quote.")
+          f"2 leads, {len(matches)} matches, 2 quotes, 1 won deal.")
     print("Login: admin@go4it.local/admin123 · sara@go4it.local/manager123 · ali@go4it.local/agent123")
 
 

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% set active = 'deals' %}
+{% block content %}
+<h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
+  <span>Deals</span><span class="text-sm text-slate-500">{{ rows|length }}</span>
+</h2>
+
+{% if rows %}
+  <div class="overflow-x-auto rounded-xl border border-slate-800">
+    <table class="w-full text-sm">
+      <thead class="bg-slate-900 text-slate-400 text-xs uppercase">
+        <tr>
+          <th class="text-left font-medium px-3 py-2">Deal</th>
+          <th class="text-left font-medium px-3 py-2">Buyer</th>
+          <th class="text-left font-medium px-3 py-2">Product</th>
+          <th class="text-left font-medium px-3 py-2">Stage</th>
+          <th class="text-right font-medium px-3 py-2">Planned margin</th>
+          <th class="text-right font-medium px-3 py-2">Realized</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+          {% set d = row.d %}
+          <tr class="border-t border-slate-800 hover:bg-slate-900/60">
+            <td class="px-3 py-2"><a href="/deals/{{ d.id }}" class="font-mono text-sky-400 hover:underline">{{ d.tracking_code }}</a></td>
+            <td class="px-3 py-2 text-slate-300">{{ row.lead.buyer_company if row.lead else '' }}</td>
+            <td class="px-3 py-2">{{ row.lead.product if row.lead else '' }}</td>
+            <td class="px-3 py-2"><span class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">{{ d.stage.replace('_', ' ') }}</span></td>
+            <td class="px-3 py-2 text-right text-slate-400">{{ '%.2f'|format(d.planned_margin) }}</td>
+            <td class="px-3 py-2 text-right {% if d.realized_margin %}text-emerald-400{% else %}text-slate-600{% endif %}">
+              {{ '%.2f'|format(d.realized_margin) if d.realized_margin else '—' }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p class="text-slate-500 text-sm">No deals yet. Mark a lead <b>Won</b> (from its detail page) and a deal opens here.</p>
+{% endif %}
+{% endblock %}
