@@ -1,18 +1,24 @@
 """go4it web app — catalog + leads + matching + quotation + team CRM."""
+import hmac
 import json
 import logging
+import os
 from datetime import datetime
 from pathlib import Path
+from typing import List
 
-from fastapi import FastAPI, File, Form, Request, UploadFile
-from fastapi.responses import HTMLResponse, PlainTextResponse, RedirectResponse
+from fastapi import (BackgroundTasks, FastAPI, File, Form, Header, Request,
+                     UploadFile)
+from fastapi.responses import (HTMLResponse, JSONResponse, PlainTextResponse,
+                               RedirectResponse)
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from pydantic import BaseModel
 from sqlmodel import Session, select
 from starlette.middleware.sessions import SessionMiddleware
 
 from .auth import current_user, role_at_least, verify_password
-from .config import INBOX_DIR, SECRET_KEY
+from .config import DEBUG_DIR, INBOX_DIR, INGEST_API_KEY, SECRET_KEY
 from .csv_import import parse_products
 from .db import engine, init_db
 from .deal_service import (DEAL_STAGES, DOC_TYPES, REQUIRED_DOCS, create_deal,
@@ -32,7 +38,7 @@ app = FastAPI(title="go4it")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 
-PUBLIC_PREFIXES = ("/login", "/logout", "/static")
+PUBLIC_PREFIXES = ("/login", "/logout", "/static", "/api")
 
 # Allowed pipeline transitions. Lost requires a reason (enforced in the route).
 TRANSITIONS = {
@@ -676,3 +682,81 @@ def update_fx(request: Request, base: str = Form(...), rate: float = Form(..., g
         session.add(fx)
         session.commit()
     return RedirectResponse("/rates", status_code=303)
+
+
+# ----------------------------------------------------------------------------- browser-helper API
+# The in-browser userscript reads buy-leads the user is already viewing (their real
+# logged-in session) and POSTs them here — no bot, no extra portal requests.
+
+class RawLeadIn(BaseModel):
+    product: str
+    external_id: str = ""
+    category: str = ""
+    spec: str = ""
+    quantity: float = 0
+    unit: str = ""
+    target_price: float = 0
+    currency: str = "USD"
+    dest_country: str = ""
+    dest_city: str = ""
+    buyer_company: str = ""
+    contact_name: str = ""
+    email: str = ""
+    phone: str = ""
+    source_url: str = ""
+
+
+class RawLeadBatch(BaseModel):
+    leads: List[RawLeadIn]
+
+
+def _ingest_browser_leads(items):
+    with Session(engine) as session:
+        for it in items:
+            if not (it.product or "").strip():
+                continue
+            lead = Lead(
+                source="go4world_browser", external_id=it.external_id,
+                product=it.product, category=it.category, spec=it.spec,
+                quantity=max(it.quantity, 0.0), unit=it.unit,
+                target_price=max(it.target_price, 0.0), currency=it.currency or "USD",
+                dest_country=(it.dest_country or "").strip().upper(), dest_city=it.dest_city,
+                buyer_company=it.buyer_company, contact_name=it.contact_name,
+                email=it.email, phone=it.phone, source_url=it.source_url,
+            )
+            try:
+                create_lead(session, lead)   # dedup + match + auto-quote + Telegram
+            except Exception:
+                logger.warning("browser lead ingest failed for %r", it.product, exc_info=True)
+
+
+@app.get("/api/health")
+def api_health():
+    return {"ok": True, "service": "go4it"}
+
+
+@app.post("/api/leads/raw")
+def api_leads_raw(batch: RawLeadBatch, background: BackgroundTasks,
+                  x_api_key: str = Header(default="")):
+    if not hmac.compare_digest(x_api_key or "", INGEST_API_KEY):
+        return JSONResponse({"error": "unauthorized"}, status_code=401)
+    background.add_task(_ingest_browser_leads, batch.leads)
+    return JSONResponse({"accepted": len(batch.leads)}, status_code=202)
+
+
+class DomDump(BaseModel):
+    url: str = ""
+    html: str = ""
+
+
+@app.post("/api/debug/dom")
+def api_debug_dom(dump: DomDump, x_api_key: str = Header(default="")):
+    """Receive the buy-leads page HTML from the browser helper so the lead
+    extractor can be tuned to the real logged-in DOM."""
+    if not hmac.compare_digest(x_api_key or "", INGEST_API_KEY):
+        return JSONResponse({"error": "unauthorized"}, status_code=401)
+    os.makedirs(DEBUG_DIR, exist_ok=True)
+    with open(os.path.join(DEBUG_DIR, "browser-dom.html"), "w", encoding="utf-8") as f:
+        f.write(dump.html or "")
+    logger.info("browser DOM captured from %s (%d bytes)", dump.url, len(dump.html or ""))
+    return JSONResponse({"saved": len(dump.html or ""), "url": dump.url})

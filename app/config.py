@@ -46,3 +46,7 @@ GO4WORLD_INTERVAL = int(os.getenv("GO4WORLD_INTERVAL", "3600"))   # hourly
 # actively blocks bots ("Too many requests"); auto-running it can flag the account.
 GO4WORLD_PORTAL_ENABLED = os.getenv("GO4WORLD_PORTAL_ENABLED", "false").strip().lower() == "true"
 GO4WORLD_ENABLED = bool(GO4WORLD_EMAIL and GO4WORLD_PASSWORD and GO4WORLD_PORTAL_ENABLED)
+
+# Key the in-browser helper (Tampermonkey userscript) uses to POST captured leads
+# to /api/leads/raw. Change it in .env for anything beyond local use.
+INGEST_API_KEY = os.getenv("GO4IT_INGEST_KEY", "go4it-local-key")
