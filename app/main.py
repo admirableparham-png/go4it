@@ -1,32 +1,33 @@
-"""go4it web app — add demands & offers, auto-match, alert the team."""
-from enum import Enum
+"""go4it web app — catalog + buyer leads + geography-aware matching."""
+import hashlib
+from datetime import datetime
 from pathlib import Path
 
-from fastapi import FastAPI, Form, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi import FastAPI, File, Form, Request, UploadFile
+from fastapi.responses import HTMLResponse, PlainTextResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlmodel import Session, select
 
 from .config import MATCH_THRESHOLD
+from .csv_import import parse_products
 from .db import engine, init_db
-from .matching import score_pair
-from .models import Demand, Match, Offer
-from .telegram import notify_match
+from .matching import score_lead_product
+from .models import Lead, Match, Product, Supplier
+from .telegram import notify_lead_matches
 
 BASE_DIR = Path(__file__).parent
 app = FastAPI(title="go4it")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 
-
-class MatchStatus(str, Enum):
-    """Allowed match statuses. Typing the path param as this makes FastAPI return
-    422 for anything else, instead of a silent no-op."""
-    new = "new"
-    contacted = "contacted"
-    won = "won"
-    lost = "lost"
+SAMPLE_CSV = (
+    "name,category,spec,hs_code,exw_price,currency,unit,weight_kg_per_unit,"
+    "cbm_per_unit,packaging,min_order_qty,origin_region,supplier\n"
+    "Steel rebar 12mm,metals,A3 / B500B,7214,590,USD,ton,1000,0.13,bundled,25,Isfahan,Isfahan Steel Co\n"
+    "Portland cement 42.5,construction,Type II,2523,55,USD,ton,1000,0.7,50kg bags,100,Tehran,Tehran Cement\n"
+    "Bitumen 60/70,petrochemicals,penetration 60/70,2713,380,USD,ton,1000,1.0,steel drums,20,Tabriz,Pasargad Oil\n"
+)
 
 
 @app.on_event("startup")
@@ -34,79 +35,78 @@ def on_startup() -> None:
     init_db()
 
 
-def _open(session, model):
-    """All rows of `model` still open for matching."""
-    return session.exec(select(model).where(model.status == "open")).all()
+# ----------------------------------------------------------------------------- helpers
+
+def _content_hash(lead: Lead) -> str:
+    """Stable hash of a lead's identifying content, for dedup."""
+    parts = [lead.product, lead.category, lead.spec, lead.quantity, lead.unit,
+             lead.target_price, lead.currency, lead.dest_country,
+             lead.buyer_company, lead.contact_name, lead.email]
+    key = "|".join(str(p).strip().lower() for p in parts)
+    return hashlib.sha1(key.encode("utf-8")).hexdigest()
 
 
-# Fields used to detect a duplicate re-submission of the same demand/offer.
-_DEMAND_KEYS = ("product", "category", "spec", "quantity", "unit",
-                "target_price", "currency", "location", "contact")
-_OFFER_KEYS = ("product", "category", "spec", "quantity", "unit",
-               "price", "currency", "location", "contact")
+def _tracking_code(session, lead_id: int) -> str:
+    return f"G4-{datetime.utcnow():%Y%m}-{lead_id:04d}"
 
 
-def _find_duplicate(session, model, keys, row):
-    """Return an existing OPEN row with identical content, if any."""
-    stmt = select(model).where(model.status == "open")
-    for k in keys:
-        stmt = stmt.where(getattr(model, k) == getattr(row, k))
-    return session.exec(stmt).first()
-
-
-def _run_match(session, *, demand=None, offer=None):
-    """Match a newly added demand (or offer) against the opposite open pool,
-    persist any new matches, and fire a Telegram alert for each one."""
-    pairs = []
-    if demand is not None:
-        for off in _open(session, Offer):
-            s, r = score_pair(demand, off)
-            if s >= MATCH_THRESHOLD:
-                pairs.append((demand, off, s, r))
-    elif offer is not None:
-        for dem in _open(session, Demand):
-            s, r = score_pair(dem, offer)
-            if s >= MATCH_THRESHOLD:
-                pairs.append((dem, offer, s, r))
-
+def _match_lead(session, lead: Lead):
+    """Score a new lead against the active catalog, persist matches, alert once."""
     saved = []
-    for dem, off, s, r in pairs:
-        exists = session.exec(
-            select(Match).where(Match.demand_id == dem.id, Match.offer_id == off.id)
-        ).first()
-        if exists:
-            continue
-        session.add(Match(demand_id=dem.id, offer_id=off.id, score=s, reasons=r))
-        saved.append((dem, off, s, r))
+    for product in session.exec(select(Product).where(Product.active == True)).all():  # noqa: E712
+        score, reasons = score_lead_product(lead, product)
+        if score >= MATCH_THRESHOLD:
+            session.add(Match(lead_id=lead.id, product_id=product.id,
+                              score=score, reasons=reasons))
+            saved.append((product, score, reasons))
     session.commit()
-
-    for dem, off, s, r in saved:
-        notify_match(dem, off, s, r)
+    if saved:
+        saved.sort(key=lambda t: t[1], reverse=True)
+        notify_lead_matches(lead, saved[:5])
     return saved
 
 
+def _get_or_create_supplier(session, name: str):
+    name = (name or "").strip()
+    if not name:
+        return None
+    norm = name.lower()
+    supplier = session.exec(
+        select(Supplier).where(Supplier.name_normalized == norm)
+    ).first()
+    if supplier is None:
+        supplier = Supplier(name=name, name_normalized=norm)
+        session.add(supplier)
+        session.commit()
+        session.refresh(supplier)
+    return supplier
+
+
+# ----------------------------------------------------------------------------- dashboard
+
 @app.get("/", response_class=HTMLResponse)
-def index(request: Request):
+def dashboard(request: Request):
     with Session(engine) as session:
-        demands = session.exec(select(Demand).order_by(Demand.id.desc())).all()
-        offers = session.exec(select(Offer).order_by(Offer.id.desc())).all()
-        matches = session.exec(
-            select(Match).order_by(Match.score.desc(), Match.id.desc())
-        ).all()
-        dmap = {d.id: d for d in demands}
-        omap = {o.id: o for o in offers}
-        rows = [
-            {"m": m, "demand": dmap.get(m.demand_id), "offer": omap.get(m.offer_id)}
-            for m in matches
-        ]
+        leads = session.exec(select(Lead).order_by(Lead.id.desc())).all()
+        products = {p.id: p for p in session.exec(select(Product)).all()}
+        lead_rows = []
+        for lead in leads:
+            ms = session.exec(
+                select(Match).where(Match.lead_id == lead.id).order_by(Match.score.desc())
+            ).all()
+            lead_rows.append({
+                "lead": lead,
+                "matches": [{"m": m, "product": products.get(m.product_id)} for m in ms],
+            })
+        product_count = len(products)
     return templates.TemplateResponse(
         "index.html",
-        {"request": request, "demands": demands, "offers": offers, "rows": rows},
+        {"request": request, "lead_rows": lead_rows, "product_count": product_count},
     )
 
 
-@app.post("/demands")
-def add_demand(
+@app.post("/leads")
+def add_lead(
     product: str = Form(...),
     category: str = Form(""),
     spec: str = Form(""),
@@ -114,77 +114,122 @@ def add_demand(
     unit: str = Form(""),
     target_price: float = Form(0, ge=0),
     currency: str = Form("USD"),
-    location: str = Form(""),
-    contact: str = Form(""),
+    dest_country: str = Form(""),
+    dest_city: str = Form(""),
+    buyer_company: str = Form(""),
+    contact_name: str = Form(""),
+    email: str = Form(""),
+    phone: str = Form(""),
     notes: str = Form(""),
 ):
     with Session(engine) as session:
-        d = Demand(
+        lead = Lead(
             product=product, category=category, spec=spec, quantity=quantity,
             unit=unit, target_price=target_price, currency=currency,
-            location=location, contact=contact, notes=notes,
+            dest_country=dest_country.strip().upper(), dest_city=dest_city,
+            buyer_company=buyer_company, contact_name=contact_name,
+            email=email, phone=phone, notes=notes, source="manual",
         )
-        # Skip an identical re-submission (double-click, browser retry) so we don't
-        # create duplicate rows + duplicate matches/alerts.
-        if _find_duplicate(session, Demand, _DEMAND_KEYS, d) is None:
-            session.add(d)
+        lead.content_hash = _content_hash(lead)
+        # Skip an identical re-submission (double-click, retry).
+        dup = session.exec(
+            select(Lead).where(Lead.content_hash == lead.content_hash)
+        ).first()
+        if dup is None:
+            session.add(lead)
             session.commit()
-            session.refresh(d)
-            _run_match(session, demand=d)
+            session.refresh(lead)
+            lead.tracking_code = _tracking_code(session, lead.id)
+            session.add(lead)
+            session.commit()
+            session.refresh(lead)
+            _match_lead(session, lead)
     return RedirectResponse("/", status_code=303)
 
 
-@app.post("/offers")
-def add_offer(
-    product: str = Form(...),
+# ----------------------------------------------------------------------------- catalog
+
+@app.get("/catalog", response_class=HTMLResponse)
+def catalog(request: Request, imported: int = 0, updated: int = 0, errors: int = 0):
+    with Session(engine) as session:
+        products = session.exec(select(Product).order_by(Product.id.desc())).all()
+        suppliers = {s.id: s for s in session.exec(select(Supplier)).all()}
+    return templates.TemplateResponse(
+        "catalog.html",
+        {
+            "request": request, "products": products, "suppliers": suppliers,
+            "imported": imported, "updated": updated, "errors": errors,
+        },
+    )
+
+
+@app.post("/catalog/products")
+def add_product(
+    name: str = Form(...),
     category: str = Form(""),
     spec: str = Form(""),
-    quantity: float = Form(0, ge=0),
-    unit: str = Form(""),
-    price: float = Form(0, ge=0),
+    hs_code: str = Form(""),
+    exw_price: float = Form(0, ge=0),
     currency: str = Form("USD"),
-    location: str = Form(""),
-    contact: str = Form(""),
-    notes: str = Form(""),
+    unit: str = Form(""),
+    weight_kg_per_unit: float = Form(0, ge=0),
+    cbm_per_unit: float = Form(0, ge=0),
+    packaging: str = Form(""),
+    min_order_qty: float = Form(0, ge=0),
+    origin_region: str = Form(""),
+    supplier: str = Form(""),
 ):
     with Session(engine) as session:
-        o = Offer(
-            product=product, category=category, spec=spec, quantity=quantity,
-            unit=unit, price=price, currency=currency,
-            location=location, contact=contact, notes=notes,
+        sup = _get_or_create_supplier(session, supplier)
+        product = Product(
+            name=name, category=category, spec=spec, hs_code=hs_code,
+            exw_price=exw_price, currency=currency, unit=unit,
+            weight_kg_per_unit=weight_kg_per_unit, cbm_per_unit=cbm_per_unit,
+            packaging=packaging, min_order_qty=min_order_qty,
+            origin_region=origin_region,
+            supplier_id=sup.id if sup else None,
         )
-        if _find_duplicate(session, Offer, _OFFER_KEYS, o) is None:
-            session.add(o)
-            session.commit()
-            session.refresh(o)
-            _run_match(session, offer=o)
-    return RedirectResponse("/", status_code=303)
-
-
-@app.post("/matches/{match_id}/status/{status}", response_class=HTMLResponse)
-def set_match_status(request: Request, match_id: int, status: MatchStatus):
-    with Session(engine) as session:
-        m = session.get(Match, match_id)
-        if not m:
-            return HTMLResponse("", status_code=404)
-        m.status = status.value
-        session.add(m)
-        # A won deal closes both sides so they leave the matching pool and stop
-        # re-matching / re-alerting against every future counterparty.
-        if status == MatchStatus.won:
-            demand = session.get(Demand, m.demand_id)
-            offer = session.get(Offer, m.offer_id)
-            if demand:
-                demand.status = "closed"
-                session.add(demand)
-            if offer:
-                offer.status = "closed"
-                session.add(offer)
+        session.add(product)
         session.commit()
-        session.refresh(m)
-        demand = session.get(Demand, m.demand_id)
-        offer = session.get(Offer, m.offer_id)
-    return templates.TemplateResponse(
-        "partials/match_card.html",
-        {"request": request, "m": m, "demand": demand, "offer": offer},
+    return RedirectResponse("/catalog", status_code=303)
+
+
+@app.post("/catalog/import")
+def import_catalog(file: UploadFile = File(...)):
+    text = file.file.read().decode("utf-8-sig", errors="replace")
+    rows, errors = parse_products(text)
+    imported = updated = 0
+    _PRODUCT_FIELDS = ("category", "spec", "hs_code", "exw_price", "currency",
+                       "unit", "weight_kg_per_unit", "cbm_per_unit", "packaging",
+                       "min_order_qty", "origin_region")
+    with Session(engine) as session:
+        for rec in rows:
+            sup = _get_or_create_supplier(session, rec.get("supplier", ""))
+            existing = session.exec(
+                select(Product).where(Product.name == rec["name"])
+            ).first()
+            product = existing or Product(name=rec["name"])
+            for field in _PRODUCT_FIELDS:
+                if field in rec:
+                    setattr(product, field, rec[field])
+            if sup:
+                product.supplier_id = sup.id
+            product.updated_at = datetime.utcnow()
+            session.add(product)
+            if existing:
+                updated += 1
+            else:
+                imported += 1
+        session.commit()
+    return RedirectResponse(
+        f"/catalog?imported={imported}&updated={updated}&errors={len(errors)}",
+        status_code=303,
+    )
+
+
+@app.get("/catalog/sample.csv", response_class=PlainTextResponse)
+def sample_csv():
+    return PlainTextResponse(
+        SAMPLE_CSV,
+        headers={"Content-Disposition": "attachment; filename=go4it_products_sample.csv"},
     )

@@ -9,9 +9,15 @@
 </head>
 <body class="h-full bg-slate-950 text-slate-100 antialiased">
   <div class="max-w-6xl mx-auto px-6 py-8">
-    <header class="mb-8">
-      <h1 class="text-2xl font-bold tracking-tight">go4it</h1>
-      <p class="text-slate-400 text-sm">match demand &harr; supply, then act fast</p>
+    <header class="flex items-end justify-between mb-8 border-b border-slate-800 pb-4">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">go4it</h1>
+        <p class="text-slate-400 text-sm">buyer leads &rarr; Iranian catalog &rarr; act fast</p>
+      </div>
+      <nav class="flex gap-1 text-sm">
+        <a href="/" class="px-3 py-1.5 rounded hover:bg-slate-800 {% if active == 'dashboard' %}bg-slate-800 text-white{% else %}text-slate-400{% endif %}">Dashboard</a>
+        <a href="/catalog" class="px-3 py-1.5 rounded hover:bg-slate-800 {% if active == 'catalog' %}bg-slate-800 text-white{% else %}text-slate-400{% endif %}">Catalog</a>
+      </nav>
     </header>
     {% block content %}{% endblock %}
   </div>

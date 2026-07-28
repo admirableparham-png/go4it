@@ -1,6 +1,6 @@
 """Regression tests for Telegram alerting — the silent-drop / injection fix."""
 import app.telegram as tg
-from app.models import Demand, Offer
+from app.models import Lead, Product
 
 
 def test_esc_escapes_html():
@@ -8,9 +8,9 @@ def test_esc_escapes_html():
     assert tg._esc(None) == ""
 
 
-def test_notify_match_escapes_user_fields(monkeypatch):
-    """Ordinary data with <, >, & must be escaped (so Telegram doesn't 400 and
-    silently drop the alert), while the hard-coded formatting tags survive."""
+def test_notify_lead_matches_escapes_user_fields(monkeypatch):
+    """Ordinary data with <, >, & must be escaped so Telegram doesn't 400 and
+    silently drop the alert, while the template's own tags survive."""
     captured = {}
 
     def fake_send(text, _plain=False):
@@ -19,18 +19,16 @@ def test_notify_match_escapes_user_fields(monkeypatch):
 
     monkeypatch.setattr(tg, "send_message", fake_send)
 
-    d = Demand(product="Steel <grade 60> rebar", category="metals", quantity=10,
-               unit="ton", target_price=650, currency="USD", location="Tbilisi",
-               contact="<jane@acme.com>")
-    o = Offer(product="Rebar & wire", category="metals", quantity=20, unit="ton",
-              price=600, currency="USD", location="Tabriz", contact="AT&T")
+    lead = Lead(product="Steel <grade 60> rebar", quantity=100, unit="ton",
+                target_price=700, currency="USD", dest_country="GE",
+                buyer_company="AT&T Georgia", contact_name="<G. B>",
+                email="b@x.example", tracking_code="G4-202607-0001")
+    product = Product(name="Rebar & wire", exw_price=590, currency="USD", unit="ton")
 
-    tg.notify_match(d, o, 88.0, "text 90%")
+    tg.notify_lead_matches(lead, [(product, 92.0, "text 95%, on GE corridor")])
     text = captured["text"]
 
-    # User-supplied angle brackets / ampersands are neutralized...
     assert "<grade 60>" not in text and "&lt;grade 60&gt;" in text
-    assert "<jane@acme.com>" not in text
     assert "AT&T" not in text and "AT&amp;T" in text
-    # ...but the template's own formatting tags remain.
-    assert "<b>" in text
+    assert "Rebar & wire" not in text and "Rebar &amp; wire" in text
+    assert "<b>" in text  # hard-coded formatting tags intact

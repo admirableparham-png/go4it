@@ -1,16 +1,11 @@
 """Instant Telegram alerts to you and your colleagues.
 
-Two hard-won details baked in here:
+Every user-supplied value is HTML-escaped before it goes into the
+``parse_mode=HTML`` message — without this, ordinary data like ``<jane@acme.com>``
+or ``AT&T`` makes Telegram reject the whole message (HTTP 400) and the alert is
+silently lost. Failures are logged, counted, and retried once in plain text.
 
-1. Every user-supplied value is HTML-escaped before it goes into the
-   ``parse_mode=HTML`` message. Without this, a perfectly ordinary contact like
-   ``<jane@acme.com>`` or a company name like ``AT&T`` makes Telegram reject the
-   whole message (HTTP 400) and the alert is silently lost.
-2. Failures are *observable* — logged with the status + body, counted, and
-   retried once in plain text — instead of being swallowed.
-
-If TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID aren't set, sending is a silent no-op,
-so the app runs fine with alerts turned off.
+If TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID aren't set, sending is a silent no-op.
 """
 import html
 import logging
@@ -22,7 +17,6 @@ from .config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 
 logger = logging.getLogger("go4it.telegram")
 
-# Simple observable counter so a monitor/endpoint can see if alerts are failing.
 stats = {"sent": 0, "failed": 0}
 
 _TAG_RE = re.compile(r"<[^>]+>")
@@ -36,8 +30,8 @@ def _esc(value) -> str:
 def send_message(text: str, _plain: bool = False) -> bool:
     """Send a message to the configured chat. Returns True on success.
 
-    On a non-200 (e.g. a markup parse error), logs the reason and retries once
-    in plain text so a formatting problem never silently drops the alert.
+    On a non-200, logs the reason and retries once in plain text so a formatting
+    problem never silently drops the alert.
     """
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
         return False
@@ -53,7 +47,6 @@ def send_message(text: str, _plain: bool = False) -> bool:
         logger.warning("Telegram send failed: HTTP %s — %s", r.status_code, r.text[:300])
         stats["failed"] += 1
         if not _plain:
-            # Fall back to plain text in case the HTML markup was the problem.
             return send_message(_TAG_RE.sub("", text), _plain=True)
         return False
     except Exception as exc:  # never let a notification failure break the trade flow
@@ -62,18 +55,24 @@ def send_message(text: str, _plain: bool = False) -> bool:
         return False
 
 
-def notify_match(demand, offer, score, reasons) -> bool:
-    """Format and send a 'new match' alert your team can act on immediately."""
-    text = (
-        f"\U0001F3AF <b>New match — {score}%</b>\n\n"
-        f"\U0001F7E2 <b>Buyer wants:</b> {_esc(demand.product)}\n"
-        f"    {_esc(demand.quantity)} {_esc(demand.unit)} · budget ≤ "
-        f"{_esc(demand.target_price)} {_esc(demand.currency)}\n"
-        f"    {_esc(demand.location) or '-'} · {_esc(demand.contact) or 'no contact'}\n\n"
-        f"\U0001F535 <b>Seller has:</b> {_esc(offer.product)}\n"
-        f"    {_esc(offer.quantity)} {_esc(offer.unit)} · price "
-        f"{_esc(offer.price)} {_esc(offer.currency)}\n"
-        f"    {_esc(offer.location) or '-'} · {_esc(offer.contact) or 'no contact'}\n\n"
-        f"<i>why:</i> {_esc(reasons)}"
-    )
-    return send_message(text)
+def notify_lead_matches(lead, matches) -> bool:
+    """Alert the team about a new buyer lead and its best catalog matches.
+
+    ``matches`` is a list of (product, score, reasons), best first.
+    """
+    lines = [
+        f"\U0001F3AF <b>New lead {_esc(lead.tracking_code)} — {len(matches)} match(es)</b>",
+        "",
+        f"\U0001F7E2 <b>Buyer wants:</b> {_esc(lead.product)}",
+        f"    {_esc(lead.quantity)} {_esc(lead.unit)} → {_esc(lead.dest_country) or '-'} · "
+        f"budget ≤ {_esc(lead.target_price)} {_esc(lead.currency)}",
+        f"    {_esc(lead.buyer_company) or '-'} · {_esc(lead.contact_name)} {_esc(lead.email)}".rstrip(),
+        "",
+        "<b>Top products:</b>",
+    ]
+    for product, score, reasons in matches:
+        lines.append(
+            f"  • {score}% {_esc(product.name)} — EXW {_esc(product.exw_price)} "
+            f"{_esc(product.currency)}/{_esc(product.unit)}  <i>({_esc(reasons)})</i>"
+        )
+    return send_message("\n".join(lines))

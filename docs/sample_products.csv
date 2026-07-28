@@ -1,0 +1,6 @@
+name,category,spec,hs_code,exw_price,currency,unit,weight_kg_per_unit,cbm_per_unit,packaging,min_order_qty,origin_region,supplier
+Steel rebar 12mm,metals,A3 / B500B,7214,590,USD,ton,1000,0.13,bundled,25,Isfahan,Isfahan Steel Co
+Portland cement 42.5,construction,Type II,2523,55,USD,ton,1000,0.7,50kg bags,100,Tehran,Tehran Cement
+Bitumen 60/70,petrochemicals,penetration 60/70,2713,380,USD,ton,1000,1.0,steel drums,20,Tabriz,Pasargad Oil
+Pistachios Akbari,food,grade A 22-24,0802,7500,USD,ton,1000,2.0,10kg vacuum,5,Kerman,Kerman Agro
+Float glass 4mm,construction,clear,7005,210,USD,ton,1000,0.5,plywood crates,50,Qazvin,Kaveh Glass
