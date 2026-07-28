@@ -29,6 +29,8 @@ inbox/processed/
 
 # Scraper debug dumps (page HTML/screenshots may contain buyer data)
 debug/
+# Saved go4worldbusiness session cookies (sensitive)
+.go4world_session.json
 
 # OS / editor
 .DS_Store
