@@ -9,6 +9,7 @@ from typing import List
 
 from fastapi import (BackgroundTasks, FastAPI, File, Form, Header, Request,
                      UploadFile)
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import (FileResponse, HTMLResponse, JSONResponse,
                                PlainTextResponse, RedirectResponse)
 from fastapi.staticfiles import StaticFiles
@@ -68,8 +69,36 @@ async def auth_gate(request: Request, call_next):
     return await call_next(request)
 
 
-# SessionMiddleware added last -> outermost -> request.session ready in auth_gate.
+# SessionMiddleware is added before CORS/PNA below, so it stays OUTSIDE auth_gate
+# (request.session is ready) but INSIDE the CORS layer.
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY, same_site="lax")
+
+# --- Reachability for the in-browser capture helper --------------------------
+# The Tampermonkey helper runs on https://www.go4worldbusiness.com and POSTs to
+# http://localhost:8400. Chromium (Brave/Chrome) treats http://localhost as
+# trustworthy, but it still requires (a) CORS headers and (b) a Private Network
+# Access opt-in on the preflight. Without both, the browser silently drops the
+# request and the helper panel shows "can't reach go4it". Auth on the capture
+# endpoints is the X-API-Key header (not the cookie), so opening CORS here is
+# safe: a caller still needs the key, and the server only listens on localhost.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+    max_age=3600,
+)
+
+
+@app.middleware("http")
+async def private_network_access(request: Request, call_next):
+    """Echo back Chrome/Brave's Private Network Access preflight opt-in so a
+    public https page is allowed to reach this local server. Outermost layer, so
+    it tags even the CORS preflight response on the way out."""
+    resp = await call_next(request)
+    if request.headers.get("access-control-request-private-network"):
+        resp.headers["Access-Control-Allow-Private-Network"] = "true"
+    return resp
 
 
 @app.on_event("startup")

@@ -36,3 +36,6 @@ debug/
 .DS_Store
 .idea/
 .vscode/
+
+# debug server access log (transient)
+capture_access.log
