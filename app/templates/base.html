@@ -15,13 +15,11 @@
         <p class="text-slate-400 text-sm">buyer leads &rarr; Iranian catalog &rarr; act fast</p>
       </div>
       <div class="flex items-center gap-4">
-        <nav class="flex gap-1 text-sm">
-          <a href="/" class="px-3 py-1.5 rounded hover:bg-slate-800 {% if active == 'dashboard' %}bg-slate-800 text-white{% else %}text-slate-400{% endif %}">Dashboard</a>
-          <a href="/quotes" class="px-3 py-1.5 rounded hover:bg-slate-800 {% if active == 'quotes' %}bg-slate-800 text-white{% else %}text-slate-400{% endif %}">Quotes</a>
-          <a href="/deals" class="px-3 py-1.5 rounded hover:bg-slate-800 {% if active == 'deals' %}bg-slate-800 text-white{% else %}text-slate-400{% endif %}">Deals</a>
-          <a href="/catalog" class="px-3 py-1.5 rounded hover:bg-slate-800 {% if active == 'catalog' %}bg-slate-800 text-white{% else %}text-slate-400{% endif %}">Catalog</a>
-          <a href="/rates" class="px-3 py-1.5 rounded hover:bg-slate-800 {% if active == 'rates' %}bg-slate-800 text-white{% else %}text-slate-400{% endif %}">Rates</a>
-          <a href="/ingest" class="px-3 py-1.5 rounded hover:bg-slate-800 {% if active == 'ingest' %}bg-slate-800 text-white{% else %}text-slate-400{% endif %}">Ingest</a>
+        <nav class="flex flex-wrap gap-1 text-sm">
+          {% set tabs = [('/', 'dashboard', 'Dashboard'), ('/leads', 'leads', 'Leads'), ('/quotes', 'quotes', 'Quotes'), ('/deals', 'deals', 'Deals'), ('/catalog', 'catalog', 'Catalog'), ('/suppliers', 'suppliers', 'Suppliers'), ('/intel', 'intel', 'Intel'), ('/rates', 'rates', 'Rates'), ('/ingest', 'ingest', 'Ingest')] %}
+          {% for href, key, label in tabs %}
+            <a href="{{ href }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {% if active == key %}bg-slate-800 text-white{% else %}text-slate-400{% endif %}">{{ label }}</a>
+          {% endfor %}
         </nav>
         {% if user %}
           <div class="flex items-center gap-2 text-sm border-l border-slate-800 pl-4">

@@ -15,6 +15,7 @@ from fastapi.responses import (FileResponse, HTMLResponse, JSONResponse,
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
+from sqlalchemy import func
 from sqlmodel import Session, select
 from starlette.middleware.sessions import SessionMiddleware
 
@@ -156,6 +157,16 @@ def _set_card(session, leg, rate_per_truck, lane_to="", capacity=25.0):
     session.add(card)
 
 
+def _bars(counts: dict, top=None, drop_empty=False):
+    """Turn a {label: count} dict into sorted bar rows with a 0-100 width pct."""
+    items = [(k or "—", v) for k, v in counts.items() if not (drop_empty and not k)]
+    items.sort(key=lambda x: -x[1])
+    if top:
+        items = items[:top]
+    mx = max((v for _, v in items), default=1) or 1
+    return [{"label": k, "count": v, "pct": round(v / mx * 100)} for k, v in items]
+
+
 # ----------------------------------------------------------------------------- auth
 
 @app.get("/login", response_class=HTMLResponse)
@@ -183,30 +194,70 @@ def logout(request: Request):
 
 @app.get("/", response_class=HTMLResponse)
 def dashboard(request: Request):
+    """Analytics overview: KPIs + distributions + recent activity, all via
+    COUNT/GROUP-BY aggregates (never loads every lead — the full list lives on /leads)."""
     with Session(engine) as session:
         user = current_user(request, session)
-        leads = session.exec(select(Lead).order_by(Lead.id.desc())).all()
-        products = {p.id: p for p in session.exec(select(Product)).all()}
-        users = {u.id: u for u in session.exec(select(User)).all()}
-        quotes_by_lead = {}
-        for q in session.exec(select(Quote).order_by(Quote.id.desc())).all():
-            quotes_by_lead.setdefault(q.lead_id, []).append(q)
-        lead_rows = []
-        for lead in leads:
-            ms = session.exec(
-                select(Match).where(Match.lead_id == lead.id).order_by(Match.score.desc())
-            ).all()
-            lead_rows.append({
-                "lead": lead,
-                "owner": users.get(lead.owner_id),
-                "matches": [{"m": m, "product": products.get(m.product_id)} for m in ms],
-                "quotes": quotes_by_lead.get(lead.id, []),
-            })
-        product_count = len(products)
-    return templates.TemplateResponse(
-        "index.html",
-        {"request": request, "user": user, "lead_rows": lead_rows, "product_count": product_count},
-    )
+
+        def group(col):
+            return {k: v for k, v in session.exec(select(col, func.count(Lead.id)).group_by(col)).all()}
+
+        by_stage = group(Lead.status)
+        by_source = group(Lead.source)
+        by_dest = group(Lead.dest_country)
+        by_cat = group(Lead.category)
+        total = sum(by_stage.values())
+
+        won, lost = by_stage.get("won", 0), by_stage.get("lost", 0)
+        win_rate = round(won / (won + lost) * 100) if (won + lost) else None
+        open_pipeline = (by_stage.get("new", 0) + by_stage.get("quoted", 0)
+                         + by_stage.get("negotiating", 0))
+        needs_enrichment = session.exec(
+            select(func.count(Lead.id)).where(
+                ((Lead.email == None) | (Lead.email == "")) &        # noqa: E711
+                ((Lead.phone == None) | (Lead.phone == "")))         # noqa: E711
+        ).one()
+
+        qcounts = {k: v for k, v in session.exec(
+            select(Quote.status, func.count(Quote.id)).group_by(Quote.status)).all()}
+        deals_total = session.exec(select(func.count(Deal.id))).one()
+        deals_open = session.exec(
+            select(func.count(Deal.id)).where(Deal.closed_at == None)).one()   # noqa: E711
+        products_total = session.exec(select(func.count(Product.id))).one()
+
+        # Pipeline value: best quote per lead still in play (quoted/negotiating).
+        active_ids = session.exec(
+            select(Lead.id).where(Lead.status.in_(["quoted", "negotiating"]))).all()
+        pipeline_value = 0.0
+        if active_ids:
+            rows = session.exec(
+                select(func.max(Quote.delivered_total)).where(
+                    Quote.lead_id.in_(active_ids)).group_by(Quote.lead_id)).all()
+            pipeline_value = sum((r or 0) for r in rows)
+
+        acts = session.exec(select(Activity).order_by(Activity.id.desc()).limit(10)).all()
+        lead_map = {ld.id: ld for ld in session.exec(
+            select(Lead).where(Lead.id.in_([a.lead_id for a in acts] or [0]))).all()}
+        user_map = {u.id: u for u in session.exec(select(User)).all()}
+        recent_leads = session.exec(select(Lead).order_by(Lead.id.desc()).limit(8)).all()
+
+        ctx = {
+            "request": request, "user": user, "active": "dashboard",
+            "total": total, "contactable": total - needs_enrichment,
+            "needs_enrichment": needs_enrichment,
+            "open_pipeline": open_pipeline, "won": won, "lost": lost, "win_rate": win_rate,
+            "quotes_total": sum(qcounts.values()), "quotes_sent": qcounts.get("sent", 0),
+            "quotes_draft": qcounts.get("draft", 0),
+            "deals_total": deals_total, "deals_open": deals_open,
+            "products_total": products_total, "pipeline_value": pipeline_value,
+            "stage_bars": _bars(by_stage),
+            "source_bars": _bars(by_source, top=8),
+            "dest_bars": _bars(by_dest, top=8, drop_empty=True),
+            "cat_bars": _bars(by_cat, top=8, drop_empty=True),
+            "acts": acts, "lead_map": lead_map, "user_map": user_map,
+            "recent_leads": recent_leads,
+        }
+    return templates.TemplateResponse("index.html", ctx)
 
 
 @app.post("/leads")
@@ -240,7 +291,156 @@ def add_lead(
             owner_id=user.id,
         )
         create_lead(session, lead)   # dedup + tracking code + match/quote/alert
-    return RedirectResponse("/", status_code=303)
+    return RedirectResponse("/leads", status_code=303)
+
+
+LEAD_SORTS = {
+    "new": Lead.id.desc(), "old": Lead.id.asc(),
+    "buyer": Lead.buyer_company.asc(), "product": Lead.product.asc(),
+}
+
+
+@app.get("/leads", response_class=HTMLResponse)
+def leads_list(request: Request, q: str = "", stage: str = "", source: str = "",
+               category: str = "", dest: str = "", owner: str = "", contact: str = "",
+               sort: str = "new", page: int = 1):
+    """The dedicated, filterable, paginated lead workspace (the dashboard no longer
+    lists every lead)."""
+    per = 50
+    with Session(engine) as session:
+        user = current_user(request, session)
+        stmt = select(Lead)
+        if q:
+            like = f"%{q.strip()}%"
+            stmt = stmt.where(Lead.product.ilike(like) | Lead.buyer_company.ilike(like)
+                              | Lead.tracking_code.ilike(like))
+        if stage:
+            stmt = stmt.where(Lead.status == stage)
+        if source:
+            stmt = stmt.where(Lead.source == source)
+        if category:
+            stmt = stmt.where(Lead.category == category)
+        if dest:
+            stmt = stmt.where(Lead.dest_country == dest)
+        if owner == "me" and user:
+            stmt = stmt.where(Lead.owner_id == user.id)
+        elif owner == "none":
+            stmt = stmt.where(Lead.owner_id == None)                    # noqa: E711
+        if contact == "yes":
+            stmt = stmt.where((Lead.email != "") | (Lead.phone != ""))
+        elif contact == "no":
+            stmt = stmt.where(((Lead.email == None) | (Lead.email == ""))    # noqa: E711
+                              & ((Lead.phone == None) | (Lead.phone == "")))  # noqa: E711
+
+        total = session.exec(select(func.count()).select_from(stmt.subquery())).one()
+        pages = max(1, (total + per - 1) // per)
+        page = min(max(1, page), pages)
+        order = LEAD_SORTS.get(sort, LEAD_SORTS["new"])
+        leads = session.exec(stmt.order_by(order).offset((page - 1) * per).limit(per)).all()
+
+        ids = [ld.id for ld in leads] or [0]
+        mcounts = {lid: c for lid, c in session.exec(
+            select(Match.lead_id, func.count(Match.id)).where(
+                Match.lead_id.in_(ids)).group_by(Match.lead_id)).all()}
+        user_map = {u.id: u for u in session.exec(select(User)).all()}
+        sources = sorted({s for s in session.exec(select(Lead.source).distinct()).all() if s})
+        categories = sorted({c for c in session.exec(select(Lead.category).distinct()).all() if c})
+        dests = sorted({d for d in session.exec(select(Lead.dest_country).distinct()).all() if d})
+        product_count = session.exec(select(func.count(Product.id))).one()
+
+        ctx = {
+            "request": request, "user": user, "active": "leads",
+            "leads": leads, "mcounts": mcounts, "user_map": user_map,
+            "total": total, "page": page, "pages": pages,
+            "sources": sources, "categories": categories, "dests": dests,
+            "stages": STAGES, "product_count": product_count,
+            "f": {"q": q, "stage": stage, "source": source, "category": category,
+                  "dest": dest, "owner": owner, "contact": contact, "sort": sort},
+        }
+    return templates.TemplateResponse("leads.html", ctx)
+
+
+# ----------------------------------------------------------------------------- suppliers + intel
+
+@app.get("/suppliers", response_class=HTMLResponse)
+def suppliers_list(request: Request):
+    """Simple view of the Supplier catalog (auto-created today with no page)."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        suppliers = session.exec(select(Supplier).order_by(Supplier.country, Supplier.name)).all()
+        pcounts = {sid: c for sid, c in session.exec(
+            select(Product.supplier_id, func.count(Product.id)).group_by(Product.supplier_id)).all()}
+        ctx = {"request": request, "user": user, "active": "suppliers",
+               "suppliers": suppliers, "pcounts": pcounts}
+    return templates.TemplateResponse("suppliers.html", ctx)
+
+
+RESEARCH_DIR = BASE_DIR.parent / "docs" / "research"
+_HS_PKEY = {"2715": "cold-asphalt", "4016": "rubber-tiles", "4004": "pour-in-place-rubber"}
+_PROD_META = {
+    "cold-asphalt": ("Cold asphalt (bagged cold-mix)", "HS 2715"),
+    "rubber-tiles": ("Rubber tiles (gym / outdoor)", "HS 4016"),
+    "pour-in-place-rubber": ("Pour-in-place rubber flooring", "HS 4004"),
+}
+
+
+def _load_research(name):
+    p = RESEARCH_DIR / name
+    if not p.exists():
+        return {}
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+@app.get("/intel", response_class=HTMLResponse)
+def intel(request: Request):
+    """Surface the harvested market intelligence in-app (customs market reality,
+    live Georgian tenders, gym/venue demand, UAE supply) — read-only, no fetching."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+
+    stats = _load_research("trade_stats_georgia.json")
+    tenders = _load_research("ge_tenders.json")
+    businesses = _load_research("ge_businesses.json")
+    suppliers = _load_research("suppliers_uae_iran.json")
+
+    by_hs = {c["hs_code"]: c for c in stats.get("commodities", [])}
+    cards = []
+    for hs, pkey in _HS_PKEY.items():
+        c = by_hs.get(hs)
+        if not c:
+            continue
+        name, hslabel = _PROD_META[pkey]
+        yrs = c.get("years", {})
+        last = max(yrs) if yrs else None
+        latest = yrs.get(last, {}) if last else {}
+        cheapest = c.get("cheapest_source") or {}
+        iran = c.get("iran_present")
+        if iran and cheapest.get("country") == "Iran":
+            verdict, tone = "Iran is already the CHEAPEST supplier to Georgia — proven live lane.", "good"
+        elif iran:
+            verdict, tone = "Iran already present and competitive.", "good"
+        else:
+            verdict, tone = "Iran absent; cheap regional bulk owns it — marginal for us.", "bad"
+        cards.append({
+            "name": name, "hs": hslabel, "tone": tone, "verdict": verdict,
+            "year": last, "tonnes": latest.get("tonnes"), "cif": latest.get("cif_usd"),
+            "price": latest.get("unit_price_usd_kg"), "trend": c.get("trend_pct_first_to_last"),
+            "cheapest": cheapest, "iran": iran,
+        })
+
+    biz = [b for b in businesses.get("businesses", []) if b.get("product_key") == "rubber-tiles"]
+    biz_contact = [b for b in biz if not b.get("needs_enrichment")]
+    uae = [s for s in suppliers.get("suppliers", []) if s.get("country") == "AE"]
+    ctx = {
+        "request": request, "user": user, "active": "intel",
+        "cards": cards, "tenders": tenders.get("tenders", []),
+        "biz_total": len(biz), "biz_contact": biz_contact[:24],
+        "uae": uae, "has_data": bool(cards or tenders.get("tenders") or uae),
+    }
+    return templates.TemplateResponse("intel.html", ctx)
 
 
 # ----------------------------------------------------------------------------- lead detail + pipeline

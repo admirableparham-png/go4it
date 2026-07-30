@@ -1,102 +1,116 @@
 {% extends "base.html" %}
 {% set active = 'dashboard' %}
 {% block content %}
-{% set ic = "w-full bg-slate-800 border border-slate-700 rounded px-2 py-1.5 text-sm placeholder-slate-500 focus:outline-none focus:border-slate-500" %}
+{% set pill = {'new':'bg-slate-700 text-slate-300','quoted':'bg-sky-500/20 text-sky-300','negotiating':'bg-amber-500/20 text-amber-300','won':'bg-emerald-500/20 text-emerald-300','lost':'bg-rose-500/20 text-rose-300'} %}
+{% set stage_bar = {'new':'bg-slate-500','quoted':'bg-sky-500','negotiating':'bg-amber-500','won':'bg-emerald-500','lost':'bg-rose-500'} %}
 
-<div class="grid lg:grid-cols-3 gap-8">
+{% macro kpi(label, value, sub='', accent='text-slate-100') %}
+<div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+  <div class="text-[11px] uppercase tracking-wide text-slate-500">{{ label }}</div>
+  <div class="text-2xl font-bold {{ accent }} leading-tight mt-1">{{ value }}</div>
+  {% if sub %}<div class="text-xs text-slate-500 mt-0.5">{{ sub }}</div>{% endif %}
+</div>
+{% endmacro %}
 
-  <!-- New lead -->
-  <section class="lg:col-span-1">
-    <h2 class="text-lg font-semibold mb-4 text-emerald-400">&#128994; New buyer lead</h2>
-    {% if product_count == 0 %}
-      <div class="mb-4 rounded-lg border border-amber-700/50 bg-amber-900/20 text-amber-200 text-sm p-3">
-        Your catalog is empty. <a href="/catalog" class="underline">Add products or import a CSV</a> so leads can match.
-      </div>
-    {% endif %}
-    <form method="post" action="/leads" class="space-y-2 rounded-xl border border-slate-800 bg-slate-900 p-4">
-      <input name="product" required placeholder="Product wanted (e.g. Steel rebar 12mm)" class="{{ ic }}">
-      <div class="grid grid-cols-2 gap-2">
-        <input name="category" placeholder="Category" class="{{ ic }}">
-        <input name="spec" placeholder="Spec / grade" class="{{ ic }}">
-      </div>
-      <div class="grid grid-cols-3 gap-2">
-        <input name="quantity" type="number" step="any" min="0" placeholder="Qty" class="{{ ic }}">
-        <input name="unit" placeholder="Unit" class="{{ ic }}">
-        <input name="target_price" type="number" step="any" min="0" placeholder="Target price" class="{{ ic }}">
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <input name="dest_country" list="corridors" placeholder="Dest country (GE/TR)" class="{{ ic }}">
-        <input name="dest_city" placeholder="Dest city" class="{{ ic }}">
-      </div>
-      <datalist id="corridors"><option value="GE"><option value="TR"></datalist>
-      <div class="pt-1 border-t border-slate-800"></div>
-      <input name="buyer_company" placeholder="Buyer company" class="{{ ic }}">
-      <div class="grid grid-cols-2 gap-2">
-        <input name="contact_name" placeholder="Contact name" class="{{ ic }}">
-        <input name="phone" placeholder="Phone" class="{{ ic }}">
-      </div>
-      <input name="email" placeholder="Email" class="{{ ic }}">
-      <button class="w-full bg-emerald-600 hover:bg-emerald-500 text-white rounded py-2 text-sm font-medium">Add lead &amp; match</button>
-    </form>
-  </section>
+{% macro bars(title, items, colors=None) %}
+<div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+  <h3 class="text-sm font-semibold text-slate-300 mb-3">{{ title }}</h3>
+  {% if items %}
+    <div class="space-y-1.5">
+      {% for it in items %}
+        <div class="flex items-center gap-2 text-xs">
+          <div class="w-28 truncate text-slate-400" title="{{ it.label }}">{{ it.label }}</div>
+          <div class="flex-1 bg-slate-800 rounded h-4 overflow-hidden">
+            <div class="h-4 rounded {{ colors.get(it.label, 'bg-sky-600') if colors else 'bg-sky-600' }}" style="width: {{ it.pct }}%"></div>
+          </div>
+          <div class="w-8 text-right tabular-nums text-slate-300">{{ it.count }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-slate-600 text-xs">No data yet.</p>
+  {% endif %}
+</div>
+{% endmacro %}
 
-  <!-- Leads + their matches -->
-  <section class="lg:col-span-2">
-    <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
-      <span>&#127919; Leads</span>
-      <span class="text-sm text-slate-500">{{ lead_rows|length }}</span>
-    </h2>
-    {% if lead_rows %}
-      <div class="space-y-4">
-        {% for row in lead_rows %}
-          {% set lead = row.lead %}
-          <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
-            <div class="flex items-start justify-between mb-3">
-              <div>
-                <div class="font-medium"><a href="/leads/{{ lead.id }}" class="hover:text-sky-300">{{ lead.product }}</a> <span class="text-slate-500 font-normal">{{ lead.spec }}</span></div>
-                <div class="text-slate-400 text-sm">
-                  {{ lead.quantity }} {{ lead.unit }} &middot; &le; {{ lead.target_price }} {{ lead.currency }}
-                  {% if lead.dest_country %}&middot; <span class="text-sky-300">{{ lead.dest_country }}</span>{% endif %}
-                </div>
-                <div class="text-slate-500 text-xs mt-0.5">
-                  {{ lead.buyer_company or 'unknown buyer' }}{% if lead.contact_name %} · {{ lead.contact_name }}{% endif %}{% if lead.website %} · <a href="{{ lead.website if '://' in lead.website else 'https://' + lead.website }}" target="_blank" rel="noopener" class="text-sky-400 hover:underline">site&#8599;</a>{% endif %}
-                </div>
+<div class="flex items-center justify-between mb-6">
+  <h2 class="text-lg font-semibold">Overview</h2>
+  <div class="flex gap-2 text-sm">
+    <a href="/leads" class="px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-medium">+ Add / view leads</a>
+    <a href="/quotes" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700">Quotes</a>
+    <a href="/catalog" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700">Catalog</a>
+  </div>
+</div>
+
+<!-- KPI cards -->
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
+  {{ kpi('Total leads', total, contactable ~ ' contactable') }}
+  {{ kpi('Open pipeline', open_pipeline, 'new + quoted + negotiating', 'text-sky-300') }}
+  {{ kpi('Quotes sent', quotes_sent, quotes_total ~ ' total (' ~ quotes_draft ~ ' draft)') }}
+  {{ kpi('Deals open', deals_open, deals_total ~ ' total', 'text-emerald-300') }}
+  {{ kpi('Win rate', (win_rate ~ '%') if win_rate is not none else '—', won ~ 'W / ' ~ lost ~ 'L') }}
+  {{ kpi('Need enrichment', needs_enrichment, 'no phone or email', 'text-amber-300') }}
+</div>
+
+{% if pipeline_value %}
+<div class="rounded-xl border border-emerald-800/40 bg-emerald-900/10 p-4 mb-8">
+  <span class="text-xs uppercase tracking-wide text-emerald-500">Pipeline value (best quote per active lead)</span>
+  <span class="text-xl font-bold text-emerald-300 ml-2">{{ '{:,.0f}'.format(pipeline_value) }} USD</span>
+</div>
+{% endif %}
+
+<div class="grid lg:grid-cols-2 gap-6">
+  <!-- distributions -->
+  <div class="space-y-4">
+    {{ bars('Leads by stage', stage_bars, stage_bar) }}
+    {{ bars('Leads by source', source_bars) }}
+    <div class="grid sm:grid-cols-2 gap-4">
+      {{ bars('By destination', dest_bars) }}
+      {{ bars('Top categories', cat_bars) }}
+    </div>
+  </div>
+
+  <!-- recent -->
+  <div class="space-y-4">
+    <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-sm font-semibold text-slate-300">Recent leads</h3>
+        <a href="/leads" class="text-xs text-sky-400 hover:underline">view all &rarr;</a>
+      </div>
+      {% if recent_leads %}
+        <div class="divide-y divide-slate-800">
+          {% for ld in recent_leads %}
+            <a href="/leads/{{ ld.id }}" class="flex items-center justify-between py-2 hover:bg-slate-800/40 -mx-1 px-1 rounded">
+              <div class="min-w-0">
+                <div class="text-sm truncate">{{ ld.product }}</div>
+                <div class="text-xs text-slate-500 truncate">{{ ld.buyer_company or 'unknown buyer' }}{% if ld.dest_country %} · {{ ld.dest_country }}{% endif %} · <span class="text-slate-600">{{ ld.source }}</span></div>
               </div>
-              <div class="text-right">
-                <span class="text-xs px-2 py-0.5 rounded-full {{ {'new':'bg-slate-700 text-slate-300','quoted':'bg-sky-500/20 text-sky-300','negotiating':'bg-amber-500/20 text-amber-300','won':'bg-emerald-500/20 text-emerald-300','lost':'bg-rose-500/20 text-rose-300'}.get(lead.status,'bg-slate-700') }}">{{ lead.status }}</span>
-                <div class="text-[11px] font-mono text-slate-500 mt-1">{{ lead.tracking_code }}</div>
-                {% if row.owner %}<div class="text-[11px] text-slate-500">{{ row.owner.name or row.owner.email }}</div>{% endif %}
+              <span class="shrink-0 ml-2 text-[10px] px-2 py-0.5 rounded-full {{ pill.get(ld.status,'bg-slate-700 text-slate-300') }}">{{ ld.status }}</span>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}<p class="text-slate-600 text-xs">No leads yet.</p>{% endif %}
+    </div>
+
+    <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+      <h3 class="text-sm font-semibold text-slate-300 mb-3">Recent activity</h3>
+      {% if acts %}
+        <div class="space-y-2">
+          {% for a in acts %}
+            {% set ld = lead_map.get(a.lead_id) %}
+            {% set who = user_map.get(a.user_id) %}
+            <div class="flex items-start gap-2 text-xs">
+              <span class="mt-0.5 text-[10px] uppercase px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 shrink-0">{{ a.kind.replace('_',' ') }}</span>
+              <div class="min-w-0 flex-1">
+                <span class="text-slate-300">{{ a.body or '' }}</span>
+                {% if ld %}<a href="/leads/{{ ld.id }}" class="text-sky-400 hover:underline font-mono">{{ ld.tracking_code }}</a>{% endif %}
+                <span class="text-slate-600">· {{ who.name if who else 'system' }} · {{ a.created_at.strftime('%m-%d %H:%M') }}</span>
               </div>
             </div>
-            {% if row.quotes %}
-              <div class="flex flex-wrap gap-2 mb-3">
-                {% for q in row.quotes %}
-                  <a href="/quotes/{{ q.id }}" class="text-xs px-2 py-1 rounded bg-slate-800 hover:bg-slate-700">
-                    {{ q.tracking_code }} · {{ q.incoterm }} {{ '%.2f'|format(q.delivered_unit) }}/{{ q.quote_currency }}
-                    <span class="text-slate-500">· {{ q.status }}</span>
-                  </a>
-                {% endfor %}
-              </div>
-            {% endif %}
-            {% if row.matches %}
-              <div class="text-[11px] uppercase tracking-wide text-slate-500 mb-2">{{ row.matches|length }} match(es)</div>
-              <div class="grid sm:grid-cols-2 gap-2">
-                {% for match in row.matches %}
-                  {% with m = match.m %}{% with product = match.product %}
-                    {% include "partials/match_card.html" %}
-                  {% endwith %}{% endwith %}
-                {% endfor %}
-              </div>
-            {% else %}
-              <div class="text-slate-500 text-sm">No catalog match yet.</div>
-            {% endif %}
-          </div>
-        {% endfor %}
-      </div>
-    {% else %}
-      <p class="text-slate-500 text-sm">No leads yet. Add one on the left and it will match against your catalog.</p>
-    {% endif %}
-  </section>
-
+          {% endfor %}
+        </div>
+      {% else %}<p class="text-slate-600 text-xs">No activity yet.</p>{% endif %}
+    </div>
+  </div>
 </div>
 {% endblock %}
