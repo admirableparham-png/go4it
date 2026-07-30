@@ -1,0 +1,584 @@
+{
+  "source": "UN Comtrade (reporter Georgia 268, flow=Import)",
+  "generated_period": "auto",
+  "commodities": [
+    {
+      "hs_code": "2715",
+      "label": "Cold asphalt / bituminous mixtures",
+      "product_key": "cold-asphalt",
+      "years": {
+        "2021": {
+          "tonnes": 868.2,
+          "cif_usd": 732247,
+          "unit_price_usd_kg": 0.843
+        },
+        "2022": {
+          "tonnes": 3.0,
+          "cif_usd": 6133,
+          "unit_price_usd_kg": 2.057
+        },
+        "2023": {
+          "tonnes": 50.0,
+          "cif_usd": 26827,
+          "unit_price_usd_kg": 0.537
+        },
+        "2024": {
+          "tonnes": 1760.3,
+          "cif_usd": 1483251,
+          "unit_price_usd_kg": 0.843
+        }
+      },
+      "trend_pct_first_to_last": 103,
+      "cheapest_source": {
+        "country": "Turkmenistan",
+        "code": 795,
+        "tonnes_total": 3117.0,
+        "cif_usd_total": 1079460,
+        "unit_price_usd_kg": 0.346,
+        "we_supply": false,
+        "watch_competitor": true
+      },
+      "iran_present": null,
+      "uae_present": {
+        "country": "UAE",
+        "code": 784,
+        "tonnes_total": 4.8,
+        "cif_usd_total": 7290,
+        "unit_price_usd_kg": 1.519,
+        "we_supply": true,
+        "watch_competitor": false
+      },
+      "top_suppliers": [
+        {
+          "country": "Turkmenistan",
+          "code": 795,
+          "tonnes_total": 3117.0,
+          "cif_usd_total": 1079460,
+          "unit_price_usd_kg": 0.346,
+          "we_supply": false,
+          "watch_competitor": true
+        },
+        {
+          "country": "code699",
+          "code": 699,
+          "tonnes_total": 128.0,
+          "cif_usd_total": 74845,
+          "unit_price_usd_kg": 0.585,
+          "we_supply": false,
+          "watch_competitor": false
+        },
+        {
+          "country": "Russia",
+          "code": 643,
+          "tonnes_total": 5938.9,
+          "cif_usd_total": 5429298,
+          "unit_price_usd_kg": 0.914,
+          "we_supply": false,
+          "watch_competitor": true
+        },
+        {
+          "country": "Turkey",
+          "code": 792,
+          "tonnes_total": 1749.4,
+          "cif_usd_total": 1625500,
+          "unit_price_usd_kg": 0.929,
+          "we_supply": false,
+          "watch_competitor": true
+        },
+        {
+          "country": "Ukraine",
+          "code": 804,
+          "tonnes_total": 77.5,
+          "cif_usd_total": 84388,
+          "unit_price_usd_kg": 1.088,
+          "we_supply": false,
+          "watch_competitor": false
+        },
+        {
+          "country": "Azerbaijan",
+          "code": 31,
+          "tonnes_total": 387.7,
+          "cif_usd_total": 472081,
+          "unit_price_usd_kg": 1.218,
+          "we_supply": false,
+          "watch_competitor": true
+        },
+        {
+          "country": "Armenia",
+          "code": 51,
+          "tonnes_total": 3.0,
+          "cif_usd_total": 3725,
+          "unit_price_usd_kg": 1.221,
+          "we_supply": false,
+          "watch_competitor": true
+        },
+        {
+          "country": "code757",
+          "code": 757,
+          "tonnes_total": 1.2,
+          "cif_usd_total": 1623,
+          "unit_price_usd_kg": 1.409,
+          "we_supply": false,
+          "watch_competitor": false
+        },
+        {
+          "country": "UAE",
+          "code": 784,
+          "tonnes_total": 4.8,
+          "cif_usd_total": 7290,
+          "unit_price_usd_kg": 1.519,
+          "we_supply": true,
+          "watch_competitor": false
+        },
+        {
+          "country": "Belarus",
+          "code": 112,
+          "tonnes_total": 1.5,
+          "cif_usd_total": 2800,
+          "unit_price_usd_kg": 1.912,
+          "we_supply": false,
+          "watch_competitor": false
+        },
+        {
+          "country": "Greece",
+          "code": 300,
+          "tonnes_total": 65.9,
+          "cif_usd_total": 136267,
+          "unit_price_usd_kg": 2.068,
+          "we_supply": false,
+          "watch_competitor": false
+        },
+        {
+          "country": "Germany",
+          "code": 276,
+          "tonnes_total": 35.3,
+          "cif_usd_total": 105547,
+          "unit_price_usd_kg": 2.991,
+          "we_supply": false,
+          "watch_competitor": false
+        }
+      ]
+    },
+    {
+      "hs_code": "400691",
+      "label": "Rubber floor coverings & mats (rubber tiles)",
+      "product_key": "rubber-tiles",
+      "years": {},
+      "trend_pct_first_to_last": null,
+      "cheapest_source": null,
+      "iran_present": null,
+      "uae_present": null,
+      "top_suppliers": []
+    },
+    {
+      "hs_code": "4016",
+      "label": "Other articles of vulcanised rubber (parent)",
+      "product_key": "rubber-tiles",
+      "years": {
+        "2021": {
+          "tonnes": 1660.2,
+          "cif_usd": 6122705,
+          "unit_price_usd_kg": 3.688
+        },
+        "2022": {
+          "tonnes": 92.2,
+          "cif_usd": 412369,
+          "unit_price_usd_kg": 4.472
+        },
+        "2023": {
+          "tonnes": 5.1,
+          "cif_usd": 21572,
+          "unit_price_usd_kg": 4.189
+        },
+        "2024": {
+          "tonnes": 2465.7,
+          "cif_usd": 12108800,
+          "unit_price_usd_kg": 4.911
+        }
+      },
+      "trend_pct_first_to_last": 98,
+      "cheapest_source": {
+        "country": "Iran",
+        "code": 364,
+        "tonnes_total": 2788.3,
+        "cif_usd_total": 994989,
+        "unit_price_usd_kg": 0.357,
+        "we_supply": true,
+        "watch_competitor": false
+      },
+      "iran_present": {
+        "country": "Iran",
+        "code": 364,
+        "tonnes_total": 2788.3,
+        "cif_usd_total": 994989,
+        "unit_price_usd_kg": 0.357,
+        "we_supply": true,
+        "watch_competitor": false
+      },
+      "uae_present": {
+        "country": "UAE",
+        "code": 784,
+        "tonnes_total": 325.9,
+        "cif_usd_total": 4709331,
+        "unit_price_usd_kg": 14.449,
+        "we_supply": true,
+        "watch_competitor": false
+      },
+      "top_suppliers": [
+        {
+          "country": "Iran",
+          "code": 364,
+          "tonnes_total": 2788.3,
+          "cif_usd_total": 994989,
+          "unit_price_usd_kg": 0.357,
+          "we_supply": true,
+          "watch_competitor": false
+        },
+        {
+          "country": "code579",
+          "code": 579,
+          "tonnes_total": 0.0,
+          "cif_usd_total": 32,
+          "unit_price_usd_kg": 0.889,
+          "we_supply": false,
+          "watch_competitor": false
+        },
+        {
+          "country": "Egypt",
+          "code": 818,
+          "tonnes_total": 14.9,
+          "cif_usd_total": 22276,
+          "unit_price_usd_kg": 1.499,
+          "we_supply": false,
+          "watch_competitor": false
+        },
+        {
+          "country": "code8",
+          "code": 8,
+          "tonnes_total": 17.2,
+          "cif_usd_total": 29205,
+          "unit_price_usd_kg": 1.702,
+          "we_supply": false,
+          "watch_competitor": false
+        },
+        {
+          "country": "code800",
+          "code": 800,
+          "tonnes_total": 1.6,
+          "cif_usd_total": 3428,
+          "unit_price_usd_kg": 2.156,
+          "we_supply": false,
+          "watch_competitor": false
+        },
+        {
+          "country": "Hong Kong",
+          "code": 344,
+          "tonnes_total": 575.0,
+          "cif_usd_total": 1367944,
+          "unit_price_usd_kg": 2.379,
+          "we_supply": false,
+          "watch_competitor": false
+        },
+        {
+          "country": "China",
+          "code": 156,
+          "tonnes_total": 13963.4,
+          "cif_usd_total": 44599935,
+          "unit_price_usd_kg": 3.194,
+          "we_supply": false,
+          "watch_competitor": true
+        },
+        {
+          "country": "Slovenia",
+          "code": 705,
+          "tonnes_total": 3.8,
+          "cif_usd_total": 14013,
+          "unit_price_usd_kg": 3.701,
+          "we_supply": false,
+          "watch_competitor": false
+        },
+        {
+          "country": "Turkey",
+          "code": 792,
+          "tonnes_total": 10954.0,
+          "cif_usd_total": 41897344,
+          "unit_price_usd_kg": 3.825,
+          "we_supply": false,
+          "watch_competitor": true
+        },
+        {
+          "country": "code124",
+          "code": 124,
+          "tonnes_total": 7.5,
+          "cif_usd_total": 30519,
+          "unit_price_usd_kg": 4.07,
+          "we_supply": false,
+          "watch_competitor": false
+        },
+        {
+          "country": "Thailand",
+          "code": 764,
+          "tonnes_total": 41.4,
+          "cif_usd_total": 180844,
+          "unit_price_usd_kg": 4.369,
+          "we_supply": false,
+          "watch_competitor": false
+        },
+        {
+          "country": "Sweden",
+          "code": 752,
+          "tonnes_total": 144.9,
+          "cif_usd_total": 712447,
+          "unit_price_usd_kg": 4.916,
+          "we_supply": false,
+          "watch_competitor": false
+        }
+      ]
+    },
+    {
+      "hs_code": "4004",
+      "label": "Waste/parings/scrap rubber + granules (crumb for pour-in-place)",
+      "product_key": "pour-in-place-rubber",
+      "years": {
+        "2022": {
+          "tonnes": 150.5,
+          "cif_usd": 70055,
+          "unit_price_usd_kg": 0.466
+        },
+        "2023": {
+          "tonnes": 432.8,
+          "cif_usd": 184623,
+          "unit_price_usd_kg": 0.427
+        },
+        "2024": {
+          "tonnes": 94.7,
+          "cif_usd": 37381,
+          "unit_price_usd_kg": 0.395
+        }
+      },
+      "trend_pct_first_to_last": -47,
+      "cheapest_source": {
+        "country": "Iran",
+        "code": 364,
+        "tonnes_total": 800.2,
+        "cif_usd_total": 299676,
+        "unit_price_usd_kg": 0.375,
+        "we_supply": true,
+        "watch_competitor": false
+      },
+      "iran_present": {
+        "country": "Iran",
+        "code": 364,
+        "tonnes_total": 800.2,
+        "cif_usd_total": 299676,
+        "unit_price_usd_kg": 0.375,
+        "we_supply": true,
+        "watch_competitor": false
+      },
+      "uae_present": null,
+      "top_suppliers": [
+        {
+          "country": "Iran",
+          "code": 364,
+          "tonnes_total": 800.2,
+          "cif_usd_total": 299676,
+          "unit_price_usd_kg": 0.375,
+          "we_supply": true,
+          "watch_competitor": false
+        },
+        {
+          "country": "Netherlands",
+          "code": 528,
+          "tonnes_total": 730.3,
+          "cif_usd_total": 316050,
+          "unit_price_usd_kg": 0.433,
+          "we_supply": false,
+          "watch_competitor": false
+        },
+        {
+          "country": "Italy",
+          "code": 380,
+          "tonnes_total": 44.0,
+          "cif_usd_total": 39876,
+          "unit_price_usd_kg": 0.906,
+          "we_supply": false,
+          "watch_competitor": false
+        },
+        {
+          "country": "Turkey",
+          "code": 792,
+          "tonnes_total": 5.0,
+          "cif_usd_total": 4807,
+          "unit_price_usd_kg": 0.961,
+          "we_supply": false,
+          "watch_competitor": true
+        }
+      ]
+    },
+    {
+      "hs_code": "4002",
+      "label": "Synthetic rubber, primary (SBR granules)",
+      "product_key": "pour-in-place-rubber",
+      "years": {
+        "2021": {
+          "tonnes": 0.0,
+          "cif_usd": 1289,
+          "unit_price_usd_kg": null
+        },
+        "2022": {
+          "tonnes": 1319.8,
+          "cif_usd": 3068736,
+          "unit_price_usd_kg": 2.325
+        },
+        "2023": {
+          "tonnes": 0.5,
+          "cif_usd": 5884,
+          "unit_price_usd_kg": 11.197
+        },
+        "2024": {
+          "tonnes": 1362.8,
+          "cif_usd": 1445108,
+          "unit_price_usd_kg": 1.06
+        }
+      },
+      "trend_pct_first_to_last": 112011,
+      "cheapest_source": {
+        "country": "Turkey",
+        "code": 792,
+        "tonnes_total": 5579.7,
+        "cif_usd_total": 5527922,
+        "unit_price_usd_kg": 0.991,
+        "we_supply": false,
+        "watch_competitor": true
+      },
+      "iran_present": {
+        "country": "Iran",
+        "code": 364,
+        "tonnes_total": 14.9,
+        "cif_usd_total": 16404,
+        "unit_price_usd_kg": 1.099,
+        "we_supply": true,
+        "watch_competitor": false
+      },
+      "uae_present": {
+        "country": "UAE",
+        "code": 784,
+        "tonnes_total": 12.8,
+        "cif_usd_total": 30920,
+        "unit_price_usd_kg": 2.415,
+        "we_supply": true,
+        "watch_competitor": false
+      },
+      "top_suppliers": [
+        {
+          "country": "Turkey",
+          "code": 792,
+          "tonnes_total": 5579.7,
+          "cif_usd_total": 5527922,
+          "unit_price_usd_kg": 0.991,
+          "we_supply": false,
+          "watch_competitor": true
+        },
+        {
+          "country": "Iran",
+          "code": 364,
+          "tonnes_total": 14.9,
+          "cif_usd_total": 16404,
+          "unit_price_usd_kg": 1.099,
+          "we_supply": true,
+          "watch_competitor": false
+        },
+        {
+          "country": "Uzbekistan",
+          "code": 860,
+          "tonnes_total": 98.0,
+          "cif_usd_total": 185780,
+          "unit_price_usd_kg": 1.896,
+          "we_supply": false,
+          "watch_competitor": true
+        },
+        {
+          "country": "Italy",
+          "code": 380,
+          "tonnes_total": 281.9,
+          "cif_usd_total": 546915,
+          "unit_price_usd_kg": 1.94,
+          "we_supply": false,
+          "watch_competitor": false
+        },
+        {
+          "country": "Singapore",
+          "code": 702,
+          "tonnes_total": 99.2,
+          "cif_usd_total": 223842,
+          "unit_price_usd_kg": 2.256,
+          "we_supply": false,
+          "watch_competitor": false
+        },
+        {
+          "country": "Hong Kong",
+          "code": 344,
+          "tonnes_total": 877.2,
+          "cif_usd_total": 2056483,
+          "unit_price_usd_kg": 2.344,
+          "we_supply": false,
+          "watch_competitor": false
+        },
+        {
+          "country": "UAE",
+          "code": 784,
+          "tonnes_total": 12.8,
+          "cif_usd_total": 30920,
+          "unit_price_usd_kg": 2.415,
+          "we_supply": true,
+          "watch_competitor": false
+        },
+        {
+          "country": "Russia",
+          "code": 643,
+          "tonnes_total": 148.8,
+          "cif_usd_total": 401625,
+          "unit_price_usd_kg": 2.7,
+          "we_supply": false,
+          "watch_competitor": true
+        },
+        {
+          "country": "China",
+          "code": 156,
+          "tonnes_total": 6520.3,
+          "cif_usd_total": 18900562,
+          "unit_price_usd_kg": 2.899,
+          "we_supply": false,
+          "watch_competitor": true
+        },
+        {
+          "country": "Greece",
+          "code": 300,
+          "tonnes_total": 22.1,
+          "cif_usd_total": 65250,
+          "unit_price_usd_kg": 2.951,
+          "we_supply": false,
+          "watch_competitor": false
+        },
+        {
+          "country": "code490",
+          "code": 490,
+          "tonnes_total": 2314.9,
+          "cif_usd_total": 7166743,
+          "unit_price_usd_kg": 3.096,
+          "we_supply": false,
+          "watch_competitor": false
+        },
+        {
+          "country": "Ukraine",
+          "code": 804,
+          "tonnes_total": 255.0,
+          "cif_usd_total": 803750,
+          "unit_price_usd_kg": 3.152,
+          "we_supply": false,
+          "watch_competitor": false
+        }
+      ]
+    }
+  ]
+}
