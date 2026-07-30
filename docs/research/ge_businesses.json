@@ -1,12 +1,12 @@
 {
   "source": "OpenStreetMap via Overpass API (area=Georgia)",
-  "total": 458,
-  "rubber_buyers": 354,
-  "with_contact": 88,
-  "needs_enrichment": 370,
+  "total": 374,
+  "rubber_buyers": 271,
+  "with_contact": 76,
+  "needs_enrichment": 298,
   "businesses": [
     {
-      "company": "ასპრია",
+      "company": "Aspria",
       "name_en": "Aspria",
       "country": "GE",
       "city": "",
@@ -21,7 +21,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "BLUE FITNES",
+      "company": "Blue Fitnes",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -30,7 +30,7 @@
       "sport": "",
       "phone": "",
       "website": "",
-      "street": "გობრონიძის ქუჩა",
+      "street": "Gobronidzis Kucha",
       "lat": 41.7887445,
       "lon": 44.8187928,
       "needs_enrichment": true
@@ -51,7 +51,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "სპორტ დარბაზი",
+      "company": "Sport Darbazi",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -66,7 +66,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "აუზი",
+      "company": "Pool - Ausi",
       "name_en": "Pool - Ausi",
       "country": "GE",
       "city": "",
@@ -81,7 +81,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "სპარტა ფიტნესი",
+      "company": "Sparta Fitness",
       "name_en": "Sparta Fitness",
       "country": "GE",
       "city": "",
@@ -96,7 +96,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "სპორტული დარბაზი",
+      "company": "Sport Hall",
       "name_en": "Sport Hall",
       "country": "GE",
       "city": "",
@@ -111,7 +111,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "იოგას სახლი",
+      "company": "Yoga House",
       "name_en": "Yoga House",
       "country": "GE",
       "city": "",
@@ -120,13 +120,13 @@
       "sport": "",
       "phone": "+995 551 11 52 88",
       "website": "https://www.yoga.ge/",
-      "street": "ნიკოლოზ ყიფშიძის ქუჩა 5ა",
+      "street": "Nikoloz Qifshidzis Kucha 5a",
       "lat": 41.7130769,
       "lon": 44.7595431,
       "needs_enrichment": false
     },
     {
-      "company": "ჩემპიონთა აკადემია",
+      "company": "Champions Academy",
       "name_en": "Champions Academy",
       "country": "GE",
       "city": "",
@@ -135,7 +135,7 @@
       "sport": "",
       "phone": "",
       "website": "https://champ.ge/",
-      "street": "დავით აღმაშენებლის გამზირი 150",
+      "street": "Davit Aghmasheneblis Gamziri 150",
       "lat": 41.7169488,
       "lon": 44.7916682,
       "needs_enrichment": false
@@ -156,7 +156,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ჰარდ ვეი",
+      "company": "hard way",
       "name_en": "hard way",
       "country": "GE",
       "city": "",
@@ -186,7 +186,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "სპარტა",
+      "company": "Sparta",
       "name_en": "Sparta",
       "country": "GE",
       "city": "",
@@ -195,13 +195,13 @@
       "sport": "",
       "phone": "",
       "website": "",
-      "street": "ვაჟა-ფშაველას ქუჩა 16",
+      "street": "Vazha-fshavelas Kucha 16",
       "lat": 41.6494002,
       "lon": 41.6322463,
       "needs_enrichment": true
     },
     {
-      "company": "ენერჯიმი",
+      "company": "Energym",
       "name_en": "Energym",
       "country": "GE",
       "city": "",
@@ -216,7 +216,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ოკტოპუს ფიტნეს კლუბი",
+      "company": "Oktopus Fitness Club",
       "name_en": "Oktopus Fitness Club",
       "country": "GE",
       "city": "",
@@ -240,13 +240,13 @@
       "sport": "",
       "phone": "",
       "website": "",
-      "street": "სულხან ცინცაძის ქუჩა 41",
+      "street": "Sulkhan Tsintsadzis Kucha 41",
       "lat": 41.7219592,
       "lon": 44.7672219,
       "needs_enrichment": true
     },
     {
-      "company": "პაუერ მაქს",
+      "company": "Power Max",
       "name_en": "Power Max",
       "country": "GE",
       "city": "",
@@ -261,7 +261,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "აკვა ცენტრი და ფიტნესი",
+      "company": "Aqua Centre & Fitness",
       "name_en": "Aqua Centre & Fitness",
       "country": "GE",
       "city": "",
@@ -291,7 +291,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "მატა ფიტნესი",
+      "company": "Mata Fitness",
       "name_en": "Mata Fitness",
       "country": "GE",
       "city": "",
@@ -321,7 +321,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "წრე",
+      "company": "Tsre",
       "name_en": "Tsre",
       "country": "GE",
       "city": "",
@@ -336,16 +336,16 @@
       "needs_enrichment": false
     },
     {
-      "company": "საკემატა ფიტნესი",
+      "company": "Sakemata Fitness",
       "name_en": "Sakemata Fitness",
       "country": "GE",
-      "city": "თბილისი",
+      "city": "Tbilisi",
       "role": "gym / fitness centre",
       "product_key": "rubber-tiles",
       "sport": "fitness;gym",
       "phone": "+995 32 219 55 11",
       "website": "https://www.sakematafitness.ge/ka",
-      "street": "ალეკო გობრონიძის ქუჩა 1",
+      "street": "Aleko Gobronidzis Kucha 1",
       "lat": 41.7907105,
       "lon": 44.8186598,
       "needs_enrichment": false
@@ -375,13 +375,13 @@
       "sport": "yoga",
       "phone": "",
       "website": "https://tbilisiyoga.com/en/villa",
-      "street": "ოთარ ონიაშვილის ქუჩა 37",
+      "street": "Otar Oniashvilis Kucha 37",
       "lat": 41.7314421,
       "lon": 44.7632155,
       "needs_enrichment": false
     },
     {
-      "company": "თბილისი იოგა ლოფტი",
+      "company": "Tbilisi Yoga Loft",
       "name_en": "Tbilisi Yoga Loft",
       "country": "GE",
       "city": "",
@@ -390,7 +390,7 @@
       "sport": "",
       "phone": "",
       "website": "https://tbilisiyoga.com/en/loft",
-      "street": "შალვა რადიანის ქუჩა 14",
+      "street": "Shalva Radianis Kucha 14",
       "lat": 41.7063231,
       "lon": 44.7685766,
       "needs_enrichment": false
@@ -411,7 +411,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ლევიოსა მოძრაობის სივრცე",
+      "company": "Leviosa",
       "name_en": "Leviosa",
       "country": "GE",
       "city": "",
@@ -426,7 +426,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "თიდანი +",
+      "company": "Tidani +",
       "name_en": "Tidani +",
       "country": "GE",
       "city": "",
@@ -441,7 +441,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "იოგავილი",
+      "company": "Yogawill",
       "name_en": "Yogawill",
       "country": "GE",
       "city": "",
@@ -450,13 +450,13 @@
       "sport": "",
       "phone": "",
       "website": "",
-      "street": "იური გაგარინის ქუჩა 13",
+      "street": "Iuri Gagarinis Kucha 13",
       "lat": 41.7336391,
       "lon": 44.7693277,
       "needs_enrichment": true
     },
     {
-      "company": "დინამიკა",
+      "company": "Dynamic",
       "name_en": "Dynamic",
       "country": "GE",
       "city": "",
@@ -471,7 +471,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ასპრია ფიტნესი",
+      "company": "Aspria Fitness",
       "name_en": "Aspria Fitness",
       "country": "GE",
       "city": "",
@@ -486,7 +486,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "სნეპ",
+      "company": "Snap",
       "name_en": "Snap",
       "country": "GE",
       "city": "",
@@ -534,7 +534,7 @@
       "company": "Flow Studio",
       "name_en": "",
       "country": "GE",
-      "city": "თბილისი",
+      "city": "Tbilisi",
       "role": "gym / fitness centre",
       "product_key": "rubber-tiles",
       "sport": "yoga",
@@ -546,7 +546,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "პრაიმ ფიტი",
+      "company": "Prime Fit",
       "name_en": "Prime Fit",
       "country": "GE",
       "city": "",
@@ -561,7 +561,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "მატრიქს ფიტნესი",
+      "company": "Matrix Fitness",
       "name_en": "Matrix Fitness",
       "country": "GE",
       "city": "",
@@ -591,7 +591,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ტონუსი",
+      "company": "Tonusi",
       "name_en": "Tonusi",
       "country": "GE",
       "city": "",
@@ -604,21 +604,6 @@
       "lat": 41.7165325,
       "lon": 44.7770688,
       "needs_enrichment": true
-    },
-    {
-      "company": "პაუერ მაქსი",
-      "name_en": "Power Max",
-      "country": "GE",
-      "city": "",
-      "role": "gym / fitness centre",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "+995 599 97 74 80",
-      "website": "",
-      "street": "",
-      "lat": 41.7000845,
-      "lon": 44.7946671,
-      "needs_enrichment": false
     },
     {
       "company": "Yoga Studio 9",
@@ -636,7 +621,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "პილატეს თბილისი",
+      "company": "Pilates Tbilisi",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -675,7 +660,7 @@
       "sport": "",
       "phone": "",
       "website": "https://gymnasia.ge/",
-      "street": "ელგუჯა ამაშუკელის ქუჩა 14a",
+      "street": "Elguja Amashukelis Kucha 14a",
       "lat": 41.7325649,
       "lon": 44.7386745,
       "needs_enrichment": false
@@ -690,7 +675,7 @@
       "sport": "martial_arts",
       "phone": "",
       "website": "",
-      "street": "ნინო რამიშვილის ქუჩა 20",
+      "street": "Nino Ramishvilis Kucha 20",
       "lat": 41.7126926,
       "lon": 44.7662494,
       "needs_enrichment": true
@@ -699,34 +684,34 @@
       "company": "Ringside Institute",
       "name_en": "",
       "country": "GE",
-      "city": "თბილისი",
+      "city": "Tbilisi",
       "role": "gym / fitness centre",
       "product_key": "rubber-tiles",
       "sport": "martial_arts",
       "phone": "",
       "website": "",
-      "street": "გიორგი მიროტაძის ქუჩა 13",
+      "street": "Giorgi Mirotadzis Kucha 13",
       "lat": 41.7205197,
       "lon": 44.7808194,
       "needs_enrichment": true
     },
     {
-      "company": "მუვ ქლაბი",
+      "company": "Move Club",
       "name_en": "Move Club",
       "country": "GE",
-      "city": "თბილისი",
+      "city": "Tbilisi",
       "role": "gym / fitness centre",
       "product_key": "rubber-tiles",
       "sport": "fitness",
       "phone": "",
       "website": "",
-      "street": "გიორგი ჭყონდიდელის ქუჩა 4",
+      "street": "Giorgi Chqondidelis Kucha 4",
       "lat": 41.7357057,
       "lon": 44.7952654,
       "needs_enrichment": true
     },
     {
-      "company": "იმოძრავე",
+      "company": "Imodzrave",
       "name_en": "Imodzrave",
       "country": "GE",
       "city": "",
@@ -735,22 +720,22 @@
       "sport": "",
       "phone": "+995 555 17 03 97",
       "website": "",
-      "street": "სიმონ ავალიანის ქუჩა",
+      "street": "Simon Avalianis Kucha",
       "lat": 41.7455717,
       "lon": 44.6914537,
       "needs_enrichment": false
     },
     {
-      "company": "მამბერი ფიტნესი",
+      "company": "Mamber Fitness",
       "name_en": "Mamber Fitness",
       "country": "GE",
-      "city": "თბილისი",
+      "city": "Tbilisi",
       "role": "gym / fitness centre",
       "product_key": "rubber-tiles",
       "sport": "fitness",
       "phone": "",
       "website": "",
-      "street": "თორნიკე ერისთავის ჩიხი 4",
+      "street": "Tornike Eristavis Chikhi 4",
       "lat": 41.7505234,
       "lon": 44.7857807,
       "needs_enrichment": true
@@ -771,22 +756,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Energym",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "gym / fitness centre",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7168835,
-      "lon": 44.7845707,
-      "needs_enrichment": true
-    },
-    {
-      "company": "საკემატა",
+      "company": "Sakemata",
       "name_en": "Sakemata",
       "country": "GE",
       "city": "",
@@ -801,7 +771,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "მფჯ",
+      "company": "MFG",
       "name_en": "MFG",
       "country": "GE",
       "city": "",
@@ -831,7 +801,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ტროა ფიტნეს",
+      "company": "Troy Fitness",
       "name_en": "Troy Fitness",
       "country": "GE",
       "city": "",
@@ -891,7 +861,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "რულ ფიტნეს",
+      "company": "Rule Fitness",
       "name_en": "Rule Fitness",
       "country": "GE",
       "city": "",
@@ -921,7 +891,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "PilatesBatumi",
+      "company": "Pilatesbatumi",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -966,7 +936,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "ზენიტი",
+      "company": "Zenith",
       "name_en": "Zenith",
       "country": "GE",
       "city": "",
@@ -981,7 +951,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ბლისს იოგა",
+      "company": "Bliss Yoga",
       "name_en": "Bliss Yoga",
       "country": "GE",
       "city": "",
@@ -996,7 +966,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ლიონ ფიტნეს პრო",
+      "company": "Lion Fitness Pro",
       "name_en": "Lion Fitness Pro",
       "country": "GE",
       "city": "",
@@ -1011,7 +981,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Heyday home / yoga studio",
+      "company": "Heyday Home / Yoga Studio",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -1071,21 +1041,6 @@
       "needs_enrichment": true
     },
     {
-      "company": "სნაპ ფიტნესი",
-      "name_en": "Snap Fitness",
-      "country": "GE",
-      "city": "",
-      "role": "gym / fitness centre",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7241871,
-      "lon": 44.747918,
-      "needs_enrichment": true
-    },
-    {
       "company": "360⁰",
       "name_en": "",
       "country": "GE",
@@ -1101,7 +1056,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "BI Fitness",
+      "company": "Bi Fitness",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -1113,21 +1068,6 @@
       "street": "",
       "lat": 41.6217527,
       "lon": 41.5927853,
-      "needs_enrichment": true
-    },
-    {
-      "company": "რეფორმა",
-      "name_en": "Reform",
-      "country": "GE",
-      "city": "",
-      "role": "gym / fitness centre",
-      "product_key": "rubber-tiles",
-      "sport": "fitness",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7328452,
-      "lon": 44.7223523,
       "needs_enrichment": true
     },
     {
@@ -1176,7 +1116,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ფიტნესი - Club 407",
+      "company": "Club 407",
       "name_en": "Club 407",
       "country": "GE",
       "city": "",
@@ -1206,7 +1146,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "თვინს",
+      "company": "Twins",
       "name_en": "Twins",
       "country": "GE",
       "city": "",
@@ -1236,7 +1176,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ელიფსი",
+      "company": "Ellipse",
       "name_en": "Ellipse",
       "country": "GE",
       "city": "",
@@ -1266,7 +1206,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "პროფიტნესი",
+      "company": "ProFitness",
       "name_en": "ProFitness",
       "country": "GE",
       "city": "",
@@ -1281,7 +1221,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ფორმატ ფიტ",
+      "company": "Format Fit",
       "name_en": "Format Fit",
       "country": "GE",
       "city": "",
@@ -1311,7 +1251,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "სოლო ფიტნესი",
+      "company": "Solo Fitness",
       "name_en": "Solo Fitness",
       "country": "GE",
       "city": "",
@@ -1341,7 +1281,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "CycleO2 cycle&fitness",
+      "company": "Cycleo2 Cycle&Fitness",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -1356,7 +1296,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "მანდალა",
+      "company": "Mandala",
       "name_en": "Mandala",
       "country": "GE",
       "city": "",
@@ -1386,22 +1326,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Power Max",
-      "name_en": "Power Max",
-      "country": "GE",
-      "city": "თბილისი",
-      "role": "gym / fitness centre",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "+995 599 97 74 80",
-      "website": "https://powermax.ge/",
-      "street": "თორნიკე ერისთავის ქუჩა 7",
-      "lat": 41.7486045,
-      "lon": 44.7809485,
-      "needs_enrichment": false
-    },
-    {
-      "company": "Fit formula",
+      "company": "Fit Formula",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -1434,19 +1359,19 @@
       "company": "Goal Fitness",
       "name_en": "",
       "country": "GE",
-      "city": "ბათუმი",
+      "city": "Batumi",
       "role": "gym / fitness centre",
       "product_key": "rubber-tiles",
       "sport": "",
       "phone": "+995 555 00 50 90",
       "website": "",
-      "street": "ჟიული შარტავას გამზირი 16",
+      "street": "Zhiuli Shartavas Gamziri 16",
       "lat": 41.6366453,
       "lon": 41.6208107,
       "needs_enrichment": false
     },
     {
-      "company": "ლოტუსი",
+      "company": "Lotus",
       "name_en": "Lotus",
       "country": "GE",
       "city": "",
@@ -1461,7 +1386,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "გოუ ფიტნეს",
+      "company": "Go Fitness",
       "name_en": "Go Fitness",
       "country": "GE",
       "city": "",
@@ -1476,7 +1401,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "მატრიქსი",
+      "company": "Matriksi",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -1491,7 +1416,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ფიტნეს ზონა",
+      "company": "Fitness Zone",
       "name_en": "Fitness Zone",
       "country": "GE",
       "city": "",
@@ -1521,16 +1446,16 @@
       "needs_enrichment": true
     },
     {
-      "company": "Gold's Gym",
+      "company": "Gold'S Gym",
       "name_en": "",
       "country": "GE",
-      "city": "თბილისი",
+      "city": "Tbilisi",
       "role": "gym / fitness centre",
       "product_key": "rubber-tiles",
       "sport": "fitness",
       "phone": "+995 597 11 71 17",
       "website": "https://goldsgym.ge",
-      "street": "აკაკი ბელიაშვილის ქუჩა 117",
+      "street": "Akaki Beliashvilis Kucha 117",
       "lat": 41.7755144,
       "lon": 44.7816755,
       "needs_enrichment": false
@@ -1581,7 +1506,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "კლუბი",
+      "company": "Clubi",
       "name_en": "Clubi",
       "country": "GE",
       "city": "",
@@ -1596,7 +1521,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "საჭიდაო დარბაზი",
+      "company": "Sachidao Darbazi",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -1611,25 +1536,25 @@
       "needs_enrichment": true
     },
     {
-      "company": "სპორტ თაიმი",
+      "company": "Sport Time",
       "name_en": "Sport Time",
       "country": "GE",
-      "city": "თბილისი",
+      "city": "Tbilisi",
       "role": "gym / fitness centre",
       "product_key": "rubber-tiles",
       "sport": "",
       "phone": "",
       "website": "",
-      "street": "გიორგი გურამიშვილის ქუჩა 7",
+      "street": "Giorgi Guramishvilis Kucha 7",
       "lat": 41.6744826,
       "lon": 44.8264633,
       "needs_enrichment": true
     },
     {
-      "company": "ფიტნეს დარბაზი",
+      "company": "Fitnes Darbazi",
       "name_en": "",
       "country": "GE",
-      "city": "ქარელი",
+      "city": "Kareli",
       "role": "gym / fitness centre",
       "product_key": "rubber-tiles",
       "sport": "",
@@ -1641,7 +1566,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ოკტოპუს",
+      "company": "Oktopus",
       "name_en": "Oktopus",
       "country": "GE",
       "city": "",
@@ -1686,7 +1611,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "გურამ თიკანაძის სახელობის სპორტული კომპლექსი (Latali Sports Complex of Guram Tikanadze)",
+      "company": "Latali Sports Complex of Guram Tikanadze",
       "name_en": "Latali Sports Complex of Guram Tikanadze",
       "country": "GE",
       "city": "",
@@ -1701,7 +1626,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "სპორტული სკოლა",
+      "company": "Sport School",
       "name_en": "Sport School",
       "country": "GE",
       "city": "",
@@ -1716,7 +1641,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Къахпортийы федераци",
+      "company": "Republic of South Ossetia Football Federation",
       "name_en": "Republic of South Ossetia Football Federation",
       "country": "GE",
       "city": "",
@@ -1728,6 +1653,21 @@
       "street": "ул. Кочиева 19",
       "lat": 42.227306,
       "lon": 43.9662765,
+      "needs_enrichment": true
+    },
+    {
+      "company": "Sports School",
+      "name_en": "Sports School",
+      "country": "GE",
+      "city": "",
+      "role": "sports centre",
+      "product_key": "rubber-tiles",
+      "sport": "",
+      "phone": "",
+      "website": "",
+      "street": "",
+      "lat": 42.7972246,
+      "lon": 43.0160687,
       "needs_enrichment": true
     },
     {
@@ -1776,7 +1716,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Cultural and Sport Centre",
+      "company": "Cultural And Sport Centre",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -1791,7 +1731,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Тедеты Дзамболаты номыл хъæбысхæсты скъола",
+      "company": "Тедеты Дзамболаты Номыл Хъæбысхæсты Скъола",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -1806,7 +1746,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "საქართველოს კიოკუშინის ფედერაცია",
+      "company": "Georgian Kyokushin Federation",
       "name_en": "Georgian Kyokushin Federation",
       "country": "GE",
       "city": "",
@@ -1821,22 +1761,22 @@
       "needs_enrichment": true
     },
     {
-      "company": "Royal Art - The School of Champions",
+      "company": "Royal Art - The School Of Champions",
       "name_en": "",
       "country": "GE",
-      "city": "თბილისი",
+      "city": "Tbilisi",
       "role": "sports centre",
       "product_key": "rubber-tiles",
       "sport": "dance",
       "phone": "+995 593 64 87 48",
       "website": "https://www.facebook.com/RoyalArtStudio",
-      "street": "ნიკოლოზ ყიფშიძის ქუჩა 9",
+      "street": "Nikoloz Qifshidzis Kucha 9",
       "lat": 41.7136243,
       "lon": 44.7596013,
       "needs_enrichment": false
     },
     {
-      "company": "ვაკის საცურაო აუზი",
+      "company": "Vake Swimming Pool",
       "name_en": "Vake Swimming Pool",
       "country": "GE",
       "city": "",
@@ -1851,7 +1791,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ურბან გარდენი",
+      "company": "Urban Garden",
       "name_en": "Urban Garden",
       "country": "GE",
       "city": "",
@@ -1860,7 +1800,7 @@
       "sport": "multi",
       "phone": "",
       "website": "",
-      "street": "დავით აღმაშენებლის გამზირი 73",
+      "street": "Davit Aghmasheneblis Gamziri 73",
       "lat": 41.707644,
       "lon": 44.7996228,
       "needs_enrichment": true
@@ -1881,7 +1821,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ვაკის საცოცი დარბაზი",
+      "company": "Vake Climbing Gym",
       "name_en": "Vake Climbing Gym",
       "country": "GE",
       "city": "",
@@ -1911,22 +1851,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "სითი ფიტნესი",
-      "name_en": "City Fitness",
-      "country": "GE",
-      "city": "",
-      "role": "sports centre",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.6516588,
-      "lon": 41.6397813,
-      "needs_enrichment": true
-    },
-    {
-      "company": "აკაკი კაკაურიძის სახელობის N18 კრივის სპორტული სკოლა",
+      "company": "Akaki Kakauridze Boxing Sport School #18",
       "name_en": "Akaki Kakauridze Boxing Sport School #18",
       "country": "GE",
       "city": "",
@@ -1941,7 +1866,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Climbing sectors \"Game Zone\", \"+18\", \"Kovida\", \"ATA\" of climbing area \"Sveri\"",
+      "company": "Climbing Sectors \"Game Zone\", \"+18\", \"Kovida\", \"Ata\" Of Climbing Area \"Sveri\"",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -1956,7 +1881,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "Arsha climbing sector",
+      "company": "Arsha Climbing Sector",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -1971,7 +1896,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "Climbing sector \"Drakula\" of climbing area \"Borjomi\"",
+      "company": "Climbing Sector \"Drakula\" Of Climbing Area \"Borjomi\"",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -1986,7 +1911,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Climbing sector \"Mzetamze\" in climbing area \"Borjomi\"",
+      "company": "Climbing Sector \"Mzetamze\" In Climbing Area \"Borjomi\"",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -2001,7 +1926,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Climbing sector \"Petcho' of climbing area \"Borjomi\"",
+      "company": "Climbing Sector \"Petcho' Of Climbing Area \"Borjomi\"",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -2016,7 +1941,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Climbing sector \"Q'veli' of climbing area \"Borjomi\"",
+      "company": "Climbing Sector \"Q'Veli' Of Climbing Area \"Borjomi\"",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -2031,7 +1956,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Climbing sector \"Lake\" of climbing area \"Sveri\"",
+      "company": "Climbing Sector \"Lake\" Of Climbing Area \"Sveri\"",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -2046,7 +1971,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "სვერის \"ვია ფერატა\"",
+      "company": "\"Sveri Via Ferrata\" of climbing area \"Sveri\"",
       "name_en": "\"Sveri Via Ferrata\" of climbing area \"Sveri\"",
       "country": "GE",
       "city": "",
@@ -2061,7 +1986,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "იმედი",
+      "company": "Imedi",
       "name_en": "Imedi",
       "country": "GE",
       "city": "",
@@ -2076,7 +2001,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ლედი სტრეჩი",
+      "company": "Lady Stretch",
       "name_en": "Lady Stretch",
       "country": "GE",
       "city": "",
@@ -2091,7 +2016,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "ბლექ სი",
+      "company": "Black Sea",
       "name_en": "Black Sea",
       "country": "GE",
       "city": "",
@@ -2106,7 +2031,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "მძლეოსნობის სასახლე",
+      "company": "Mdzleosnobis Sasakhle",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -2115,7 +2040,7 @@
       "sport": "athletics",
       "phone": "",
       "website": "",
-      "street": "აკაკი წერეთლის გამზირი 95A",
+      "street": "Akaki Tseretlis Gamziri 95A",
       "lat": 41.7403873,
       "lon": 44.781514,
       "needs_enrichment": true
@@ -2130,13 +2055,13 @@
       "sport": "table_tennis;laser_tag",
       "phone": "",
       "website": "https://lazerlounge.ge/eng",
-      "street": "ცოტნე დადიანის ქუჩა 7b",
+      "street": "Tsotne Dadianis Kucha 7b",
       "lat": 41.719328,
       "lon": 44.8035354,
       "needs_enrichment": false
     },
     {
-      "company": "СК Агузерский",
+      "company": "Ск Агузерский",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -2151,7 +2076,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ДЮШС",
+      "company": "Дюшс",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -2166,7 +2091,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "კრივის სკოლა",
+      "company": "Boxing School",
       "name_en": "Boxing School",
       "country": "GE",
       "city": "",
@@ -2184,13 +2109,13 @@
       "company": "Splash Abashidze",
       "name_en": "",
       "country": "GE",
-      "city": "თბილისი",
+      "city": "Tbilisi",
       "role": "sports centre",
       "product_key": "rubber-tiles",
       "sport": "swimming",
       "phone": "+995 598 14 88 88",
       "website": "",
-      "street": "ირაკლი აბაშიძის ქუჩა 70",
+      "street": "Irakli Abashidzis Kucha 70",
       "lat": 41.7082808,
       "lon": 44.7565176,
       "needs_enrichment": false
@@ -2226,7 +2151,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "საჭყუმპალაო",
+      "company": "Sachqumpalao",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -2241,7 +2166,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ქირიას საბრძოლო ხელოვნების აკადემია",
+      "company": "Kiria's Martial Arts Academy",
       "name_en": "Kiria's Martial Arts Academy",
       "country": "GE",
       "city": "",
@@ -2256,22 +2181,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "12 რაუმდი ბოქსის კლუბი",
-      "name_en": "12 Rounds Boxing Club",
-      "country": "GE",
-      "city": "",
-      "role": "sports centre",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7110477,
-      "lon": 44.7547424,
-      "needs_enrichment": true
-    },
-    {
-      "company": "საცურაო აუზი „დინამო“",
+      "company": "Swimming Pool \"Dinamo\"",
       "name_en": "Swimming Pool \"Dinamo\"",
       "country": "GE",
       "city": "",
@@ -2286,7 +2196,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "მურად ჭიჭინაძის სახელობის სკვერი",
+      "company": "Murad Chichinadze Square",
       "name_en": "Murad Chichinadze Square",
       "country": "GE",
       "city": "",
@@ -2304,7 +2214,7 @@
       "company": "Padel Port Batumi",
       "name_en": "",
       "country": "GE",
-      "city": "ბათუმი",
+      "city": "Batumi",
       "role": "sports centre",
       "product_key": "rubber-tiles",
       "sport": "padel",
@@ -2316,7 +2226,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "Спортивная база",
+      "company": "Спортивная База",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -2331,7 +2241,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "underground",
+      "company": "Underground",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -2346,7 +2256,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "თბილისის სპორტის სასახლე",
+      "company": "Tbilisi Sports Palace",
       "name_en": "Tbilisi Sports Palace",
       "country": "GE",
       "city": "",
@@ -2361,7 +2271,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "არენა II",
+      "company": "Arena 2",
       "name_en": "Arena 2",
       "country": "GE",
       "city": "",
@@ -2370,13 +2280,13 @@
       "sport": "multi",
       "phone": "",
       "website": "",
-      "street": "უნივერსიტეტის ქუჩა",
+      "street": "University Kucha",
       "lat": 41.7179366,
       "lon": 44.7408423,
       "needs_enrichment": true
     },
     {
-      "company": "ოლიმპიკი",
+      "company": "Olympic",
       "name_en": "Olympic",
       "country": "GE",
       "city": "",
@@ -2391,7 +2301,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "არენა I",
+      "company": "Arena 1",
       "name_en": "Arena 1",
       "country": "GE",
       "city": "",
@@ -2400,13 +2310,13 @@
       "sport": "multi",
       "phone": "",
       "website": "",
-      "street": "უნივერსიტეტის ქუჩა",
+      "street": "University Kucha",
       "lat": 41.7182648,
       "lon": 44.7419967,
       "needs_enrichment": true
     },
     {
-      "company": "ვერის საკალათბურთო დარბაზი",
+      "company": "Vere Basketball Palace",
       "name_en": "Vere Basketball Palace",
       "country": "GE",
       "city": "",
@@ -2421,25 +2331,25 @@
       "needs_enrichment": true
     },
     {
-      "company": "ძიუდოს კლუბი “ჯორჯია”",
+      "company": "Judo Club \"Georgia\"",
       "name_en": "Judo Club \"Georgia\"",
       "country": "GE",
-      "city": "თბილისი",
+      "city": "Tbilisi",
       "role": "sports centre",
       "product_key": "rubber-tiles",
       "sport": "multi",
       "phone": "+995 599 93 38 97",
       "website": "",
-      "street": "ბერი გაბრიელ სალოსის გამზირი 144ა",
+      "street": "Beri Gabriel Salosis Gamziri 144a",
       "lat": 41.6719481,
       "lon": 44.8712862,
       "needs_enrichment": false
     },
     {
-      "company": "გლდანი-ნაძალადევის კომპლექსური სპორტული ცენტრი",
+      "company": "Gldani-Nadzaladevi Sport Complex",
       "name_en": "Gldani-Nadzaladevi Sport Complex",
       "country": "GE",
-      "city": "ზღვისუბანის მე-11 მიკრო რაიონი / მე-3 კვარტალი",
+      "city": "Zghvisubanis Me-11 Mikro Raioni / Me-3 Kvartali",
       "role": "sports centre",
       "product_key": "rubber-tiles",
       "sport": "swimming;boxing;gymnastics;multi",
@@ -2451,7 +2361,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "ხელბურთის ეროვნული სკოლა",
+      "company": "Khelburtis Erovnuli Skola",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -2475,28 +2385,28 @@
       "sport": "swimming",
       "phone": "",
       "website": "",
-      "street": "ილია ჭავჭავაძის გამზირი 49ა",
+      "street": "Ilia Chavchavadzis Gamziri 49a",
       "lat": 41.7121906,
       "lon": 44.7453478,
       "needs_enrichment": true
     },
     {
-      "company": "სპორტის სასახლე",
+      "company": "Kutaisi Sports Palace",
       "name_en": "Kutaisi Sports Palace",
       "country": "GE",
-      "city": "ქუთაისი",
+      "city": "Kutaisi",
       "role": "sports centre",
       "product_key": "rubber-tiles",
       "sport": "",
       "phone": "",
       "website": "",
-      "street": "ახალგაზრდობის გამზირი 90",
+      "street": "Youth Gamziri 90",
       "lat": 42.2352591,
       "lon": 42.7113933,
       "needs_enrichment": true
     },
     {
-      "company": "ქუთაისის ტორპედოს ბაზა",
+      "company": "Torpedo Training Center",
       "name_en": "Torpedo Training Center",
       "country": "GE",
       "city": "",
@@ -2511,7 +2421,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "სპორტ-კომპლექსი მართვე (Martve)",
+      "company": "Martve",
       "name_en": "Martve",
       "country": "GE",
       "city": "",
@@ -2541,7 +2451,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Sport Centre of Senaki",
+      "company": "Sport Centre Of Senaki",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -2601,7 +2511,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ცენტრალური სტადიონი (Central Stadium)",
+      "company": "Central Stadium",
       "name_en": "Central Stadium",
       "country": "GE",
       "city": "",
@@ -2616,10 +2526,10 @@
       "needs_enrichment": true
     },
     {
-      "company": "რუსთავი არენა",
+      "company": "Rustavi Arena",
       "name_en": "Rustavi Arena",
       "country": "GE",
-      "city": "რუსთავი",
+      "city": "Rustavi",
       "role": "sports centre",
       "product_key": "rubber-tiles",
       "sport": "swimming",
@@ -2631,7 +2541,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ქიმიკოსთა სპორტული კომპლექსი",
+      "company": "Kimikosta Sports Complex",
       "name_en": "Kimikosta Sports Complex",
       "country": "GE",
       "city": "",
@@ -2646,22 +2556,22 @@
       "needs_enrichment": true
     },
     {
-      "company": "გლდანის ახალი საცურაო აუზი",
+      "company": "Gldani-Nadzaladevi Sports Complex",
       "name_en": "Gldani-Nadzaladevi Sports Complex",
       "country": "GE",
-      "city": "თბილისი",
+      "city": "Tbilisi",
       "role": "sports centre",
       "product_key": "rubber-tiles",
       "sport": "swimming",
       "phone": "",
       "website": "",
-      "street": "ილია ვეკუას ქუჩა 127",
+      "street": "Ilia Vekuas Kucha 127",
       "lat": 41.8016366,
       "lon": 44.8288058,
       "needs_enrichment": true
     },
     {
-      "company": "Ареспубликатә Стадион",
+      "company": "Republican Stadium",
       "name_en": "Republican Stadium",
       "country": "GE",
       "city": "",
@@ -2676,7 +2586,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Стадион им. Виталия Дараселия",
+      "company": "Vitaly Daraseliya Stadium",
       "name_en": "Vitaly Daraseliya Stadium",
       "country": "GE",
       "city": "",
@@ -2691,7 +2601,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Стадион ФК Киараз",
+      "company": "Стадион Фк Киараз",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -2721,7 +2631,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ლეილა მესხის სახელობის საჩოგბურთო კომპლექსი",
+      "company": "Leila Meskhi Courts",
       "name_en": "Leila Meskhi Courts",
       "country": "GE",
       "city": "",
@@ -2730,13 +2640,13 @@
       "sport": "tennis",
       "phone": "",
       "website": "",
-      "street": "კოტე მარჯანიშვილის ქუჩა 29გ",
+      "street": "Kote Marjanishvilis Kucha 29g",
       "lat": 41.7093621,
       "lon": 44.799259,
       "needs_enrichment": true
     },
     {
-      "company": "ლისის ტბის იპოდრომი",
+      "company": "Lisi Lake Hippodrome",
       "name_en": "Lisi Lake Hippodrome",
       "country": "GE",
       "city": "",
@@ -2760,28 +2670,28 @@
       "sport": "swimming",
       "phone": "",
       "website": "",
-      "street": "შერიფ ხიმშიაშვილის ქუჩა 18",
+      "street": "Sherif Khimshiashvilis Kucha 18",
       "lat": 41.6370779,
       "lon": 41.6084771,
       "needs_enrichment": true
     },
     {
-      "company": "ლერი ნაკანის სახელობის მესტიის სპორტული კომპლექსი",
+      "company": "Leri Nakani Mestia Sports Complex",
       "name_en": "Leri Nakani Mestia Sports Complex",
       "country": "GE",
-      "city": "მესტია",
+      "city": "Mestia",
       "role": "sports centre",
       "product_key": "rubber-tiles",
       "sport": "",
       "phone": "",
       "website": "",
-      "street": "ბეთლემის ქუჩა 12",
+      "street": "Betlemis Kucha 12",
       "lat": 43.0428898,
       "lon": 42.7210968,
       "needs_enrichment": true
     },
     {
-      "company": "საცურაო აუზი",
+      "company": "Satsurao Auzi",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -2796,7 +2706,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Дворец спорта \"Олимп\"",
+      "company": "Дворец Спорта \"Олимп\"",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -2811,7 +2721,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "დინამოს აკადემია",
+      "company": "FC Dinamo Accademy",
       "name_en": "FC Dinamo Accademy",
       "country": "GE",
       "city": "",
@@ -2826,7 +2736,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "მულახის სპორტული კომპლექსი",
+      "company": "Mulakhi's Sports Complex",
       "name_en": "Mulakhi's Sports Complex",
       "country": "GE",
       "city": "",
@@ -2841,46 +2751,46 @@
       "needs_enrichment": true
     },
     {
-      "company": "დინამო ბათუმის ბაზა \"ანგისა\"",
+      "company": "Dinamo Batumi Base \"Angisa\"",
       "name_en": "Dinamo Batumi Base \"Angisa\"",
       "country": "GE",
-      "city": "ბათუმი",
+      "city": "Batumi",
       "role": "sports centre",
       "product_key": "rubber-tiles",
       "sport": "soccer",
       "phone": "",
       "website": "",
-      "street": "აეროპორტის გზატკეცილი",
+      "street": "Aeroportis Gzatketsili",
       "lat": 41.6209544,
       "lon": 41.6120502,
       "needs_enrichment": true
     },
     {
-      "company": "საქართველოს ოლიმპიური რეზერვების მზადების ეროვნული ცენტრი",
+      "company": "Olympic Reserve Training National Centre",
       "name_en": "Olympic Reserve Training National Centre",
       "country": "GE",
-      "city": "თბილისი",
+      "city": "Tbilisi",
       "role": "sports centre",
       "product_key": "rubber-tiles",
       "sport": "archery;judo;boxing;wrestling;weightlifting;athletics;greco-roman_wrestling",
       "phone": "+995 32 268 79 30",
       "website": "https://www.olympiccentre.ge/",
-      "street": "თიანეთის გზატკეცილი 29",
+      "street": "Tianetis Gzatketsili 29",
       "lat": 41.8091616,
       "lon": 44.8189638,
       "needs_enrichment": false
     },
     {
-      "company": "სპორტული კომპლექსი შატილი",
+      "company": "Sportuli Kompleksi Shatili",
       "name_en": "",
       "country": "GE",
-      "city": "თბილისი",
+      "city": "Tbilisi",
       "role": "sports centre",
       "product_key": "rubber-tiles",
       "sport": "soccer",
       "phone": "",
       "website": "",
-      "street": "შატილის ქუჩა",
+      "street": "Shatilis Kucha",
       "lat": 41.7782205,
       "lon": 44.8001591,
       "needs_enrichment": true
@@ -2895,13 +2805,13 @@
       "sport": "",
       "phone": "",
       "website": "",
-      "street": "ვახტანგ გორგასლის ქუჩა 4ა",
+      "street": "Vakhtang Gorgaslis Kucha 4a",
       "lat": 41.6815643,
       "lon": 44.8249014,
       "needs_enrichment": true
     },
     {
-      "company": "ფრენბურთის არენა",
+      "company": "Volleyball Arena",
       "name_en": "Volleyball Arena",
       "country": "GE",
       "city": "",
@@ -2916,7 +2826,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ტანვარჯიშის არენა",
+      "company": "Gymnastics Arena",
       "name_en": "Gymnastics Arena",
       "country": "GE",
       "city": "",
@@ -2931,7 +2841,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "NoNa Veterans Club",
+      "company": "Nona Veterans Club",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -2946,37 +2856,22 @@
       "needs_enrichment": true
     },
     {
-      "company": "ოლიმპიური სასახლე",
+      "company": "Olympic Palace",
       "name_en": "Olympic Palace",
       "country": "GE",
-      "city": "თბილისი",
+      "city": "Tbilisi",
       "role": "sports centre",
       "product_key": "rubber-tiles",
       "sport": "",
       "phone": "",
       "website": "",
-      "street": "უნივერსიტეტის ქუჩა 15",
+      "street": "University Kucha 15",
       "lat": 41.7181477,
       "lon": 44.7282514,
       "needs_enrichment": true
     },
     {
-      "company": "სპორტსკოლა",
-      "name_en": "Sport School",
-      "country": "GE",
-      "city": "ქუთაისი",
-      "role": "sports centre",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "ედუარდ როძევიჩის ქუჩა 2ა",
-      "lat": 42.2649059,
-      "lon": 42.7067881,
-      "needs_enrichment": true
-    },
-    {
-      "company": "\"აია\" არენა",
+      "company": "Aia Arena",
       "name_en": "Aia Arena",
       "country": "GE",
       "city": "",
@@ -2991,7 +2886,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "რაგბის სტადიონი",
+      "company": "Ragbis Stadioni",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -3006,7 +2901,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "საქართველოს ფეხბურთის ფედერაციის აკადემია",
+      "company": "Academy of Georgian Football Federation",
       "name_en": "Academy of Georgian Football Federation",
       "country": "GE",
       "city": "",
@@ -3021,37 +2916,67 @@
       "needs_enrichment": true
     },
     {
-      "company": "რაგბის სტადიონი \"კავკასიონი\"",
+      "company": "Rugby Arena \"Kavkasioni\"",
       "name_en": "Rugby Arena \"Kavkasioni\"",
       "country": "GE",
-      "city": "თელავი",
+      "city": "Telavi",
       "role": "sports centre",
       "product_key": "rubber-tiles",
       "sport": "rugby",
       "phone": "",
       "website": "",
-      "street": "კავკასიონის ქუჩა (Kavkasioni St)",
+      "street": "Kavkasionis Kucha (Kavkasioni St)",
       "lat": 41.9340093,
       "lon": 45.4693954,
       "needs_enrichment": true
     },
     {
-      "company": "აქვა ბეიბი",
+      "company": "Akva Beibi",
       "name_en": "",
       "country": "GE",
-      "city": "გორი",
+      "city": "Gori",
       "role": "sports centre",
       "product_key": "rubber-tiles",
       "sport": "swimming",
       "phone": "",
       "website": "",
-      "street": "თბილისის ქუჩა 9",
+      "street": "Tbilisis Kucha 9",
       "lat": 41.9897897,
       "lon": 44.117209,
       "needs_enrichment": true
     },
     {
-      "company": "ალექსანდრე მეტრეველის სახელობის საჩოგბურთო კომპლექსი",
+      "company": "Sportis Sasakhle",
+      "name_en": "",
+      "country": "GE",
+      "city": "",
+      "role": "sports centre",
+      "product_key": "rubber-tiles",
+      "sport": "",
+      "phone": "",
+      "website": "",
+      "street": "",
+      "lat": 41.9320613,
+      "lon": 45.4727936,
+      "needs_enrichment": true
+    },
+    {
+      "company": "Poti Rugby Stadium",
+      "name_en": "Poti Rugby Stadium",
+      "country": "GE",
+      "city": "",
+      "role": "sports centre",
+      "product_key": "rubber-tiles",
+      "sport": "",
+      "phone": "",
+      "website": "",
+      "street": "",
+      "lat": 42.1467901,
+      "lon": 41.6899104,
+      "needs_enrichment": true
+    },
+    {
+      "company": "Alexander Metreveli Tennis Complex",
       "name_en": "Alexander Metreveli Tennis Complex",
       "country": "GE",
       "city": "",
@@ -3066,7 +2991,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ხელვაჩაურის სასპორტო სკოლა",
+      "company": "Khelvachauris Sasporto Skola",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -3081,22 +3006,22 @@
       "needs_enrichment": true
     },
     {
-      "company": "თბილისი არენა",
+      "company": "Tbilisi Arena",
       "name_en": "Tbilisi Arena",
       "country": "GE",
-      "city": "თბილისი",
+      "city": "Tbilisi",
       "role": "sports centre",
       "product_key": "rubber-tiles",
       "sport": "basketball",
       "phone": "",
       "website": "",
-      "street": "უნივერსიტეტის ქუჩა 15ა",
+      "street": "University Kucha 15a",
       "lat": 41.7180432,
       "lon": 44.7267722,
       "needs_enrichment": true
     },
     {
-      "company": "ფოთის საცურაო აუზი",
+      "company": "Poti Swimming Pool",
       "name_en": "Poti Swimming Pool",
       "country": "GE",
       "city": "",
@@ -3111,7 +3036,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "მუხრან ვახტანგაძის ბათუმის სპორტის სასახლე",
+      "company": "Mukhran Vakhtangadze Batumi Sport Palace",
       "name_en": "Mukhran Vakhtangadze Batumi Sport Palace",
       "country": "GE",
       "city": "",
@@ -3120,13 +3045,13 @@
       "sport": "",
       "phone": "",
       "website": "",
-      "street": "იური გაგარინის ქუჩა 21",
+      "street": "Iuri Gagarinis Kucha 21",
       "lat": 41.6261105,
       "lon": 41.6270578,
       "needs_enrichment": true
     },
     {
-      "company": "ოზუეგეთის სპორტული სკოლა",
+      "company": "Ozurgeti Sport School",
       "name_en": "Ozurgeti Sport School",
       "country": "GE",
       "city": "",
@@ -3141,7 +3066,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ფიგურული სრიალის ცენტრი",
+      "company": "Figure Skating Center",
       "name_en": "Figure Skating Center",
       "country": "GE",
       "city": "",
@@ -3156,7 +3081,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "სპორტკომპლექსი",
+      "company": "Sportkompleksi",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -3171,7 +3096,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ხვამლი არენა",
+      "company": "Khvamli Arena",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -3186,22 +3111,22 @@
       "needs_enrichment": true
     },
     {
-      "company": "აკაკი წერეთლის სახელობის სახელმწიფო უნივერსიტეტი, კორპუსი VI",
+      "company": "Akaki Tseretlis Sakhelobis Sakhelmtsifo Universiteti, Korpusi Vi",
       "name_en": "",
       "country": "GE",
-      "city": "ქუთაისი",
+      "city": "Kutaisi",
       "role": "sports centre",
       "product_key": "rubber-tiles",
       "sport": "basketball;climbing",
       "phone": "",
       "website": "",
-      "street": "ვიქტორ კუპრაძის ქუჩა 13",
+      "street": "Viktor Kupradzis Kucha 13",
       "lat": 42.2621674,
       "lon": 42.7146639,
       "needs_enrichment": true
     },
     {
-      "company": "Climbing area Botanical Garden, Tbilisi",
+      "company": "Climbing Area Botanical Garden, Tbilisi",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -3216,7 +3141,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "Climbing sector \"Office\" of climbing area \"Katskhi\"",
+      "company": "Climbing Sector \"Office\" Of Climbing Area \"Katskhi\"",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -3231,7 +3156,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "Climbing sector \"Gulo\" of climbing area \"Katskhi\"",
+      "company": "Climbing Sector \"Gulo\" Of Climbing Area \"Katskhi\"",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -3246,7 +3171,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "Climbing sector \"Bazi\" of climbing area \"Katskhi\"",
+      "company": "Climbing Sector \"Bazi\" Of Climbing Area \"Katskhi\"",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -3261,7 +3186,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "Climbing sector \"Cave\" of climbing area \"Katskhi\"",
+      "company": "Climbing Sector \"Cave\" Of Climbing Area \"Katskhi\"",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -3276,7 +3201,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "Climbing sector \"Ozzy\" of climbing area \"Katskhi\"",
+      "company": "Climbing Sector \"Ozzy\" Of Climbing Area \"Katskhi\"",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -3291,7 +3216,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "Climbing sector \"Canyon\" of climbing area \"Katskhi\"",
+      "company": "Climbing Sector \"Canyon\" Of Climbing Area \"Katskhi\"",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -3306,7 +3231,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "Climbing sector \"Tsunami\" of climbing area \"Katskhi\"",
+      "company": "Climbing Sector \"Tsunami\" Of Climbing Area \"Katskhi\"",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -3321,7 +3246,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "Climbing sector \"Dano\" of climbing area \"Katskhi\"",
+      "company": "Climbing Sector \"Dano\" Of Climbing Area \"Katskhi\"",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -3336,7 +3261,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "GymBreeze",
+      "company": "Gymbreeze",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -3351,7 +3276,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "საფეხბურთო ცენტრი ნუცუბიძის პლატოზე",
+      "company": "Nutsubidze Plateau Football Centre",
       "name_en": "Nutsubidze Plateau Football Centre",
       "country": "GE",
       "city": "",
@@ -3366,7 +3291,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ბათუმის სპორტული ცენტრი",
+      "company": "Batumi Sport Center",
       "name_en": "Batumi Sport Center",
       "country": "GE",
       "city": "",
@@ -3381,7 +3306,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ჭურიის თოკების პარკი",
+      "company": "Churiis Tokebis Parki",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -3405,13 +3330,13 @@
       "sport": "fitness",
       "phone": "",
       "website": "",
-      "street": "ანა პოლიტკოვსკაიას ქუჩა 28",
+      "street": "Ana Politkovskaias Kucha 28",
       "lat": 41.7202844,
       "lon": 44.7085462,
       "needs_enrichment": true
     },
     {
-      "company": "Теннисный клуб Akua",
+      "company": "Теннисный Клуб Akua",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -3426,7 +3351,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ერთობა",
+      "company": "Unity Club",
       "name_en": "Unity Club",
       "country": "GE",
       "city": "",
@@ -3486,7 +3411,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "Climbing sector \"Tsikhidziri\"",
+      "company": "Climbing Sector \"Tsikhidziri\"",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -3501,7 +3426,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "Climbing sector \"Old Road\"",
+      "company": "Climbing Sector \"Old Road\"",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -3516,7 +3441,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "Climbing sector \"Parking\"",
+      "company": "Climbing Sector \"Parking\"",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -3531,7 +3456,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "Climbing sector \"Fuel Sation\"",
+      "company": "Climbing Sector \"Fuel Sation\"",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -3561,7 +3486,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "რუსთავის საერთაშორისო მოტოდრომი",
+      "company": "Rustavi International Motorpark",
       "name_en": "Rustavi International Motorpark",
       "country": "GE",
       "city": "",
@@ -3576,7 +3501,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "კუს ტბა პადელი",
+      "company": "Kus Tba Padel",
       "name_en": "Kus Tba Padel",
       "country": "GE",
       "city": "",
@@ -3603,471 +3528,6 @@
       "street": "",
       "lat": 42.3288252,
       "lon": 42.6060267,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Tamaz Stepania Stadium",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "აკალი წერეთლის ქუჩა 1ა",
-      "lat": 41.4481476,
-      "lon": 44.5351521,
-      "needs_enrichment": true
-    },
-    {
-      "company": "მიხეილ მესხის სახელობის სტადიონი",
-      "name_en": "Mikheil Meskhi Stadium",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "soccer",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7097905,
-      "lon": 44.7462738,
-      "needs_enrichment": true
-    },
-    {
-      "company": "ცენტრალური სტადიონი",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.4073834,
-      "lon": 43.4920877,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Спартак",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 42.2281161,
-      "lon": 43.9793911,
-      "needs_enrichment": true
-    },
-    {
-      "company": "შევარდენის სტადიონი",
-      "name_en": "Shevardeni Stadium",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.6747346,
-      "lon": 44.8600141,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Стадион имени Баграмяна",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 43.2181978,
-      "lon": 40.2935653,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Гагрский городской стадион имени Даура Ахвледиани",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 43.2860591,
-      "lon": 40.2628295,
-      "needs_enrichment": true
-    },
-    {
-      "company": "ევგრაფი შევარდნაძის სტადიონი",
-      "name_en": "Evgrapi Shevardnadze Stadium",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 42.0949221,
-      "lon": 42.047652,
-      "needs_enrichment": true
-    },
-    {
-      "company": "გურჯაანის დავით ყიფიანის სახელობის სტადიონი",
-      "name_en": "Davit Kipiani Stadium",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7564941,
-      "lon": 45.7970891,
-      "needs_enrichment": true
-    },
-    {
-      "company": "ეროსი მანჯგალაძის სტადიონი",
-      "name_en": "Erosi Manjgaladze Stadium",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 42.160829,
-      "lon": 42.3305828,
-      "needs_enrichment": true
-    },
-    {
-      "company": "ფაზისი",
-      "name_en": "Fazisi Stadium",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 42.1428325,
-      "lon": 41.6650451,
-      "needs_enrichment": true
-    },
-    {
-      "company": "აჭარაბეთ არენა",
-      "name_en": "Adjarabet Arena",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "soccer",
-      "phone": "",
-      "website": "",
-      "street": "ჟიული შარტავას ქუჩა",
-      "lat": 41.6351782,
-      "lon": 41.6191776,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Cтадион «Динамо»",
-      "name_en": "Dynamo Stadium",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 43.0048139,
-      "lon": 41.0145948,
-      "needs_enrichment": true
-    },
-    {
-      "company": "თერჯოლის საპოვნელა",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 42.169786,
-      "lon": 42.9645803,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Megobroba Stadium",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.924195,
-      "lon": 42.013371,
-      "needs_enrichment": true
-    },
-    {
-      "company": "BAIA stadium",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 42.4956235,
-      "lon": 41.8550355,
-      "needs_enrichment": true
-    },
-    {
-      "company": "გრიგოლ ნიკოლეიშვილის სტადიონი",
-      "name_en": "Grigol Nikoleishvili Stadium",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 42.0924205,
-      "lon": 42.5061163,
-      "needs_enrichment": true
-    },
-    {
-      "company": "ჭიათურის თემურ მაღრაძის სახელობის სტადიონი",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 42.2808689,
-      "lon": 43.2719283,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Mikheil Iadze Stadium",
-      "name_en": "Mikheil Iadze Stadium",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.6416794,
-      "lon": 42.9895446,
-      "needs_enrichment": true
-    },
-    {
-      "company": "რუსთავის რაგბის სტადიონი",
-      "name_en": "Rustavi Rugby stadium",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "rugby",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.5714274,
-      "lon": 44.994045,
-      "needs_enrichment": true
-    },
-    {
-      "company": "სტადიონი \"ავჩალა\"",
-      "name_en": "Stadium \"Avchala\"",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7991129,
-      "lon": 44.8000812,
-      "needs_enrichment": true
-    },
-    {
-      "company": "დავით აბაშიძის სტადიონი",
-      "name_en": "David Abashidze Stadium",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 42.1115985,
-      "lon": 43.0261087,
-      "needs_enrichment": true
-    },
-    {
-      "company": "ზედა ალისუბნის სკოლის საფეხბურთო მოედანი",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 42.2573527,
-      "lon": 43.0199913,
-      "needs_enrichment": true
-    },
-    {
-      "company": "ჯემალ ზეინკლიშვილის სტადიონი",
-      "name_en": "Jemal Zeinklishvili Stadium",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.8430984,
-      "lon": 43.3885892,
-      "needs_enrichment": true
-    },
-    {
-      "company": "სპაერი",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7024744,
-      "lon": 44.8366151,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Tqwarchal Stadium",
-      "name_en": "Tqwarchal Stadium",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 42.8464568,
-      "lon": 41.6898403,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Центральный стадион",
-      "name_en": "Gali Central Stadium",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 42.6255063,
-      "lon": 41.7292192,
-      "needs_enrichment": true
-    },
-    {
-      "company": "ფოლადის სტადიონი",
-      "name_en": "Poladi Stadium",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.5409783,
-      "lon": 45.006788,
-      "needs_enrichment": true
-    },
-    {
-      "company": "რამაზ შენგელიას სტადიონი",
-      "name_en": "Ramaz Shengelia Stadium",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 42.2551237,
-      "lon": 42.6830932,
-      "needs_enrichment": true
-    },
-    {
-      "company": "ბორის პაიჭაძის სახელობის დინამო არენა",
-      "name_en": "Dinamo Arena named after Boris Paichadze",
-      "country": "GE",
-      "city": "თბილისი",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "soccer",
-      "phone": "+995 32 218 26 27;+995 32 218 27 26",
-      "website": "",
-      "street": "აკაკი წერეთლის გამზირი",
-      "lat": 41.7230184,
-      "lon": 44.7897945,
-      "needs_enrichment": false
-    },
-    {
-      "company": "თენგიზ ბურჯანაძის სტადიონი",
-      "name_en": "Tengiz Burjanadze Stadium",
-      "country": "GE",
-      "city": "",
-      "role": "stadium",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.9830333,
-      "lon": 44.1037649,
       "needs_enrichment": true
     },
     {
@@ -4116,7 +3576,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "padelbade",
+      "company": "Padelbade",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -4131,7 +3591,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "Padel Academy of Georgia",
+      "company": "Padel Academy Of Georgia",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -4146,7 +3606,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "Free table tennis in School",
+      "company": "Free Table Tennis In School",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -4161,7 +3621,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "სტადიონი მარაკანა",
+      "company": "Marakana Stadium",
       "name_en": "Marakana Stadium",
       "country": "GE",
       "city": "",
@@ -4176,7 +3636,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "სოხუმის \"ცხუმის\" საწვრთნელი ბაზა",
+      "company": "Traning Ground of FC Sokhumi \"Tskhumi\"",
       "name_en": "Traning Ground of FC Sokhumi \"Tskhumi\"",
       "country": "GE",
       "city": "",
@@ -4191,7 +3651,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ბენდელას სტადიონი",
+      "company": "Stadium Bendela",
       "name_en": "Stadium Bendela",
       "country": "GE",
       "city": "",
@@ -4206,7 +3666,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "\"ლელო\" არენა",
+      "company": "\"Lelo\" Arena",
       "name_en": "\"Lelo\" Arena",
       "country": "GE",
       "city": "",
@@ -4221,7 +3681,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ლისის სტადიონი",
+      "company": "Lisi stadium",
       "name_en": "Lisi stadium",
       "country": "GE",
       "city": "",
@@ -4266,7 +3726,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Стадион села Араду (Stadium of Aradu)",
+      "company": "Stadium of Aradu",
       "name_en": "Stadium of Aradu",
       "country": "GE",
       "city": "",
@@ -4281,7 +3741,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "გურია ლანჩხუთი",
+      "company": "FC Guria Lanchkhuti",
       "name_en": "FC Guria Lanchkhuti",
       "country": "GE",
       "city": "",
@@ -4296,7 +3756,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "როლანდი ისონიას სახელობის სტადიონი (Rolandi Isonia Stadium)",
+      "company": "Rolandi Isonia Stadium",
       "name_en": "Rolandi Isonia Stadium",
       "country": "GE",
       "city": "",
@@ -4311,7 +3771,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ორსანტიის ფეხბურთის მოედანი",
+      "company": "Orsantiis Fekhburtis Moedani",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -4326,7 +3786,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ჯონი ბაკურიძის სტადიონი",
+      "company": "Joni Bakuridzis Stadioni",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -4335,13 +3795,13 @@
       "sport": "soccer",
       "phone": "",
       "website": "",
-      "street": "აეროპორტის გზატკეცილი 89",
+      "street": "Aeroportis Gzatketsili 89",
       "lat": 41.6212309,
       "lon": 41.6116642,
       "needs_enrichment": true
     },
     {
-      "company": "Теннисный клуб Гагрский",
+      "company": "Теннисный Клуб Гагрский",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -4356,7 +3816,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "სტადიონი",
+      "company": "Stadioni",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -4371,7 +3831,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ვაკის პარკის კორტები",
+      "company": "Vake Park Courts",
       "name_en": "Vake Park Courts",
       "country": "GE",
       "city": "",
@@ -4386,7 +3846,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "სპორტსქეიფი პადელი",
+      "company": "Sportscape Padel",
       "name_en": "Sportscape Padel",
       "country": "GE",
       "city": "",
@@ -4401,7 +3861,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "\"ენგურის\" მოედანი",
+      "company": "\"Enguris\" Moedani",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -4416,7 +3876,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "გივი ჩოხელის სტადიონი",
+      "company": "Givi Chokhelis Stadioni",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -4431,7 +3891,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "IBSU - Soccer field",
+      "company": "Ibsu - Soccer Field",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -4446,7 +3906,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ტოლდოს სტადიონი",
+      "company": "Toldos Stadioni",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -4476,7 +3936,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "სამტრედიის იპოდრომი",
+      "company": "Samtrediis Ipodromi",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -4491,7 +3951,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "დავით პეტრიაშვილის სტადიონი",
+      "company": "Davit Petriashvili Stadium",
       "name_en": "Davit Petriashvili Stadium",
       "country": "GE",
       "city": "",
@@ -4506,7 +3966,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ძველი ორხევის სტადიონი",
+      "company": "Orkhevi old stadium",
       "name_en": "Orkhevi old stadium",
       "country": "GE",
       "city": "",
@@ -4521,10 +3981,10 @@
       "needs_enrichment": true
     },
     {
-      "company": "FC Sioni Bolnisi",
+      "company": "Fc Sioni Bolnisi",
       "name_en": "",
       "country": "GE",
-      "city": "ბოლნისი (Bolnisi)",
+      "city": "Bolnisi (Bolnisi)",
       "role": "sports pitch",
       "product_key": "rubber-tiles",
       "sport": "soccer",
@@ -4536,7 +3996,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "პარკ არენა",
+      "company": "Park Arena",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -4551,7 +4011,22 @@
       "needs_enrichment": true
     },
     {
-      "company": "დინამო",
+      "company": "Marneuli Stadion",
+      "name_en": "Marneuli Stadion",
+      "country": "GE",
+      "city": "",
+      "role": "sports pitch",
+      "product_key": "rubber-tiles",
+      "sport": "soccer",
+      "phone": "",
+      "website": "",
+      "street": "",
+      "lat": 41.4810287,
+      "lon": 44.8072408,
+      "needs_enrichment": true
+    },
+    {
+      "company": "Dinamo",
       "name_en": "Dinamo",
       "country": "GE",
       "city": "",
@@ -4566,7 +4041,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "მოედანი",
+      "company": "Moedani",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -4581,7 +4056,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ძველი სპორტული მოედანი",
+      "company": "Dzveli Sportuli Moedani",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -4596,727 +4071,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Solo_Tu",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "Сталины уынг 16",
-      "lat": 42.2269543,
-      "lon": 43.97041,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Adidas",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 42.2236219,
-      "lon": 43.9641418,
-      "needs_enrichment": true
-    },
-    {
-      "company": "ლიდერი",
-      "name_en": "Leader",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7216762,
-      "lon": 44.7903909,
-      "needs_enrichment": true
-    },
-    {
-      "company": "სპორტ X",
-      "name_en": "Sport X",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7219674,
-      "lon": 44.7912864,
-      "needs_enrichment": true
-    },
-    {
-      "company": "ოლიმპი",
-      "name_en": "Olympi",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7219305,
-      "lon": 44.7911851,
-      "needs_enrichment": true
-    },
-    {
-      "company": "World Sport",
-      "name_en": "World Sport",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7211857,
-      "lon": 44.7892553,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Ikasport",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7215469,
-      "lon": 44.7901061,
-      "needs_enrichment": true
-    },
-    {
-      "company": "მსოფლიო ჩემპიონი",
-      "name_en": "Msoplio Chempioni",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7212587,
-      "lon": 44.7894496,
-      "needs_enrichment": true
-    },
-    {
-      "company": "ჩემპიონი",
-      "name_en": "Champion",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7217695,
-      "lon": 44.7906791,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Aspria Fitness",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "+995 32 222 22 38",
-      "website": "Aspria.ge",
-      "street": "მიხეილ ბურძგლას ქუჩა 74",
-      "lat": 41.7229884,
-      "lon": 44.7595154,
-      "needs_enrichment": false
-    },
-    {
-      "company": "რიბოკი",
-      "name_en": "Reebok",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7270807,
-      "lon": 44.7644489,
-      "needs_enrichment": true
-    },
-    {
-      "company": "ნაიკი",
-      "name_en": "Nike",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7270761,
-      "lon": 44.7643566,
-      "needs_enrichment": true
-    },
-    {
-      "company": "ადიდასი",
-      "name_en": "Adidas",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7270991,
-      "lon": 44.7646667,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Спортивное питание \"Геркулес\"",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 42.2282228,
-      "lon": 43.9714249,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Спортмастер",
-      "name_en": "Sportmaster",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "33",
-      "lat": 42.2303271,
-      "lon": 43.9691791,
-      "needs_enrichment": true
-    },
-    {
-      "company": "ჯომა",
-      "name_en": "Joma",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.6893437,
-      "lon": 44.8998162,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Sportuli botasebi tuflebi",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "+995 593 18 01 40",
-      "website": "https://www.facebook.com/New-style-654256704642634/",
-      "street": "დავით აღმაშენებლის ქუჩა 21",
-      "lat": 41.6232893,
-      "lon": 41.6215214,
-      "needs_enrichment": false
-    },
-    {
-      "company": "Sportmaster",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "+995 591 23 83 88",
-      "website": "https://sportmaster.ge",
-      "street": "გრიგოლ რობაქიძის გამზირი 31",
-      "lat": 41.7617965,
-      "lon": 44.7697844,
-      "needs_enrichment": false
-    },
-    {
-      "company": "Billiard club",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "billiards",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.6329029,
-      "lon": 41.6119654,
-      "needs_enrichment": true
-    },
-    {
-      "company": "დელტა სპორტი",
-      "name_en": "Delta Sport",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "ირაკლი აბაშიძის ქუჩა 5",
-      "lat": 41.6495591,
-      "lon": 41.6379058,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Macro Sports",
-      "name_en": "Macro Sports",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.6502729,
-      "lon": 41.6370986,
-      "needs_enrichment": true
-    },
-    {
-      "company": "ჯეო სპორტი",
-      "name_en": "Geosport",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.6515882,
-      "lon": 41.6406806,
-      "needs_enrichment": true
-    },
-    {
-      "company": "ჯიელ სპორტი",
-      "name_en": "GL Sport",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.724075,
-      "lon": 44.7423482,
-      "needs_enrichment": true
-    },
-    {
-      "company": "აჯარა პიკ",
-      "name_en": "Adjara peak",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "ტბელ აბუსერისძის ქუჩა 38",
-      "lat": 41.6331025,
-      "lon": 41.6131981,
-      "needs_enrichment": true
-    },
-    {
-      "company": "ესფიიქს",
-      "name_en": "SPX",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.6949184,
-      "lon": 44.8000272,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Day on Water",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "+995 591 00 55 06",
-      "website": "https://day-on.ge/",
-      "street": "Maho Village Area",
-      "lat": 41.5513673,
-      "lon": 41.6897535,
-      "needs_enrichment": false
-    },
-    {
-      "company": "ტექნოჯიმ",
-      "name_en": "TechnoGym",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "fitness",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7079808,
-      "lon": 44.7863121,
-      "needs_enrichment": true
-    },
-    {
-      "company": "იმპულსი",
-      "name_en": "Impulse",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7262833,
-      "lon": 44.7697354,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Margo Skateshop",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "skateboard",
-      "phone": "",
-      "website": "",
-      "street": "ეგნატე ნინოშვილის ქუჩა 8",
-      "lat": 41.7093773,
-      "lon": 44.802845,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Товары для спорта",
-      "name_en": "Sports Shop",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "https://www.facebook.com/SportsShopBatumi",
-      "street": "შერიფ ხიმშიაშვილის ქუჩა",
-      "lat": 41.6390413,
-      "lon": 41.6132404,
-      "needs_enrichment": false
-    },
-    {
-      "company": "ტოპსპორტი",
-      "name_en": "Topsport",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.6891143,
-      "lon": 44.899774,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Fitness House",
-      "name_en": "Fitness House",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7220263,
-      "lon": 44.7896425,
-      "needs_enrichment": true
-    },
-    {
-      "company": "ბალანსი",
-      "name_en": "Balance",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7220727,
-      "lon": 44.7915001,
-      "needs_enrichment": true
-    },
-    {
-      "company": "ჯასსპორტი",
-      "name_en": "Jassport",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7221305,
-      "lon": 44.7916559,
-      "needs_enrichment": true
-    },
-    {
-      "company": "კორნერი",
-      "name_en": "Korneri",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7274348,
-      "lon": 44.7628024,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Top Sport",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.6278824,
-      "lon": 41.6029391,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Jas Sport",
-      "name_en": "Jas Sport",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 42.252422,
-      "lon": 42.6811836,
-      "needs_enrichment": true
-    },
-    {
-      "company": "კემპი",
-      "name_en": "Kemp",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7259633,
-      "lon": 44.7434214,
-      "needs_enrichment": true
-    },
-    {
-      "company": "NeedShop",
-      "name_en": "NeedShop",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7329728,
-      "lon": 44.7524318,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Toxigen Board Shop",
-      "name_en": "",
-      "country": "GE",
-      "city": "თბილისი",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "skateboard",
-      "phone": "+995 592 18 96 79",
-      "website": "https://toxigenlongboards.wixsite.com/shop",
-      "street": "გრიგოლ აბაშიძის ქუჩა 14",
-      "lat": 41.695946,
-      "lon": 44.8021752,
-      "needs_enrichment": false
-    },
-    {
-      "company": "Open24/7",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "skateboard",
-      "phone": "+995 599 10 02 91",
-      "website": "",
-      "street": "",
-      "lat": 41.7036726,
-      "lon": 44.8060327,
-      "needs_enrichment": false
-    },
-    {
-      "company": "Geo Home Skate Shop",
-      "name_en": "",
-      "country": "GE",
-      "city": "თბილისი",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "skateboard",
-      "phone": "+995 599 10 02 91",
-      "website": "",
-      "street": "",
-      "lat": 41.7041632,
-      "lon": 44.8567415,
-      "needs_enrichment": false
-    },
-    {
-      "company": "Fitness Frau",
-      "name_en": "Fitness Frau",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7143459,
-      "lon": 44.7712414,
-      "needs_enrichment": true
-    },
-    {
-      "company": "ლიგა",
-      "name_en": "liga",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "soccer",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.9173376,
-      "lon": 45.4775365,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Sportland",
-      "name_en": "Sportland",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7207833,
-      "lon": 44.7783673,
-      "needs_enrichment": true
-    },
-    {
-      "company": "Runfit",
-      "name_en": "Runfit",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "+995 571 15 54 65",
-      "website": "",
-      "street": "გიორგი ცაბაძის ქუჩა 8ბ",
-      "lat": 41.7241232,
-      "lon": 44.7924331,
-      "needs_enrichment": false
-    },
-    {
-      "company": "ბურუსპორტი",
-      "name_en": "Burusports",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 42.4696973,
-      "lon": 44.4932668,
-      "needs_enrichment": true
-    },
-    {
-      "company": "გოუ სპორტი",
-      "name_en": "GoSport",
-      "country": "GE",
-      "city": "",
-      "role": "sports shop",
-      "product_key": "rubber-tiles",
-      "sport": "",
-      "phone": "",
-      "website": "https://go-sport.ge/",
-      "street": "",
-      "lat": 41.7236195,
-      "lon": 44.7367499,
-      "needs_enrichment": false
-    },
-    {
-      "company": "სამშენებლო მაღაზია",
+      "company": "Construction Shop",
       "name_en": "Construction Shop",
       "country": "GE",
       "city": "",
@@ -5331,7 +4086,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "მეტალო-პლასტიკური პროდუქცია",
+      "company": "Metal-Plastic Product",
       "name_en": "Metal-Plastic Product",
       "country": "GE",
       "city": "",
@@ -5346,7 +4101,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ლიტოფონის ქარხნის მაღაზია",
+      "company": "Litoponi Factory Shop",
       "name_en": "Litoponi Factory Shop",
       "country": "GE",
       "city": "",
@@ -5361,22 +4116,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "მეტალო-პლასტმასის პროდუქცია (Metal-Plastic Product)",
-      "name_en": "Metal-Plastic Product",
-      "country": "GE",
-      "city": "",
-      "role": "hardware shop",
-      "product_key": "construction-buyer",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 42.2612104,
-      "lon": 42.6622748,
-      "needs_enrichment": true
-    },
-    {
-      "company": "ჩოპ იქსი (Chop X)",
+      "company": "Chop X",
       "name_en": "Chop X",
       "country": "GE",
       "city": "",
@@ -5391,7 +4131,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "თეკო",
+      "company": "Teko",
       "name_en": "Teko",
       "country": "GE",
       "city": "",
@@ -5406,7 +4146,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "წყალმომარაგების მექანიზმი-აგრო იმპექსი (Agro Impex-Supply Machinery)",
+      "company": "Agro Impex-Supply Machinery",
       "name_en": "Agro Impex-Supply Machinery",
       "country": "GE",
       "city": "",
@@ -5421,7 +4161,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ჰარდვეი (Hardway)",
+      "company": "Hardway",
       "name_en": "Hardway",
       "country": "GE",
       "city": "",
@@ -5436,7 +4176,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "კაფელის სახლი (Tile House)",
+      "company": "Tile House",
       "name_en": "Tile House",
       "country": "GE",
       "city": "",
@@ -5451,7 +4191,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "1000 წვრილმანი",
+      "company": "1000 Tsvrilmani",
       "name_en": "1000 Tsvrilmani",
       "country": "GE",
       "city": "",
@@ -5466,7 +4206,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "იბერიონ-2000",
+      "company": "Iberion-2000",
       "name_en": "Iberion-2000",
       "country": "GE",
       "city": "",
@@ -5481,7 +4221,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "სამშენებლო მასალები",
+      "company": "Construction Materials Shop",
       "name_en": "Construction Materials Shop",
       "country": "GE",
       "city": "",
@@ -5496,7 +4236,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "გრანსიერი",
+      "company": "Gransier",
       "name_en": "Gransier",
       "country": "GE",
       "city": "",
@@ -5511,7 +4251,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Королевство зеркал",
+      "company": "Королевство Зеркал",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -5571,7 +4311,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "შენი სახლი",
+      "company": "Sheni Sakhli",
       "name_en": "Sheni Sakhli",
       "country": "GE",
       "city": "",
@@ -5580,13 +4320,13 @@
       "sport": "",
       "phone": "",
       "website": "",
-      "street": "ცხინვალის გზატკეცილი",
+      "street": "Tskhinvalis Gzatketsili",
       "lat": 41.9894058,
       "lon": 44.1098371,
       "needs_enrichment": true
     },
     {
-      "company": "მცენარეთა თესლები",
+      "company": "Mtsenareta Teslebi",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -5595,13 +4335,13 @@
       "sport": "",
       "phone": "",
       "website": "",
-      "street": "ცხინვალის გზატკეცილი",
+      "street": "Tskhinvalis Gzatketsili",
       "lat": 41.9959697,
       "lon": 44.1111948,
       "needs_enrichment": true
     },
     {
-      "company": "აგროქართლი",
+      "company": "Agrokartli",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -5610,13 +4350,13 @@
       "sport": "",
       "phone": "",
       "website": "",
-      "street": "ცხინვალის გზატკეცილი",
+      "street": "Tskhinvalis Gzatketsili",
       "lat": 41.9881656,
       "lon": 44.1095435,
       "needs_enrichment": true
     },
     {
-      "company": "აგროგორგია",
+      "company": "Agrogorgia",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -5625,7 +4365,7 @@
       "sport": "",
       "phone": "",
       "website": "",
-      "street": "ცხინვალის გზატკეცილი",
+      "street": "Tskhinvalis Gzatketsili",
       "lat": 41.9963245,
       "lon": 44.1115636,
       "needs_enrichment": true
@@ -5661,7 +4401,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Адау",
+      "company": "Adau",
       "name_en": "Adau",
       "country": "GE",
       "city": "",
@@ -5691,7 +4431,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "იღბლიანი სალო",
+      "company": "Lucky House",
       "name_en": "Lucky House",
       "country": "GE",
       "city": "",
@@ -5700,13 +4440,13 @@
       "sport": "",
       "phone": "+995 568 09 11 77",
       "website": "",
-      "street": "რაფიელ აგლაძის ქუჩა 15",
+      "street": "Rafiel Agladzis Kucha 15",
       "lat": 41.7296551,
       "lon": 44.7836898,
       "needs_enrichment": false
     },
     {
-      "company": "საკეტები",
+      "company": "Saketebi",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -5721,7 +4461,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "\"Декор\" магазин красок",
+      "company": "\"Декор\" Магазин Красок",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -5736,7 +4476,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Магазин хоз.товаров",
+      "company": "Магазин Хоз.Товаров",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -5766,7 +4506,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "იმერი",
+      "company": "Imeri",
       "name_en": "Imeri",
       "country": "GE",
       "city": "",
@@ -5796,7 +4536,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Сельхоз продукты",
+      "company": "Сельхоз Продукты",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -5811,7 +4551,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ბაღდასარიან",
+      "company": "Bagdasaryan",
       "name_en": "Bagdasaryan",
       "country": "GE",
       "city": "",
@@ -5820,13 +4560,13 @@
       "sport": "",
       "phone": "",
       "website": "",
-      "street": "ალექსანდრე პუშკინის ქუჩა 46а",
+      "street": "Aleksandre Pushkinis Kucha 46а",
       "lat": 41.2662844,
       "lon": 43.5893602,
       "needs_enrichment": true
     },
     {
-      "company": "DNK LTD",
+      "company": "Dnk Ltd",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -5835,13 +4575,13 @@
       "sport": "",
       "phone": "",
       "website": "http://www.dnk.com.ge/en/home",
-      "street": "გიორგი ჩიკვაიძის ქუჩა 1",
+      "street": "Giorgi Chikvaidzis Kucha 1",
       "lat": 41.6933501,
       "lon": 44.9686396,
       "needs_enrichment": false
     },
     {
-      "company": "სმაილ თაიმ",
+      "company": "Smile Time",
       "name_en": "Smile Time",
       "country": "GE",
       "city": "",
@@ -5850,13 +4590,13 @@
       "sport": "",
       "phone": "",
       "website": "",
-      "street": "ა. ჭავჭავაძის ქუჩა 9",
+      "street": "A. Chavchavadzis Kucha 9",
       "lat": 41.7000716,
       "lon": 44.7934091,
       "needs_enrichment": true
     },
     {
-      "company": "სანტექნიკა",
+      "company": "Santeknika",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -5865,13 +4605,13 @@
       "sport": "",
       "phone": "",
       "website": "",
-      "street": "აეროპორტის დასახლება",
+      "street": "Aeroportis Dasakhleba",
       "lat": 41.6837945,
       "lon": 44.9488648,
       "needs_enrichment": true
     },
     {
-      "company": "1000 мелочей",
+      "company": "1000 melochei",
       "name_en": "1000 melochei",
       "country": "GE",
       "city": "",
@@ -5886,7 +4626,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ვიურტი",
+      "company": "Viurti",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -5895,13 +4635,13 @@
       "sport": "",
       "phone": "",
       "website": "http://www.wurth.com.ge",
-      "street": "დიღმის მასივი I კვარტალი",
+      "street": "Dighmis Masivi I Kvartali",
       "lat": 41.7594205,
       "lon": 44.7707703,
       "needs_enrichment": false
     },
     {
-      "company": "А-видео",
+      "company": "A-Video",
       "name_en": "A-Video",
       "country": "GE",
       "city": "",
@@ -5916,7 +4656,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "იატო",
+      "company": "Yato",
       "name_en": "Yato",
       "country": "GE",
       "city": "",
@@ -5931,7 +4671,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "არტლაინ ვინგს",
+      "company": "Artline wings",
       "name_en": "Artline wings",
       "country": "GE",
       "city": "",
@@ -5940,13 +4680,13 @@
       "sport": "",
       "phone": "",
       "website": "",
-      "street": "ფატმანი 3",
+      "street": "Fatmani 3",
       "lat": 41.782946,
       "lon": 44.763642,
       "needs_enrichment": true
     },
     {
-      "company": "იყიდება შეშა",
+      "company": "Iqideba Shesha",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -5961,7 +4701,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "არსენალი",
+      "company": "Arsenali",
       "name_en": "Arsenali",
       "country": "GE",
       "city": "",
@@ -5976,16 +4716,16 @@
       "needs_enrichment": true
     },
     {
-      "company": "გუდბილდი",
+      "company": "Goodbuild",
       "name_en": "Goodbuild",
       "country": "GE",
-      "city": "თბილისი",
+      "city": "Tbilisi",
       "role": "hardware shop",
       "product_key": "construction-buyer",
       "sport": "",
       "phone": "+995 555 88 11 22",
       "website": "https://goodbuild.ge/",
-      "street": "დავით გურამიშვილის გამზირი 71",
+      "street": "Davit Guramishvilis Gamziri 71",
       "lat": 41.7851337,
       "lon": 44.8007945,
       "needs_enrichment": false
@@ -6006,7 +4746,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "მირა",
+      "company": "Mira",
       "name_en": "Mira",
       "country": "GE",
       "city": "",
@@ -6015,13 +4755,13 @@
       "sport": "",
       "phone": "",
       "website": "https://mira.ge",
-      "street": "მიხეილ ლერმონტოვის ქუჩა 57",
+      "street": "Mikheil Lermontovis Kucha 57",
       "lat": 41.6405458,
       "lon": 41.6275457,
       "needs_enrichment": false
     },
     {
-      "company": "DeWalt Stanley",
+      "company": "Dewalt Stanley",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -6051,7 +4791,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "საქკაბელი",
+      "company": "Sakcable",
       "name_en": "Sakcable",
       "country": "GE",
       "city": "",
@@ -6066,7 +4806,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "1001 წვრილმანი",
+      "company": "1001 Tsvrilmani",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -6075,13 +4815,13 @@
       "sport": "",
       "phone": "",
       "website": "",
-      "street": "კობალაძის ქუჩა 14",
+      "street": "Kobaladzis Kucha 14",
       "lat": 41.6334015,
       "lon": 41.6102951,
       "needs_enrichment": true
     },
     {
-      "company": "ენერ.ჯი",
+      "company": "Ener.ge",
       "name_en": "Ener.ge",
       "country": "GE",
       "city": "",
@@ -6096,7 +4836,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "GM Market",
+      "company": "Gm Market",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -6111,7 +4851,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "დათანატა",
+      "company": "Datanata",
       "name_en": "Datanata",
       "country": "GE",
       "city": "",
@@ -6126,7 +4866,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Bosch makita dewalt Milwaukee",
+      "company": "Bosch Makita Dewalt Milwaukee",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -6141,7 +4881,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ტექნო მოლი",
+      "company": "Techno Mall",
       "name_en": "Techno Mall",
       "country": "GE",
       "city": "",
@@ -6156,7 +4896,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ევრო ხელსაწუოები",
+      "company": "Evro Khelsatsuoebi",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -6201,7 +4941,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "აბბე ჯგუფი",
+      "company": "Abbe Group",
       "name_en": "Abbe Group",
       "country": "GE",
       "city": "",
@@ -6216,7 +4956,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "იმერგაზი-საქართველო",
+      "company": "Immergas Georgia",
       "name_en": "Immergas Georgia",
       "country": "GE",
       "city": "",
@@ -6231,7 +4971,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "დევალტი",
+      "company": "Eurotechnologies - DeWalt - Stanley",
       "name_en": "Eurotechnologies - DeWalt - Stanley",
       "country": "GE",
       "city": "",
@@ -6246,7 +4986,22 @@
       "needs_enrichment": false
     },
     {
-      "company": "Маркет бытовой химит SkLaD",
+      "company": "1000 trifles",
+      "name_en": "1000 trifles",
+      "country": "GE",
+      "city": "",
+      "role": "hardware shop",
+      "product_key": "construction-buyer",
+      "sport": "",
+      "phone": "+995 558 14 58 54",
+      "website": "",
+      "street": "",
+      "lat": 41.7103305,
+      "lon": 44.7585914,
+      "needs_enrichment": false
+    },
+    {
+      "company": "SkLaD",
       "name_en": "SkLaD",
       "country": "GE",
       "city": "",
@@ -6261,7 +5016,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "უნივერსალი",
+      "company": "Universal",
       "name_en": "Universal",
       "country": "GE",
       "city": "",
@@ -6321,7 +5076,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "GSFixtop",
+      "company": "Gsfixtop",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -6336,7 +5091,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ქალმატრონი",
+      "company": "Kalmatron",
       "name_en": "Kalmatron",
       "country": "GE",
       "city": "",
@@ -6351,7 +5106,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ბოში",
+      "company": "Bosch",
       "name_en": "Bosch",
       "country": "GE",
       "city": "",
@@ -6381,7 +5136,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ვეიტო",
+      "company": "Veito",
       "name_en": "Veito",
       "country": "GE",
       "city": "",
@@ -6396,7 +5151,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "გასთროტექი",
+      "company": "Gastrotech",
       "name_en": "Gastrotech",
       "country": "GE",
       "city": "",
@@ -6411,7 +5166,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "აფინოქს",
+      "company": "Apinox",
       "name_en": "Apinox",
       "country": "GE",
       "city": "",
@@ -6426,7 +5181,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "გემი",
+      "company": "Gemi",
       "name_en": "Gemi",
       "country": "GE",
       "city": "",
@@ -6441,7 +5196,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ბეუმა",
+      "company": "Beuma",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -6456,7 +5211,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ციტადელი",
+      "company": "Citadeli",
       "name_en": "Citadeli",
       "country": "GE",
       "city": "",
@@ -6471,7 +5226,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "თერმოინდუსტრია",
+      "company": "Thermoindustria",
       "name_en": "Thermoindustria",
       "country": "GE",
       "city": "",
@@ -6501,7 +5256,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "რონიქსი",
+      "company": "Ronix",
       "name_en": "Ronix",
       "country": "GE",
       "city": "",
@@ -6516,7 +5271,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ნოვა",
+      "company": "Nova",
       "name_en": "Nova",
       "country": "GE",
       "city": "",
@@ -6531,7 +5286,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "რითეილერ",
+      "company": "Retailer",
       "name_en": "Retailer",
       "country": "GE",
       "city": "",
@@ -6561,22 +5316,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Bosch",
-      "name_en": "Bosch",
-      "country": "GE",
-      "city": "",
-      "role": "hardware shop",
-      "product_key": "construction-buyer",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.7562258,
-      "lon": 44.7786101,
-      "needs_enrichment": true
-    },
-    {
-      "company": "ომაქს",
+      "company": "Omax",
       "name_en": "Omax",
       "country": "GE",
       "city": "",
@@ -6591,7 +5331,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ენერჯი",
+      "company": "Energe",
       "name_en": "Energe",
       "country": "GE",
       "city": "",
@@ -6606,22 +5346,22 @@
       "needs_enrichment": false
     },
     {
-      "company": "სამშენებლო მასალების ბაზა",
+      "company": "Base of building materials",
       "name_en": "Base of building materials",
       "country": "GE",
-      "city": "ბორჯომი",
+      "city": "Borjomi",
       "role": "hardware shop",
       "product_key": "construction-buyer",
       "sport": "",
       "phone": "+995 598 20 40 70",
       "website": "",
-      "street": "თორის ქუჩა 18ა",
+      "street": "Toris Kucha 18a",
       "lat": 41.8453362,
       "lon": 43.4099532,
       "needs_enrichment": false
     },
     {
-      "company": "სამშენებლო მასალების ბაზა \"ტეხასი\"",
+      "company": "Building Materials Base \"Texas\"",
       "name_en": "Building Materials Base \"Texas\"",
       "country": "GE",
       "city": "",
@@ -6636,7 +5376,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "საგა",
+      "company": "Saga",
       "name_en": "Saga",
       "country": "GE",
       "city": "",
@@ -6651,7 +5391,22 @@
       "needs_enrichment": true
     },
     {
-      "company": "ელექტრონი",
+      "company": "Boshi",
+      "name_en": "",
+      "country": "GE",
+      "city": "",
+      "role": "hardware shop",
+      "product_key": "construction-buyer",
+      "sport": "",
+      "phone": "",
+      "website": "",
+      "street": "",
+      "lat": 41.7406183,
+      "lon": 44.7720057,
+      "needs_enrichment": true
+    },
+    {
+      "company": "Elektroni",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -6681,22 +5436,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Ronix",
-      "name_en": "",
-      "country": "GE",
-      "city": "",
-      "role": "hardware shop",
-      "product_key": "construction-buyer",
-      "sport": "",
-      "phone": "",
-      "website": "",
-      "street": "",
-      "lat": 41.6822897,
-      "lon": 44.8532938,
-      "needs_enrichment": true
-    },
-    {
-      "company": "საწყობი #1",
+      "company": "Satsqobi #1",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -6726,7 +5466,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Изготовление памятников",
+      "company": "Изготовление Памятников",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -6756,7 +5496,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "Building materials, plumbing",
+      "company": "Building Materials, Plumbing",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -6771,7 +5511,7 @@
       "needs_enrichment": false
     },
     {
-      "company": "M House სანტექნიკა",
+      "company": "M House Santeknika",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -6786,7 +5526,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "ბარანტი მდ",
+      "company": "Baranti Md",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -6801,7 +5541,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "სან-ტექ",
+      "company": "San-Tek",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -6816,7 +5556,7 @@
       "needs_enrichment": true
     },
     {
-      "company": "თუნსა",
+      "company": "Tunsa",
       "name_en": "",
       "country": "GE",
       "city": "",
@@ -6846,10 +5586,10 @@
       "needs_enrichment": true
     },
     {
-      "company": "პეპელა (შპალერის მაღაზია)",
+      "company": "Pepela",
       "name_en": "Pepela",
       "country": "GE",
-      "city": "თბილისი",
+      "city": "Tbilisi",
       "role": "hardware shop",
       "product_key": "construction-buyer",
       "sport": "",
@@ -6861,16 +5601,16 @@
       "needs_enrichment": true
     },
     {
-      "company": "ქებული",
+      "company": "Kebuli",
       "name_en": "Kebuli",
       "country": "GE",
-      "city": "თბილისი",
+      "city": "Tbilisi",
       "role": "hardware shop",
       "product_key": "construction-buyer",
       "sport": "",
       "phone": "",
       "website": "",
-      "street": "ეთერ ბოცვაძის ქუჩა 2",
+      "street": "Eter Botsvadzis Kucha 2",
       "lat": 41.7840969,
       "lon": 44.779692,
       "needs_enrichment": true

@@ -31,6 +31,9 @@ import urllib.parse
 import urllib.request
 import http.cookiejar
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from geo_en import cpv_en, geo_to_en  # noqa: E402
+
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(BASE, "docs", "research", "ge_tenders.json")
 
@@ -147,6 +150,9 @@ def run():
             pkey, how = classify(r)
             if pkey:
                 r.pop("_text", None)
+                r["buyer"] = geo_to_en(r["buyer"])
+                r["cpv_desc"] = cpv_en(r["cpv"]) or geo_to_en(r["cpv_desc"])
+                r["status"] = geo_to_en(r.get("status", ""))
                 r["product_key"] = pkey
                 r["matched_by"] = how
                 r["dest_country"] = "GE"

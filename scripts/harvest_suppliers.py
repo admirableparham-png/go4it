@@ -19,8 +19,12 @@ import html
 import json
 import os
 import re
+import sys
 import time
 import urllib.request
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from geo_en import fa_translit  # noqa: E402
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(BASE, "docs", "research", "suppliers_uae_iran.json")
@@ -126,11 +130,13 @@ def harvest_iran(max_pages=4):
             if cid in seen:
                 continue
             seen.add(cid)
-            name = html.unescape(nm.group(1)).strip()
+            raw_name = html.unescape(nm.group(1)).strip()
             loc = re.search(r'موقعیت[:：]?\s*(?:</?\w+>)?\s*([^<\n]{2,30})', it)
-            city = loc.group(1).strip() if loc else ""
-            blob = (name + " " + it).lower()
+            raw_city = loc.group(1).strip() if loc else ""
+            blob = (raw_name + " " + it).lower()
             is_rubber = any(t.lower() in blob for t in IR_RUBBER_TERMS)
+            name = fa_translit(raw_name)                    # -> Latin display name
+            city = fa_translit(raw_city)
             suppliers.append({
                 "company": name, "country": "IR", "city": city, "location": city,
                 "phones": [], "company_id": cid,

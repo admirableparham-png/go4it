@@ -1,365 +1,278 @@
 Type,Product,Company/Buyer,Country,City,Phone,Website,Detail
-GE tender,Rubber tiles (gym / outdoor),კასპის მუნიციპალიტეტი,GE,,,,MRS260044354 | deadline 03.08.2026 13:00 | CPV 37400000
-GE tender,Rubber tiles (gym / outdoor),ნინოწმინდის მუნიციპალიტეტის მერია,GE,,,,MRS260044277 | deadline 31.07.2026 14:30 | CPV 37400000
-GE tender,Rubber tiles (gym / outdoor),გორის მუნიციპალიტეტის სპორტის განვითარებისა და ხელშეწყობის სააგენტო,GE,,,,MRS260044249 | deadline 03.08.2026 12:00 | CPV 37400000
-GE tender,Rubber tiles (gym / outdoor),მარტვილის მუნიციპალიტეტის მერია,GE,,,,MRS260044109 | deadline 31.07.2026 15:00 | CPV 37400000
-GE tender,Rubber tiles (gym / outdoor),ბათუმის შოთა რუსთაველის სახელმწიფო უნივერსიტეტი,GE,,,,MRS260044091 | deadline 03.08.2026 15:00 | CPV 37400000
-GE tender,Rubber tiles (gym / outdoor),ა(ა)იპ ბათუმის სპორტული ცენტრი,GE,,,,MRS260044077 | deadline 31.07.2026 12:00 | CPV 37400000
-GE tender,Rubber tiles (gym / outdoor),ქარელის მუნიციპალიტეტი,GE,,,,MRS260044061 | deadline 31.07.2026 12:00 | CPV 37400000
-GE venue,Rubber tiles (buyer),ასპრია,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),BLUE FITNES,GE,,,,gym / fitness centre
+GE tender,Rubber tiles (gym / outdoor),Kaspis Municipality,GE,,,,MRS260044354 | deadline 03.08.2026 13:00 | CPV 37400000
+GE tender,Rubber tiles (gym / outdoor),Ninotsmindis Municipality City Hall,GE,,,,MRS260044277 | deadline 31.07.2026 14:30 | CPV 37400000
+GE tender,Rubber tiles (gym / outdoor),Goris Municipality Sport Development And Support Agency,GE,,,,MRS260044249 | deadline 03.08.2026 12:00 | CPV 37400000
+GE venue,Rubber tiles (buyer),Aspria,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Blue Fitnes,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),"Ambrolauri municipality NNJP wrestling club ""Falavani""",GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),სპორტ დარბაზი,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),აუზი,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),სპარტა ფიტნესი,GE,,+995 598 55 56 70,,gym / fitness centre
-GE venue,Rubber tiles (buyer),სპორტული დარბაზი,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),იოგას სახლი,GE,,+995 551 11 52 88,https://www.yoga.ge/,gym / fitness centre
-GE venue,Rubber tiles (buyer),ჩემპიონთა აკადემია,GE,,,https://champ.ge/,gym / fitness centre
+GE venue,Rubber tiles (buyer),Sport Darbazi,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Pool - Ausi,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Sparta Fitness,GE,,+995 598 55 56 70,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Sport Hall,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Yoga House,GE,,+995 551 11 52 88,https://www.yoga.ge/,gym / fitness centre
+GE venue,Rubber tiles (buyer),Champions Academy,GE,,,https://champ.ge/,gym / fitness centre
 GE venue,Rubber tiles (buyer),City Fitness,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),ჰარდ ვეი,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),hard way,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),World Feetness,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),სპარტა,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),ენერჯიმი,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),ოკტოპუს ფიტნეს კლუბი,GE,,+995 32 230 18 88,https://www.oktopus.ge,gym / fitness centre
+GE venue,Rubber tiles (buyer),Sparta,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Energym,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Oktopus Fitness Club,GE,,+995 32 230 18 88,https://www.oktopus.ge,gym / fitness centre
 GE venue,Rubber tiles (buyer),Fit Line,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),პაუერ მაქს,GE,,+995 599 97 74 80,https://powermax.ge,gym / fitness centre
-GE venue,Rubber tiles (buyer),აკვა ცენტრი და ფიტნესი,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Power Max,GE,,+995 599 97 74 80,https://powermax.ge,gym / fitness centre
+GE venue,Rubber tiles (buyer),Aqua Centre & Fitness,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Snap-Fitness,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),მატა ფიტნესი,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Mata Fitness,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Olympia Fitness Club,GE,,+995 555 88 20 20,,gym / fitness centre
-GE venue,Rubber tiles (buyer),წრე,GE,,+995 32 214 90 06,,gym / fitness centre
-GE venue,Rubber tiles (buyer),საკემატა ფიტნესი,GE,თბილისი,+995 32 219 55 11,https://www.sakematafitness.ge/ka,gym / fitness centre
+GE venue,Rubber tiles (buyer),Tsre,GE,,+995 32 214 90 06,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Sakemata Fitness,GE,Tbilisi,+995 32 219 55 11,https://www.sakematafitness.ge/ka,gym / fitness centre
 GE venue,Rubber tiles (buyer),Underground Gym,GE,,,https://www.facebook.com/UndegroundGym/,gym / fitness centre
 GE venue,Rubber tiles (buyer),Tbilisi yoga villa,GE,,,https://tbilisiyoga.com/en/villa,gym / fitness centre
-GE venue,Rubber tiles (buyer),თბილისი იოგა ლოფტი,GE,,,https://tbilisiyoga.com/en/loft,gym / fitness centre
+GE venue,Rubber tiles (buyer),Tbilisi Yoga Loft,GE,,,https://tbilisiyoga.com/en/loft,gym / fitness centre
 GE venue,Rubber tiles (buyer),BFA Gym,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),ლევიოსა მოძრაობის სივრცე,GE,,,https://www.facebook.com/leviosamovelab/about,gym / fitness centre
-GE venue,Rubber tiles (buyer),თიდანი +,GE,,,https://tidanigym.ge/,gym / fitness centre
-GE venue,Rubber tiles (buyer),იოგავილი,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),დინამიკა,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),ასპრია ფიტნესი,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),სნეპ,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Leviosa,GE,,,https://www.facebook.com/leviosamovelab/about,gym / fitness centre
+GE venue,Rubber tiles (buyer),Tidani +,GE,,,https://tidanigym.ge/,gym / fitness centre
+GE venue,Rubber tiles (buyer),Yogawill,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Dynamic,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Aspria Fitness,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Snap,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Stay Strong,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Reform,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),Flow Studio,GE,თბილისი,+995 551 58 87 50,https://fitbase.io/,gym / fitness centre
-GE venue,Rubber tiles (buyer),პრაიმ ფიტი,GE,,+995 32 200 21 77,https://primefit.ge/,gym / fitness centre
-GE venue,Rubber tiles (buyer),მატრიქს ფიტნესი,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Flow Studio,GE,Tbilisi,+995 551 58 87 50,https://fitbase.io/,gym / fitness centre
+GE venue,Rubber tiles (buyer),Prime Fit,GE,,+995 32 200 21 77,https://primefit.ge/,gym / fitness centre
+GE venue,Rubber tiles (buyer),Matrix Fitness,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Galileo,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),ტონუსი,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),პაუერ მაქსი,GE,,+995 599 97 74 80,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Tonusi,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Yoga Studio 9,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),პილატეს თბილისი,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Pilates Tbilisi,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Sative,GE,,+995 32 219 44 05,https://sative.space/,gym / fitness centre
 GE venue,Rubber tiles (buyer),Gymnasia,GE,,,https://gymnasia.ge/,gym / fitness centre
 GE venue,Rubber tiles (buyer),Warriors,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),Ringside Institute,GE,თბილისი,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),მუვ ქლაბი,GE,თბილისი,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),იმოძრავე,GE,,+995 555 17 03 97,,gym / fitness centre
-GE venue,Rubber tiles (buyer),მამბერი ფიტნესი,GE,თბილისი,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Ringside Institute,GE,Tbilisi,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Move Club,GE,Tbilisi,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Imodzrave,GE,,+995 555 17 03 97,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Mamber Fitness,GE,Tbilisi,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Snap Fitness,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),Energym,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),საკემატა,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),მფჯ,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Sakemata,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),MFG,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Absolute,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),ტროა ფიტნეს,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Troy Fitness,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Reformer,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),My Baby Pool & Gym,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Gladiator Fitness,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),რულ ფიტნეს,GE,,+995 557 70 45 55,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Rule Fitness,GE,,+995 557 70 45 55,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Evo Gym,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),PilatesBatumi,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Pilatesbatumi,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Elastic Fit Space,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Global Fitness,GE,,+995 591 06 04 25,,gym / fitness centre
-GE venue,Rubber tiles (buyer),ზენიტი,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),ბლისს იოგა,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),ლიონ ფიტნეს პრო,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),Heyday home / yoga studio,GE,,,https://heyday-home.com/,gym / fitness centre
+GE venue,Rubber tiles (buyer),Zenith,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Bliss Yoga,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Lion Fitness Pro,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Heyday Home / Yoga Studio,GE,,,https://heyday-home.com/,gym / fitness centre
 GE venue,Rubber tiles (buyer),Hard Gym,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Colosseum Gym,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Mega Gym Fitness Batumi,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),სნაპ ფიტნესი,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),360⁰,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),BI Fitness,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),რეფორმა,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Bi Fitness,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),GYM13,GE,,+995 511 13 13 78,https://www.gym13.ge/,gym / fitness centre
 GE venue,Rubber tiles (buyer),Iron Viking,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Iviko's Cage,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),ფიტნესი - Club 407,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Club 407,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Pro Fitness,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),თვინს,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Twins,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),K2,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),ელიფსი,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Ellipse,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),"Fitness Club ""Mtieli""",GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),პროფიტნესი,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),ფორმატ ფიტ,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),ProFitness,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Format Fit,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Stronger,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),სოლო ფიტნესი,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Solo Fitness,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),World Class Georgia,GE,,+995 32 291 48 88,,gym / fitness centre
-GE venue,Rubber tiles (buyer),CycleO2 cycle&fitness,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),მანდალა,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Cycleo2 Cycle&Fitness,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Mandala,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Rituals,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),Power Max,GE,თბილისი,+995 599 97 74 80,https://powermax.ge/,gym / fitness centre
-GE venue,Rubber tiles (buyer),Fit formula,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Fit Formula,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),X Area,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),Goal Fitness,GE,ბათუმი,+995 555 00 50 90,,gym / fitness centre
-GE venue,Rubber tiles (buyer),ლოტუსი,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),გოუ ფიტნეს,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),მატრიქსი,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),ფიტნეს ზონა,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Goal Fitness,GE,Batumi,+995 555 00 50 90,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Lotus,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Go Fitness,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Matriksi,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Fitness Zone,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Ultraform,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),Gold's Gym,GE,თბილისი,+995 597 11 71 17,https://goldsgym.ge,gym / fitness centre
+GE venue,Rubber tiles (buyer),Gold'S Gym,GE,Tbilisi,+995 597 11 71 17,https://goldsgym.ge,gym / fitness centre
 GE venue,Rubber tiles (buyer),Marpha,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Valhalla,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Laboratory,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),კლუბი,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),საჭიდაო დარბაზი,GE,,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),სპორტ თაიმი,GE,თბილისი,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),ფიტნეს დარბაზი,GE,ქარელი,,,gym / fitness centre
-GE venue,Rubber tiles (buyer),ოკტოპუს,GE,,+995 32 230 18 88,https://www.oktopus.ge,gym / fitness centre
+GE venue,Rubber tiles (buyer),Clubi,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Sachidao Darbazi,GE,,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Sport Time,GE,Tbilisi,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Fitnes Darbazi,GE,Kareli,,,gym / fitness centre
+GE venue,Rubber tiles (buyer),Oktopus,GE,,+995 32 230 18 88,https://www.oktopus.ge,gym / fitness centre
 GE venue,Rubber tiles (buyer),12 Rounds Boxing Club,GE,,,,gym / fitness centre
 GE venue,Rubber tiles (buyer),Chess House,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),გურამ თიკანაძის სახელობის სპორტული კომპლექსი (Latali Sports Complex of Guram Tikanadze),GE,,,,sports centre
-GE venue,Rubber tiles (buyer),სპორტული სკოლა,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),Къахпортийы федераци,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Latali Sports Complex of Guram Tikanadze,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Sport School,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Republic of South Ossetia Football Federation,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Sports School,GE,,,,sports centre
 GE venue,Rubber tiles (buyer),Tsageri Sports School,GE,,,,sports centre
 GE venue,Rubber tiles (buyer),Tennis Courts Administration,GE,,,,sports centre
 GE venue,Rubber tiles (buyer),Telavi Tennis Courts,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),Cultural and Sport Centre,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),Тедеты Дзамболаты номыл хъæбысхæсты скъола,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),საქართველოს კიოკუშინის ფედერაცია,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),Royal Art - The School of Champions,GE,თბილისი,+995 593 64 87 48,https://www.facebook.com/RoyalArtStudio,sports centre
-GE venue,Rubber tiles (buyer),ვაკის საცურაო აუზი,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),ურბან გარდენი,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Cultural And Sport Centre,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Тедеты Дзамболаты Номыл Хъæбысхæсты Скъола,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Georgian Kyokushin Federation,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Royal Art - The School Of Champions,GE,Tbilisi,+995 593 64 87 48,https://www.facebook.com/RoyalArtStudio,sports centre
+GE venue,Rubber tiles (buyer),Vake Swimming Pool,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Urban Garden,GE,,,,sports centre
 GE venue,Rubber tiles (buyer),Boxing Hall,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),ვაკის საცოცი დარბაზი,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Vake Climbing Gym,GE,,,,sports centre
 GE venue,Rubber tiles (buyer),Тир,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),სითი ფიტნესი,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),აკაკი კაკაურიძის სახელობის N18 კრივის სპორტული სკოლა,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),"Climbing sectors ""Game Zone"", ""+18"", ""Kovida"", ""ATA"" of climbing area ""Sveri""",GE,,,https://climbing.ge/outdoor/Climbing_In_Sveri(Chiatura),sports centre
-GE venue,Rubber tiles (buyer),Arsha climbing sector,GE,,,https://www.thecrag.com/climbing/georgia/area/1347465513,sports centre
-GE venue,Rubber tiles (buyer),"Climbing sector ""Drakula"" of climbing area ""Borjomi""",GE,,,,sports centre
-GE venue,Rubber tiles (buyer),"Climbing sector ""Mzetamze"" in climbing area ""Borjomi""",GE,,,,sports centre
-GE venue,Rubber tiles (buyer),"Climbing sector ""Petcho' of climbing area ""Borjomi""",GE,,,,sports centre
-GE venue,Rubber tiles (buyer),"Climbing sector ""Q'veli' of climbing area ""Borjomi""",GE,,,,sports centre
-GE venue,Rubber tiles (buyer),"Climbing sector ""Lake"" of climbing area ""Sveri""",GE,,,https://www.thecrag.com/en/climbing/georgia/area/1344555015,sports centre
-GE venue,Rubber tiles (buyer),"სვერის ""ვია ფერატა""",GE,,,,sports centre
-GE venue,Rubber tiles (buyer),იმედი,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),ლედი სტრეჩი,GE,,+995 591 28 86 82,https://ladystretching.com/tbilisi,sports centre
-GE venue,Rubber tiles (buyer),ბლექ სი,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),მძლეოსნობის სასახლე,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Akaki Kakauridze Boxing Sport School #18,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),"Climbing Sectors ""Game Zone"", ""+18"", ""Kovida"", ""Ata"" Of Climbing Area ""Sveri""",GE,,,https://climbing.ge/outdoor/Climbing_In_Sveri(Chiatura),sports centre
+GE venue,Rubber tiles (buyer),Arsha Climbing Sector,GE,,,https://www.thecrag.com/climbing/georgia/area/1347465513,sports centre
+GE venue,Rubber tiles (buyer),"Climbing Sector ""Drakula"" Of Climbing Area ""Borjomi""",GE,,,,sports centre
+GE venue,Rubber tiles (buyer),"Climbing Sector ""Mzetamze"" In Climbing Area ""Borjomi""",GE,,,,sports centre
+GE venue,Rubber tiles (buyer),"Climbing Sector ""Petcho' Of Climbing Area ""Borjomi""",GE,,,,sports centre
+GE venue,Rubber tiles (buyer),"Climbing Sector ""Q'Veli' Of Climbing Area ""Borjomi""",GE,,,,sports centre
+GE venue,Rubber tiles (buyer),"Climbing Sector ""Lake"" Of Climbing Area ""Sveri""",GE,,,https://www.thecrag.com/en/climbing/georgia/area/1344555015,sports centre
+GE venue,Rubber tiles (buyer),"""Sveri Via Ferrata"" of climbing area ""Sveri""",GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Imedi,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Lady Stretch,GE,,+995 591 28 86 82,https://ladystretching.com/tbilisi,sports centre
+GE venue,Rubber tiles (buyer),Black Sea,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Mdzleosnobis Sasakhle,GE,,,,sports centre
 GE venue,Rubber tiles (buyer),Lazer Lounge,GE,,,https://lazerlounge.ge/eng,sports centre
-GE venue,Rubber tiles (buyer),СК Агузерский,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),ДЮШС,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),კრივის სკოლა,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),Splash Abashidze,GE,თბილისი,+995 598 14 88 88,,sports centre
+GE venue,Rubber tiles (buyer),Ск Агузерский,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Дюшс,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Boxing School,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Splash Abashidze,GE,Tbilisi,+995 598 14 88 88,,sports centre
 GE venue,Rubber tiles (buyer),Deadpool,GE,,,,sports centre
 GE venue,Rubber tiles (buyer),Karda Gaming,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),საჭყუმპალაო,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),ქირიას საბრძოლო ხელოვნების აკადემია,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),12 რაუმდი ბოქსის კლუბი,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),საცურაო აუზი „დინამო“,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),მურად ჭიჭინაძის სახელობის სკვერი,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),Padel Port Batumi,GE,ბათუმი,+995 577 30 88 72,https://padel-port-batumi2.reservio.com,sports centre
-GE venue,Rubber tiles (buyer),Спортивная база,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),underground,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),თბილისის სპორტის სასახლე,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),არენა II,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),ოლიმპიკი,GE,,,https://olympic.ge,sports centre
-GE venue,Rubber tiles (buyer),არენა I,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),ვერის საკალათბურთო დარბაზი,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),ძიუდოს კლუბი “ჯორჯია”,GE,თბილისი,+995 599 93 38 97,,sports centre
-GE venue,Rubber tiles (buyer),გლდანი-ნაძალადევის კომპლექსური სპორტული ცენტრი,GE,ზღვისუბანის მე-11 მიკრო რაიონი / მე-3 კვარტალი,+995 32 224 03 04,,sports centre
-GE venue,Rubber tiles (buyer),ხელბურთის ეროვნული სკოლა,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Sachqumpalao,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Kiria's Martial Arts Academy,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),"Swimming Pool ""Dinamo""",GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Murad Chichinadze Square,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Padel Port Batumi,GE,Batumi,+995 577 30 88 72,https://padel-port-batumi2.reservio.com,sports centre
+GE venue,Rubber tiles (buyer),Спортивная База,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Underground,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Tbilisi Sports Palace,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Arena 2,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Olympic,GE,,,https://olympic.ge,sports centre
+GE venue,Rubber tiles (buyer),Arena 1,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Vere Basketball Palace,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),"Judo Club ""Georgia""",GE,Tbilisi,+995 599 93 38 97,,sports centre
+GE venue,Rubber tiles (buyer),Gldani-Nadzaladevi Sport Complex,GE,Zghvisubanis Me-11 Mikro Raioni / Me-3 Kvartali,+995 32 224 03 04,,sports centre
+GE venue,Rubber tiles (buyer),Khelburtis Erovnuli Skola,GE,,,,sports centre
 GE venue,Rubber tiles (buyer),Neptune Sport Complex,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),სპორტის სასახლე,GE,ქუთაისი,,,sports centre
-GE venue,Rubber tiles (buyer),ქუთაისის ტორპედოს ბაზა,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),სპორტ-კომპლექსი მართვე (Martve),GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Kutaisi Sports Palace,GE,Kutaisi,,,sports centre
+GE venue,Rubber tiles (buyer),Torpedo Training Center,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Martve,GE,,,,sports centre
 GE venue,Rubber tiles (buyer),Sagarejo Sports School,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),Sport Centre of Senaki,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Sport Centre Of Senaki,GE,,,,sports centre
 GE venue,Rubber tiles (buyer),Wrestling Playground,GE,,,,sports centre
 GE venue,Rubber tiles (buyer),Didi Plevi Wrestling Arena,GE,,,,sports centre
 GE venue,Rubber tiles (buyer),Khovle Wrestling Arena,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),ცენტრალური სტადიონი (Central Stadium),GE,,,,sports centre
-GE venue,Rubber tiles (buyer),რუსთავი არენა,GE,რუსთავი,,,sports centre
-GE venue,Rubber tiles (buyer),ქიმიკოსთა სპორტული კომპლექსი,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),გლდანის ახალი საცურაო აუზი,GE,თბილისი,,,sports centre
-GE venue,Rubber tiles (buyer),Ареспубликатә Стадион,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),Стадион им. Виталия Дараселия,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),Стадион ФК Киараз,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Central Stadium,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Rustavi Arena,GE,Rustavi,,,sports centre
+GE venue,Rubber tiles (buyer),Kimikosta Sports Complex,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Gldani-Nadzaladevi Sports Complex,GE,Tbilisi,,,sports centre
+GE venue,Rubber tiles (buyer),Republican Stadium,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Vitaly Daraseliya Stadium,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Стадион Фк Киараз,GE,,,,sports centre
 GE venue,Rubber tiles (buyer),City Sport,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),ლეილა მესხის სახელობის საჩოგბურთო კომპლექსი,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),ლისის ტბის იპოდრომი,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Leila Meskhi Courts,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Lisi Lake Hippodrome,GE,,,,sports centre
 GE venue,Rubber tiles (buyer),Marina Hotel Swimming Pool,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),ლერი ნაკანის სახელობის მესტიის სპორტული კომპლექსი,GE,მესტია,,,sports centre
-GE venue,Rubber tiles (buyer),საცურაო აუზი,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),"Дворец спорта ""Олимп""",GE,,,,sports centre
-GE venue,Rubber tiles (buyer),დინამოს აკადემია,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),მულახის სპორტული კომპლექსი,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),"დინამო ბათუმის ბაზა ""ანგისა""",GE,ბათუმი,,,sports centre
-GE venue,Rubber tiles (buyer),საქართველოს ოლიმპიური რეზერვების მზადების ეროვნული ცენტრი,GE,თბილისი,+995 32 268 79 30,https://www.olympiccentre.ge/,sports centre
-GE venue,Rubber tiles (buyer),სპორტული კომპლექსი შატილი,GE,თბილისი,,,sports centre
+GE venue,Rubber tiles (buyer),Leri Nakani Mestia Sports Complex,GE,Mestia,,,sports centre
+GE venue,Rubber tiles (buyer),Satsurao Auzi,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),"Дворец Спорта ""Олимп""",GE,,,,sports centre
+GE venue,Rubber tiles (buyer),FC Dinamo Accademy,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Mulakhi's Sports Complex,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),"Dinamo Batumi Base ""Angisa""",GE,Batumi,,,sports centre
+GE venue,Rubber tiles (buyer),Olympic Reserve Training National Centre,GE,Tbilisi,+995 32 268 79 30,https://www.olympiccentre.ge/,sports centre
+GE venue,Rubber tiles (buyer),Sportuli Kompleksi Shatili,GE,Tbilisi,,,sports centre
 GE venue,Rubber tiles (buyer),Fitness Plaza Gym,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),ფრენბურთის არენა,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),ტანვარჯიშის არენა,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),NoNa Veterans Club,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),ოლიმპიური სასახლე,GE,თბილისი,,,sports centre
-GE venue,Rubber tiles (buyer),სპორტსკოლა,GE,ქუთაისი,,,sports centre
-GE venue,Rubber tiles (buyer),"""აია"" არენა",GE,,,,sports centre
-GE venue,Rubber tiles (buyer),რაგბის სტადიონი,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),საქართველოს ფეხბურთის ფედერაციის აკადემია,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),"რაგბის სტადიონი ""კავკასიონი""",GE,თელავი,,,sports centre
-GE venue,Rubber tiles (buyer),აქვა ბეიბი,GE,გორი,,,sports centre
-GE venue,Rubber tiles (buyer),ალექსანდრე მეტრეველის სახელობის საჩოგბურთო კომპლექსი,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),ხელვაჩაურის სასპორტო სკოლა,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),თბილისი არენა,GE,თბილისი,,,sports centre
-GE venue,Rubber tiles (buyer),ფოთის საცურაო აუზი,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),მუხრან ვახტანგაძის ბათუმის სპორტის სასახლე,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),ოზუეგეთის სპორტული სკოლა,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),ფიგურული სრიალის ცენტრი,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),სპორტკომპლექსი,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),ხვამლი არენა,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),"აკაკი წერეთლის სახელობის სახელმწიფო უნივერსიტეტი, კორპუსი VI",GE,ქუთაისი,,,sports centre
-GE venue,Rubber tiles (buyer),"Climbing area Botanical Garden, Tbilisi",GE,,,https://www.thecrag.com/en/climbing/georgia/tbilisi,sports centre
-GE venue,Rubber tiles (buyer),"Climbing sector ""Office"" of climbing area ""Katskhi""",GE,,,https://www.thecrag.com/en/climbing/georgia/area/7568181576,sports centre
-GE venue,Rubber tiles (buyer),"Climbing sector ""Gulo"" of climbing area ""Katskhi""",GE,,,https://www.thecrag.com/en/climbing/georgia/area/7569062847,sports centre
-GE venue,Rubber tiles (buyer),"Climbing sector ""Bazi"" of climbing area ""Katskhi""",GE,,,https://www.thecrag.com/en/climbing/georgia/area/7569021021,sports centre
-GE venue,Rubber tiles (buyer),"Climbing sector ""Cave"" of climbing area ""Katskhi""",GE,,,https://www.thecrag.com/en/climbing/georgia/area/1346810898,sports centre
-GE venue,Rubber tiles (buyer),"Climbing sector ""Ozzy"" of climbing area ""Katskhi""",GE,,,https://www.thecrag.com/en/climbing/georgia/area/7578216348,sports centre
-GE venue,Rubber tiles (buyer),"Climbing sector ""Canyon"" of climbing area ""Katskhi""",GE,,,https://www.thecrag.com/en/climbing/georgia/area/1346810952,sports centre
-GE venue,Rubber tiles (buyer),"Climbing sector ""Tsunami"" of climbing area ""Katskhi""",GE,,,https://www.thecrag.com/en/climbing/georgia/area/7568181576,sports centre
-GE venue,Rubber tiles (buyer),"Climbing sector ""Dano"" of climbing area ""Katskhi""",GE,,,https://www.thecrag.com/en/climbing/georgia/area/7569459249,sports centre
-GE venue,Rubber tiles (buyer),GymBreeze,GE,,+995 511 43 33 10,,sports centre
-GE venue,Rubber tiles (buyer),საფეხბურთო ცენტრი ნუცუბიძის პლატოზე,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),ბათუმის სპორტული ცენტრი,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),ჭურიის თოკების პარკი,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Volleyball Arena,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Gymnastics Arena,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Nona Veterans Club,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Olympic Palace,GE,Tbilisi,,,sports centre
+GE venue,Rubber tiles (buyer),Aia Arena,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Ragbis Stadioni,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Academy of Georgian Football Federation,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),"Rugby Arena ""Kavkasioni""",GE,Telavi,,,sports centre
+GE venue,Rubber tiles (buyer),Akva Beibi,GE,Gori,,,sports centre
+GE venue,Rubber tiles (buyer),Sportis Sasakhle,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Poti Rugby Stadium,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Alexander Metreveli Tennis Complex,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Khelvachauris Sasporto Skola,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Tbilisi Arena,GE,Tbilisi,,,sports centre
+GE venue,Rubber tiles (buyer),Poti Swimming Pool,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Mukhran Vakhtangadze Batumi Sport Palace,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Ozurgeti Sport School,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Figure Skating Center,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Sportkompleksi,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Khvamli Arena,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),"Akaki Tseretlis Sakhelobis Sakhelmtsifo Universiteti, Korpusi Vi",GE,Kutaisi,,,sports centre
+GE venue,Rubber tiles (buyer),"Climbing Area Botanical Garden, Tbilisi",GE,,,https://www.thecrag.com/en/climbing/georgia/tbilisi,sports centre
+GE venue,Rubber tiles (buyer),"Climbing Sector ""Office"" Of Climbing Area ""Katskhi""",GE,,,https://www.thecrag.com/en/climbing/georgia/area/7568181576,sports centre
+GE venue,Rubber tiles (buyer),"Climbing Sector ""Gulo"" Of Climbing Area ""Katskhi""",GE,,,https://www.thecrag.com/en/climbing/georgia/area/7569062847,sports centre
+GE venue,Rubber tiles (buyer),"Climbing Sector ""Bazi"" Of Climbing Area ""Katskhi""",GE,,,https://www.thecrag.com/en/climbing/georgia/area/7569021021,sports centre
+GE venue,Rubber tiles (buyer),"Climbing Sector ""Cave"" Of Climbing Area ""Katskhi""",GE,,,https://www.thecrag.com/en/climbing/georgia/area/1346810898,sports centre
+GE venue,Rubber tiles (buyer),"Climbing Sector ""Ozzy"" Of Climbing Area ""Katskhi""",GE,,,https://www.thecrag.com/en/climbing/georgia/area/7578216348,sports centre
+GE venue,Rubber tiles (buyer),"Climbing Sector ""Canyon"" Of Climbing Area ""Katskhi""",GE,,,https://www.thecrag.com/en/climbing/georgia/area/1346810952,sports centre
+GE venue,Rubber tiles (buyer),"Climbing Sector ""Tsunami"" Of Climbing Area ""Katskhi""",GE,,,https://www.thecrag.com/en/climbing/georgia/area/7568181576,sports centre
+GE venue,Rubber tiles (buyer),"Climbing Sector ""Dano"" Of Climbing Area ""Katskhi""",GE,,,https://www.thecrag.com/en/climbing/georgia/area/7569459249,sports centre
+GE venue,Rubber tiles (buyer),Gymbreeze,GE,,+995 511 43 33 10,,sports centre
+GE venue,Rubber tiles (buyer),Nutsubidze Plateau Football Centre,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Batumi Sport Center,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Churiis Tokebis Parki,GE,,,,sports centre
 GE venue,Rubber tiles (buyer),Aura,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),Теннисный клуб Akua,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),ერთობა,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Теннисный Клуб Akua,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Unity Club,GE,,,,sports centre
 GE venue,Rubber tiles (buyer),"Climbing sector ""Central""",GE,,,https://27crags.com/crags/dzevri,sports centre
 GE venue,Rubber tiles (buyer),"Climbing sector ""River""",GE,,,https://27crags.com/crags/dzevri,sports centre
 GE venue,Rubber tiles (buyer),"Climbing sector ""Road""",GE,,,https://27crags.com/crags/dzevri,sports centre
-GE venue,Rubber tiles (buyer),"Climbing sector ""Tsikhidziri""",GE,,,https://www.thecrag.com/climbing/georgia/area/7628869776,sports centre
-GE venue,Rubber tiles (buyer),"Climbing sector ""Old Road""",GE,,,https://www.thecrag.com/climbing/georgia/area/7628869776,sports centre
-GE venue,Rubber tiles (buyer),"Climbing sector ""Parking""",GE,,,https://www.thecrag.com/climbing/georgia/area/7628869692,sports centre
-GE venue,Rubber tiles (buyer),"Climbing sector ""Fuel Sation""",GE,,,https://www.thecrag.com/climbing/georgia/area/7628869602,sports centre
+GE venue,Rubber tiles (buyer),"Climbing Sector ""Tsikhidziri""",GE,,,https://www.thecrag.com/climbing/georgia/area/7628869776,sports centre
+GE venue,Rubber tiles (buyer),"Climbing Sector ""Old Road""",GE,,,https://www.thecrag.com/climbing/georgia/area/7628869776,sports centre
+GE venue,Rubber tiles (buyer),"Climbing Sector ""Parking""",GE,,,https://www.thecrag.com/climbing/georgia/area/7628869692,sports centre
+GE venue,Rubber tiles (buyer),"Climbing Sector ""Fuel Sation""",GE,,,https://www.thecrag.com/climbing/georgia/area/7628869602,sports centre
 GE venue,Rubber tiles (buyer),Surebi Off-Road Fest,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),რუსთავის საერთაშორისო მოტოდრომი,GE,,,https://www.rustavi1.com/,sports centre
-GE venue,Rubber tiles (buyer),კუს ტბა პადელი,GE,,,,sports centre
+GE venue,Rubber tiles (buyer),Rustavi International Motorpark,GE,,,https://www.rustavi1.com/,sports centre
+GE venue,Rubber tiles (buyer),Kus Tba Padel,GE,,,,sports centre
 GE venue,Rubber tiles (buyer),Tskaltubo Stadium,GE,,,,sports centre
-GE venue,Rubber tiles (buyer),Tamaz Stepania Stadium,GE,,,,stadium
-GE venue,Rubber tiles (buyer),მიხეილ მესხის სახელობის სტადიონი,GE,,,,stadium
-GE venue,Rubber tiles (buyer),ცენტრალური სტადიონი,GE,,,,stadium
-GE venue,Rubber tiles (buyer),Спартак,GE,,,,stadium
-GE venue,Rubber tiles (buyer),შევარდენის სტადიონი,GE,,,,stadium
-GE venue,Rubber tiles (buyer),Стадион имени Баграмяна,GE,,,,stadium
-GE venue,Rubber tiles (buyer),Гагрский городской стадион имени Даура Ахвледиани,GE,,,,stadium
-GE venue,Rubber tiles (buyer),ევგრაფი შევარდნაძის სტადიონი,GE,,,,stadium
-GE venue,Rubber tiles (buyer),გურჯაანის დავით ყიფიანის სახელობის სტადიონი,GE,,,,stadium
-GE venue,Rubber tiles (buyer),ეროსი მანჯგალაძის სტადიონი,GE,,,,stadium
-GE venue,Rubber tiles (buyer),ფაზისი,GE,,,,stadium
-GE venue,Rubber tiles (buyer),აჭარაბეთ არენა,GE,,,,stadium
-GE venue,Rubber tiles (buyer),Cтадион «Динамо»,GE,,,,stadium
-GE venue,Rubber tiles (buyer),თერჯოლის საპოვნელა,GE,,,,stadium
-GE venue,Rubber tiles (buyer),Megobroba Stadium,GE,,,,stadium
-GE venue,Rubber tiles (buyer),BAIA stadium,GE,,,,stadium
-GE venue,Rubber tiles (buyer),გრიგოლ ნიკოლეიშვილის სტადიონი,GE,,,,stadium
-GE venue,Rubber tiles (buyer),ჭიათურის თემურ მაღრაძის სახელობის სტადიონი,GE,,,,stadium
-GE venue,Rubber tiles (buyer),Mikheil Iadze Stadium,GE,,,,stadium
-GE venue,Rubber tiles (buyer),რუსთავის რაგბის სტადიონი,GE,,,,stadium
-GE venue,Rubber tiles (buyer),"სტადიონი ""ავჩალა""",GE,,,,stadium
-GE venue,Rubber tiles (buyer),დავით აბაშიძის სტადიონი,GE,,,,stadium
-GE venue,Rubber tiles (buyer),ზედა ალისუბნის სკოლის საფეხბურთო მოედანი,GE,,,,stadium
-GE venue,Rubber tiles (buyer),ჯემალ ზეინკლიშვილის სტადიონი,GE,,,,stadium
-GE venue,Rubber tiles (buyer),სპაერი,GE,,,,stadium
-GE venue,Rubber tiles (buyer),Tqwarchal Stadium,GE,,,,stadium
-GE venue,Rubber tiles (buyer),Центральный стадион,GE,,,,stadium
-GE venue,Rubber tiles (buyer),ფოლადის სტადიონი,GE,,,,stadium
-GE venue,Rubber tiles (buyer),რამაზ შენგელიას სტადიონი,GE,,,,stadium
-GE venue,Rubber tiles (buyer),ბორის პაიჭაძის სახელობის დინამო არენა,GE,თბილისი,+995 32 218 26 27;+995 32 218 27 26,,stadium
-GE venue,Rubber tiles (buyer),თენგიზ ბურჯანაძის სტადიონი,GE,,,,stadium
 GE venue,Rubber tiles (buyer),Paragliding launch Tbilisi Sea,GE,,,,sports pitch
 GE venue,Rubber tiles (buyer),Paragliding Mestia Launch,GE,,,,sports pitch
 GE venue,Rubber tiles (buyer),Padel Island Lisi,GE,,+995 511 13 35 51,https://www.padelisland.ge,sports pitch
-GE venue,Rubber tiles (buyer),padelbade,GE,,,https://padelbade.com,sports pitch
-GE venue,Rubber tiles (buyer),Padel Academy of Georgia,GE,,+995 599 00 88 55,https://padelacademy.ge,sports pitch
-GE venue,Rubber tiles (buyer),Free table tennis in School,GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),სტადიონი მარაკანა,GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),"სოხუმის ""ცხუმის"" საწვრთნელი ბაზა",GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),ბენდელას სტადიონი,GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),"""ლელო"" არენა",GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),ლისის სტადიონი,GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),Padelbade,GE,,,https://padelbade.com,sports pitch
+GE venue,Rubber tiles (buyer),Padel Academy Of Georgia,GE,,+995 599 00 88 55,https://padelacademy.ge,sports pitch
+GE venue,Rubber tiles (buyer),Free Table Tennis In School,GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),Marakana Stadium,GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),"Traning Ground of FC Sokhumi ""Tskhumi""",GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),Stadium Bendela,GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),"""Lelo"" Arena",GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),Lisi stadium,GE,,,,sports pitch
 GE venue,Rubber tiles (buyer),"Астадион ""Динамо""",GE,Аҟәа,,,sports pitch
 GE venue,Rubber tiles (buyer),Nabaki Stadium,GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),Стадион села Араду (Stadium of Aradu),GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),გურია ლანჩხუთი,GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),როლანდი ისონიას სახელობის სტადიონი (Rolandi Isonia Stadium),GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),ორსანტიის ფეხბურთის მოედანი,GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),ჯონი ბაკურიძის სტადიონი,GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),Теннисный клуб Гагрский,GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),სტადიონი,GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),ვაკის პარკის კორტები,GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),სპორტსქეიფი პადელი,GE,,,https://sportscape.ge,sports pitch
-GE venue,Rubber tiles (buyer),"""ენგურის"" მოედანი",GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),გივი ჩოხელის სტადიონი,GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),IBSU - Soccer field,GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),ტოლდოს სტადიონი,GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),Stadium of Aradu,GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),FC Guria Lanchkhuti,GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),Rolandi Isonia Stadium,GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),Orsantiis Fekhburtis Moedani,GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),Joni Bakuridzis Stadioni,GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),Теннисный Клуб Гагрский,GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),Stadioni,GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),Vake Park Courts,GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),Sportscape Padel,GE,,,https://sportscape.ge,sports pitch
+GE venue,Rubber tiles (buyer),"""Enguris"" Moedani",GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),Givi Chokhelis Stadioni,GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),Ibsu - Soccer Field,GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),Toldos Stadioni,GE,,,,sports pitch
 GE venue,Rubber tiles (buyer),Snow Park,GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),სამტრედიის იპოდრომი,GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),დავით პეტრიაშვილის სტადიონი,GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),ძველი ორხევის სტადიონი,GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),FC Sioni Bolnisi,GE,ბოლნისი (Bolnisi),+995 598 51 06 17,http://www.fcsionibolnisi.com,sports pitch
-GE venue,Rubber tiles (buyer),პარკ არენა,GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),დინამო,GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),მოედანი,GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),ძველი სპორტული მოედანი,GE,,,,sports pitch
-GE venue,Rubber tiles (buyer),Solo_Tu,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),Adidas,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),ლიდერი,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),სპორტ X,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),ოლიმპი,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),World Sport,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),Ikasport,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),მსოფლიო ჩემპიონი,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),ჩემპიონი,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),Aspria Fitness,GE,,+995 32 222 22 38,https://Aspria.ge,sports shop
-GE venue,Rubber tiles (buyer),რიბოკი,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),ნაიკი,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),ადიდასი,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),"Спортивное питание ""Геркулес""",GE,,,,sports shop
-GE venue,Rubber tiles (buyer),Спортмастер,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),ჯომა,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),Sportuli botasebi tuflebi,GE,,+995 593 18 01 40,https://www.facebook.com/New-style-654256704642634/,sports shop
-GE venue,Rubber tiles (buyer),Sportmaster,GE,,+995 591 23 83 88,https://sportmaster.ge,sports shop
-GE venue,Rubber tiles (buyer),Billiard club,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),დელტა სპორტი,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),Macro Sports,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),ჯეო სპორტი,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),ჯიელ სპორტი,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),აჯარა პიკ,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),ესფიიქს,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),Day on Water,GE,,+995 591 00 55 06,https://day-on.ge/,sports shop
-GE venue,Rubber tiles (buyer),ტექნოჯიმ,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),იმპულსი,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),Margo Skateshop,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),Товары для спорта,GE,,,https://www.facebook.com/SportsShopBatumi,sports shop
-GE venue,Rubber tiles (buyer),ტოპსპორტი,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),Fitness House,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),ბალანსი,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),ჯასსპორტი,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),კორნერი,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),Top Sport,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),Jas Sport,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),კემპი,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),NeedShop,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),Toxigen Board Shop,GE,თბილისი,+995 592 18 96 79,https://toxigenlongboards.wixsite.com/shop,sports shop
-GE venue,Rubber tiles (buyer),Open24/7,GE,,+995 599 10 02 91,,sports shop
-GE venue,Rubber tiles (buyer),Geo Home Skate Shop,GE,თბილისი,+995 599 10 02 91,,sports shop
-GE venue,Rubber tiles (buyer),Fitness Frau,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),ლიგა,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),Sportland,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),Runfit,GE,,+995 571 15 54 65,,sports shop
-GE venue,Rubber tiles (buyer),ბურუსპორტი,GE,,,,sports shop
-GE venue,Rubber tiles (buyer),გოუ სპორტი,GE,,,https://go-sport.ge/,sports shop
+GE venue,Rubber tiles (buyer),Samtrediis Ipodromi,GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),Davit Petriashvili Stadium,GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),Orkhevi old stadium,GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),Fc Sioni Bolnisi,GE,Bolnisi (Bolnisi),+995 598 51 06 17,http://www.fcsionibolnisi.com,sports pitch
+GE venue,Rubber tiles (buyer),Park Arena,GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),Marneuli Stadion,GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),Dinamo,GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),Moedani,GE,,,,sports pitch
+GE venue,Rubber tiles (buyer),Dzveli Sportuli Moedani,GE,,,,sports pitch
 Regional RFQ,Cold asphalt (bagged cold-mix),Rizwan is looking for suppliers of road bitumen,KW,"al-Farwaniyah, al-Farwaniyah",,,13 July 2026
 Regional RFQ,Cold asphalt (bagged cold-mix),Yousif Aldarmaki is looking for suppliers of Onduline Color Coated Bitumen Sheet,AE,"Abu Dhabi, Abu Zabi",,,16 June 2026
 UAE supplier,Rubber tiles (gym / outdoor),Global Rubber Industry LLC,AE,,+97165270515,,"Warehouse 34, Al Jurf 2"

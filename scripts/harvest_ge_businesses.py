@@ -16,9 +16,13 @@ as Leads via scripts/load_intel.py.
 """
 import json
 import os
+import sys
 import time
 import urllib.parse
 import urllib.request
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from geo_en import translit_ka  # noqa: E402
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(BASE, "docs", "research", "ge_businesses.json")
@@ -62,11 +66,13 @@ def run():
         named = kept = 0
         for e in els:
             t = e.get("tags", {})
-            name = t.get("name") or t.get("name:en") or t.get("official_name")
-            if not name:
+            raw_name = t.get("name") or t.get("official_name") or t.get("name:en")
+            if not raw_name:
                 continue
             named += 1
-            key = name.strip().lower()
+            # Display name in English: OSM name:en if tagged, else transliterate.
+            name = (t.get("name:en") or translit_ka(raw_name).title()).strip()
+            key = name.lower()
             if key in seen:
                 continue
             seen.add(key)
@@ -74,14 +80,14 @@ def run():
             phone = t.get("phone") or t.get("contact:phone") or t.get("contact:mobile") or ""
             web = t.get("website") or t.get("contact:website") or t.get("url") or ""
             businesses.append({
-                "company": name.strip(),
+                "company": name,
                 "name_en": t.get("name:en", ""),
                 "country": "GE",
-                "city": t.get("addr:city") or t.get("addr:place") or "",
+                "city": translit_ka(t.get("addr:city") or t.get("addr:place") or "").title(),
                 "role": role, "product_key": pkey,
                 "sport": t.get("sport", ""),
                 "phone": phone, "website": web,
-                "street": " ".join(x for x in [t.get("addr:street", ""), t.get("addr:housenumber", "")] if x),
+                "street": translit_ka(" ".join(x for x in [t.get("addr:street", ""), t.get("addr:housenumber", "")] if x)),
                 "lat": e.get("lat") or (e.get("center") or {}).get("lat"),
                 "lon": e.get("lon") or (e.get("center") or {}).get("lon"),
                 "needs_enrichment": not (phone or web),
