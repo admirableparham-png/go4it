@@ -2,18 +2,35 @@
 {% set active = 'uae' %}
 {% block content %}
 
-<div class="flex items-center justify-between mb-1">
-  <h2 class="text-lg font-semibold">UAE buyers &mdash; Decora home-decor range</h2>
+{% macro contact(b) %}
+  {% if b.phones and b.phones[0] %}<a href="tel:{{ b.phones[0] }}" class="text-sky-400 hover:underline">{{ b.phones[0] }}</a>{% endif %}
+  {% if b.email %}{% if b.phones and b.phones[0] %} · {% endif %}<a href="mailto:{{ b.email }}" class="text-sky-400 hover:underline">{{ b.email }}</a>{% endif %}
+  {% if b.website %} · <a href="{{ b.website if '://' in b.website else 'https://' + b.website }}" target="_blank" rel="noopener" class="text-sky-400 hover:underline">site&#8599;</a>{% endif %}
+  {% if not b.phones and not b.email and not b.website %}<span class="text-amber-500/70">enrich</span>{% endif %}
+{% endmacro %}
+
+{% macro card(b) %}
+<div class="rounded-lg border border-slate-800 bg-slate-900/60 p-2.5">
+  <div class="font-medium text-sm truncate">
+    {% if b.website %}<a href="{{ b.website if '://' in b.website else 'https://' + b.website }}" target="_blank" rel="noopener" class="text-sky-300 hover:underline">{{ b.company }}</a>{% else %}{{ b.company }}{% endif %}
+    {% if b.match_score is defined %}<span class="float-right text-[10px] font-bold bg-emerald-500/15 text-emerald-300 rounded px-1.5">{{ b.match_score }}</span>{% endif %}
+  </div>
+  <div class="text-[11px] text-slate-500 truncate">{{ b.categories | join(', ') }} · {{ b.city or 'UAE' }}</div>
+  <div class="text-xs mb-1">{{ contact(b) }}</div>
+  {% if b.buys %}<div class="flex flex-wrap gap-1"><span class="text-[9px] text-slate-500 uppercase mr-1">buys</span>{% for f in b.buys %}<span class="text-[10px] bg-sky-500/15 text-sky-300 border border-sky-500/20 rounded px-1.5">{{ f }}</span>{% endfor %}</div>{% endif %}
 </div>
+{% endmacro %}
+
+<h2 class="text-lg font-semibold mb-1">UAE buyers &mdash; Decora home-decor range</h2>
 <p class="text-slate-500 text-sm mb-6">
   Supplier: <b>{{ store.name or 'Decora Store' }}</b>{% if store.material %} ({{ store.material }}{% if store.price_band_usd %}, ${{ store.price_band_usd }}{% endif %}){% endif %}
-  · {{ buyers|length }} UAE buyers · {{ with_phone }} with phone.
+  · {{ buyers|length }} buyers · {{ with_phone }} phone · {{ with_email }} email · {{ with_website }} website.
   {% if store.note %}<span class="text-amber-500/70">{{ store.note }}</span>{% endif %}
 </p>
 
 {% if not has_data %}
   <div class="rounded-xl border border-slate-800 bg-slate-900 p-6 text-slate-400 text-sm">
-    No data yet. Run <span class="font-mono text-xs">scripts/harvest_uae_decor_buyers.py</span> then <span class="font-mono text-xs">load_uae.py</span>.
+    No data yet. Run the UAE harvest + enrich + load scripts.
   </div>
 {% else %}
 
@@ -24,34 +41,53 @@
   {% for f in families %}
     <div class="rounded-xl border border-slate-800 bg-slate-900 p-3">
       <div class="font-semibold text-sm">{{ f.name }} <span class="text-xs text-amber-400">${{ f.price_usd }}</span></div>
-      <ul class="mt-1 mb-2 pl-4 list-disc text-[11px] text-slate-400 space-y-0.5">
-        {% for i in f['items'][:6] %}<li>{{ i }}</li>{% endfor %}
-      </ul>
+      <ul class="mt-1 mb-2 pl-4 list-disc text-[11px] text-slate-400 space-y-0.5">{% for i in f['items'][:6] %}<li>{{ i }}</li>{% endfor %}</ul>
       <div class="text-[10px] text-slate-500 border-t border-slate-800 pt-1.5">Buyers: {{ f.fit_buyers | join(' · ') }}</div>
     </div>
   {% endfor %}
 </div>
 {% endif %}
 
-<!-- UAE buyers grouped -->
-<h3 class="text-sm font-semibold text-sky-400 mb-3">UAE buyers <span class="text-slate-500">{{ buyers|length }}</span></h3>
+<!-- High-rate matches -->
+<h3 class="text-sm font-semibold text-emerald-400 mb-1">&#128293; High-rate matches <span class="text-slate-500">{{ high_n }}</span></h3>
+<p class="text-slate-500 text-xs mb-3">Best product-fit &mdash; real serveware / gift / decor / hospitality buyers, ranked above the interior/maintenance firms. Top {{ ranked|length }}.</p>
+{% if ranked %}
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-8">{% for b in ranked %}{{ card(b) }}{% endfor %}</div>
+{% else %}<p class="text-slate-600 text-sm mb-8">Enrichment/scoring not run yet.</p>{% endif %}
+
+<!-- Active RFQs -->
+<h3 class="text-sm font-semibold text-sky-400 mb-2">&#128226; Active buy-requests (RFQs) <span class="text-slate-500">{{ rfqs|length }}</span></h3>
+{% if rfqs %}
+  <div class="overflow-x-auto rounded-xl border border-slate-800 mb-8">
+    <table class="w-full text-sm">
+      <thead class="bg-slate-900 text-slate-400 text-xs uppercase"><tr>
+        <th class="text-left font-medium px-3 py-2">Buyer</th><th class="text-left font-medium px-3 py-2">Wants</th>
+        <th class="text-left font-medium px-3 py-2">Where</th><th class="text-left font-medium px-3 py-2">Contact</th>
+        <th class="text-left font-medium px-3 py-2">Posted</th>
+      </tr></thead>
+      <tbody>
+        {% for q in rfqs %}
+          <tr class="border-t border-slate-800 hover:bg-slate-900/60">
+            <td class="px-3 py-2 text-slate-200">{{ q.buyer }}</td>
+            <td class="px-3 py-2 text-slate-300">{{ q.product }}</td>
+            <td class="px-3 py-2 text-slate-400">{{ q.city or q.country }}</td>
+            <td class="px-3 py-2 text-xs">{{ contact(q) }}</td>
+            <td class="px-3 py-2 text-slate-400">{{ q.posted }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p class="text-slate-500 text-sm mb-8">No public UAE home-decor RFQs on the B2B boards scanned (gated / India-heavy). The high-rate matches above are the actionable demand &mdash; approach them as direct outreach.</p>
+{% endif %}
+
+<!-- All buyers grouped -->
+<h3 class="text-sm font-semibold text-slate-300 mb-3">All UAE buyers <span class="text-slate-500">{{ buyers|length }}</span></h3>
 {% for cat, items in grouped %}
   <div class="mb-6">
     <div class="text-[11px] uppercase tracking-wide text-slate-500 mb-2">{{ cat }} <span class="text-slate-600">{{ items|length }}</span></div>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
-      {% for b in items %}
-        <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-2.5">
-          <div class="font-medium text-sm truncate">
-            {% if b.website %}<a href="{{ b.website if '://' in b.website else 'https://' + b.website }}" target="_blank" rel="noopener" class="text-sky-300 hover:underline">{{ b.company }}</a>{% else %}{{ b.company }}{% endif %}
-          </div>
-          <div class="text-[11px] text-slate-500 truncate">{{ b.city or b.location or 'UAE' }}</div>
-          <div class="text-xs">
-            {% if b.phones and b.phones[0] %}<a href="tel:{{ b.phones[0] }}" class="text-sky-400 hover:underline">{{ b.phones[0] }}</a>{% else %}<span class="text-amber-500/70">enrich</span>{% endif %}
-            {% if b.website %} · <a href="{{ b.website if '://' in b.website else 'https://' + b.website }}" target="_blank" rel="noopener" class="text-sky-400 hover:underline">site&#8599;</a>{% endif %}
-          </div>
-        </div>
-      {% endfor %}
-    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">{% for b in items %}{{ card(b) }}{% endfor %}</div>
   </div>
 {% endfor %}
 

@@ -479,13 +479,20 @@ def uae(request: Request):
     groups = {}
     for b in buyers:
         groups.setdefault((b.get("categories") or ["Other"])[0], []).append(b)
+    for c in groups:
+        groups[c].sort(key=lambda x: -x.get("match_score", 0))
     grouped = ([(c, groups[c]) for c in order if c in groups]
                + [(c, groups[c]) for c in groups if c not in order])
+    ranked = sorted([b for b in buyers if b.get("match_score", 0) >= 75],
+                    key=lambda x: -x.get("match_score", 0))
+    rfqs = _load_research("uae_decor_rfqs.json").get("rfqs", [])
     ctx = {
         "request": request, "user": user, "active": "uae",
         "store": prod.get("store", {}), "families": prod.get("families", []),
         "buyers": buyers, "grouped": grouped,
-        "with_phone": data.get("with_phone", 0), "has_data": bool(buyers),
+        "ranked": ranked[:60], "high_n": len(ranked), "rfqs": rfqs,
+        "with_phone": data.get("with_phone", 0), "with_email": data.get("with_email", 0),
+        "with_website": data.get("with_website", 0), "has_data": bool(buyers),
     }
     return templates.TemplateResponse("uae.html", ctx)
 
