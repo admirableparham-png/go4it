@@ -3,7 +3,7 @@
   "dest": "UAE",
   "total": 1628,
   "with_phone": 1545,
-  "with_website": 8,
+  "with_website": 90,
   "by_category": {
     "Home-decor retailer": 871,
     "Tableware / serveware": 201,
@@ -22187,13 +22187,13 @@
         "+971501579322"
       ],
       "established": "",
-      "website": "",
+      "website": "tyluhospitality.com",
       "profile": "/tylu-hospitality-190479",
       "categories": [
         "Tableware / serveware",
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -22211,14 +22211,14 @@
         "+971565334464"
       ],
       "established": "",
-      "website": "",
+      "website": "buyhoreca.com",
       "profile": "/buyhoreca-trading-co-llc-191270",
       "categories": [
         "Tableware / serveware",
         "Crockery",
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -22305,12 +22305,12 @@
         "+971557325999"
       ],
       "established": "",
-      "website": "",
+      "website": "nineventures.ae",
       "profile": "/nine-ventures-decor-tableware-llc-181472",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -22396,12 +22396,12 @@
         "+971522311991"
       ],
       "established": "",
-      "website": "",
+      "website": "catania.ae",
       "profile": "/catania-ref-kitchen-equipment-ind-llc-145327",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -22419,12 +22419,12 @@
         "+971505752641"
       ],
       "established": "",
-      "website": "",
+      "website": "parco-me.com",
       "profile": "/parco-refrigeration-and-kitchen-equipment-factory-llc-153307",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -22465,21 +22465,22 @@
         "+971527328601"
       ],
       "established": "",
-      "website": "",
+      "website": "dgtsupplies.com",
       "profile": "/dhiraj-general-trading-llc-107360",
       "categories": [
         "Tableware / serveware",
         "Crockery",
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
       "match_score": 100,
       "buys": [
         "Serveware & tableware"
-      ]
+      ],
+      "email": "maniar@emirates.net.ae"
     },
     {
       "company": "Aatish General Trading FZE",
@@ -22512,12 +22513,12 @@
         "+97142964111"
       ],
       "established": "",
-      "website": "",
+      "website": "abaysankit.com",
       "profile": "/abaysan-kitchen-equipments-llc-146415",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -22535,12 +22536,12 @@
         "+971504590070"
       ],
       "established": "",
-      "website": "",
+      "website": "tabeico.ae",
       "profile": "/abdulla-mohd-tabei-trading-co-114143",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -22622,12 +22623,12 @@
         "+97165337464"
       ],
       "established": "",
-      "website": "",
+      "website": "alafeefkitchens.ae",
       "profile": "/al-afeef-kitchens-accessories-trading-company-llc-124889",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -22644,13 +22645,13 @@
         "+97128870206"
       ],
       "established": "",
-      "website": "",
+      "website": "alahliakitchen.ae",
       "profile": "/al-ahlia-kitchen-equipment-172529",
       "categories": [
         "Tableware / serveware",
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -22689,13 +22690,13 @@
         "+97165436904"
       ],
       "established": "",
-      "website": "",
+      "website": "alarzkitchen.com",
       "profile": "/al-arz-refrigeration-equipment-trading-company-llc-117123",
       "categories": [
         "Tableware / serveware",
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -22756,12 +22757,12 @@
         "+97143804064"
       ],
       "established": "",
-      "website": "",
+      "website": "albarshaa.com",
       "profile": "/al-barshaa-general-trading-company-llc-159024",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -22778,13 +22779,13 @@
         "+97165599866"
       ],
       "established": "",
-      "website": "",
+      "website": "albashakitchens.com",
       "profile": "/al-basha-kitchen-ind-llc-114851",
       "categories": [
         "Tableware / serveware",
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -22848,19 +22849,20 @@
         "+971507346249"
       ],
       "established": "",
-      "website": "",
+      "website": "albustankitchens.com",
       "profile": "/al-bustan-kitchens-177037",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
       "match_score": 96,
       "buys": [
         "Serveware & tableware"
-      ]
+      ],
+      "email": "bustan.kitchens@gmail.com"
     },
     {
       "company": "Al Diwan Refrigeration and Steel LLC",
@@ -22892,13 +22894,13 @@
         "+97143474727"
       ],
       "established": "",
-      "website": "",
+      "website": "aldiyafa.com",
       "profile": "/al-diyafa-hotel-and-catering-supplies-108170",
       "categories": [
         "Tableware / serveware",
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -22939,12 +22941,12 @@
         "+971585279994"
       ],
       "established": "",
-      "website": "",
+      "website": "alhalabifactory.com",
       "profile": "/al-halabi-refrigeration-and-kitchen-equipment-factory-llc-179616",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -22962,12 +22964,12 @@
         "+971586279994"
       ],
       "established": "",
-      "website": "",
+      "website": "al-halabi.com",
       "profile": "/al-halabi-refrigeration-and-kitchen-equipment-llc-153040",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -22984,13 +22986,13 @@
         "+97165422936"
       ],
       "established": "",
-      "website": "",
+      "website": "hayamkitchens.com",
       "profile": "/al-hayam-kitchens-trading-llc-154466",
       "categories": [
         "Tableware / serveware",
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -23008,19 +23010,20 @@
         "+971501755892"
       ],
       "established": "",
-      "website": "",
+      "website": "alibdaa-kitchen.com",
       "profile": "/al-ibdaa-ref-devices-trading-llc-177490",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
       "match_score": 96,
       "buys": [
         "Serveware & tableware"
-      ]
+      ],
+      "email": "info@alibdaa-kitchen.com"
     },
     {
       "company": "Al Inshirah Kitchen Equipments",
@@ -23030,12 +23033,12 @@
         "+97143806957"
       ],
       "established": "",
-      "website": "",
+      "website": "alinshirahkitchen.com",
       "profile": "/al-inshirah-kitchen-equipments-162671",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -23116,12 +23119,12 @@
         "+97165435051"
       ],
       "established": "",
-      "website": "",
+      "website": "almayzankitchens.com",
       "profile": "/al-mayzan-kitchens-machines-devices-ind-llc-158983",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -23206,12 +23209,12 @@
         "+971557617644"
       ],
       "established": "",
-      "website": "",
+      "website": "alpatrakitchen.com",
       "profile": "/al-patra-kitchen-equipment-trading-llc-164652",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -23229,12 +23232,12 @@
         "+971503660621"
       ],
       "established": "",
-      "website": "",
+      "website": "al-qureshkitchen.com",
       "profile": "/al-quresh-kitchen-equipments-174794",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -23251,12 +23254,12 @@
         "+97165599840"
       ],
       "established": "",
-      "website": "",
+      "website": "alrazanaonline.com",
       "profile": "/al-razana-kitchen-eqpt-tr-llc-143093",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -23274,12 +23277,12 @@
         "+971502013530"
       ],
       "established": "",
-      "website": "",
+      "website": "alrumooz.com",
       "profile": "/al-rumooz-trading-llc-128872",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -23390,12 +23393,12 @@
         "+971528244874"
       ],
       "established": "",
-      "website": "",
+      "website": "alwahakitchen.com",
       "profile": "/al-waha-kitchen-equipment-llc-168944",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -23413,12 +23416,12 @@
         "+971505607316"
       ],
       "established": "",
-      "website": "",
+      "website": "https://alwardatr.ae/",
       "profile": "/al-warda-kitchen-equipment-trading-178520",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -23525,12 +23528,12 @@
         "+97167480178"
       ],
       "established": "",
-      "website": "",
+      "website": "ankeintl.com",
       "profile": "/anke-al-nasseeb-kitchen-equipments-131238",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -23616,12 +23619,12 @@
         "+971502471555"
       ],
       "established": "",
-      "website": "",
+      "website": "aswarkitchen.com",
       "profile": "/aswar-kitchens-and-ovens-ind-llc-142876",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -23660,12 +23663,12 @@
         "+97165384888"
       ],
       "established": "",
-      "website": "",
+      "website": "awtad-trading.com",
       "profile": "/awtad-trading-co-138718",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -23704,12 +23707,12 @@
         "+971524948162"
       ],
       "established": "",
-      "website": "",
+      "website": "baayaatrading.com",
       "profile": "/baayaa-for-catering-equipment-trading-co-194772",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -23726,19 +23729,20 @@
         "+971559632096"
       ],
       "established": "",
-      "website": "",
+      "website": "https://www.babkitchen.com/",
       "profile": "/bab-al-bahar-kitchen-and-restaurant-equipment-trading-178086",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
       "match_score": 100,
       "buys": [
         "Serveware & tableware"
-      ]
+      ],
+      "email": "sales@babkitchen.com"
     },
     {
       "company": "Bari Kitchen Equipment Tr LLC",
@@ -23748,12 +23752,12 @@
         "+971529903885"
       ],
       "established": "",
-      "website": "",
+      "website": "barikitchen.ae",
       "profile": "/bari-kitchen-equipment-tr-llc-189960",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -24015,13 +24019,13 @@
         "+97142276667"
       ],
       "established": "",
-      "website": "",
+      "website": "chefs-first.com",
       "profile": "/chefs-first-equipment-trading-llc-122960",
       "categories": [
         "Tableware / serveware",
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -24106,12 +24110,12 @@
         "+971566486306"
       ],
       "established": "",
-      "website": "",
+      "website": "ckitchensolutions.com",
       "profile": "/complete-kitchen-solutions-fze-154462",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -24128,12 +24132,12 @@
         "+97142731771"
       ],
       "established": "",
-      "website": "",
+      "website": "ckitchensolutions.com",
       "profile": "/complete-kitchen-solutions-llc-159218",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -24150,12 +24154,12 @@
         "+97143472700"
       ],
       "established": "",
-      "website": "",
+      "website": "concept-bath.com",
       "profile": "/concept-bath-trading-fze-165092",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -24172,13 +24176,13 @@
         "+97142726050"
       ],
       "established": "",
-      "website": "",
+      "website": "daliyatrading.ae",
       "profile": "/daliya-trading-company-llc-122414",
       "categories": [
         "Tableware / serveware",
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -24330,12 +24334,12 @@
         "+97142599580"
       ],
       "established": "",
-      "website": "",
+      "website": "elegantuae.com",
       "profile": "/elegant-kitchen-equipment-trdg-llc-109035",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -24352,12 +24356,12 @@
         "+97126778880"
       ],
       "established": "",
-      "website": "",
+      "website": "https://www.elencogroup.com/",
       "profile": "/elenco-general-trading-establishment-108309",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -24374,12 +24378,12 @@
         "+97142690890"
       ],
       "established": "",
-      "website": "",
+      "website": "elencogroup.com",
       "profile": "/elenco-trading-establishment-111558",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -24394,12 +24398,12 @@
       "city": "",
       "phones": [],
       "established": "",
-      "website": "",
+      "website": "empirekitchenuae.ae",
       "profile": "/empire-kitchen-industry-llc-145326",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -24461,13 +24465,13 @@
         "+97165314106"
       ],
       "established": "",
-      "website": "",
+      "website": "everstyleuae.com",
       "profile": "/everstyle-trading-limited-128581",
       "categories": [
         "Tableware / serveware",
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -24485,12 +24489,12 @@
         "+971502849313"
       ],
       "established": "",
-      "website": "",
+      "website": "excelkitchen.com",
       "profile": "/excel-kitchen-llc-127959",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -24553,12 +24557,12 @@
         "+97142053400"
       ],
       "established": "",
-      "website": "",
+      "website": "falconkitchen.com",
       "profile": "/falcon-professional-kitchen-llc-143312",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -24625,14 +24629,15 @@
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
       "match_score": 96,
       "buys": [
         "Serveware & tableware"
-      ]
+      ],
+      "email": "fke@emirates.net.ae"
     },
     {
       "company": "Gianni & Gelato Gen Trdg LLC",
@@ -24759,14 +24764,15 @@
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
       "match_score": 96,
       "buys": [
         "Serveware & tableware"
-      ]
+      ],
+      "email": "mohebico@emirates.net.ae"
     },
     {
       "company": "Harvest Home",
@@ -24821,19 +24827,20 @@
         "+97165391217"
       ],
       "established": "",
-      "website": "",
+      "website": "https://alibdaa-kitchen.com/",
       "profile": "/ibdaa-ref-devices-bakery-kitchen-equip-142732",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
       "match_score": 96,
       "buys": [
         "Serveware & tableware"
-      ]
+      ],
+      "email": "info@alibdaa-kitchen.com"
     },
     {
       "company": "Imperial Kitchen & Technology LLC",
@@ -24841,12 +24848,12 @@
       "city": "",
       "phones": [],
       "established": "",
-      "website": "",
+      "website": "http://imperialgroup.org/",
       "profile": "/imperial-kitchen-technology-llc-177362",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -24908,13 +24915,13 @@
         "+97144585898"
       ],
       "established": "",
-      "website": "",
+      "website": "https://www.inoksservis.com/",
       "profile": "/inoks-service-trading-llc-129501",
       "categories": [
         "Tableware / serveware",
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -24931,19 +24938,20 @@
         "+97142977488"
       ],
       "established": "",
-      "website": "",
+      "website": "http://www.italiakitchengroup.com/",
       "profile": "/italia-kitchen-group-122710",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
       "match_score": 96,
       "buys": [
         "Serveware & tableware"
-      ]
+      ],
+      "email": "info@italiakitchengroup.com"
     },
     {
       "company": "JB Technical Service LLC",
@@ -25000,12 +25008,12 @@
         "+971506314193"
       ],
       "established": "",
-      "website": "",
+      "website": "https://www.kitchennstyle.com/",
       "profile": "/kitchen-n-style-llc-124966",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -25066,20 +25074,21 @@
         "+97165323884"
       ],
       "established": "",
-      "website": "",
+      "website": "http://www.kitcheramauae.com/",
       "profile": "/kitcherama-trading-company-llc-115392",
       "categories": [
         "Tableware / serveware",
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
       "match_score": 96,
       "buys": [
         "Serveware & tableware"
-      ]
+      ],
+      "email": "saldi@emirates.net.ae"
     },
     {
       "company": "Land & Sea Kitchens Equipment Manufacturing LLC",
@@ -25090,12 +25099,12 @@
         "+971568406226"
       ],
       "established": "",
-      "website": "",
+      "website": "https://landandseakitchenuae.com/",
       "profile": "/land-sea-kitchens-equipment-manufacturing-llc-180570",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -25178,13 +25187,13 @@
         "+97142288535"
       ],
       "established": "",
-      "website": "",
+      "website": "https://marinouae.com/",
       "profile": "/marino-kitchen-equipment-llc-135301",
       "categories": [
         "Tableware / serveware",
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -25202,13 +25211,13 @@
         "+971501203917"
       ],
       "established": "",
-      "website": "",
+      "website": "https://mariotstore.com/",
       "profile": "/mariot-kitchen-equipment-llc-177416",
       "categories": [
         "Tableware / serveware",
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -25269,12 +25278,12 @@
         "+971564749109"
       ],
       "established": "",
-      "website": "",
+      "website": "https://muatikitchen.com/",
       "profile": "/mohamad-muati-kitchen-equip-trading-llc-sp-192512",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -25314,12 +25323,12 @@
         "+97143414900"
       ],
       "established": "",
-      "website": "",
+      "website": "https://www.mhao.ae/",
       "profile": "/mohamed-hareb-al-otaiba-kitchens-supplies-llc-112041",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -25427,12 +25436,12 @@
         "+97167482469"
       ],
       "established": "",
-      "website": "",
+      "website": "https://nicekitchenuae.com/",
       "profile": "/nice-kitchen-ind-llc-143252",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -25450,19 +25459,20 @@
         "+971504737897"
       ],
       "established": "",
-      "website": "",
+      "website": "https://nicetwo.com/",
       "profile": "/nice-two-kitchens-and-refrigeration-136589",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
       "match_score": 96,
       "buys": [
         "Serveware & tableware"
-      ]
+      ],
+      "email": "gmzaatar@nicetwo.com"
     },
     {
       "company": "Nisa Trading LLC",
@@ -25472,19 +25482,20 @@
         "+97143966132"
       ],
       "established": "",
-      "website": "",
+      "website": "http://www.nisa-trading.com/",
       "profile": "/nisa-trading-llc-117533",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
       "match_score": 96,
       "buys": [
         "Serveware & tableware"
-      ]
+      ],
+      "email": "nisa@emirates.net.ae"
     },
     {
       "company": "Noor Al Qamar Kitchens and Restaurant Equipment Trading LLC",
@@ -25544,14 +25555,15 @@
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
       "match_score": 96,
       "buys": [
         "Serveware & tableware"
-      ]
+      ],
+      "email": "orienthi@emirates.net.ae"
     },
     {
       "company": "Parco Kitchen Equipment LLC",
@@ -25561,12 +25573,12 @@
         "+97142670660"
       ],
       "established": "",
-      "website": "",
+      "website": "https://www.parco-me.com/",
       "profile": "/parco-kitchen-equipment-llc-152171",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -25896,14 +25908,15 @@
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
       "match_score": 96,
       "buys": [
         "Serveware & tableware"
-      ]
+      ],
+      "email": "sawaftr@emirates.net.ae"
     },
     {
       "company": "Sawas Kitchen Equipment Co",
@@ -25914,21 +25927,22 @@
         "+971568099470"
       ],
       "established": "",
-      "website": "",
+      "website": "https://sawasuae.com/",
       "profile": "/sawas-kitchen-equipment-co-115990",
       "categories": [
         "Tableware / serveware",
         "Crockery",
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
       "match_score": 96,
       "buys": [
         "Serveware & tableware"
-      ]
+      ],
+      "email": "info@sawasuae.com"
     },
     {
       "company": "Silver Metals Industries LLC",
@@ -25984,12 +25998,12 @@
         "+97143456600"
       ],
       "established": "",
-      "website": "",
+      "website": "https://silvingt.ae/",
       "profile": "/silvin-general-trading-llc-184622",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -26007,19 +26021,20 @@
         "+971503438611"
       ],
       "established": "",
-      "website": "",
+      "website": "https://smartequipmenttrading.com/",
       "profile": "/smart-equipment-trading-177050",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
       "match_score": 96,
       "buys": [
         "Serveware & tableware"
-      ]
+      ],
+      "email": "info@smartequipmenttrading.com"
     },
     {
       "company": "Smart Kitchens FZE",
@@ -26029,12 +26044,12 @@
         "+97165612505"
       ],
       "established": "",
-      "website": "",
+      "website": "http://smartkitchensfze.com/",
       "profile": "/smart-kitchens-fze-170882",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -26141,12 +26156,12 @@
         "+971551017836"
       ],
       "established": "",
-      "website": "",
+      "website": "https://www.steelcraftuae.com/",
       "profile": "/steel-craft-refrigeration-kitchen-equipment-llc-145822",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -26387,12 +26402,12 @@
         "+971569428924"
       ],
       "established": "",
-      "website": "",
+      "website": "https://www.truststore.ae/",
       "profile": "/trust-kitchens-equipment-184547",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -26432,13 +26447,13 @@
         "+97126335331"
       ],
       "established": "",
-      "website": "",
+      "website": "https://utc.ae/",
       "profile": "/universal-trading-co-108938",
       "categories": [
         "Tableware / serveware",
         "Crockery"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -26569,19 +26584,20 @@
         "+971506892323"
       ],
       "established": "",
-      "website": "",
+      "website": "https://www.western-kitchen.com/",
       "profile": "/western-kitchen-equipment-trading-llc-185864",
       "categories": [
         "Tableware / serveware"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
       "match_score": 100,
       "buys": [
         "Serveware & tableware"
-      ]
+      ],
+      "email": "info@western-kitchen.com"
     },
     {
       "company": "Williams Refrigeration",
@@ -27225,12 +27241,12 @@
         "+97143390017"
       ],
       "established": "",
-      "website": "",
+      "website": "https://www.awmgroup.com/",
       "profile": "/awm-general-trading-llc-119139",
       "categories": [
         "Crockery"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -27671,12 +27687,12 @@
         "+97142256677"
       ],
       "established": "",
-      "website": "",
+      "website": "http://www.fulmar.ae/",
       "profile": "/fulmar-general-trading-llc-116283",
       "categories": [
         "Crockery"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -28453,14 +28469,15 @@
       "categories": [
         "Crockery"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
       "match_score": 100,
       "buys": [
         "Serveware & tableware"
-      ]
+      ],
+      "email": "newfulmr@eim.ae"
     },
     {
       "company": "Orange Gallery General Trading LLC",
@@ -28537,19 +28554,20 @@
         "+97142265223"
       ],
       "established": "",
-      "website": "",
+      "website": "http://parchamuae.com/",
       "profile": "/parcham-general-trading-121749",
       "categories": [
         "Crockery"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
       "match_score": 100,
       "buys": [
         "Serveware & tableware"
-      ]
+      ],
+      "email": "info@parchamuae.com"
     },
     {
       "company": "Pasanda Trading Company LLC",
@@ -36932,12 +36950,12 @@
         "+971551543646"
       ],
       "established": "",
-      "website": "",
+      "website": "https://bestcaregt.com/",
       "profile": "/best-care-general-trading-llc-177571",
       "categories": [
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -37048,12 +37066,12 @@
         "+971582533387"
       ],
       "established": "",
-      "website": "",
+      "website": "https://www.care-kitchen.com/",
       "profile": "/carekitchen-equipment-trading-llc-185268",
       "categories": [
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -37181,12 +37199,12 @@
         "+971507587246"
       ],
       "established": "",
-      "website": "",
+      "website": "emporiauae.com",
       "profile": "/emporia-general-trading-llc-180621",
       "categories": [
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -37273,12 +37291,12 @@
         "+971526055333"
       ],
       "established": "",
-      "website": "",
+      "website": "hkgt.ae",
       "profile": "/hongkong-general-trading-llc-194558",
       "categories": [
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -37407,12 +37425,12 @@
         "+97143809399"
       ],
       "established": "",
-      "website": "",
+      "website": "luxor.ae",
       "profile": "/luxor-general-trading-llc-142778",
       "categories": [
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -37429,12 +37447,12 @@
         "+97165547400"
       ],
       "established": "",
-      "website": "",
+      "website": "masterfulllc.com",
       "profile": "/masterful-hotels-accessories-trading-llc-116678",
       "categories": [
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -37476,12 +37494,12 @@
         "+971507863554"
       ],
       "established": "",
-      "website": "",
+      "website": "mycotton.ae",
       "profile": "/my-cotton-general-trading-llc-190206",
       "categories": [
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -37631,12 +37649,12 @@
         "+971588382030"
       ],
       "established": "",
-      "website": "",
+      "website": "spaworlduae.com",
       "profile": "/spa-world-general-trading-196750",
       "categories": [
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -37698,19 +37716,20 @@
         "+971552396120"
       ],
       "established": "",
-      "website": "",
+      "website": "valenciatrading.com",
       "profile": "/valencia-international-general-trading-llc-162994",
       "categories": [
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
       "match_score": 97,
       "buys": [
         "Serveware & tableware"
-      ]
+      ],
+      "email": "infouae@valenciatrading.com"
     },
     {
       "company": "Whiteline Detergents Factory LLC",
@@ -38251,12 +38270,12 @@
         "+971545632021"
       ],
       "established": "",
-      "website": "",
+      "website": "cleresdyne.com",
       "profile": "/cleres-dyne-general-trading-llc-170405",
       "categories": [
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -38273,12 +38292,12 @@
         "+97143386401"
       ],
       "established": "",
-      "website": "",
+      "website": "coffema.net",
       "profile": "/coffema-international-general-trading-llc-144873",
       "categories": [
         "Hotel & hospitality supplier"
       ],
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "fits": [
         "serveware/tableware"
       ],
@@ -39588,5 +39607,5 @@
     }
   ],
   "high_matches": 630,
-  "with_email": 93
+  "with_email": 112
 }
