@@ -16,7 +16,14 @@
   </div>
   <div class="text-[11px] text-slate-500 mb-1">{{ b.segment }}{% if b.city %} · {{ b.city }}{% endif %}</div>
   <div class="text-xs mb-1">{{ contact(b.email, b.phone, b.website) }}</div>
-  {% if b.reagents %}<div class="text-[11px] text-slate-400 bg-slate-800/50 rounded px-2 py-1">{{ b.reagents }}</div>{% endif %}
+  {% if b.chemicals %}
+    <div class="text-[9px] uppercase tracking-wide text-slate-500 mb-1">Buys / needs</div>
+    <div class="flex flex-wrap gap-1">
+      {% for c in b.chemicals %}<span class="text-[10px] bg-sky-500/15 text-sky-300 border border-sky-500/20 rounded px-1.5 py-0.5">{{ c }}</span>{% endfor %}
+    </div>
+  {% elif b.distributor %}
+    <div class="text-[10px] text-slate-400 bg-slate-800/50 rounded px-2 py-0.5">distributor · can source any of the 13</div>
+  {% endif %}
 </div>
 {% endmacro %}
 

@@ -55,6 +55,15 @@ def run():
     anchors = [b for b in buyers if b.get("source_tier") == "anchor"]
     directory = [b for b in buyers if b.get("source_tier") != "anchor"]
 
+    def products_html(b):
+        chems = b.get("chemicals") or []
+        if chems:
+            return ('<div class="prodlabel">Buys / needs:</div><div class="chips">'
+                    + "".join(f'<span class="chip">{esc(c)}</span>' for c in chems) + "</div>")
+        if b.get("distributor"):
+            return '<div class="chips"><span class="chip any">distributor · can source any of the 13</span></div>'
+        return f'<div class="spec">{esc(b.get("reagents"))}</div>'
+
     def buyer_card(b):
         name = esc(b.get("company"))
         web = as_url(b.get("website"))
@@ -63,7 +72,7 @@ def run():
         return (f'<div class="card"><div class="name">{name_html}</div>'
                 f'<div class="loc">{loc}</div>'
                 f'<div class="contact">{contact_html(b.get("email"), b.get("phone"), b.get("website"))}</div>'
-                f'<div class="spec">{esc(b.get("reagents"))}</div></div>')
+                f'{products_html(b)}</div>')
 
     sections = []
     sections.append(
@@ -121,6 +130,10 @@ def run():
     .loc{color:#64748b;font-size:12px;margin:2px 0 6px}
     .contact{font-size:12.5px;margin-bottom:6px}.contact a{color:#0369a1;text-decoration:none;margin-right:2px}
     .spec{font-size:11.5px;color:#475569;background:#f8fafc;border-radius:6px;padding:6px 8px}
+    .prodlabel{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:#94a3b8;margin-bottom:4px}
+    .chips{display:flex;flex-wrap:wrap;gap:4px}
+    .chip{font-size:11px;background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;border-radius:6px;padding:1px 7px}
+    .chip.any{background:#f1f5f9;color:#475569;border-color:#e2e8f0}
     .enrich{color:#b45309}
     table{width:100%;border-collapse:collapse;font-size:12.5px;background:#fff;border-radius:8px;overflow:hidden}
     th,td{text-align:left;padding:7px 9px;border-bottom:1px solid #e2e8f0}th{background:#e2e8f0}

@@ -33,36 +33,52 @@ MINING = "Sulfuric acid, caustic soda, flocculants/coagulants, and flotation/lea
 ANCHORS = [
     {"company": "RMG - Rich Metals Group", "segment": "Mining - Cu/Au (flotation + leaching)",
      "city": "Kazreti / Bolnisi", "website": "richmetalsgroup.com",
-     "reagents": "SIPX/Z-11, PAX/Z-6, MIBC, copper sulfate, zinc sulfate, sodium sulfite/sulfide, sodium cyanide, caustic soda, sulfuric acid, flocculants"},
+     "chemicals": ["Sodium Isopropyl Xanthate (Z11)", "MIBC", "Potassium Amyl Xanthate (Z6)",
+                   "Zinc Sulfate", "Copper Sulfate", "Sodium Sulfite", "Sulfuric Acid",
+                   "Sodium Hydroxide", "Sodium Cyanide", "Anionic Polyacrylamide",
+                   "Cationic Polyacrylamide", "Sodium Sulfide"]},
     {"company": "JSC RMG Copper", "segment": "Mining - copper flotation", "city": "Madneuli / Kazreti",
-     "website": "madneuli.ge", "reagents": "xanthate collectors (SIPX/PAX), MIBC frother, copper/zinc sulfate, depressants, flocculants"},
+     "website": "madneuli.ge",
+     "chemicals": ["Sodium Isopropyl Xanthate (Z11)", "MIBC", "Potassium Amyl Xanthate (Z6)",
+                   "Zinc Sulfate", "Copper Sulfate", "Sodium Sulfite", "Sodium Sulfide",
+                   "Sulfuric Acid", "Sodium Hydroxide", "Anionic Polyacrylamide", "Cationic Polyacrylamide"]},
     {"company": "RMG Gold LLC", "segment": "Mining - gold (CIL / heap leach)", "city": "Sakdrisi / Kvartsiti",
-     "website": "richmetalsgroup.com", "reagents": "sodium cyanide, caustic soda, activated carbon reagents, flocculants"},
+     "website": "richmetalsgroup.com",
+     "chemicals": ["Sodium Cyanide", "Sodium Hydroxide", "Sulfuric Acid",
+                   "Anionic Polyacrylamide", "Cationic Polyacrylamide"]},
     {"company": "Georgian Manganese LLC", "segment": "Mining/metallurgy - Mn beneficiation + ferroalloy",
      "city": "Chiatura / Zestafoni", "website": "gm.ge",
-     "reagents": "sulfuric acid, caustic soda, flocculants/coagulants (tailings & process water)"},
+     "chemicals": ["Sulfuric Acid", "Sodium Hydroxide", "Anionic Polyacrylamide",
+                   "Cationic Polyacrylamide", "Polyaluminum Chloride"]},
     {"company": "JSC Zestafoni Ferroalloy Plant", "segment": "Metallurgy - ferroalloys", "city": "Zestafoni",
-     "website": "gaalloys.ge", "reagents": "sulfuric acid, caustic soda, process reagents"},
-    {"company": "JSC Rustavi Azot", "segment": "Heavy chemical plant (buyer + domestic NaCN producer)",
-     "city": "Rustavi", "website": "rustaviazot.ge",
-     "reagents": "buys sulfuric acid, caustic soda; PRODUCES sodium cyanide (~14 kt/yr) - NaCN demand may be met in-country"},
+     "website": "gaalloys.ge", "chemicals": ["Sulfuric Acid", "Sodium Hydroxide"]},
+    {"company": "JSC Rustavi Azot", "segment": "Heavy chemical plant (buys acid/caustic; MAKES cyanide)",
+     "city": "Rustavi", "website": "rustaviazot.ge", "chemicals": ["Sulfuric Acid", "Sodium Hydroxide"]},
     {"company": "Rustavi Steel", "segment": "Metallurgy - steel", "city": "Rustavi", "website": "",
-     "reagents": "pickling acids, caustic soda"},
+     "chemicals": ["Sulfuric Acid", "Sodium Hydroxide"]},
     {"company": "Georgian Water & Power (GWP)", "segment": "Water utility", "city": "Tbilisi",
-     "website": "gwp.ge", "reagents": "polyaluminium chloride, aluminium sulphate, polyacrylamide, chlorine, caustic soda, sulfuric acid"},
+     "website": "gwp.ge",
+     "chemicals": ["Polyaluminum Chloride", "Sulfuric Acid", "Sodium Hydroxide",
+                   "Anionic Polyacrylamide", "Cationic Polyacrylamide"]},
     {"company": "United Water Supply Company of Georgia (UWSCG)", "segment": "Water utility - STATE (tenders)",
      "city": "Tbilisi (nationwide)", "website": "water.gov.ge",
-     "reagents": "PAC, aluminium sulphate, flocculant/coagulant, chlorine, caustic, sulfuric acid - procured via state e-tenders"},
+     "chemicals": ["Polyaluminum Chloride", "Sulfuric Acid", "Sodium Hydroxide",
+                   "Anionic Polyacrylamide", "Cationic Polyacrylamide"]},
     {"company": "Batumi Water LLC (Adjara)", "segment": "Water utility", "city": "Batumi", "website": "",
-     "reagents": "coagulants/flocculants, chlorine, caustic"},
-    {"company": "Chemkraft", "segment": "Chemical importer/distributor", "city": "Tbilisi",
-     "website": "chemkraft.ir", "reagents": "imports caustic soda flakes into Georgia (Iran-sourced)"},
+     "chemicals": ["Polyaluminum Chloride", "Sodium Hydroxide",
+                   "Anionic Polyacrylamide", "Cationic Polyacrylamide"]},
+    {"company": "Chemkraft", "segment": "Chemical importer/distributor (Iran-sourced)", "city": "Tbilisi",
+     "website": "chemkraft.ir", "distributor": True, "chemicals": ["Sodium Hydroxide"]},
     {"company": "AFG Finance LLC (mining holding)", "segment": "Mining holding / investor",
-     "city": "Tbilisi", "website": "afg.ge", "reagents": "flotation/leaching reagents across held mining assets"},
+     "city": "Tbilisi", "website": "afg.ge",
+     "chemicals": ["Sodium Isopropyl Xanthate (Z11)", "MIBC", "Potassium Amyl Xanthate (Z6)",
+                   "Zinc Sulfate", "Copper Sulfate", "Sodium Sulfite", "Sulfuric Acid",
+                   "Sodium Hydroxide", "Sodium Cyanide", "Anionic Polyacrylamide",
+                   "Cationic Polyacrylamide", "Sodium Sulfide"]},
 ]
 
 # (b) directory long-tail --------------------------------------------------------
-YELL_RUBRICS = [3767]           # chemical reagents
+YELL_RUBRICS = [3767, 3630, 3766]   # chemical reagents · disinfectants · lab supplies
 JUNK_HOST = ("yell.ge", "w3.org", "clarity.ms", "cdnjs", "cloudflare", "jquery",
              "bootstrap", "googleapis", "gstatic", "google.", "facebook", "twitter",
              "instagram", "youtube", "schema.org", "gmail.com", "maps.", "popper")
@@ -115,7 +131,8 @@ def harvest_directory():
             out.append({
                 "company": name, "segment": "Chemical importer/distributor (directory)",
                 "city": "", "website": website, "email": email, "phone": phone,
-                "reagents": "industrial/lab chemicals - vet for industrial tonnage",
+                "distributor": True, "chemicals": [],   # a trader can source any of the 13
+                "reagents": "distributor - can source any of the 13 (vet for industrial tonnage)",
                 "needs_enrichment": not (email or phone),
             })
             time.sleep(0.4)
@@ -128,6 +145,8 @@ def run():
         a = dict(a)
         a.setdefault("email", "")
         a.setdefault("phone", "")
+        a.setdefault("distributor", False)
+        a["reagents"] = ", ".join(a.get("chemicals", []))   # display string from the 13
         a["needs_enrichment"] = not (a.get("email") or a.get("phone"))
         a["source_tier"] = "anchor"
         buyers.append(a)
