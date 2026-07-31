@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% set active = 'uae' %}
+{% block content %}
+
+<div class="flex items-center justify-between mb-1">
+  <h2 class="text-lg font-semibold">UAE buyers &mdash; Decora home-decor range</h2>
+</div>
+<p class="text-slate-500 text-sm mb-6">
+  Supplier: <b>{{ store.name or 'Decora Store' }}</b>{% if store.material %} ({{ store.material }}{% if store.price_band_usd %}, ${{ store.price_band_usd }}{% endif %}){% endif %}
+  · {{ buyers|length }} UAE buyers · {{ with_phone }} with phone.
+  {% if store.note %}<span class="text-amber-500/70">{{ store.note }}</span>{% endif %}
+</p>
+
+{% if not has_data %}
+  <div class="rounded-xl border border-slate-800 bg-slate-900 p-6 text-slate-400 text-sm">
+    No data yet. Run <span class="font-mono text-xs">scripts/harvest_uae_decor_buyers.py</span> then <span class="font-mono text-xs">load_uae.py</span>.
+  </div>
+{% else %}
+
+<!-- What we offer -->
+{% if families %}
+<h3 class="text-sm font-semibold text-emerald-400 mb-2">What we offer</h3>
+<div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+  {% for f in families %}
+    <div class="rounded-xl border border-slate-800 bg-slate-900 p-3">
+      <div class="font-semibold text-sm">{{ f.name }} <span class="text-xs text-amber-400">${{ f.price_usd }}</span></div>
+      <ul class="mt-1 mb-2 pl-4 list-disc text-[11px] text-slate-400 space-y-0.5">
+        {% for i in f['items'][:6] %}<li>{{ i }}</li>{% endfor %}
+      </ul>
+      <div class="text-[10px] text-slate-500 border-t border-slate-800 pt-1.5">Buyers: {{ f.fit_buyers | join(' · ') }}</div>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- UAE buyers grouped -->
+<h3 class="text-sm font-semibold text-sky-400 mb-3">UAE buyers <span class="text-slate-500">{{ buyers|length }}</span></h3>
+{% for cat, items in grouped %}
+  <div class="mb-6">
+    <div class="text-[11px] uppercase tracking-wide text-slate-500 mb-2">{{ cat }} <span class="text-slate-600">{{ items|length }}</span></div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+      {% for b in items %}
+        <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-2.5">
+          <div class="font-medium text-sm truncate">
+            {% if b.website %}<a href="{{ b.website if '://' in b.website else 'https://' + b.website }}" target="_blank" rel="noopener" class="text-sky-300 hover:underline">{{ b.company }}</a>{% else %}{{ b.company }}{% endif %}
+          </div>
+          <div class="text-[11px] text-slate-500 truncate">{{ b.city or b.location or 'UAE' }}</div>
+          <div class="text-xs">
+            {% if b.phones and b.phones[0] %}<a href="tel:{{ b.phones[0] }}" class="text-sky-400 hover:underline">{{ b.phones[0] }}</a>{% else %}<span class="text-amber-500/70">enrich</span>{% endif %}
+            {% if b.website %} · <a href="{{ b.website if '://' in b.website else 'https://' + b.website }}" target="_blank" rel="noopener" class="text-sky-400 hover:underline">site&#8599;</a>{% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endfor %}
+
+{% endif %}
+{% endblock %}

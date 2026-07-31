@@ -16,7 +16,7 @@
       </div>
       <div class="flex items-center gap-4">
         <nav class="flex flex-wrap gap-1 text-sm">
-          {% set tabs = [('/', 'dashboard', 'Dashboard'), ('/leads', 'leads', 'Leads'), ('/quotes', 'quotes', 'Quotes'), ('/deals', 'deals', 'Deals'), ('/catalog', 'catalog', 'Catalog'), ('/suppliers', 'suppliers', 'Suppliers'), ('/intel', 'intel', 'Intel'), ('/georgia', 'georgia', 'Georgia'), ('/rates', 'rates', 'Rates'), ('/ingest', 'ingest', 'Ingest')] %}
+          {% set tabs = [('/', 'dashboard', 'Dashboard'), ('/leads', 'leads', 'Leads'), ('/quotes', 'quotes', 'Quotes'), ('/deals', 'deals', 'Deals'), ('/catalog', 'catalog', 'Catalog'), ('/suppliers', 'suppliers', 'Suppliers'), ('/intel', 'intel', 'Intel'), ('/georgia', 'georgia', 'Georgia'), ('/uae', 'uae', 'UAE'), ('/rates', 'rates', 'Rates'), ('/ingest', 'ingest', 'Ingest')] %}
           {% for href, key, label in tabs %}
             <a href="{{ href }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {% if active == key %}bg-slate-800 text-white{% else %}text-slate-400{% endif %}">{{ label }}</a>
           {% endfor %}

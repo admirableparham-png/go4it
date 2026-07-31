@@ -1,0 +1,67 @@
+{
+  "store": {
+    "name": "Decora Store",
+    "url": "decorastore1.ir",
+    "location": "Tehran, Iran",
+    "brand": "Mapco (serveware line)",
+    "positioning": "Affordable-luxury home decor / decorative giftware",
+    "material": "Cast aluminium with gold/silver plating + crystal/cut-glass; some ceramic & stone-lid pieces",
+    "price_band_usd": "18-300",
+    "note": "Retail-only storefront; no wholesale advertised - a B2B/export deal must be opened directly with the owner.",
+    "owner_contact": "WhatsApp +98 992 400 5980 · Instagram @Decora_store1 · Tehran showroom (Aghdasieh, Parnian Center)"
+  },
+  "families": [
+    {
+      "key": "serveware",
+      "name": "Serveware & tableware",
+      "price_usd": "18-165",
+      "fit_buyers": ["Tableware / serveware", "Crockery", "Hotel & hospitality supplier", "Housewares"],
+      "items": [
+        "Gold & silver trays (round / rectangular)",
+        "Candy & chocolate dishes (gold; stone-lid; Line collection)",
+        "Footed / pedestal bowls",
+        "Conical fruit bowls & fruit platters",
+        "Appetizer / nut platters",
+        "Two-tiered serving dish",
+        "Shell-design dishes",
+        "Tissue holders",
+        "Silver drink dispenser (Coleman)"
+      ]
+    },
+    {
+      "key": "decor-objects",
+      "name": "Decorative objects",
+      "price_usd": "39-300",
+      "fit_buyers": ["Gift shop", "Gift / corporate-gift", "Home-decor retailer", "Handicrafts"],
+      "items": [
+        "World globes (gold; gold & silver)",
+        "Photo frames (gold / silver)",
+        "Decorative vases (aluminium gold-plated; ceramic)",
+        "Candlesticks (aluminium + crystal - by request)",
+        "Decorative horse statue (by request)"
+      ]
+    },
+    {
+      "key": "clocks",
+      "name": "Clocks",
+      "price_usd": "36-88",
+      "fit_buyers": ["Home-decor retailer", "Gift shop", "Gift / corporate-gift"],
+      "items": [
+        "'Lotus' antique wall clocks (gold / silver)",
+        "Desk / table clocks (silver, gold, green-gold, pyramid)",
+        "Wall clocks (gray / black)"
+      ]
+    },
+    {
+      "key": "lighting",
+      "name": "Lighting",
+      "price_usd": "131+",
+      "fit_buyers": ["Lighting shop", "Home-decor retailer", "Interior designer"],
+      "items": [
+        "Table lamps (gold & black - Line collection)",
+        "Floor / standing lamps (by request)",
+        "Chandeliers (by request)"
+      ]
+    }
+  ]
+}

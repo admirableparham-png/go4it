@@ -465,6 +465,31 @@ def georgia(request: Request):
     return templates.TemplateResponse("georgia.html", ctx)
 
 
+@app.get("/uae", response_class=HTMLResponse)
+def uae(request: Request):
+    """UAE buyers for the Decora Store home-decor range (what we offer + who buys it)."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+    data = _load_research("uae_decor_buyers.json")
+    prod = _load_research("decora_products.json")
+    buyers = data.get("buyers", [])
+    order = ["Home-decor retailer", "Tableware / serveware", "Crockery", "Housewares",
+             "Handicrafts", "Lighting shop", "Gift / corporate-gift", "Gift shop",
+             "Hotel & hospitality supplier"]
+    groups = {}
+    for b in buyers:
+        groups.setdefault((b.get("categories") or ["Other"])[0], []).append(b)
+    grouped = ([(c, groups[c]) for c in order if c in groups]
+               + [(c, groups[c]) for c in groups if c not in order])
+    ctx = {
+        "request": request, "user": user, "active": "uae",
+        "store": prod.get("store", {}), "families": prod.get("families", []),
+        "buyers": buyers, "grouped": grouped,
+        "with_phone": data.get("with_phone", 0), "has_data": bool(buyers),
+    }
+    return templates.TemplateResponse("uae.html", ctx)
+
+
 # ----------------------------------------------------------------------------- lead detail + pipeline
 
 @app.get("/leads/{lead_id}", response_class=HTMLResponse)
