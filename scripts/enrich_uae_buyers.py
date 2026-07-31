@@ -48,7 +48,25 @@ PENALTY = ["interior", "maintenance", "fit out", "fit-out", "fitout", "contracti
            "cleaning", "facility", "real estate", "consultan"]
 JUNK = ["yellowpages-uae", "google", "facebook", "instagram", "twitter", "x.com", "threads",
         "youtube", "whatsapp", "pinterest", "w3.org", "gstatic", "cloudflare", "cdnjs",
-        "jquery", "schema.org", "dmca", "undefined", "linkedin", "tiktok"]
+        "jquery", "schema.org", "dmca", "undefined", "linkedin", "tiktok",
+        # analytics / CDNs / assets that appear on EVERY listing (not the company site)
+        "clarity.ms", "clarity", "bing.com", "microsoft", "gtag", "googletag", "hotjar",
+        "sentry", "fontawesome", "bootstrapcdn", "unpkg", "jsdelivr", "gravatar", "gmpg.org",
+        "doubleclick", "amazonaws", "cloudfront", "apple.com", "play.google", "itunes",
+        "wp.com", "cdn.", "static.", "assets.", "ajax."]
+
+
+def real_site(u):
+    """A URL is a usable company website only if it's not a third-party/asset URL."""
+    u = (u or "").strip().strip('\\"\'')
+    if not u or "\\" in u or " " in u:
+        return ""
+    lo = u.lower()
+    if any(j in lo for j in JUNK):
+        return ""
+    if any(x in lo for x in ("/tag/", "/badge", "/pixel", ".js", ".css", ".min.", "/ajax/", "/embed")):
+        return ""
+    return u
 EMAIL_RE = re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+")
 
 
@@ -86,9 +104,12 @@ def detail_contacts(profile):
               if not e.lower().endswith((".png", ".jpg", ".webp", ".css", ".js"))
               and not any(j in e.lower() for j in ("yellowpages", "sentry", "example", "wixpress"))]
     email = emails[0] if emails else ""
-    sites = [u for u in re.findall(r'https?://[^"\s<>]+', h)
-             if not any(j in u.lower() for j in JUNK)]
-    website = sites[0] if sites else ""
+    website = ""
+    for u in re.findall(r'https?://[^"\s<>\\]+', h):
+        cleaned = real_site(u)
+        if cleaned:
+            website = cleaned
+            break
     phones = []
     for p in re.findall(r"tel:([+\d]{7,})", h):
         if p not in phones:

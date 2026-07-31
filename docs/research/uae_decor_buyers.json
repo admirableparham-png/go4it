@@ -3,7 +3,7 @@
   "dest": "UAE",
   "total": 1628,
   "with_phone": 1545,
-  "with_website": 150,
+  "with_website": 8,
   "by_category": {
     "Home-decor retailer": 871,
     "Tableware / serveware": 201,
@@ -155,7 +155,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/home-decor-192024",
       "categories": [
         "Home-decor retailer"
@@ -182,7 +182,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/home-hub-llc-199198",
       "categories": [
         "Home-decor retailer"
@@ -209,7 +209,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/jewel-of-desert-fz-llc-199497",
       "categories": [
         "Home-decor retailer"
@@ -286,7 +286,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/mishka-general-trade-fz-llc-197776",
       "categories": [
         "Home-decor retailer"
@@ -313,7 +313,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/naikjee-190387",
       "categories": [
         "Home-decor retailer"
@@ -340,7 +340,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/narrah-living-191244",
       "categories": [
         "Home-decor retailer",
@@ -370,7 +370,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/oculus-general-trading-llc-189192",
       "categories": [
         "Home-decor retailer"
@@ -398,7 +398,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/pendulum-decor-llc-189982",
       "categories": [
         "Home-decor retailer"
@@ -450,7 +450,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/zaharat-al-mezeher-general-trading-llc-196267",
       "categories": [
         "Home-decor retailer"
@@ -478,7 +478,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/zennova-carpet-190984",
       "categories": [
         "Home-decor retailer"
@@ -758,7 +758,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/a-j-decor-llc-112619",
       "categories": [
         "Home-decor retailer"
@@ -836,7 +836,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/a-b-m-designs-llc-162182",
       "categories": [
         "Home-decor retailer"
@@ -863,12 +863,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/a-r-deco-decor-and-furniture-172995",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -889,12 +889,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/a-touch-of-class-design-and-decor-123538",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -915,7 +915,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/a3-design-llc-176869",
       "categories": [
         "Home-decor retailer"
@@ -943,7 +943,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/aati-contracts-114301",
       "categories": [
         "Home-decor retailer"
@@ -970,7 +970,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/abu-hussain-cont-company-llc-123540",
       "categories": [
         "Home-decor retailer"
@@ -997,7 +997,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/abu-irfan-manual-carpentry-shop-141197",
       "categories": [
         "Home-decor retailer"
@@ -1025,7 +1025,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/abu-sajjad-decor-103964",
       "categories": [
         "Home-decor retailer"
@@ -1052,12 +1052,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/act-decor-llc-135506",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -1079,7 +1079,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/acumen-decor-135177",
       "categories": [
         "Home-decor retailer"
@@ -1232,7 +1232,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/afkar-advertising-and-publishing-llc-122694",
       "categories": [
         "Home-decor retailer",
@@ -1286,12 +1286,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/aic-design-llc-148282",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -1337,12 +1337,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/akhtar-decorator-establishment-120025",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -1441,7 +1441,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-aqaba-star-furniture-manufacturing-llc-122526",
       "categories": [
         "Home-decor retailer"
@@ -1468,7 +1468,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-arabi-aluminium-and-rolling-shutters-mfg-106075",
       "categories": [
         "Home-decor retailer"
@@ -1495,7 +1495,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-araka-gp-122617",
       "categories": [
         "Home-decor retailer"
@@ -1523,7 +1523,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-arif-decor-161245",
       "categories": [
         "Home-decor retailer"
@@ -1550,12 +1550,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-aryan-furniture-industrial-factory-llc-151994",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -1576,7 +1576,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-arz-decoration-works-119464",
       "categories": [
         "Home-decor retailer"
@@ -1604,7 +1604,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-asas-decoration-works-llc-185359",
       "categories": [
         "Home-decor retailer"
@@ -1631,12 +1631,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-askuna-decor-52177",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -1683,12 +1683,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-basrawi-decoration-and-aluminium-company-wll-115780",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -1736,7 +1736,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-daffa-carpentry-llc-176868",
       "categories": [
         "Home-decor retailer"
@@ -1789,12 +1789,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-faner-decoration-178211",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -1815,12 +1815,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-fardan-decor-llc-148019",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -1841,7 +1841,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-faris-carpentry-140438",
       "categories": [
         "Home-decor retailer"
@@ -1868,12 +1868,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-fikree-leisure-and-decor-130608",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -1894,7 +1894,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-fnon-alasrya-decor-works-128160",
       "categories": [
         "Home-decor retailer"
@@ -1998,7 +1998,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-jassim-aluminium-carpentry-llc-159299",
       "categories": [
         "Home-decor retailer"
@@ -2025,12 +2025,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-karama-centre-139542",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -2051,12 +2051,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-katheeb-auto-spare-parts-trading-llc-162960",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -2077,7 +2077,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-kawther-decor-contg-129637",
       "categories": [
         "Home-decor retailer"
@@ -2104,12 +2104,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-khaima-decor-establishment-144417",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -2182,12 +2182,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-madah-building-contg-establishment-119957",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -2208,12 +2208,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-majd-decoration-house-144278",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -2234,12 +2234,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-mandaloon-decor-llc-123554",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -2262,7 +2262,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-manzel-decor-llc-156576",
       "categories": [
         "Home-decor retailer"
@@ -2289,7 +2289,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-manzool-115777",
       "categories": [
         "Home-decor retailer"
@@ -2316,7 +2316,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-maraghi-building-material-trading-106973",
       "categories": [
         "Home-decor retailer"
@@ -2393,7 +2393,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-masood-carpentry-services-llc-153396",
       "categories": [
         "Home-decor retailer"
@@ -2445,12 +2445,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-mehrab-tech-svces-llc-160890",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -2471,7 +2471,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-misbah-decoration-co-llc-158699",
       "categories": [
         "Home-decor retailer"
@@ -2524,12 +2524,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-muqtadir-general-maint-llc-37401",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -2575,12 +2575,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-naboodah-design-spaces-176174",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -2602,7 +2602,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-najah-al-mumayaz-tech-cont-llc-177712",
       "categories": [
         "Home-decor retailer"
@@ -2735,12 +2735,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-raad-decoration-143506",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -2814,7 +2814,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-safi-furniture-manufacturing-llc-136419",
       "categories": [
         "Home-decor retailer"
@@ -2842,7 +2842,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-sahary-for-gypsum-decor-176941",
       "categories": [
         "Home-decor retailer"
@@ -2920,7 +2920,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-samah-arabian-majlis-establishment-135007",
       "categories": [
         "Home-decor retailer"
@@ -2997,12 +2997,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-shahama-decoration-establishment-136344",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -3023,12 +3023,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-sinarah-decor-cont-llc-121432",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -3050,7 +3050,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-tafahom-cont-llc-152324",
       "categories": [
         "Home-decor retailer"
@@ -3078,12 +3078,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-tahani-decor-124235",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -3105,7 +3105,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-tasmeem-al-asri-decor-190623",
       "categories": [
         "Home-decor retailer"
@@ -3132,12 +3132,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-tayer-stocks-llc-106319",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -3158,7 +3158,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-tomouh-for-decoration-works-128671",
       "categories": [
         "Home-decor retailer"
@@ -3185,7 +3185,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-wafa-wooden-doors-and-furniture-factory-131016",
       "categories": [
         "Home-decor retailer"
@@ -3213,7 +3213,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-wahda-carpentry-143920",
       "categories": [
         "Home-decor retailer"
@@ -3269,7 +3269,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-zahi-decor-llc-111679",
       "categories": [
         "Home-decor retailer"
@@ -3322,7 +3322,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/al-zubair-general-trading-establishment-furnishing-div-116199",
       "categories": [
         "Home-decor retailer"
@@ -3477,7 +3477,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/alia-wood-pressing-llc-130218",
       "categories": [
         "Home-decor retailer"
@@ -3505,7 +3505,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/alliance-royal-tec-176827",
       "categories": [
         "Home-decor retailer"
@@ -3586,12 +3586,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/almax-design-164983",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -3612,7 +3612,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/alpha-decoration-111446",
       "categories": [
         "Home-decor retailer"
@@ -3639,7 +3639,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/alpha-home-interior-decoration-llc-145188",
       "categories": [
         "Home-decor retailer"
@@ -3720,7 +3720,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/ambar-garden-furniture-llc-131716",
       "categories": [
         "Home-decor retailer"
@@ -3798,7 +3798,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/amzan-middle-east-llc-117908",
       "categories": [
         "Home-decor retailer"
@@ -3825,7 +3825,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/amzan-neon-llc-154484",
       "categories": [
         "Home-decor retailer"
@@ -3877,12 +3877,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/arabian-alliance-inc-143544",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -3903,7 +3903,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/arabian-carpentry-workshop-116183",
       "categories": [
         "Home-decor retailer"
@@ -3930,7 +3930,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/arabian-designs-131056",
       "categories": [
         "Home-decor retailer"
@@ -3957,12 +3957,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/arabian-treasures-moroccan-decor-139238",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -4034,12 +4034,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/arcade-decor-126982",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -4160,12 +4160,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/arch-way-llc-160705",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -4186,12 +4186,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/archiade-group-151730",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -4238,7 +4238,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/ardent-decoration-work-llc-104304",
       "categories": [
         "Home-decor retailer"
@@ -4265,7 +4265,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/area-decor-llc-143118",
       "categories": [
         "Home-decor retailer"
@@ -4318,12 +4318,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/ariel-designs-139716",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -4445,12 +4445,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/art-address-decor-165096",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -4471,12 +4471,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/art-and-oriental-creativity-128527",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -4497,7 +4497,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/art-design-decor-121766",
       "categories": [
         "Home-decor retailer"
@@ -4525,7 +4525,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/art-designing-decor-works-llc-158057",
       "categories": [
         "Home-decor retailer"
@@ -4553,7 +4553,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/art-home-decor-llc-185528",
       "categories": [
         "Home-decor retailer"
@@ -4580,7 +4580,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/art-line-building-material-and-decor-135199",
       "categories": [
         "Home-decor retailer"
@@ -4632,7 +4632,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/art-vision-decor-llc-123474",
       "categories": [
         "Home-decor retailer"
@@ -4710,7 +4710,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/artisans-decor-llc-136878",
       "categories": [
         "Home-decor retailer"
@@ -4738,7 +4738,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/artista-one-decorative-paint-162710",
       "categories": [
         "Home-decor retailer"
@@ -4765,7 +4765,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/arts-island-contg-gen-maint-decor-llc-164131",
       "categories": [
         "Home-decor retailer"
@@ -4818,12 +4818,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/asif-decore-establishment-125223",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -4845,12 +4845,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/astrid-oasis-manufacturing-llc-154422",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -4871,12 +4871,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/aswar-al-manar-group-123299",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -4974,7 +4974,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/atrium-design-and-decoration-124735",
       "categories": [
         "Home-decor retailer"
@@ -5001,12 +5001,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/audiviz-technologies-163054",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -5052,12 +5052,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/authentic-turnkey-projects-supplies-llc-143286",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -5129,12 +5129,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/avenue-design-121980",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -5180,12 +5180,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/awalle-158721",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -5206,12 +5206,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/awasco-group-162282",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -5307,7 +5307,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/base-plate-llc-128401",
       "categories": [
         "Home-decor retailer"
@@ -5435,7 +5435,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/bellagio-creations-llc-132771",
       "categories": [
         "Home-decor retailer",
@@ -5489,12 +5489,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/bertolini-furniture-llc-154473",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -5515,12 +5515,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/best-way-international-trading-171021",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -5566,12 +5566,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/big-boys-117685",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -5672,7 +5672,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/bin-sanqoor-general-maint-137548",
       "categories": [
         "Home-decor retailer"
@@ -5699,7 +5699,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/blooms-flowers-and-gifts-trading-116018",
       "categories": [
         "Home-decor retailer"
@@ -5726,12 +5726,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/blue-camel-design-117282",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -5775,12 +5775,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/blue-star-curtains-and-decor-establishment-115437",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -5801,7 +5801,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/bold-borne-carpentry-184868",
       "categories": [
         "Home-decor retailer"
@@ -5930,12 +5930,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/brothers-carpentry-131501",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -5956,12 +5956,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/bruno-furnishings-llc-145982",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -6061,7 +6061,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/c-d-intl-decor-co-147469",
       "categories": [
         "Home-decor retailer"
@@ -6213,12 +6213,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/casaprestige-suppliers-165108",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -6239,7 +6239,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/caspaiou-136873",
       "categories": [
         "Home-decor retailer"
@@ -6314,7 +6314,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/ceramic-city-118767",
       "categories": [
         "Home-decor retailer"
@@ -6341,12 +6341,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/cercle-d-art-llc-133812",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -6418,7 +6418,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/city-tower-decor-162046",
       "categories": [
         "Home-decor retailer"
@@ -6445,12 +6445,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/class-building-maint-and-decor-works-llc-133346",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -6471,12 +6471,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/classic-gulf-decor-113642",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -6498,7 +6498,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/classic-touch-furniture-factory-llc-114039",
       "categories": [
         "Home-decor retailer"
@@ -6576,12 +6576,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/climate-solution-technologies-102667",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -6629,7 +6629,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/closets-unlimited-175471",
       "categories": [
         "Home-decor retailer"
@@ -6657,7 +6657,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/coast-line-carpentry-132554",
       "categories": [
         "Home-decor retailer"
@@ -6709,7 +6709,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/colorland-decor-140500",
       "categories": [
         "Home-decor retailer"
@@ -6736,12 +6736,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/compass-arabian-decor-cont-llc-189862",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -6788,7 +6788,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/concord-decor-127447",
       "categories": [
         "Home-decor retailer"
@@ -6840,12 +6840,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/consonni-group-of-companies-119089",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -6866,7 +6866,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/contrast-furniture-manufacturing-and-decor-113998",
       "categories": [
         "Home-decor retailer"
@@ -6943,12 +6943,12 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/creative-angels-161862",
       "categories": [
         "Home-decor retailer"
       ],
-      "needs_enrichment": false,
+      "needs_enrichment": true,
       "fits": [
         "all families"
       ],
@@ -6969,7 +6969,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/creative-concepts-129445",
       "categories": [
         "Home-decor retailer"
@@ -7021,7 +7021,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/creative-corner-decor-177163",
       "categories": [
         "Home-decor retailer"
@@ -7049,7 +7049,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/creative-display-co-llc-156113",
       "categories": [
         "Home-decor retailer"
@@ -7077,7 +7077,7 @@
         "0097142832133"
       ],
       "established": "",
-      "website": "https://www.clarity.ms/tag/\\\\\\",
+      "website": "",
       "profile": "/creative-hands-decor-llc-190896",
       "categories": [
         "Home-decor retailer"
