@@ -1,0 +1,261 @@
+{
+  "section": "A - potential Georgian buyers",
+  "total": 23,
+  "anchors": 12,
+  "with_contact": 11,
+  "buyers": [
+    {
+      "company": "RMG - Rich Metals Group",
+      "segment": "Mining - Cu/Au (flotation + leaching)",
+      "city": "Kazreti / Bolnisi",
+      "website": "richmetalsgroup.com",
+      "reagents": "SIPX/Z-11, PAX/Z-6, MIBC, copper sulfate, zinc sulfate, sodium sulfite/sulfide, sodium cyanide, caustic soda, sulfuric acid, flocculants",
+      "email": "",
+      "phone": "",
+      "needs_enrichment": true,
+      "source_tier": "anchor"
+    },
+    {
+      "company": "JSC RMG Copper",
+      "segment": "Mining - copper flotation",
+      "city": "Madneuli / Kazreti",
+      "website": "madneuli.ge",
+      "reagents": "xanthate collectors (SIPX/PAX), MIBC frother, copper/zinc sulfate, depressants, flocculants",
+      "email": "",
+      "phone": "",
+      "needs_enrichment": true,
+      "source_tier": "anchor"
+    },
+    {
+      "company": "RMG Gold LLC",
+      "segment": "Mining - gold (CIL / heap leach)",
+      "city": "Sakdrisi / Kvartsiti",
+      "website": "richmetalsgroup.com",
+      "reagents": "sodium cyanide, caustic soda, activated carbon reagents, flocculants",
+      "email": "",
+      "phone": "",
+      "needs_enrichment": true,
+      "source_tier": "anchor"
+    },
+    {
+      "company": "Georgian Manganese LLC",
+      "segment": "Mining/metallurgy - Mn beneficiation + ferroalloy",
+      "city": "Chiatura / Zestafoni",
+      "website": "gm.ge",
+      "reagents": "sulfuric acid, caustic soda, flocculants/coagulants (tailings & process water)",
+      "email": "",
+      "phone": "",
+      "needs_enrichment": true,
+      "source_tier": "anchor"
+    },
+    {
+      "company": "JSC Zestafoni Ferroalloy Plant",
+      "segment": "Metallurgy - ferroalloys",
+      "city": "Zestafoni",
+      "website": "gaalloys.ge",
+      "reagents": "sulfuric acid, caustic soda, process reagents",
+      "email": "",
+      "phone": "",
+      "needs_enrichment": true,
+      "source_tier": "anchor"
+    },
+    {
+      "company": "JSC Rustavi Azot",
+      "segment": "Heavy chemical plant (buyer + domestic NaCN producer)",
+      "city": "Rustavi",
+      "website": "rustaviazot.ge",
+      "reagents": "buys sulfuric acid, caustic soda; PRODUCES sodium cyanide (~14 kt/yr) - NaCN demand may be met in-country",
+      "email": "",
+      "phone": "",
+      "needs_enrichment": true,
+      "source_tier": "anchor"
+    },
+    {
+      "company": "Rustavi Steel",
+      "segment": "Metallurgy - steel",
+      "city": "Rustavi",
+      "website": "",
+      "reagents": "pickling acids, caustic soda",
+      "email": "",
+      "phone": "",
+      "needs_enrichment": true,
+      "source_tier": "anchor"
+    },
+    {
+      "company": "Georgian Water & Power (GWP)",
+      "segment": "Water utility",
+      "city": "Tbilisi",
+      "website": "gwp.ge",
+      "reagents": "polyaluminium chloride, aluminium sulphate, polyacrylamide, chlorine, caustic soda, sulfuric acid",
+      "email": "",
+      "phone": "",
+      "needs_enrichment": true,
+      "source_tier": "anchor"
+    },
+    {
+      "company": "United Water Supply Company of Georgia (UWSCG)",
+      "segment": "Water utility - STATE (tenders)",
+      "city": "Tbilisi (nationwide)",
+      "website": "water.gov.ge",
+      "reagents": "PAC, aluminium sulphate, flocculant/coagulant, chlorine, caustic, sulfuric acid - procured via state e-tenders",
+      "email": "",
+      "phone": "",
+      "needs_enrichment": true,
+      "source_tier": "anchor"
+    },
+    {
+      "company": "Batumi Water LLC (Adjara)",
+      "segment": "Water utility",
+      "city": "Batumi",
+      "website": "",
+      "reagents": "coagulants/flocculants, chlorine, caustic",
+      "email": "",
+      "phone": "",
+      "needs_enrichment": true,
+      "source_tier": "anchor"
+    },
+    {
+      "company": "Chemkraft",
+      "segment": "Chemical importer/distributor",
+      "city": "Tbilisi",
+      "website": "chemkraft.ir",
+      "reagents": "imports caustic soda flakes into Georgia (Iran-sourced)",
+      "email": "",
+      "phone": "",
+      "needs_enrichment": true,
+      "source_tier": "anchor"
+    },
+    {
+      "company": "AFG Finance LLC (mining holding)",
+      "segment": "Mining holding / investor",
+      "city": "Tbilisi",
+      "website": "afg.ge",
+      "reagents": "flotation/leaching reagents across held mining assets",
+      "email": "",
+      "phone": "",
+      "needs_enrichment": true,
+      "source_tier": "anchor"
+    },
+    {
+      "company": "GEOCHEMLAB",
+      "segment": "Chemical importer/distributor (directory)",
+      "city": "",
+      "website": "https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);",
+      "email": "geo.chemlab@yahoo.com",
+      "phone": "526704615",
+      "reagents": "industrial/lab chemicals - vet for industrial tonnage",
+      "needs_enrichment": false,
+      "source_tier": "directory"
+    },
+    {
+      "company": "REAGENT GROUP",
+      "segment": "Chemical importer/distributor (directory)",
+      "city": "",
+      "website": "https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);",
+      "email": "reagentgeorgia@gmail.com",
+      "phone": "526704615",
+      "reagents": "industrial/lab chemicals - vet for industrial tonnage",
+      "needs_enrichment": false,
+      "source_tier": "directory"
+    },
+    {
+      "company": "LABHOUSE",
+      "segment": "Chemical importer/distributor (directory)",
+      "city": "",
+      "website": "https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);",
+      "email": "info@labhouse.ge",
+      "phone": "526704615",
+      "reagents": "industrial/lab chemicals - vet for industrial tonnage",
+      "needs_enrichment": false,
+      "source_tier": "directory"
+    },
+    {
+      "company": "KHIMREACTIVE",
+      "segment": "Chemical importer/distributor (directory)",
+      "city": "",
+      "website": "https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);",
+      "email": "khimreactive@gmail.com",
+      "phone": "526704615",
+      "reagents": "industrial/lab chemicals - vet for industrial tonnage",
+      "needs_enrichment": false,
+      "source_tier": "directory"
+    },
+    {
+      "company": "GEOJEMI",
+      "segment": "Chemical importer/distributor (directory)",
+      "city": "",
+      "website": "https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);",
+      "email": "geojemi@yahoo.com",
+      "phone": "526704615",
+      "reagents": "industrial/lab chemicals - vet for industrial tonnage",
+      "needs_enrichment": false,
+      "source_tier": "directory"
+    },
+    {
+      "company": "GEOTEK",
+      "segment": "Chemical importer/distributor (directory)",
+      "city": "",
+      "website": "https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);",
+      "email": "ddzneladze@yahoo.com",
+      "phone": "526704615",
+      "reagents": "industrial/lab chemicals - vet for industrial tonnage",
+      "needs_enrichment": false,
+      "source_tier": "directory"
+    },
+    {
+      "company": "PRIMAMEDI",
+      "segment": "Chemical importer/distributor (directory)",
+      "city": "",
+      "website": "https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);",
+      "email": "contact@primamedi.com",
+      "phone": "526704615",
+      "reagents": "industrial/lab chemicals - vet for industrial tonnage",
+      "needs_enrichment": false,
+      "source_tier": "directory"
+    },
+    {
+      "company": "SAMAIA",
+      "segment": "Chemical importer/distributor (directory)",
+      "city": "",
+      "website": "https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);",
+      "email": "info@samaia.ge",
+      "phone": "526704615",
+      "reagents": "industrial/lab chemicals - vet for industrial tonnage",
+      "needs_enrichment": false,
+      "source_tier": "directory"
+    },
+    {
+      "company": "ALPHALAB",
+      "segment": "Chemical importer/distributor (directory)",
+      "city": "",
+      "website": "https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);",
+      "email": "mbgeorgia@gmail.com",
+      "phone": "526704615",
+      "reagents": "industrial/lab chemicals - vet for industrial tonnage",
+      "needs_enrichment": false,
+      "source_tier": "directory"
+    },
+    {
+      "company": "MOLECULE+",
+      "segment": "Chemical importer/distributor (directory)",
+      "city": "",
+      "website": "https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);",
+      "email": "moleculeplus@yahoo.com",
+      "phone": "526704615",
+      "reagents": "industrial/lab chemicals - vet for industrial tonnage",
+      "needs_enrichment": false,
+      "source_tier": "directory"
+    },
+    {
+      "company": "LABTECH GEORGIA",
+      "segment": "Chemical importer/distributor (directory)",
+      "city": "",
+      "website": "https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);",
+      "email": "contact@labtech.ge",
+      "phone": "526704615",
+      "reagents": "industrial/lab chemicals - vet for industrial tonnage",
+      "needs_enrichment": false,
+      "source_tier": "directory"
+    }
+  ]
+}

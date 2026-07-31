@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% set active = 'georgia' %}
+{% block content %}
+
+{% macro contact(email, phone, website) %}
+  {% if phone %}<a href="tel:{{ phone }}" class="text-sky-400 hover:underline">{{ phone }}</a>{% endif %}
+  {% if email %}{% if phone %} · {% endif %}<a href="mailto:{{ email }}" class="text-sky-400 hover:underline">{{ email }}</a>{% endif %}
+  {% if website %}{% if email or phone %} · {% endif %}<a href="{{ website if '://' in website else 'https://' + website }}" target="_blank" rel="noopener" class="text-sky-400 hover:underline">site&#8599;</a>{% endif %}
+  {% if not email and not phone and not website %}<span class="text-amber-500/70">needs enrichment</span>{% endif %}
+{% endmacro %}
+
+{% macro card(b) %}
+<div class="rounded-xl border border-slate-800 bg-slate-900/60 p-3">
+  <div class="font-semibold text-sm">
+    {% if b.website %}<a href="{{ b.website if '://' in b.website else 'https://' + b.website }}" target="_blank" rel="noopener" class="text-sky-300 hover:underline">{{ b.company }}</a>{% else %}{{ b.company }}{% endif %}
+  </div>
+  <div class="text-[11px] text-slate-500 mb-1">{{ b.segment }}{% if b.city %} · {{ b.city }}{% endif %}</div>
+  <div class="text-xs mb-1">{{ contact(b.email, b.phone, b.website) }}</div>
+  {% if b.reagents %}<div class="text-[11px] text-slate-400 bg-slate-800/50 rounded px-2 py-1">{{ b.reagents }}</div>{% endif %}
+</div>
+{% endmacro %}
+
+<div class="flex items-center justify-between mb-1">
+  <h2 class="text-lg font-semibold">Georgia &mdash; chemical buyers</h2>
+</div>
+<p class="text-slate-500 text-sm mb-6">Mineral-processing &amp; water-treatment reagents. {{ buyers|length }} potential buyers ({{ with_contact }} with a contact) · {{ tenders|length }} live procurement RFQs ({{ open_rfq }} open) · {{ customs|length }} customs records.</p>
+
+{% if not has_data %}
+  <div class="rounded-xl border border-slate-800 bg-slate-900 p-6 text-slate-400 text-sm">
+    No data yet. Run <span class="font-mono text-xs">scripts/harvest_ge_chem_buyers.py</span> +
+    <span class="font-mono text-xs">harvest_ge_chem_tenders.py</span> then <span class="font-mono text-xs">load_chem.py</span>.
+  </div>
+{% else %}
+
+<!-- Section A -->
+<section class="mb-8">
+  <h3 class="text-sm font-semibold text-emerald-400 mb-2">Section A &middot; Potential Georgian buyers <span class="text-slate-500">{{ buyers|length }}</span></h3>
+  {% if anchors %}
+    <div class="text-[11px] uppercase tracking-wide text-slate-500 mb-2">Anchor accounts &mdash; mines · metallurgy · water utilities · importers ({{ anchors|length }})</div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">{% for b in anchors %}{{ card(b) }}{% endfor %}</div>
+  {% endif %}
+  {% if directory %}
+    <div class="text-[11px] uppercase tracking-wide text-slate-500 mb-2">Chemical importers / distributors ({{ directory|length }})</div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">{% for b in directory %}{{ card(b) }}{% endfor %}</div>
+  {% endif %}
+</section>
+
+<!-- Section B -->
+<section class="mb-8">
+  <h3 class="text-sm font-semibold text-sky-400 mb-2">Section B &middot; Live procurement buy-requests (2025+) <span class="text-slate-500">{{ tenders|length }}</span></h3>
+  {% if tenders %}
+    <div class="overflow-x-auto rounded-xl border border-slate-800">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-900 text-slate-400 text-xs uppercase"><tr>
+          <th class="text-left font-medium px-3 py-2">Chemical</th>
+          <th class="text-left font-medium px-3 py-2">Buyer (public body)</th>
+          <th class="text-left font-medium px-3 py-2">Announced</th>
+          <th class="text-left font-medium px-3 py-2">Deadline</th>
+          <th class="text-left font-medium px-3 py-2">Status</th>
+        </tr></thead>
+        <tbody>
+          {% for t in tenders %}
+            <tr class="border-t border-slate-800 hover:bg-slate-900/60">
+              <td class="px-3 py-2 text-slate-200">{{ t.chemical }}</td>
+              <td class="px-3 py-2 text-slate-300">{{ t.buyer }}</td>
+              <td class="px-3 py-2 text-slate-400">{{ t.announced }}</td>
+              <td class="px-3 py-2 text-rose-300">{{ t.deadline }}</td>
+              <td class="px-3 py-2">{% if t.open %}<span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">OPEN</span>{% else %}<span class="text-xs text-slate-500">closed</span>{% endif %}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-slate-500 text-sm">No open chemical tenders in the scanned window. Mining reagents are procured <b>privately</b> (see Section A); water-treatment tenders appear here periodically &mdash; re-run the harvester to refresh.</p>
+  {% endif %}
+</section>
+
+<!-- Customs -->
+{% if customs %}
+<section>
+  <h3 class="text-sm font-semibold text-amber-400 mb-2">Customs import records <span class="text-slate-500">{{ customs|length }}</span></h3>
+  <div class="overflow-x-auto rounded-xl border border-slate-800">
+    <table class="w-full text-sm">
+      <thead class="bg-slate-900 text-slate-400 text-xs uppercase"><tr>
+        <th class="text-left font-medium px-3 py-2">Importer</th>
+        <th class="text-left font-medium px-3 py-2">Chemical</th>
+        <th class="text-left font-medium px-3 py-2">Import date</th>
+        <th class="text-left font-medium px-3 py-2">Qty</th>
+        <th class="text-left font-medium px-3 py-2">Contact</th>
+      </tr></thead>
+      <tbody>
+        {% for c in customs %}
+          <tr class="border-t border-slate-800 hover:bg-slate-900/60">
+            <td class="px-3 py-2 text-slate-200">{{ c.company }}</td>
+            <td class="px-3 py-2 text-slate-300">{{ c.chemical }}</td>
+            <td class="px-3 py-2 text-slate-400">{{ c.import_date }}</td>
+            <td class="px-3 py-2 text-slate-400">{{ c.quantity }} {{ c.unit }}</td>
+            <td class="px-3 py-2 text-xs">{{ contact(c.email, c.phone, c.website) }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% else %}
+<section>
+  <h3 class="text-sm font-semibold text-amber-400 mb-2">Customs import records <span class="text-slate-500">0</span></h3>
+  <p class="text-slate-500 text-sm">Paid channel: drop Volza/Trademo/ImportGenius "importers in Georgia" CSVs into <span class="font-mono text-xs">docs/customs_inbox/</span> and run <span class="font-mono text-xs">scripts/load_customs.py</span> &rarr; every Georgian importer of these chemicals appears here with dates.</p>
+</section>
+{% endif %}
+
+{% endif %}
+{% endblock %}

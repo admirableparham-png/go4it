@@ -443,6 +443,28 @@ def intel(request: Request):
     return templates.TemplateResponse("intel.html", ctx)
 
 
+@app.get("/georgia", response_class=HTMLResponse)
+def georgia(request: Request):
+    """Georgia chemical-buyer research (Section A potential buyers + Section B live
+    procurement RFQs + customs), read from the committed harvest JSONs."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+    buyers = _load_research("ge_chem_buyers.json").get("buyers", [])
+    tenders = _load_research("ge_chem_rfqs.json").get("tenders", [])
+    customs = _load_research("ge_customs.json").get("records", [])
+    ctx = {
+        "request": request, "user": user, "active": "georgia",
+        "buyers": buyers,
+        "anchors": [b for b in buyers if b.get("source_tier") == "anchor"],
+        "directory": [b for b in buyers if b.get("source_tier") != "anchor"],
+        "with_contact": sum(1 for b in buyers if not b.get("needs_enrichment")),
+        "tenders": tenders, "open_rfq": sum(1 for t in tenders if t.get("open")),
+        "customs": customs,
+        "has_data": bool(buyers or tenders or customs),
+    }
+    return templates.TemplateResponse("georgia.html", ctx)
+
+
 # ----------------------------------------------------------------------------- lead detail + pipeline
 
 @app.get("/leads/{lead_id}", response_class=HTMLResponse)
