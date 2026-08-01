@@ -28,6 +28,11 @@ INBOX_DIR = os.getenv("INBOX_DIR", os.path.join(_PROJECT_ROOT, "inbox"))
 INGEST_INTERVAL = int(os.getenv("INGEST_INTERVAL", "120"))
 DEBUG_DIR = os.path.join(_PROJECT_ROOT, "debug")
 
+# Background worker: periodically fill blank contacts on new website-bearing leads (app/enrich_service).
+# OFF by default (0). Set ENRICH_INTERVAL to e.g. 3600 (hourly) to keep harvested leads outreach-ready.
+ENRICH_INTERVAL = int(os.getenv("ENRICH_INTERVAL", "0"))    # seconds between enrich passes; 0 = disabled
+ENRICH_BATCH = int(os.getenv("ENRICH_BATCH", "40"))         # max leads scraped per pass (stay polite)
+
 # --- go4worldbusiness authenticated portal scraper (browser bot) ---
 # Credentials for YOUR OWN paid account. Set in .env (gitignored) — never in code.
 # Automated access may conflict with go4worldbusiness Terms / risk the account.

@@ -1,4 +1,4 @@
-.PHONY: install run prod seed test save backup db-migrate clean worker ingest ingest-portal
+.PHONY: install run prod seed test save backup db-migrate clean worker enrich ingest ingest-portal
 
 # One-time setup: create a virtualenv and install dependencies.
 install:
@@ -28,9 +28,13 @@ test:
 ingest:
 	./.venv/bin/python -m app.worker --once
 
-# Run the background ingestion worker (inbox often + go4world portal hourly).
+# Run the background worker (inbox often + go4world portal hourly + web-enrich if ENRICH_INTERVAL>0).
 worker:
 	./.venv/bin/python -m app.worker
+
+# One web-enrichment pass now: fill blank buyer emails/phones from their own sites (no API credits).
+enrich:
+	./.venv/bin/python -m app.worker --enrich
 
 # Portal-only pass: log into go4worldbusiness and capture the pages to ./debug
 # (needs GO4WORLD_EMAIL/PASSWORD in .env). Use this for first-run selector tuning.

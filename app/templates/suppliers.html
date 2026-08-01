@@ -2,45 +2,127 @@
 {% set active = 'suppliers' %}
 {% block content %}
 
+{% macro sup_form(action, s=None, submit='Save', busy='Saving') %}
+  <form method="post" action="{{ action }}" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+    <label class="block sm:col-span-2 lg:col-span-1">
+      <span class="field-label">Name</span>
+      <input name="name" value="{{ s.name if s else '' }}" required placeholder="Supplier name" class="input">
+    </label>
+    <label class="block">
+      <span class="field-label">Country</span>
+      <input name="country" value="{{ s.country if s else 'IR' }}" maxlength="3" placeholder="IR" class="input" list="sup-countries">
+    </label>
+    <label class="block">
+      <span class="field-label">City</span>
+      <input name="city" value="{{ s.city if s else '' }}" placeholder="Tabriz / Dubai" class="input">
+    </label>
+    <label class="block">
+      <span class="field-label">Contact person</span>
+      <input name="contact" value="{{ s.contact if s else '' }}" placeholder="Name" class="input">
+    </label>
+    <label class="block">
+      <span class="field-label">Phone</span>
+      <input name="phone" value="{{ s.phone if s else '' }}" placeholder="+98…" class="input">
+    </label>
+    <label class="block">
+      <span class="field-label">Email</span>
+      <input name="email" type="email" value="{{ s.email if s else '' }}" placeholder="sales@…" class="input">
+    </label>
+    <label class="block">
+      <span class="field-label">Reliability</span>
+      <select name="reliability" class="select">
+        {% for n in [1,2,3,4,5] %}
+          <option value="{{ n }}" {% if (s.reliability if s else 3) == n %}selected{% endif %}>{{ n }} — {{ '★' * n }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label class="block sm:col-span-2">
+      <span class="field-label">Payment terms</span>
+      <input name="payment_terms" value="{{ s.payment_terms if s else '' }}" placeholder="30% advance, balance on B/L…" class="input">
+    </label>
+    <div class="sm:col-span-2 lg:col-span-3 flex items-center gap-2 pt-1">
+      <button class="btn btn-primary btn-sm" data-busy="{{ busy }}">{{ submit }}</button>
+    </div>
+  </form>
+{% endmacro %}
+
+<datalist id="sup-countries">
+  <option value="IR"><option value="AE"><option value="TR"><option value="GE"><option value="CN"><option value="IN">
+</datalist>
+
 <div class="flex flex-wrap items-end justify-between gap-3 mb-6">
   <div>
     <h2 class="text-xl font-bold tracking-tight flex items-center gap-2">Suppliers <span class="badge badge-slate">{{ suppliers|length }}</span></h2>
-    <p class="text-slate-500 text-sm mt-0.5">Your sourcing side &mdash; created automatically from catalog products.</p>
+    <p class="text-slate-500 text-sm mt-0.5">Your sourcing side &mdash; who you buy from. Add them here or let catalog products create them.</p>
   </div>
 </div>
 
+{% if request.query_params.get('error') == 'name' %}
+  <div class="alert-rose mb-4">A supplier needs a name.</div>
+{% elif request.query_params.get('error') == 'dupe' %}
+  <div class="alert-rose mb-4">Another supplier already uses that name.</div>
+{% endif %}
+
+{% if can_edit %}
+<details class="card card-soft mb-6">
+  <summary class="cursor-pointer select-none font-semibold text-sm flex items-center gap-2">
+    <span class="text-emerald-400">＋</span> Add a supplier
+  </summary>
+  <div class="mt-4">{{ sup_form('/suppliers', submit='Add supplier', busy='Adding') }}</div>
+</details>
+{% endif %}
+
 {% if suppliers %}
   <div class="table-wrap">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Country</th>
-          <th>City</th>
-          <th>Contact</th>
-          <th class="text-right">Products</th>
-          <th class="text-right">Reliability</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for s in suppliers %}
-          <tr>
-            <td class="text-slate-200">{{ s.name }}</td>
-            <td><span class="badge badge-slate text-[10px]">{{ s.country }}</span></td>
-            <td class="text-slate-400">{{ s.city or '—' }}</td>
-            <td class="text-slate-400 text-xs">
-              {% if s.phone %}<a href="tel:{{ s.phone }}" class="link">{{ s.phone }}</a>{% endif %}
-              {% if s.email %}{% if s.phone %} · {% endif %}<a href="mailto:{{ s.email }}" class="link">{{ s.email }}</a>{% endif %}
-              {% if not s.phone and not s.email %}—{% endif %}
-            </td>
-            <td class="text-right text-slate-300 tabular-nums">{{ pcounts.get(s.id, 0) }}</td>
-            <td class="text-right text-amber-400/80">{{ '★' * s.reliability }}<span class="text-slate-700">{{ '★' * (5 - s.reliability) }}</span></td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="min-w-[720px]">
+      <!-- header -->
+      <div class="grid grid-cols-[minmax(0,2fr)_64px_minmax(0,1.4fr)_minmax(0,1.6fr)_70px_90px_80px] gap-3 px-3 py-2 text-[11px] uppercase tracking-wide text-slate-500 border-b border-slate-800">
+        <div>Name</div><div>Country</div><div>City</div><div>Contact</div>
+        <div class="text-right">Products</div><div class="text-right">Reliability</div><div class="text-right">Status</div>
+      </div>
+      {% for s in suppliers %}
+        <details class="group border-b border-slate-800/70 {% if not s.active %}opacity-55{% endif %}">
+          <summary class="grid grid-cols-[minmax(0,2fr)_64px_minmax(0,1.4fr)_minmax(0,1.6fr)_70px_90px_80px] gap-3 px-3 py-2.5 items-center cursor-pointer select-none hover:bg-slate-800/30">
+            <div class="text-slate-200 font-medium truncate flex items-center gap-1.5">
+              <span class="text-slate-600 group-open:rotate-90 transition-transform text-xs">▸</span>{{ s.name }}
+            </div>
+            <div><span class="badge badge-slate text-[10px]">{{ s.country }}</span></div>
+            <div class="text-slate-400 truncate">{{ s.city or '—' }}</div>
+            <div class="text-slate-400 text-xs truncate">
+              {% if s.phone %}<a href="tel:{{ s.phone }}" class="link" onclick="event.stopPropagation()">{{ s.phone }}</a>{% endif %}
+              {% if s.email %}{% if s.phone %} · {% endif %}<a href="mailto:{{ s.email }}" class="link" onclick="event.stopPropagation()">{{ s.email }}</a>{% endif %}
+              {% if not s.phone and not s.email %}<span class="text-amber-500/70">no contact</span>{% endif %}
+            </div>
+            <div class="text-right text-slate-300 tabular-nums">{{ pcounts.get(s.id, 0) }}</div>
+            <div class="text-right text-amber-400/80 text-xs">{{ '★' * s.reliability }}<span class="text-slate-700">{{ '★' * (5 - s.reliability) }}</span></div>
+            <div class="text-right">
+              {% if s.active %}<span class="badge badge-emerald text-[10px]">active</span>
+              {% else %}<span class="badge badge-slate text-[10px]">off</span>{% endif %}
+            </div>
+          </summary>
+          {% if can_edit %}
+          <div class="px-3 pb-4 pt-1">
+            {% if s.payment_terms %}<div class="text-xs text-slate-500 mb-3">Terms: <span class="text-slate-300">{{ s.payment_terms }}</span></div>{% endif %}
+            {{ sup_form('/suppliers/' ~ s.id ~ '/edit', s=s, submit='Save changes', busy='Saving') }}
+            <form method="post" action="/suppliers/{{ s.id }}/toggle" class="mt-2">
+              {% if s.active %}
+                <button class="btn btn-ghost-sky btn-sm" data-busy="…">Deactivate</button>
+                <span class="text-[11px] text-slate-500">hides it from active sourcing (kept for history)</span>
+              {% else %}
+                <button class="btn btn-ghost-emerald btn-sm" data-busy="…">Reactivate</button>
+              {% endif %}
+            </form>
+          </div>
+          {% else %}
+          <div class="px-3 pb-4 pt-1 text-xs text-slate-500">
+            {% if s.payment_terms %}Terms: <span class="text-slate-300">{{ s.payment_terms }}</span>{% else %}No extra details.{% endif %}
+          </div>
+          {% endif %}
+        </details>
+      {% endfor %}
+    </div>
   </div>
 {% else %}
-  <div class="empty">No suppliers yet. They're created automatically when you add catalog products.</div>
+  <div class="empty">No suppliers yet. Add one above, or they're created automatically when you add catalog products.</div>
 {% endif %}
 {% endblock %}

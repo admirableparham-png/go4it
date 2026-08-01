@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Pro-forma {{ q.tracking_code }} — go4it</title>
+<style>
+  :root { --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --brand:#059669; --brandbg:#ecfdf5; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink); background: #f1f5f9; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 24px 16px 64px; }
+  .toolbar { display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 16px; }
+  .btn {
+    font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+    border: 1px solid var(--line); background: #fff; color: var(--ink);
+    padding: 8px 14px; border-radius: 8px;
+  }
+  .btn-print { background: var(--brand); color: #fff; border-color: var(--brand); }
+  .doc {
+    background: #fff; border: 1px solid var(--line); border-radius: 14px;
+    box-shadow: 0 10px 30px -12px rgba(15,23,42,.18); padding: 40px;
+  }
+  .head { display: flex; justify-content: space-between; align-items: flex-start;
+          gap: 16px; border-bottom: 1px solid var(--line); padding-bottom: 20px; margin-bottom: 24px; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .mark { width: 34px; height: 34px; border-radius: 9px; background: var(--brand); color: #fff;
+          font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .brand h1 { font-size: 22px; margin: 0; letter-spacing: -.01em; }
+  .brand .sub { color: var(--muted); font-size: 13px; }
+  .meta { text-align: right; font-size: 13px; color: var(--muted); }
+  .meta .code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 700; color: var(--ink); font-size: 14px; }
+  .cols { display: flex; flex-wrap: wrap; gap: 24px; margin-bottom: 24px; }
+  .col { flex: 1 1 220px; }
+  .label { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 4px; }
+  .col .name { font-weight: 600; }
+  .col .row { font-size: 14px; color: #334155; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 24px; font-size: 14px; }
+  th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .04em;
+       color: var(--muted); border-bottom: 1px solid var(--line); padding: 8px 0; font-weight: 600; }
+  th.r, td.r { text-align: right; }
+  td { padding: 12px 0; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+  .desc .p { font-weight: 600; }
+  .desc .s { color: var(--muted); font-size: 13px; }
+  .total-band { display: flex; justify-content: flex-end; }
+  .total {
+    background: var(--brandbg); border: 1px solid #a7f3d0; border-radius: 12px;
+    padding: 16px 22px; min-width: 260px; text-align: right;
+  }
+  .total .label { color: var(--brand); }
+  .total .big { font-size: 28px; font-weight: 800; color: #047857; letter-spacing: -.02em; }
+  .total .per { font-size: 14px; font-weight: 500; color: var(--muted); }
+  .total .unit { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .note { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line);
+          margin-top: 28px; padding-top: 14px; }
+  .expired { display: inline-block; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca;
+             border-radius: 999px; padding: 2px 10px; font-size: 12px; font-weight: 600; margin-top: 6px; }
+  .foot { text-align: center; color: #94a3b8; font-size: 12px; margin-top: 22px; }
+  @media print {
+    body { background: #fff; }
+    .toolbar, .foot { display: none; }
+    .doc { box-shadow: none; border: none; padding: 0; }
+    .wrap { padding: 0; }
+  }
+  @media (max-width: 520px) { .doc { padding: 24px; } .head { flex-direction: column; } .meta { text-align: left; } }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="toolbar">
+      <button class="btn btn-print" onclick="window.print()">Print / Save as PDF</button>
+    </div>
+
+    <div class="doc">
+      <div class="head">
+        <div class="brand">
+          <div class="mark">g4</div>
+          <div>
+            <h1>go4it</h1>
+            <div class="sub">Pro-forma quotation</div>
+          </div>
+        </div>
+        <div class="meta">
+          <div class="code">{{ q.tracking_code }}</div>
+          <div>Issued {{ q.created_at.strftime('%d %b %Y') }}</div>
+          <div>Valid {{ q.validity_days }} days{% if expires %} &middot; until {{ expires.strftime('%d %b %Y') }}{% endif %}</div>
+          {% if expires and today > expires %}<div class="expired">Expired &mdash; ask us to refresh</div>{% endif %}
+        </div>
+      </div>
+
+      <div class="cols">
+        <div class="col">
+          <div class="label">Prepared for</div>
+          {% if lead %}
+            <div class="name">{{ lead.buyer_company or 'Valued buyer' }}</div>
+            {% if lead.contact_name %}<div class="row">{{ lead.contact_name }}</div>{% endif %}
+            {% if lead.dest_city or lead.dest_country %}<div class="row">{{ lead.dest_city }}{% if lead.dest_city and lead.dest_country %}, {% endif %}{{ lead.dest_country }}</div>{% endif %}
+          {% else %}
+            <div class="name">Valued buyer</div>
+          {% endif %}
+        </div>
+        <div class="col">
+          <div class="label">Terms</div>
+          <div class="row"><b>{{ q.incoterm }}</b>{% if q.dest_border %} &middot; {{ q.dest_border }}{% endif %}</div>
+          <div class="row">Currency: {{ q.quote_currency }}</div>
+          <div class="row">Quantity: {{ '%g'|format(q.quantity) }}{% if product %} {{ product.unit }}{% endif %}</div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th class="r">Qty</th>
+            <th class="r">Unit price</th>
+            <th class="r">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="desc">
+              <div class="p">{{ product.name if product else q.product_id }}</div>
+              {% if product and (product.spec or product.hs_code or product.origin_region) %}
+                <div class="s">
+                  {% if product.spec %}{{ product.spec }}{% endif %}
+                  {% if product.hs_code %}{% if product.spec %} &middot; {% endif %}HS {{ product.hs_code }}{% endif %}
+                  {% if product.origin_region %} &middot; origin {{ product.origin_region }}{% endif %}
+                </div>
+              {% endif %}
+              <div class="s">Delivered {{ q.incoterm }}{% if q.dest_border %} to {{ q.dest_border }}{% endif %}</div>
+            </td>
+            <td class="r">{{ '%g'|format(q.quantity) }}{% if product %}<br><span class="s">{{ product.unit }}</span>{% endif %}</td>
+            <td class="r">{{ '%.2f'|format(q.delivered_unit) }}</td>
+            <td class="r">{{ '%.2f'|format(q.delivered_total) }} {{ q.quote_currency }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="total-band">
+        <div class="total">
+          <div class="label">Delivered price ({{ q.incoterm }})</div>
+          <div class="big">{{ '%.2f'|format(q.delivered_total) }} <span class="per">{{ q.quote_currency }}</span></div>
+          <div class="unit">{{ '%.2f'|format(q.delivered_unit) }} {{ q.quote_currency }}{% if product %} / {{ product.unit }}{% endif %} &middot; {{ '%g'|format(q.quantity) }}{% if product %} {{ product.unit }}{% endif %}</div>
+        </div>
+      </div>
+
+      <div class="note">
+        This is a pro-forma quotation, not a tax invoice. Prices are indicative and valid for
+        {{ q.validity_days }} days from the issue date. We handle freight, customs and delivery to the
+        stated Incoterm; import duty and VAT at destination are the buyer's account unless agreed otherwise.
+        Final terms are confirmed on order.
+      </div>
+    </div>
+
+    <div class="foot">go4it &middot; sourcing &amp; delivered trade</div>
+  </div>
+</body>
+</html>

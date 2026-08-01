@@ -22,6 +22,28 @@
   </div>
 </div>
 
+{% if share_url and can_approve %}
+<div class="card card-soft mb-4 no-print">
+  <div class="flex flex-wrap items-center gap-2">
+    <div class="eyebrow shrink-0">&#128279; Buyer link</div>
+    <input id="shareUrl" value="{{ share_url }}" readonly onclick="this.select()"
+           class="input flex-1 min-w-[220px] font-mono text-xs">
+    <button type="button" class="btn btn-secondary btn-sm" onclick="copyShare(this)">Copy</button>
+    <a href="{{ share_url }}" target="_blank" rel="noopener" class="btn btn-neutral btn-sm">Open</a>
+  </div>
+  <div class="text-[11px] text-slate-500 mt-2">Safe to send &mdash; the buyer sees only the delivered price, never your cost breakdown, EXW, or margin.</div>
+</div>
+<script>
+  function copyShare(btn) {
+    var i = document.getElementById('shareUrl');
+    i.select(); i.setSelectionRange(0, 99999);
+    var done = function () { var t = btn.textContent; btn.textContent = 'Copied'; setTimeout(function(){ btn.textContent = t; }, 1500); };
+    if (navigator.clipboard) { navigator.clipboard.writeText(i.value).then(done, function(){ document.execCommand('copy'); done(); }); }
+    else { document.execCommand('copy'); done(); }
+  }
+</script>
+{% endif %}
+
 <!-- Pro-forma document (white, so it prints like a real invoice) -->
 <div id="proforma" class="mx-auto max-w-3xl bg-white text-slate-900 rounded-xl shadow p-8">
   <div class="flex items-start justify-between border-b border-slate-200 pb-4 mb-6">

@@ -14,16 +14,21 @@ DEAL_STAGES = [
     "payment_received",
     "freight_booked",
     "export_cleared",     # gated: needs CoO + commercial invoice verified
-    "in_transit",
-    "import_cleared",
+    "in_transit",         # gated: needs bill of lading verified
+    "import_cleared",     # gated: needs packing list + customs declaration verified
     "delivered",
     "settled",
     "closed",
 ]
 
-# Documents that must be VERIFIED before a deal may enter a given stage.
+# Documents that must be VERIFIED before a deal may enter a given stage. Non-bypassable, enforced in
+# advance_deal(): each stage's real trade paperwork must exist and be verified before the deal moves
+# into it — you can't be "in transit" without a bill of lading, or "import cleared" without the
+# import paperwork. Mirrors PULSE's hard-rules philosophy (compliance in code, not memory).
 REQUIRED_DOCS = {
     "export_cleared": ["certificate_of_origin", "commercial_invoice"],
+    "in_transit": ["bill_of_lading"],
+    "import_cleared": ["packing_list", "customs_declaration"],
 }
 
 DOC_TYPES = [

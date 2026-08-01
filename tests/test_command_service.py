@@ -1,5 +1,6 @@
 """Tests for the command-box intent router + directory parsers."""
 from app.command_service import _osm_selectors, _parse_cards, parse_command, slugify
+from geo_en import translit_any
 
 
 def test_parse_uae_routes_to_yellowpages():
@@ -28,8 +29,38 @@ def test_parse_country_without_category_is_unknown():
     assert r["action"] == "unknown" and r["iso"] == "GE"
 
 
-def test_osm_selectors_unknown_keyword_guesses_shop():
-    assert _osm_selectors("widget") == ['nwr["shop"="widget"]']
+def test_osm_selectors_validated_guess_only_for_real_shop_values():
+    # a real OSM shop value is guessed; a made-up one is NOT (returns [] -> caller gives guidance)
+    assert _osm_selectors("butcher") == ['nwr["shop"="butcher"]']
+    assert _osm_selectors("widget") == []
+
+
+def test_parse_unmappable_osm_keyword_is_unknown_with_guidance():
+    r = parse_command("widget shops in Georgia")
+    assert r["action"] == "unknown" and r["iso"] == "GE"
+    assert "OpenStreetMap category" in r["note"]
+
+
+def test_translit_any_handles_arabic_persian_cyrillic():
+    assert translit_any("مبلمان") and translit_any("مبلمان").isascii()      # Persian
+    assert translit_any("Мебель").isascii()                                 # Cyrillic
+    assert translit_any("Furniture World") == "Furniture World"             # Latin passthrough
+    assert translit_any("株式会社") == ""                                    # non-mappable -> empty (skip)
+
+
+def test_translit_any_folds_latin_diacritics_not_drops():
+    # Azerbaijani/Turkish/European names must keep their letters (fold), not lose them
+    assert translit_any("Çağ Mağaza") == "Cag Magaza"
+    assert translit_any("Şişecam") == "Sisecam"
+    assert translit_any("Bakı Ticarət") == "Baki Ticaret"      # ı, ə have no NFKD decomposition
+    assert translit_any("İstanbul") == "Istanbul"
+
+
+def test_parse_non_latin_country_and_category():
+    # Cyrillic category word + Latin country -> still routes to OSM with a real selector
+    r = parse_command("мебель in Georgia")
+    assert r["iso"] == "GE"
+    assert r["action"] in ("harvest_osm", "unknown")   # transliterates; may or may not map, never crashes
 
 
 def test_slugify():

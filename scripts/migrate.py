@@ -16,6 +16,7 @@ DB = os.path.join(BASE, "data.db")
 MIGRATIONS = [
     ("lead", "next_action_at", "TIMESTAMP"),
     ("lead", "next_action_note", "VARCHAR DEFAULT ''"),
+    ("quote", "share_token", "VARCHAR DEFAULT ''"),
 ]
 
 
@@ -32,6 +33,12 @@ def run():
             cur.execute(f"ALTER TABLE {table} ADD COLUMN {column} {decl}")
             print(f"+ {table}.{column}")
             applied += 1
+    # Indexes the models declare (Field(index=True)) that ALTER TABLE ADD COLUMN doesn't create.
+    # create_all() makes them on fresh DBs; migrated DBs need them here to match (else full scans).
+    tables = {r[0] for r in cur.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+    for idx, table, column in [("ix_quote_share_token", "quote", "share_token")]:
+        if table in tables:
+            cur.execute(f"CREATE INDEX IF NOT EXISTS {idx} ON {table}({column})")
     con.commit()
     con.close()
     print(f"migrations applied: {applied}")

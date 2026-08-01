@@ -21,6 +21,19 @@ def test_default_message_includes_quote_offer():
     assert "delivered" in body.lower() and "Ceramic tiles A-grade" in body
 
 
+def test_default_message_includes_buyer_link_when_quote_shared():
+    lead = Lead(product="Ceramic tiles", buyer_company="ACME")
+    product = Product(name="Tiles", unit="m2", exw_price=4.5, currency="USD")
+    shared = Quote(lead_id=1, product_id=1, tracking_code="G4-Q9", quantity=500, incoterm="DAP",
+                   quote_currency="USD", delivered_unit=6.0, delivered_total=3000, share_token="abc123")
+    _, body = default_message(lead, shared, product)
+    assert "/p/abc123" in body                          # buyer link included
+    draft = Quote(lead_id=1, product_id=1, tracking_code="G4-Q8", quantity=500, incoterm="DAP",
+                  quote_currency="USD", delivered_unit=6.0, delivered_total=3000, share_token="")
+    _, body2 = default_message(lead, draft, product)
+    assert "/p/" not in body2                            # no link for an unshared (draft) quote
+
+
 def test_send_email_disabled_returns_reason():
     ok, err = send_email("buyer@example.com", "Hi", "Body")
     assert ok is False and "not configured" in err.lower()   # SMTP off in tests

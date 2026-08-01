@@ -6,7 +6,8 @@ import smtplib
 import ssl
 from email.message import EmailMessage
 
-from .config import (SMTP_ENABLED, SMTP_FROM, SMTP_HOST, SMTP_PASSWORD, SMTP_PORT, SMTP_USER)
+from .config import (BASE_URL, SMTP_ENABLED, SMTP_FROM, SMTP_HOST, SMTP_PASSWORD,
+                     SMTP_PORT, SMTP_USER)
 
 
 def default_message(lead, quote=None, product=None):
@@ -24,6 +25,9 @@ def default_message(lead, quote=None, product=None):
         lines += ["", f"Indicative offer for {product.name}: "
                   f"{quote.delivered_unit} {quote.quote_currency}/{product.unit} delivered "
                   f"({quote.incoterm}), for {quote.quantity} {product.unit}."]
+    # Only approved/sent quotes carry a share_token — link straight to the buyer-safe pro-forma.
+    if quote is not None and (getattr(quote, "share_token", "") or "").strip():
+        lines += ["", f"View your quotation: {BASE_URL}/p/{quote.share_token}"]
     lines += ["", "Happy to share full specifications and terms. What quantity and destination "
               "are you targeting?", "", "Best regards,", "go4it"]
     return subject, "\n".join(lines)

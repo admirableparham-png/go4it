@@ -276,6 +276,7 @@ class Quote(SQLModel, table=True):
 
     validity_days: int = 14
     status: str = "draft"          # draft | approved | sent | expired | superseded
+    share_token: str = Field(default="", index=True)   # unguessable slug for the public buyer link
     version: int = 1
     created_by: str = ""
     approved_by: str = ""

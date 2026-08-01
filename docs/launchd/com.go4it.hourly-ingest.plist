@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Hourly go4it ingestion via launchd (macOS).
-  Runs one pass (CSV inbox + go4worldbusiness portal) every hour.
+  Hourly go4it ingestion + enrichment via launchd (macOS).
+  Runs one `app.worker --once` pass every hour: CSV inbox, go4world portal (if creds), and — when
+  ENRICH_INTERVAL is set > 0 in .env — a bounded web-enrichment pass that fills blank contacts on
+  newly-harvested website leads (see app/enrich_service.py). Each lead is attempted once, so steady
+  state is a fast no-op until new leads arrive.
 
   Install:
     1. Edit the two ABSOLUTE paths below if your repo lives elsewhere.
-    2. cp docs/launchd/com.go4it.hourly-ingest.plist ~/Library/LaunchAgents/
-    3. launchctl load ~/Library/LaunchAgents/com.go4it.hourly-ingest.plist
-    4. launchctl start com.go4it.hourly-ingest     # run once now to test
+    2. (optional) in .env set  ENRICH_INTERVAL=3600  to turn on hourly auto-enrichment.
+    3. cp docs/launchd/com.go4it.hourly-ingest.plist ~/Library/LaunchAgents/
+    4. launchctl load ~/Library/LaunchAgents/com.go4it.hourly-ingest.plist
+    5. launchctl start com.go4it.hourly-ingest     # run once now to test
   Logs: ./debug/ingest.out.log and ingest.err.log
   Stop/remove:
     launchctl unload ~/Library/LaunchAgents/com.go4it.hourly-ingest.plist

@@ -3,6 +3,7 @@ import hmac
 import json
 import logging
 import os
+import secrets
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import List
@@ -21,9 +22,10 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from .auth import current_user, role_at_least, verify_password
 from .command_service import parse_command, run_command_job
-from .config import DEBUG_DIR, INBOX_DIR, INGEST_API_KEY, SECRET_KEY, SMTP_ENABLED
+from .config import BASE_URL, DEBUG_DIR, INBOX_DIR, INGEST_API_KEY, SECRET_KEY, SMTP_ENABLED
 from .csv_import import parse_products
 from .db import engine, init_db
+from .enrich_service import clean_site, enrich_lead
 from .deal_service import (DEAL_STAGES, DOC_TYPES, REQUIRED_DOCS, create_deal,
                            missing_docs_for, next_stage)
 from .ingest import ingest_source
@@ -44,7 +46,7 @@ app = FastAPI(title="go4it")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 
-PUBLIC_PREFIXES = ("/login", "/logout", "/static", "/api", "/go4it-capture.user.js")
+PUBLIC_PREFIXES = ("/login", "/logout", "/static", "/api", "/go4it-capture.user.js", "/p/")
 
 # Allowed pipeline transitions. Lost requires a reason (enforced in the route).
 TRANSITIONS = {
@@ -418,8 +420,92 @@ def suppliers_list(request: Request):
         pcounts = {sid: c for sid, c in session.exec(
             select(Product.supplier_id, func.count(Product.id)).group_by(Product.supplier_id)).all()}
         ctx = {"request": request, "user": user, "active": "suppliers",
-               "suppliers": suppliers, "pcounts": pcounts}
+               "suppliers": suppliers, "pcounts": pcounts, "can_edit": role_at_least(user, "agent")}
     return templates.TemplateResponse("suppliers.html", ctx)
+
+
+def _clamp_reliability(v):
+    try:
+        return max(1, min(5, int(v)))
+    except (TypeError, ValueError):
+        return 3
+
+
+@app.post("/suppliers")
+def supplier_create(request: Request, name: str = Form(...), country: str = Form("IR"),
+                    city: str = Form(""), contact: str = Form(""), email: str = Form(""),
+                    phone: str = Form(""), reliability: int = Form(3),
+                    payment_terms: str = Form("")):
+    """Add a supplier (the sourcing side). Dedups on normalized name — re-adding an existing name
+    updates its details instead of creating a duplicate."""
+    with Session(engine) as session:
+        if not role_at_least(current_user(request, session), "agent"):
+            return _forbidden()
+        name = (name or "").strip()
+        if not name:
+            return RedirectResponse("/suppliers?error=name", status_code=303)
+        norm = name.lower()
+        sup = session.exec(select(Supplier).where(Supplier.name_normalized == norm)).first()
+        if sup is None:
+            sup = Supplier(name=name, name_normalized=norm)
+        sup.country = (country or "IR").strip().upper()[:3]
+        sup.city = (city or "").strip()
+        sup.contact = (contact or "").strip()
+        sup.email = (email or "").strip()
+        sup.phone = (phone or "").strip()
+        sup.reliability = _clamp_reliability(reliability)
+        sup.payment_terms = (payment_terms or "").strip()
+        session.add(sup)
+        session.commit()
+    return RedirectResponse("/suppliers", status_code=303)
+
+
+@app.post("/suppliers/{supplier_id}/edit")
+def supplier_edit(request: Request, supplier_id: int, name: str = Form(...),
+                  country: str = Form("IR"), city: str = Form(""), contact: str = Form(""),
+                  email: str = Form(""), phone: str = Form(""), reliability: int = Form(3),
+                  payment_terms: str = Form("")):
+    """Update a supplier's details in place."""
+    with Session(engine) as session:
+        if not role_at_least(current_user(request, session), "agent"):
+            return _forbidden()
+        sup = session.get(Supplier, supplier_id)
+        if not sup:
+            return HTMLResponse("Not found", status_code=404)
+        name = (name or "").strip()
+        if name:
+            norm = name.lower()
+            clash = session.exec(select(Supplier).where(
+                Supplier.name_normalized == norm, Supplier.id != supplier_id)).first()
+            if clash:            # don't create two rows sharing a normalized name (breaks dedup)
+                return RedirectResponse("/suppliers?error=dupe", status_code=303)
+            sup.name = name
+            sup.name_normalized = norm
+        sup.country = (country or "IR").strip().upper()[:3]
+        sup.city = (city or "").strip()
+        sup.contact = (contact or "").strip()
+        sup.email = (email or "").strip()
+        sup.phone = (phone or "").strip()
+        sup.reliability = _clamp_reliability(reliability)
+        sup.payment_terms = (payment_terms or "").strip()
+        session.add(sup)
+        session.commit()
+    return RedirectResponse("/suppliers", status_code=303)
+
+
+@app.post("/suppliers/{supplier_id}/toggle")
+def supplier_toggle(request: Request, supplier_id: int):
+    """Deactivate / reactivate a supplier (kept for history; hidden from active sourcing)."""
+    with Session(engine) as session:
+        if not role_at_least(current_user(request, session), "agent"):
+            return _forbidden()
+        sup = session.get(Supplier, supplier_id)
+        if not sup:
+            return HTMLResponse("Not found", status_code=404)
+        sup.active = not sup.active
+        session.add(sup)
+        session.commit()
+    return RedirectResponse("/suppliers", status_code=303)
 
 
 RESEARCH_DIR = BASE_DIR.parent / "docs" / "research"
@@ -957,6 +1043,22 @@ def lead_outreach(request: Request, lead_id: int, channel: str = Form("email"),
     return RedirectResponse(f"/leads/{lead_id}", status_code=303)
 
 
+@app.post("/leads/{lead_id}/enrich")
+def lead_enrich(request: Request, lead_id: int):
+    """Scrape this buyer's own website for a role mailbox (+ tel: phone) and fill blank contacts.
+    No third-party credits; only fills fields that are empty. Provenance is logged by enrich_lead."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not role_at_least(user, "agent"):
+            return _forbidden()
+        lead = session.get(Lead, lead_id)
+        if not lead:
+            return HTMLResponse("Not found", status_code=404)
+        enrich_lead(session, lead, apply=True)
+        session.commit()
+    return RedirectResponse(f"/leads/{lead_id}", status_code=303)
+
+
 @app.post("/leads/{lead_id}/followup")
 def lead_followup(request: Request, lead_id: int, next_action_at: str = Form(""),
                   next_action_note: str = Form(""), clear: str = Form("")):
@@ -999,6 +1101,15 @@ def quotes_list(request: Request):
     return templates.TemplateResponse("quotes_list.html", {"request": request, "user": user, "rows": rows})
 
 
+def _ensure_share_token(session, q) -> str:
+    """Give the quote an unguessable public-link token if it doesn't have one yet."""
+    if not (q.share_token or "").strip():
+        q.share_token = secrets.token_urlsafe(12)
+        session.add(q)
+        session.commit()
+    return q.share_token
+
+
 @app.get("/quotes/{quote_id}", response_class=HTMLResponse)
 def quote_detail(request: Request, quote_id: int):
     with Session(engine) as session:
@@ -1010,10 +1121,40 @@ def quote_detail(request: Request, quote_id: int):
         product = session.get(Product, q.product_id)
         breakdown = json.loads(q.breakdown or "[]")
         fx = json.loads(q.fx_snapshot or "{}")
+        # a shareable buyer link exists once the quote is a real offer (approved/sent). Read-only:
+        # the token is MINTED in the approve/send POST handlers, never on this GET (no write-on-read,
+        # so a read-only viewer can't trigger a commit or conjure a link).
+        share_url = ""
+        if q.status in ("approved", "sent") and (q.share_token or "").strip():
+            share_url = f"{BASE_URL}/p/{q.share_token}"
     return templates.TemplateResponse(
         "quote_detail.html",
         {"request": request, "user": user, "q": q, "lead": lead, "product": product,
-         "breakdown": breakdown, "fx": fx, "can_approve": role_at_least(user, "agent")},
+         "breakdown": breakdown, "fx": fx, "can_approve": role_at_least(user, "agent"),
+         "share_url": share_url},
+    )
+
+
+@app.get("/p/{token}", response_class=HTMLResponse)
+def public_proforma(request: Request, token: str):
+    """Buyer-facing pro-forma at an unguessable link — NO internal costs (breakdown, EXW, or margin
+    are never rendered here). Public (auth-exempt); only approved/sent quotes are viewable."""
+    if not (token or "").strip():
+        return HTMLResponse("Not found", status_code=404)
+    with Session(engine) as session:
+        q = session.exec(select(Quote).where(Quote.share_token == token)).first()
+        if not q or q.status not in ("approved", "sent"):
+            return HTMLResponse("This quotation link is not available.", status_code=404)
+        lead = session.get(Lead, q.lead_id)
+        product = session.get(Product, q.product_id)
+        fx = json.loads(q.fx_snapshot or "{}")
+        expires = None
+        if q.created_at and q.validity_days:
+            expires = q.created_at + timedelta(days=q.validity_days)
+    return templates.TemplateResponse(
+        "proforma_public.html",
+        {"request": request, "q": q, "lead": lead, "product": product, "fx": fx,
+         "expires": expires, "today": datetime.utcnow()},
     )
 
 
@@ -1028,6 +1169,7 @@ def approve_quote(request: Request, quote_id: int):
             q.status = "approved"
             q.approved_by = user.email
             session.add(q)
+            _ensure_share_token(session, q)     # buyer link ready to preview/share
             session.commit()
     return RedirectResponse(f"/quotes/{quote_id}", status_code=303)
 
@@ -1041,7 +1183,15 @@ def send_quote(request: Request, quote_id: int):
         q = session.get(Quote, quote_id)
         if q and q.status == "approved":
             q.status = "sent"
+            _ensure_share_token(session, q)
             session.add(q)
+            # Supersede any prior live quote for this lead so its public /p/ link stops serving an
+            # outdated price (the public route only serves approved/sent — superseded ones 404).
+            for old in session.exec(select(Quote).where(
+                    Quote.lead_id == q.lead_id, Quote.id != q.id,
+                    Quote.status.in_(["approved", "sent"]))).all():
+                old.status = "superseded"
+                session.add(old)
             lead = session.get(Lead, q.lead_id)
             if lead and lead.status == "new":
                 lead.status = "quoted"

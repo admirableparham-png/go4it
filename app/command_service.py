@@ -30,10 +30,10 @@ _SCRIPTS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__
 if _SCRIPTS not in sys.path:
     sys.path.insert(0, _SCRIPTS)
 try:
-    from geo_en import translit_ka  # noqa: E402
+    from geo_en import translit_any  # noqa: E402  (any-script -> Latin: KA/AR/FA/Cyrillic)
 except Exception:  # noqa: BLE001
-    def translit_ka(s):
-        return s or ""
+    def translit_any(s):
+        return (s or "").strip()
 
 UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) go4it-command"
 # Public Overpass instances get overloaded (504s) - try mirrors in order until one answers.
@@ -44,7 +44,7 @@ OVERPASS_ENDPOINTS = [
     "https://overpass.private.coffee/api/interpreter",
 ]
 MAX_PAGES = 10          # yellowpages page cap (bound each UAE harvest)
-OSM_CAP = 500           # OSM element cap per country query
+OSM_CAP = 2000          # OSM element cap per country query (raised from 500; cap is reported, not silent)
 
 # country token -> (M49 code, ISO2, directory kind: "uae"=yellowpages, "osm"=OpenStreetMap).
 # UAE keeps its rich phone directory; every other country is served globally via OSM Overpass.
@@ -101,6 +101,29 @@ OSM_TAGS = {
     "textile": ['nwr["shop"="fabric"]', 'nwr["shop"="clothes"]'],
 }
 
+# Documented OpenStreetMap shop=* values (wiki "Map Features"). An unknown keyword is only turned
+# into nwr["shop"="<word>"] when it's ACTUALLY a valid shop value — otherwise we'd fire a query that
+# always returns nothing and looks like "no buyers there". Unmappable keywords get guidance instead.
+VALID_OSM_SHOP = {
+    "supermarket", "convenience", "grocery", "greengrocer", "butcher", "bakery", "deli",
+    "confectionery", "seafood", "cheese", "dairy", "farm", "pasta", "beverages", "alcohol",
+    "wine", "coffee", "tea", "spices", "health_food", "chemist", "cosmetics", "perfumery",
+    "hairdresser", "beauty", "optician", "medical_supply", "nutrition_supplements",
+    "department_store", "general", "kiosk", "mall", "wholesale", "trade", "variety_store",
+    "clothes", "shoes", "boutique", "fabric", "fashion_accessories", "jewelry", "watches",
+    "bag", "leather", "tailor", "sewing", "furniture", "kitchen", "bathroom_furnishing",
+    "bed", "interior_decoration", "curtain", "carpet", "flooring", "tiles", "houseware",
+    "household_linen", "lighting", "doityourself", "hardware", "paint", "trade", "glaziery",
+    "electrical", "energy", "fireplace", "garden_centre", "florist", "doors", "windows",
+    "building_materials", "electronics", "hifi", "computer", "mobile_phone", "telecommunication",
+    "camera", "appliance", "vacuum_cleaner", "car", "car_parts", "car_repair", "motorcycle",
+    "tyres", "bicycle", "toys", "sports", "outdoor", "fishing", "hunting", "musical_instrument",
+    "art", "craft", "frame", "collector", "games", "model", "books", "stationery", "newsagent",
+    "gift", "ticket", "lottery", "travel_agency", "copyshop", "photo", "pet", "pet_grooming",
+    "florist", "garden_furniture", "agrarian", "trade", "hardware", "tobacco", "e-cigarette",
+    "furniture", "antiques", "candles", "party", "fireworks", "toys",
+}
+
 # category keyword -> a known-good yellowpages-uae slug (any unknown keyword is slugified + tried)
 SLUG_SYNONYMS = {
     "home decor": "home-decor", "decor": "home-decor", "home-decor": "home-decor",
@@ -144,8 +167,9 @@ def slugify(s):
 
 
 def _osm_selectors(keyword):
-    """Map a category keyword to OSM selectors; unknown -> a best-guess shop=<word> query.
-    Tries the phrase then each word, each in given/singular/plural form."""
+    """Map a category keyword to OSM selectors. Tries the curated OSM_TAGS map (phrase, then each
+    word, each in given/singular/plural form); falls back to nwr["shop"="<word>"] ONLY when <word>
+    is a documented OSM shop value. Returns [] for an unmappable keyword (caller gives guidance)."""
     for cand in (keyword, keyword.rstrip("s"), keyword + "s"):
         if cand in OSM_TAGS:
             return OSM_TAGS[cand]
@@ -153,19 +177,32 @@ def _osm_selectors(keyword):
         for cand in (w, w.rstrip("s"), w + "s"):
             if cand in OSM_TAGS:
                 return OSM_TAGS[cand]
-    return ['nwr["shop"="%s"]' % keyword.replace(" ", "_")]
+    # validated guess: only a REAL shop=* value, never a made-up one
+    for cand in (keyword.replace(" ", "_"), keyword.rstrip("s").replace(" ", "_"),
+                 (keyword + "s").replace(" ", "_")):
+        if cand in VALID_OSM_SHOP:
+            return ['nwr["shop"="%s"]' % cand]
+    for w in keyword.split():                       # a single valid word inside a phrase
+        for cand in (w, w.rstrip("s"), w + "s"):
+            if cand in VALID_OSM_SHOP:
+                return ['nwr["shop"="%s"]' % cand]
+    return []
 
 
 def parse_command(prompt):
     """Free-text prompt -> {action, country_code, iso, country_name, keyword, slug, selectors, note}.
     UAE routes to the yellowpages directory; any other known country routes to OpenStreetMap."""
-    lo = " " + (prompt or "").lower().strip() + " "
+    # Accept non-Latin input (Persian/Arabic/Cyrillic): transliterate to Latin first, and match the
+    # country in BOTH the raw and transliterated text so Finglish and native script both work.
+    raw_lo = " " + (prompt or "").lower().strip() + " "
+    tl = translit_any(prompt or "")
+    tl_lo = " " + tl.lower().strip() + " "
     country = None
     for token in sorted(COUNTRIES, key=len, reverse=True):   # longest match first
-        if f" {token} " in lo:
+        if f" {token} " in raw_lo or f" {token} " in tl_lo:
             country = token
             break
-    words = re.findall(r"[a-z0-9]+", (prompt or "").lower())
+    words = re.findall(r"[a-z0-9]+", tl.lower()) or re.findall(r"[a-z0-9]+", (prompt or "").lower())
     if country:
         ctoks = set(country.split())
         words = [w for w in words if w not in ctoks]
@@ -190,8 +227,14 @@ def parse_command(prompt):
         base.update({"action": "harvest_uae", "slug": slug,
                      "note": f"Harvesting UAE '{slug}' buyers from the public directory..."})
         return base
-    base.update({"action": "harvest_osm", "slug": slugify(keyword),
-                 "selectors": _osm_selectors(keyword),
+    selectors = _osm_selectors(keyword)
+    if not selectors:
+        base["action"] = "unknown"
+        base["note"] = (f"I don't have an OpenStreetMap category for '{keyword}'. Try one like "
+                        "furniture, hardware, building materials, tiles, lighting, hotel, restaurant, "
+                        "supermarket, pharmacy, sports, perfume, jewelry, or electronics.")
+        return base
+    base.update({"action": "harvest_osm", "slug": slugify(keyword), "selectors": selectors,
                  "note": f"Harvesting {cname} '{keyword}' businesses from OpenStreetMap..."})
     return base
 
@@ -267,8 +310,10 @@ def harvest_uae_directory(slug, max_pages=MAX_PAGES):
 
 def harvest_osm_directory(iso, selectors, cap=OSM_CAP):
     """Pull named businesses of the given category in a country from OpenStreetMap Overpass
-    (free, global, no key). Returns a list of {osmid, company, city, phone, website}.
-    Names come out English (name:en / int_name, else transliterated)."""
+    (free, global, no key). Returns (rows, capped) where each row is
+    {osmid, company, city, phone, website} and `capped` is True if the query hit `cap` (more exist).
+    Names come out Latin (name:en / int_name, else any-script transliteration); a name that can't be
+    Latinized at all is skipped rather than leaking non-Latin into the CRM."""
     parts = "".join(f"{s}(area.a);" for s in selectors)
     ql = ('[out:json][timeout:60];area["ISO3166-1"="%s"][admin_level=2]->.a;(%s);out center tags %d;'
           % (iso, parts, cap))
@@ -285,24 +330,25 @@ def harvest_osm_directory(iso, selectors, cap=OSM_CAP):
         except Exception:  # noqa: BLE001
             time.sleep(1.5)
             continue
+    capped = len(els) >= cap
     out, seen = [], set()
     for e in els:
         t = e.get("tags", {})
-        raw_name = t.get("name:en") or t.get("int_name") or t.get("name:latin") or t.get("name")
-        if not raw_name:
-            continue
-        name = (t.get("name:en") or t.get("int_name") or translit_ka(raw_name)).strip()
+        # prefer an explicit Latin/English tag, else the local name; ALWAYS run it through
+        # translit_any (a no-op for real Latin) because name:en/int_name sometimes hold non-Latin.
+        name = translit_any(t.get("name:en") or t.get("int_name") or t.get("name:latin")
+                            or t.get("name") or "").strip()
         key = name.lower()
-        if not name or key in seen:
+        if not name or key in seen:          # no name, or non-Latinizable -> skip (don't leak)
             continue
         seen.add(key)
         phone = t.get("phone") or t.get("contact:phone") or t.get("contact:mobile") or ""
         web = t.get("website") or t.get("contact:website") or t.get("url") or ""
         city = t.get("addr:city") or t.get("addr:place") or ""
         out.append({"osmid": f"{(e.get('type') or 'x')[:1]}{e.get('id')}", "company": name,
-                    "city": translit_ka(city).title() if city else "",
+                    "city": translit_any(city).title() if city else "",
                     "phone": phone, "website": web})
-    return out
+    return out, capped
 
 
 # --------------------------------------------------------------------------- background job
@@ -353,7 +399,7 @@ def run_command_job(job_id):
             elif job.action == "harvest_osm":
                 iso, kw, sel = p["iso"], p.get("keyword") or p.get("slug"), p.get("selectors") or []
                 cname = p.get("country_name") or iso
-                found = harvest_osm_directory(iso, sel)
+                found, capped = harvest_osm_directory(iso, sel)
                 new = dup = 0
                 for b in found:
                     lead = Lead(
@@ -375,8 +421,11 @@ def run_command_job(job_id):
                 job.leads_duplicate = dup
                 job.status = "ok"
                 if found:
+                    capnote = (f" (hit the {OSM_CAP} cap - narrow the category or add a city for more)"
+                               if capped else "")
                     job.note = (f"Found {len(found)} {cname} '{kw}' businesses on OpenStreetMap "
-                                f"({with_c} with phone/website) -> {new} new leads, {dup} already had.")
+                                f"({with_c} with phone/website) -> {new} new leads, {dup} already had"
+                                f"{capnote}.")
                 else:
                     job.note = (f"No '{kw}' businesses mapped in {cname}. Try a broader category "
                                 f"(furniture, hardware, hotel, restaurant, supermarket, pharmacy).")

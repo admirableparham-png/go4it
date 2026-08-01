@@ -10,6 +10,7 @@ Not a full translator - it yields readable English proper-noun + role names
 (e.g. "kaspis municipality", "batumi sports center"), which is what we need.
 """
 import re
+import unicodedata
 
 # Mkhedruli letter -> Latin (national-style, brand-friendly f for phi).
 _KA = {
@@ -134,3 +135,71 @@ def fa_translit(s):
         else:
             out.append(ch)
     return _title(re.sub(r"\s+", " ", "".join(out)).strip())
+
+
+# --- Cyrillic transliteration (Kazakhstan/Azerbaijan/CIS OSM names) ------------------
+# Russian base + the extra letters used in Kazakh/Azerbaijani/Ukrainian Cyrillic.
+_RU = {
+    "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "e", "ж": "zh",
+    "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m", "н": "n", "о": "o",
+    "п": "p", "р": "r", "с": "s", "т": "t", "у": "u", "ф": "f", "х": "kh", "ц": "ts",
+    "ч": "ch", "ш": "sh", "щ": "shch", "ъ": "", "ы": "y", "ь": "", "э": "e", "ю": "yu",
+    "я": "ya",
+    # Kazakh / Azerbaijani / Ukrainian extras
+    "ә": "a", "ғ": "gh", "қ": "q", "ң": "ng", "ө": "o", "ұ": "u", "ү": "u", "һ": "h",
+    "і": "i", "ї": "yi", "є": "ye", "ґ": "g", "ђ": "dj", "ј": "j", "љ": "lj", "њ": "nj",
+}
+
+
+def ru_translit(s):
+    if not s:
+        return s
+    if not re.search(r"[А-Яа-яЀ-ӿ]", s):
+        return s
+    out = []
+    for ch in s:
+        low = ch.lower()
+        if low in _RU:
+            t = _RU[low]
+            out.append(t.upper() if ch.isupper() and t else t)
+        elif 0x0400 <= ord(ch) <= 0x04FF:   # unmapped Cyrillic glyph -> drop
+            continue
+        else:
+            out.append(ch)
+    return _title(re.sub(r"\s+", " ", "".join(out)).strip())
+
+
+# Latin-script letters with no Unicode decomposition (NFKD won't fold these) -> ASCII.
+# Covers Azerbaijani/Turkish (ı, ə) and common European letters, so diacritics FOLD not DROP.
+_LATIN_FOLD = str.maketrans({
+    "ı": "i", "İ": "I", "ə": "e", "Ə": "E", "ø": "o", "Ø": "O", "ß": "ss", "œ": "oe", "Œ": "OE",
+    "æ": "ae", "Æ": "AE", "ł": "l", "Ł": "L", "đ": "d", "Đ": "D", "ħ": "h", "ð": "d", "Ð": "D",
+    "þ": "th", "Þ": "Th",
+})
+
+
+def _fold_latin(s):
+    """Fold Latin-script diacritics to ASCII (ç->c, ş->s, ğ->g, ü->u, ə->e...) so the name/letter
+    is KEPT, not deleted. NFKD splits off combining marks; _LATIN_FOLD handles the non-decomposable
+    letters. Must run BEFORE dropping truly non-Latin scripts (CJK etc.)."""
+    s = s.translate(_LATIN_FOLD)
+    s = unicodedata.normalize("NFKD", s)
+    return "".join(c for c in s if not unicodedata.combining(c))
+
+
+def translit_any(s):
+    """Best-effort ANY-script -> readable Latin, so nothing non-Latin reaches the CRM.
+
+    Routes by script (Georgian org-words via geo_to_en, Arabic/Persian via fa_translit, Cyrillic
+    via ru_translit), then FOLDS Latin diacritics to ASCII (keeps the letter). Any residual truly
+    non-Latin glyph (CJK, etc.) is dropped. Returns '' if the string was purely non-mappable."""
+    if not s:
+        return s or ""
+    if s.isascii():                                # already ASCII, nothing to do
+        return s.strip()
+    s = geo_to_en(s)                                # Georgian (+org-word translation), no-op if none
+    s = fa_translit(s)                              # Arabic/Persian, no-op if none
+    s = ru_translit(s)                              # Cyrillic, no-op if none
+    s = _fold_latin(s)                              # ç/ş/ğ/ü/ə... -> c/s/g/u/e (fold, don't drop)
+    s = re.sub(r"[^\x00-\x7f]+", " ", s)            # only NOW drop remaining non-Latin (Chinese, etc.)
+    return _title(re.sub(r"\s+", " ", s).strip())

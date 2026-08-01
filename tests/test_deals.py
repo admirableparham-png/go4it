@@ -41,8 +41,25 @@ def test_export_gate_clears_when_all_verified():
 
 
 def test_ungated_stage_has_no_requirements():
-    assert missing_docs_for(_FakeSession([]), Deal(id=1, lead_id=1), "in_transit") == []
+    # supplier_confirmed / delivered carry no doc gate
+    assert missing_docs_for(_FakeSession([]), Deal(id=1, lead_id=1), "supplier_confirmed") == []
+    assert missing_docs_for(_FakeSession([]), Deal(id=1, lead_id=1), "delivered") == []
     assert "export_cleared" in REQUIRED_DOCS
+
+
+def test_transit_gate_requires_bill_of_lading():
+    deal = Deal(id=1, lead_id=1)
+    assert missing_docs_for(_FakeSession([]), deal, "in_transit") == ["bill_of_lading"]
+    docs = [ComplianceDoc(deal_id=1, doc_type="bill_of_lading", status="verified")]
+    assert missing_docs_for(_FakeSession(docs), deal, "in_transit") == []
+
+
+def test_import_gate_requires_packing_list_and_customs_declaration():
+    deal = Deal(id=1, lead_id=1)
+    docs = [ComplianceDoc(deal_id=1, doc_type="packing_list", status="verified"),
+            ComplianceDoc(deal_id=1, doc_type="customs_declaration", status="received")]
+    missing = missing_docs_for(_FakeSession(docs), deal, "import_cleared")
+    assert missing == ["customs_declaration"]        # packing list ok, declaration not yet verified
 
 
 def test_planned_margin_backs_out_from_delivered_total():

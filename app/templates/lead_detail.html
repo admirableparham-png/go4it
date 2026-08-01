@@ -42,13 +42,20 @@
     <div class="eyebrow">&#9889; Contact this buyer</div>
     <div class="text-[11px] text-slate-500">{% if smtp_enabled %}SMTP on &mdash; can send from go4it{% else %}opens your email / WhatsApp{% endif %}</div>
   </div>
-  <div class="flex flex-wrap gap-2 mb-3">
+  <div class="flex flex-wrap items-center gap-2 mb-3">
     {% if lead.email %}<a href="mailto:{{ lead.email }}?subject={{ default_subject|urlencode }}&amp;body={{ default_body|urlencode }}" class="btn btn-secondary btn-sm">&#9993; Email</a>{% endif %}
     {% if lead.phone %}
       <a href="https://wa.me/{{ lead.phone|replace('+','')|replace(' ','')|replace('-','')|replace('(','')|replace(')','') }}?text={{ default_body|urlencode }}" target="_blank" rel="noopener" class="btn btn-ghost-emerald btn-sm">WhatsApp</a>
       <a href="tel:{{ lead.phone }}" class="btn btn-neutral btn-sm">Call</a>
     {% endif %}
-    {% if not lead.email and not lead.phone %}<span class="text-amber-500/80 text-sm">No contact yet &mdash; enrich this lead first.</span>{% endif %}
+    {% if not lead.email and not lead.phone %}<span class="text-amber-500/80 text-sm">No contact yet{% if not lead.website %} &mdash; no website to enrich from{% endif %}.</span>{% endif %}
+    {% if can_edit and lead.website and not lead.email %}
+      <form method="post" action="/leads/{{ lead.id }}/enrich" class="inline">
+        <button class="btn btn-ghost-sky btn-sm" data-busy="Scanning site&hellip;"
+                title="Scrape the buyer's own site for a role mailbox (info@/sales@) &mdash; no credits">
+          &#128269; Find email from website</button>
+      </form>
+    {% endif %}
   </div>
   {% if can_edit %}
   <form method="post" action="/leads/{{ lead.id }}/outreach" class="space-y-2">
