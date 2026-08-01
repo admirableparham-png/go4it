@@ -1,0 +1,72 @@
+{
+  "hs_code": "2713",
+  "label": "Bitumen / petroleum asphalt",
+  "years": {
+    "2023": {
+      "tonnes": 71077.3,
+      "cif_usd": 27703561,
+      "unit_price_usd_kg": 0.39
+    },
+    "2024": {
+      "tonnes": 95345.6,
+      "cif_usd": 37083992,
+      "unit_price_usd_kg": 0.389
+    }
+  },
+  "trend_pct_first_to_last": 34,
+  "latest_year": "2024",
+  "latest_tonnes": 95345.6,
+  "latest_cif": 37083992,
+  "latest_price": 0.389,
+  "top_suppliers": [
+    {
+      "country": "Turkmenistan",
+      "code": 795,
+      "tonnes_total": 30165.8,
+      "cif_usd_total": 9737887,
+      "unit_price_usd_kg": 0.323,
+      "watch_competitor": true
+    },
+    {
+      "country": "Azerbaijan",
+      "code": 31,
+      "tonnes_total": 6906.6,
+      "cif_usd_total": 2609186,
+      "unit_price_usd_kg": 0.378,
+      "watch_competitor": true
+    },
+    {
+      "country": "Russia",
+      "code": 643,
+      "tonnes_total": 227983.6,
+      "cif_usd_total": 87876630,
+      "unit_price_usd_kg": 0.385,
+      "watch_competitor": true
+    },
+    {
+      "country": "Turkey",
+      "code": 792,
+      "tonnes_total": 41147.3,
+      "cif_usd_total": 16384385,
+      "unit_price_usd_kg": 0.398,
+      "watch_competitor": true
+    },
+    {
+      "country": "Iraq",
+      "code": 368,
+      "tonnes_total": 268631.3,
+      "cif_usd_total": 108096294,
+      "unit_price_usd_kg": 0.402,
+      "watch_competitor": false
+    },
+    {
+      "country": "Lithuania",
+      "code": 440,
+      "tonnes_total": 0.2,
+      "cif_usd_total": 1291,
+      "unit_price_usd_kg": 8.514,
+      "watch_competitor": false
+    }
+  ],
+  "total_cif": 224705673
+}

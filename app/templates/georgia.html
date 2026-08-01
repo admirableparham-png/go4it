@@ -3,9 +3,9 @@
 {% block content %}
 
 {% macro contact(email, phone, website) %}
-  {% if phone %}<a href="tel:{{ phone }}" class="text-sky-400 hover:underline">{{ phone }}</a>{% endif %}
-  {% if email %}{% if phone %} · {% endif %}<a href="mailto:{{ email }}" class="text-sky-400 hover:underline">{{ email }}</a>{% endif %}
-  {% if website %}{% if email or phone %} · {% endif %}<a href="{{ website if '://' in website else 'https://' + website }}" target="_blank" rel="noopener" class="text-sky-400 hover:underline">site&#8599;</a>{% endif %}
+  {% if phone %}<a href="tel:{{ phone }}" class="link">{{ phone }}</a>{% endif %}
+  {% if email %}{% if phone %} · {% endif %}<a href="mailto:{{ email }}" class="link">{{ email }}</a>{% endif %}
+  {% if website %}{% if email or phone %} · {% endif %}<a href="{{ website if '://' in website else 'https://' + website }}" target="_blank" rel="noopener" class="link">site&#8599;</a>{% endif %}
   {% if not email and not phone and not website %}<span class="text-amber-500/70">needs enrichment</span>{% endif %}
 {% endmacro %}
 
@@ -28,7 +28,7 @@
 {% endmacro %}
 
 <div class="flex items-center justify-between mb-1">
-  <h2 class="text-lg font-semibold">Georgia &mdash; chemical buyers</h2>
+  <h2 class="text-xl font-bold tracking-tight">Georgia &mdash; chemical buyers</h2>
 </div>
 <p class="text-slate-500 text-sm mb-6">Mineral-processing &amp; water-treatment reagents. {{ buyers|length }} potential buyers ({{ with_contact }} with a contact) · {{ tenders|length }} live procurement RFQs ({{ open_rfq }} open) · {{ customs|length }} customs records.</p>
 

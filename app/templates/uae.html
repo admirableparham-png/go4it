@@ -3,9 +3,9 @@
 {% block content %}
 
 {% macro contact(b) %}
-  {% if b.phones and b.phones[0] %}<a href="tel:{{ b.phones[0] }}" class="text-sky-400 hover:underline">{{ b.phones[0] }}</a>{% endif %}
-  {% if b.email %}{% if b.phones and b.phones[0] %} · {% endif %}<a href="mailto:{{ b.email }}" class="text-sky-400 hover:underline">{{ b.email }}</a>{% endif %}
-  {% if b.website %} · <a href="{{ b.website if '://' in b.website else 'https://' + b.website }}" target="_blank" rel="noopener" class="text-sky-400 hover:underline">site&#8599;</a>{% endif %}
+  {% if b.phones and b.phones[0] %}<a href="tel:{{ b.phones[0] }}" class="link">{{ b.phones[0] }}</a>{% endif %}
+  {% if b.email %}{% if b.phones and b.phones[0] %} · {% endif %}<a href="mailto:{{ b.email }}" class="link">{{ b.email }}</a>{% endif %}
+  {% if b.website %} · <a href="{{ b.website if '://' in b.website else 'https://' + b.website }}" target="_blank" rel="noopener" class="link">site&#8599;</a>{% endif %}
   {% if not b.phones and not b.email and not b.website %}<span class="text-amber-500/70">enrich</span>{% endif %}
 {% endmacro %}
 
@@ -21,7 +21,7 @@
 </div>
 {% endmacro %}
 
-<h2 class="text-lg font-semibold mb-1">UAE buyers &mdash; Decora home-decor range</h2>
+<h2 class="text-xl font-bold tracking-tight mb-1">UAE buyers &mdash; Decora home-decor range</h2>
 <p class="text-slate-500 text-sm mb-6">
   Supplier: <b>{{ store.name or 'Decora Store' }}</b>{% if store.material %} ({{ store.material }}{% if store.price_band_usd %}, ${{ store.price_band_usd }}{% endif %}){% endif %}
   · {{ buyers|length }} buyers · {{ with_phone }} phone · {{ with_email }} email · {{ with_website }} website.

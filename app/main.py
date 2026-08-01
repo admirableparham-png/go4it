@@ -3,7 +3,7 @@ import hmac
 import json
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import List
 
@@ -20,17 +20,21 @@ from sqlmodel import Session, select
 from starlette.middleware.sessions import SessionMiddleware
 
 from .auth import current_user, role_at_least, verify_password
-from .config import DEBUG_DIR, INBOX_DIR, INGEST_API_KEY, SECRET_KEY
+from .command_service import parse_command, run_command_job
+from .config import DEBUG_DIR, INBOX_DIR, INGEST_API_KEY, SECRET_KEY, SMTP_ENABLED
 from .csv_import import parse_products
 from .db import engine, init_db
 from .deal_service import (DEAL_STAGES, DOC_TYPES, REQUIRED_DOCS, create_deal,
                            missing_docs_for, next_stage)
 from .ingest import ingest_source
-from .lead_service import create_lead
-from .models import (Activity, ComplianceDoc, CostParam, Deal, FxRate,
-                     IngestionRun, Lead, Match, Product, Quote, RateCard,
-                     Supplier, User)
+from .lead_service import create_lead, run_matching
+from .models import (Activity, CommandJob, ComplianceDoc, CostParam, Deal,
+                     FxRate, IngestionRun, Lead, Match, Outreach, Product,
+                     Quote, RateCard, Supplier, User)
+from .outreach import default_message, send_email
 from .quote_service import create_quote
+from .research_engine import (PARTNERS, country_options, market_report,
+                              product_options, rank_opportunities, resolve_query)
 from .sources.go4world_csv import Go4WorldCsvSource
 from .telegram import notify_quote_ready, notify_status_change
 
@@ -117,7 +121,7 @@ def _log(session, lead: Lead, user, kind: str, body: str = ""):
     """Append a timeline entry; stamp first_response_at on the first real action."""
     session.add(Activity(lead_id=lead.id, user_id=user.id if user else None,
                          kind=kind, body=body))
-    if kind in ("note", "call", "status_change", "quote_sent") and lead.first_response_at is None:
+    if kind in ("note", "call", "status_change", "quote_sent", "outreach") and lead.first_response_at is None:
         lead.first_response_at = datetime.utcnow()
         session.add(lead)
 
@@ -240,6 +244,12 @@ def dashboard(request: Request):
             select(Lead).where(Lead.id.in_([a.lead_id for a in acts] or [0]))).all()}
         user_map = {u.id: u for u in session.exec(select(User)).all()}
         recent_leads = session.exec(select(Lead).order_by(Lead.id.desc()).limit(8)).all()
+        due_cut = datetime.utcnow().replace(hour=23, minute=59, second=59, microsecond=0)
+        due_leads = session.exec(
+            select(Lead).where(Lead.next_action_at != None,             # noqa: E711
+                               Lead.next_action_at <= due_cut,
+                               Lead.status.notin_(["won", "lost"]))
+            .order_by(Lead.next_action_at.asc()).limit(10)).all()
 
         ctx = {
             "request": request, "user": user, "active": "dashboard",
@@ -255,7 +265,8 @@ def dashboard(request: Request):
             "dest_bars": _bars(by_dest, top=8, drop_empty=True),
             "cat_bars": _bars(by_cat, top=8, drop_empty=True),
             "acts": acts, "lead_map": lead_map, "user_map": user_map,
-            "recent_leads": recent_leads,
+            "recent_leads": recent_leads, "market_cards": _intel_cards(),
+            "due_leads": due_leads, "today": datetime.utcnow().date(),
         }
     return templates.TemplateResponse("index.html", ctx)
 
@@ -297,13 +308,14 @@ def add_lead(
 LEAD_SORTS = {
     "new": Lead.id.desc(), "old": Lead.id.asc(),
     "buyer": Lead.buyer_company.asc(), "product": Lead.product.asc(),
+    "posted": Lead.posted_at.desc(),   # freshest RFQ/customs date first (NULLs last in SQLite)
 }
 
 
 @app.get("/leads", response_class=HTMLResponse)
 def leads_list(request: Request, q: str = "", stage: str = "", source: str = "",
                category: str = "", dest: str = "", owner: str = "", contact: str = "",
-               sort: str = "new", page: int = 1):
+               due: str = "", sort: str = "new", page: int = 1):
     """The dedicated, filterable, paginated lead workspace (the dashboard no longer
     lists every lead)."""
     per = 50
@@ -331,6 +343,13 @@ def leads_list(request: Request, q: str = "", stage: str = "", source: str = "",
         elif contact == "no":
             stmt = stmt.where(((Lead.email == None) | (Lead.email == ""))    # noqa: E711
                               & ((Lead.phone == None) | (Lead.phone == "")))  # noqa: E711
+        if due:
+            _now = datetime.utcnow()
+            stmt = stmt.where(Lead.next_action_at != None)                    # noqa: E711
+            if due == "overdue":
+                stmt = stmt.where(Lead.next_action_at < _now.replace(hour=0, minute=0, second=0, microsecond=0))
+            elif due == "today":
+                stmt = stmt.where(Lead.next_action_at <= _now.replace(hour=23, minute=59, second=59, microsecond=0))
 
         total = session.exec(select(func.count()).select_from(stmt.subquery())).one()
         pages = max(1, (total + per - 1) // per)
@@ -354,10 +373,38 @@ def leads_list(request: Request, q: str = "", stage: str = "", source: str = "",
             "total": total, "page": page, "pages": pages,
             "sources": sources, "categories": categories, "dests": dests,
             "stages": STAGES, "product_count": product_count,
+            "users": [u for u in user_map.values() if u.active],
             "f": {"q": q, "stage": stage, "source": source, "category": category,
-                  "dest": dest, "owner": owner, "contact": contact, "sort": sort},
+                  "dest": dest, "owner": owner, "contact": contact, "due": due, "sort": sort},
         }
     return templates.TemplateResponse("leads.html", ctx)
+
+
+@app.post("/leads/bulk")
+def leads_bulk(request: Request, action: str = Form(""), owner_id: str = Form(""),
+               stage: str = Form(""), ids: List[int] = Form(default=[])):
+    """Apply one action (assign / set stage / set-or-clear follow-up) to many selected leads."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not role_at_least(user, "agent"):
+            return _forbidden()
+        leads = session.exec(select(Lead).where(Lead.id.in_(ids or [0]))).all()
+        for lead in leads:
+            if action == "assign_me" and user:
+                lead.owner_id = user.id
+            elif action == "assign":
+                lead.owner_id = int(owner_id) if owner_id else None
+            elif action == "stage" and stage in STAGES and stage != "lost":
+                lead.status = stage
+            elif action == "followup_today":
+                lead.next_action_at = datetime.utcnow()
+            elif action == "followup_week":
+                lead.next_action_at = datetime.utcnow() + timedelta(days=7)
+            elif action == "followup_clear":
+                lead.next_action_at, lead.next_action_note = None, ""
+            session.add(lead)
+        session.commit()
+    return RedirectResponse(request.headers.get("referer") or "/leads", status_code=303)
 
 
 # ----------------------------------------------------------------------------- suppliers + intel
@@ -394,18 +441,10 @@ def _load_research(name):
         return {}
 
 
-@app.get("/intel", response_class=HTMLResponse)
-def intel(request: Request):
-    """Surface the harvested market intelligence in-app (customs market reality,
-    live Georgian tenders, gym/venue demand, UAE supply) — read-only, no fetching."""
-    with Session(engine) as session:
-        user = current_user(request, session)
-
+def _intel_cards():
+    """Build the good/watch/bad market verdict cards from committed customs data (no fetch).
+    Used by both the dashboard 'market opportunities' strip and the /intel tab."""
     stats = _load_research("trade_stats_georgia.json")
-    tenders = _load_research("ge_tenders.json")
-    businesses = _load_research("ge_businesses.json")
-    suppliers = _load_research("suppliers_uae_iran.json")
-
     by_hs = {c["hs_code"]: c for c in stats.get("commodities", [])}
     cards = []
     for hs, pkey in _HS_PKEY.items():
@@ -430,6 +469,20 @@ def intel(request: Request):
             "price": latest.get("unit_price_usd_kg"), "trend": c.get("trend_pct_first_to_last"),
             "cheapest": cheapest, "iran": iran,
         })
+    return cards
+
+
+@app.get("/intel", response_class=HTMLResponse)
+def intel(request: Request):
+    """Surface the harvested market intelligence in-app (customs market reality,
+    live Georgian tenders, gym/venue demand, UAE supply) — read-only, no fetching."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+
+    tenders = _load_research("ge_tenders.json")
+    businesses = _load_research("ge_businesses.json")
+    suppliers = _load_research("suppliers_uae_iran.json")
+    cards = _intel_cards()
 
     biz = [b for b in businesses.get("businesses", []) if b.get("product_key") == "rubber-tiles"]
     biz_contact = [b for b in biz if not b.get("needs_enrichment")]
@@ -497,6 +550,139 @@ def uae(request: Request):
     return templates.TemplateResponse("uae.html", ctx)
 
 
+# ----------------------------------------------------------------------------- research console
+
+# M49 reporter code -> ISO2, for cross-referencing buyers we've already harvested in a market.
+M49_ISO = {
+    268: "GE", 784: "AE", 364: "IR", 792: "TR", 634: "QA", 682: "SA", 51: "AM", 31: "AZ",
+    398: "KZ", 860: "UZ", 795: "TM", 368: "IQ", 4: "AF", 643: "RU", 156: "CN", 804: "UA",
+    414: "KW", 512: "OM", 48: "BH", 400: "JO", 422: "LB", 818: "EG",
+}
+
+
+def _sources_tuple(sources):
+    return {"iran": (364,), "uae": (784,), "both": (364, 784)}.get(sources, (364, 784))
+
+
+def _our_buyers(session, code):
+    """Buyers we've already harvested for this destination market (ties research -> pipeline)."""
+    iso = M49_ISO.get(code, "")
+    if not iso:
+        return [], 0
+    rows = session.exec(select(Lead).where(Lead.dest_country == iso)
+                        .order_by(Lead.posted_at.desc(), Lead.id.desc())).all()
+    return rows[:15], len(rows)
+
+
+@app.get("/research", response_class=HTMLResponse)
+def research(request: Request):
+    """The Research console: analyse any product -> destination country from REAL UN Comtrade
+    customs data (no LLM), and rank a country's best import opportunities for Iran/UAE supply."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+    ctx = {"request": request, "user": user, "active": "research",
+           "countries": country_options(), "products": product_options(),
+           "default_reporter": 268}
+    return templates.TemplateResponse("research.html", ctx)
+
+
+@app.post("/research/run", response_class=HTMLResponse)
+def research_run(request: Request, reporter: str = Form(...), product: str = Form(""),
+                 hs: str = Form(""), sources: str = Form("both"), refresh: str = Form("")):
+    """Directional report for one product into one country (HTMX fragment)."""
+    label, hs_codes, _ = resolve_query(product, hs)
+    if not hs_codes:
+        return templates.TemplateResponse("partials/research_result.html",
+            {"request": request, "error": "Pick a product from the list or type an HS code."})
+    try:
+        code = int(reporter)
+    except ValueError:
+        code = 0
+    if code == 0 or code not in PARTNERS:
+        return templates.TemplateResponse("partials/research_result.html",
+            {"request": request, "error": "That destination country isn't recognized."})
+    report = market_report(code, hs_codes, our_sources=_sources_tuple(sources),
+                           refresh=bool(refresh))
+    with Session(engine) as session:
+        current_user(request, session)
+        our_leads, our_lead_n = _our_buyers(session, code)
+        ctx = {"request": request, "report": report, "query_label": label,
+               "our_leads": our_leads, "our_lead_n": our_lead_n,
+               "our_iso": M49_ISO.get(code, "")}
+    return templates.TemplateResponse("partials/research_result.html", ctx)
+
+
+@app.post("/research/scan", response_class=HTMLResponse)
+def research_scan(request: Request, reporter: str = Form(...), sources: str = Form("both"),
+                  refresh: str = Form("")):
+    """Rank a country's best import opportunities for Iran/UAE supply (HTMX fragment)."""
+    try:
+        code = int(reporter)
+    except ValueError:
+        code = 0
+    if code == 0 or code not in PARTNERS:
+        return templates.TemplateResponse("partials/research_result.html",
+            {"request": request, "error": "That destination country isn't recognized."})
+    rows = rank_opportunities(code, our_sources=_sources_tuple(sources), refresh=bool(refresh))
+    with Session(engine) as session:
+        current_user(request, session)
+        our_leads, our_lead_n = _our_buyers(session, code)
+        ctx = {"request": request, "scan": rows, "reporter_name": PARTNERS.get(code, ""),
+               "our_leads": our_leads, "our_lead_n": our_lead_n,
+               "our_iso": M49_ISO.get(code, "")}
+    return templates.TemplateResponse("partials/research_result.html", ctx)
+
+
+# ----------------------------------------------------------------------------- command box
+
+@app.get("/command", response_class=HTMLResponse)
+def command_page(request: Request):
+    """The dashboard command box: type what to find, it harvests real buyers into leads."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        jobs = session.exec(select(CommandJob).order_by(CommandJob.id.desc()).limit(25)).all()
+    ctx = {"request": request, "user": user, "active": "command", "jobs": jobs,
+           "can_run": role_at_least(user, "agent")}
+    return templates.TemplateResponse("command.html", ctx)
+
+
+@app.post("/command/run", response_class=HTMLResponse)
+def command_run(request: Request, background: BackgroundTasks, prompt: str = Form("")):
+    """Parse the prompt, create a queued CommandJob, kick off the harvest in the background,
+    and return the job card (which self-polls until done)."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not role_at_least(user, "agent"):
+            return HTMLResponse('<div class="text-rose-300 text-sm p-2">Agent role required to run commands.</div>',
+                                status_code=403)
+        prompt = (prompt or "").strip()
+        if not prompt:
+            return HTMLResponse("", status_code=204)
+        parsed = parse_command(prompt)
+        job = CommandJob(prompt=prompt[:300], action=parsed["action"],
+                         params=json.dumps(parsed), status="queued",
+                         note=parsed.get("note", ""), owner_id=user.id)
+        session.add(job)
+        session.commit()
+        session.refresh(job)
+        jid = job.id
+    background.add_task(run_command_job, jid)
+    with Session(engine) as session:
+        job = session.get(CommandJob, jid)
+        return templates.TemplateResponse("partials/command_job.html", {"request": request, "job": job})
+
+
+@app.get("/command/{job_id}/status", response_class=HTMLResponse)
+def command_status(request: Request, job_id: int):
+    """HTMX poll target: re-render the job card (it stops polling once terminal)."""
+    with Session(engine) as session:
+        current_user(request, session)
+        job = session.get(CommandJob, job_id)
+        if not job:
+            return HTMLResponse("", status_code=404)
+        return templates.TemplateResponse("partials/command_job.html", {"request": request, "job": job})
+
+
 # ----------------------------------------------------------------------------- lead detail + pipeline
 
 @app.get("/leads/{lead_id}", response_class=HTMLResponse)
@@ -520,12 +706,23 @@ def lead_detail(request: Request, lead_id: int):
         umap = {u.id: u for u in session.exec(select(User)).all()}
         owner = umap.get(lead.owner_id)
         timeline = [{"a": a, "user": umap.get(a.user_id)} for a in acts]
+        quotable = sorted(
+            (p for p in products.values() if _quotable(p)),
+            key=lambda p: p.name)
+        latest_q = quotes[0] if quotes else None
+        latest_p = products.get(latest_q.product_id) if latest_q else None
+        default_subject, default_body = default_message(lead, latest_q, latest_p)
+        outreach = session.exec(
+            select(Outreach).where(Outreach.lead_id == lead_id).order_by(Outreach.id.desc())
+        ).all()
     return templates.TemplateResponse(
         "lead_detail.html",
         {"request": request, "user": user, "lead": lead, "owner": owner,
-         "users": users, "products": products,
+         "users": users, "products": products, "quotable": quotable,
          "matches": [{"m": m, "product": products.get(m.product_id)} for m in matches],
-         "quotes": quotes, "timeline": timeline,
+         "quotes": quotes, "timeline": timeline, "outreach": outreach,
+         "default_subject": default_subject, "default_body": default_body,
+         "smtp_enabled": SMTP_ENABLED, "today": datetime.utcnow().date(),
          "next_stages": sorted(TRANSITIONS.get(lead.status, set()))},
     )
 
@@ -679,6 +876,11 @@ def sample_csv():
 
 # ----------------------------------------------------------------------------- quotes
 
+def _quotable(product):
+    """A product can be quoted only if it has a real price and shipping weight."""
+    return bool(product) and (product.exw_price or 0) > 0 and (product.weight_kg_per_unit or 0) > 0
+
+
 @app.post("/leads/{lead_id}/quote/{product_id}")
 def quote_match(request: Request, lead_id: int, product_id: int):
     with Session(engine) as session:
@@ -688,10 +890,101 @@ def quote_match(request: Request, lead_id: int, product_id: int):
         product = session.get(Product, product_id)
         if not lead or not product:
             return HTMLResponse("Not found", status_code=404)
+        if not _quotable(product):
+            return RedirectResponse(f"/leads/{lead_id}?error=unpriced", status_code=303)
         quote = create_quote(session, lead, product)
         notify_quote_ready(quote, lead, product)
         quote_id = quote.id
     return RedirectResponse(f"/quotes/{quote_id}", status_code=303)
+
+
+@app.post("/leads/{lead_id}/quote")
+def quote_manual(request: Request, lead_id: int, product_id: int = Form(...)):
+    """Quote a lead against ANY chosen catalog product (for the ~2551 leads with no auto-match)."""
+    with Session(engine) as session:
+        if not role_at_least(current_user(request, session), "agent"):
+            return _forbidden()
+        lead = session.get(Lead, lead_id)
+        product = session.get(Product, product_id)
+        if not lead or not product:
+            return HTMLResponse("Not found", status_code=404)
+        if not _quotable(product):
+            return RedirectResponse(f"/leads/{lead_id}?error=unpriced", status_code=303)
+        quote = create_quote(session, lead, product)
+        notify_quote_ready(quote, lead, product)
+        quote_id = quote.id
+    return RedirectResponse(f"/quotes/{quote_id}", status_code=303)
+
+
+@app.post("/leads/{lead_id}/rematch")
+def lead_rematch(request: Request, lead_id: int):
+    """Re-run catalog matching for one lead (matches only, no auto-quote/alert)."""
+    with Session(engine) as session:
+        if not role_at_least(current_user(request, session), "agent"):
+            return _forbidden()
+        lead = session.get(Lead, lead_id)
+        if not lead:
+            return HTMLResponse("Not found", status_code=404)
+        run_matching(session, lead, auto_quote=False)
+    return RedirectResponse(f"/leads/{lead_id}", status_code=303)
+
+
+@app.post("/leads/{lead_id}/outreach")
+def lead_outreach(request: Request, lead_id: int, channel: str = Form("email"),
+                  recipient: str = Form(""), subject: str = Form(""), body: str = Form(""),
+                  send: str = Form("")):
+    """Record a buyer contact (and SMTP-send it when 'send' is set + SMTP is configured).
+    Stamps first_response_at + adds a timeline entry so outreach + response speed are tracked."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not role_at_least(user, "agent"):
+            return _forbidden()
+        lead = session.get(Lead, lead_id)
+        if not lead:
+            return HTMLResponse("Not found", status_code=404)
+        status, error = "logged", ""
+        if send and channel == "email":
+            ok, error = send_email(recipient or lead.email, subject, body)
+            status = "sent" if ok else "failed"
+        session.add(Outreach(
+            lead_id=lead.id, channel=channel,
+            recipient=(recipient or lead.email or lead.phone or "")[:200],
+            subject=subject[:200], body=body[:4000], status=status, error=error,
+            user_id=user.id if user else None))
+        _log(session, lead, user, "outreach",
+             f"{channel} to {recipient or lead.email or lead.phone or '?'} - {status}")
+        session.commit()
+    return RedirectResponse(f"/leads/{lead_id}", status_code=303)
+
+
+@app.post("/leads/{lead_id}/followup")
+def lead_followup(request: Request, lead_id: int, next_action_at: str = Form(""),
+                  next_action_note: str = Form(""), clear: str = Form("")):
+    """Set/clear a follow-up date + note (feeds the 'contact today' queue)."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not role_at_least(user, "agent"):
+            return _forbidden()
+        lead = session.get(Lead, lead_id)
+        if not lead:
+            return HTMLResponse("Not found", status_code=404)
+        if clear:
+            lead.next_action_at, lead.next_action_note = None, ""
+            _log(session, lead, user, "note", "follow-up cleared")
+        else:
+            dt = None
+            if next_action_at:
+                try:
+                    dt = datetime.strptime(next_action_at, "%Y-%m-%d")
+                except ValueError:
+                    dt = None
+            lead.next_action_at = dt
+            lead.next_action_note = (next_action_note or "")[:200]
+            _log(session, lead, user, "note",
+                 f"follow-up {next_action_at or 'set'}: {next_action_note}"[:200])
+        session.add(lead)
+        session.commit()
+    return RedirectResponse(f"/leads/{lead_id}", status_code=303)
 
 
 @app.get("/quotes", response_class=HTMLResponse)
@@ -720,7 +1013,7 @@ def quote_detail(request: Request, quote_id: int):
     return templates.TemplateResponse(
         "quote_detail.html",
         {"request": request, "user": user, "q": q, "lead": lead, "product": product,
-         "breakdown": breakdown, "fx": fx, "can_approve": role_at_least(user, "manager")},
+         "breakdown": breakdown, "fx": fx, "can_approve": role_at_least(user, "agent")},
     )
 
 
@@ -728,7 +1021,7 @@ def quote_detail(request: Request, quote_id: int):
 def approve_quote(request: Request, quote_id: int):
     with Session(engine) as session:
         user = current_user(request, session)
-        if not role_at_least(user, "manager"):    # only manager+ can approve
+        if not role_at_least(user, "agent"):    # agent+ can approve (solo-operator friendly)
             return _forbidden()
         q = session.get(Quote, quote_id)
         if q and q.status == "draft":
@@ -743,7 +1036,7 @@ def approve_quote(request: Request, quote_id: int):
 def send_quote(request: Request, quote_id: int):
     with Session(engine) as session:
         user = current_user(request, session)
-        if not role_at_least(user, "manager"):     # only manager+ can send
+        if not role_at_least(user, "agent"):     # agent+ can send (solo-operator friendly)
             return _forbidden()
         q = session.get(Quote, quote_id)
         if q and q.status == "approved":
@@ -865,6 +1158,8 @@ def settle_deal(request: Request, deal_id: int,
             deal.actual_revenue = actual_revenue
             deal.actual_cost = actual_cost
             deal.realized_margin = round(actual_revenue - actual_cost, 2)
+            deal.stage = "settled"                 # settling advances the pipeline...
+            deal.closed_at = datetime.utcnow()     # ...and closes the deal (no longer "open")
             deal.updated_at = datetime.utcnow()
             session.add(deal)
             session.commit()
@@ -887,11 +1182,24 @@ def ingest_page(request: Request):
 
 
 @app.post("/ingest/run")
-def ingest_run(request: Request):
+def ingest_run(request: Request, background: BackgroundTasks):
     with Session(engine) as session:
         if not role_at_least(current_user(request, session), "manager"):
             return _forbidden()
-    ingest_source(Go4WorldCsvSource(INBOX_DIR))   # opens its own session
+    background.add_task(ingest_source, Go4WorldCsvSource(INBOX_DIR))   # non-blocking
+    return RedirectResponse("/ingest", status_code=303)
+
+
+@app.post("/ingest/upload")
+async def ingest_upload(request: Request, background: BackgroundTasks, file: UploadFile = File(...)):
+    """Browser CSV upload: save into the inbox then kick off ingestion in the background."""
+    with Session(engine) as session:
+        if not role_at_least(current_user(request, session), "manager"):
+            return _forbidden()
+    if file.filename and file.filename.lower().endswith(".csv"):
+        Path(INBOX_DIR).mkdir(parents=True, exist_ok=True)
+        (Path(INBOX_DIR) / Path(file.filename).name).write_bytes(await file.read())
+        background.add_task(ingest_source, Go4WorldCsvSource(INBOX_DIR))
     return RedirectResponse("/ingest", status_code=303)
 
 

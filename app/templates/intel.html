@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 {% set active = 'intel' %}
 {% block content %}
-<h2 class="text-lg font-semibold mb-1">Market intelligence</h2>
-<p class="text-slate-500 text-sm mb-6">Harvested from customs records, the Georgian procurement portal, OpenStreetMap and B2B directories &mdash; read-only.</p>
+
+<div class="mb-6">
+  <h2 class="text-xl font-bold tracking-tight">Market intelligence</h2>
+  <p class="text-slate-500 text-sm mt-0.5">Harvested from customs records, the Georgian procurement portal, OpenStreetMap and B2B directories &mdash; read-only.</p>
+</div>
 
 {% if not has_data %}
-  <div class="rounded-xl border border-slate-800 bg-slate-900 p-6 text-slate-400 text-sm">
-    No harvested data found. Run the harvesters (<span class="font-mono text-xs text-slate-500">scripts/harvest_*.py</span>) to populate this tab.
-  </div>
+  <div class="empty">No harvested data found. Run the harvesters (<span class="font-mono text-xs text-slate-400">scripts/harvest_*.py</span>) to populate this tab.</div>
 {% else %}
 
 {% if cards %}
@@ -17,11 +18,11 @@
       {% set border = {'good':'border-emerald-700/50','bad':'border-rose-800/50','warn':'border-amber-700/50'}[c.tone] %}
       {% set vcol = {'good':'text-emerald-300','bad':'text-rose-300','warn':'text-amber-300'}[c.tone] %}
       <div class="rounded-xl border {{ border }} bg-slate-900 p-4">
-        <div class="font-semibold">{{ c.name }} <span class="text-xs text-slate-500">{{ c.hs }}</span></div>
+        <div class="font-semibold">{{ c.name }} <span class="text-xs text-slate-500 font-mono">{{ c.hs }}</span></div>
         <div class="mt-2 space-y-1 text-xs text-slate-400">
-          {% if c.year and c.cif %}<div class="flex justify-between gap-2"><span>Imports {{ c.year }}</span><span class="text-slate-200 text-right">{{ c.tonnes }} t · {{ '{:,.0f}'.format(c.cif) }} $</span></div>{% endif %}
-          {% if c.price %}<div class="flex justify-between gap-2"><span>Landed price</span><span class="text-slate-200">{{ c.price }} $/kg</span></div>{% endif %}
-          {% if c.trend is not none %}<div class="flex justify-between gap-2"><span>Trend</span><span class="text-slate-200">{{ '+' if c.trend >= 0 else '' }}{{ c.trend }}%</span></div>{% endif %}
+          {% if c.year and c.cif %}<div class="flex justify-between gap-2"><span>Imports {{ c.year }}</span><span class="text-slate-200 text-right tabular-nums">{{ c.tonnes }} t · {{ '{:,.0f}'.format(c.cif) }} $</span></div>{% endif %}
+          {% if c.price %}<div class="flex justify-between gap-2"><span>Landed price</span><span class="text-slate-200 tabular-nums">{{ c.price }} $/kg</span></div>{% endif %}
+          {% if c.trend is not none %}<div class="flex justify-between gap-2"><span>Trend</span><span class="text-slate-200 tabular-nums">{{ '+' if c.trend >= 0 else '' }}{{ c.trend }}%</span></div>{% endif %}
           {% if c.cheapest %}<div class="flex justify-between gap-2"><span>Cheapest now</span><span class="text-slate-200 text-right">{{ c.cheapest.country }} @ {{ c.cheapest.unit_price_usd_kg }} $/kg</span></div>{% endif %}
           <div class="flex justify-between gap-2"><span>Iran in market</span><span class="text-slate-200 text-right">{% if c.iran %}yes · {{ c.iran.unit_price_usd_kg }} $/kg{% else %}no{% endif %}</span></div>
         </div>
@@ -32,8 +33,8 @@
 {% endif %}
 
 <div class="grid lg:grid-cols-2 gap-6">
-  <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
-    <h3 class="text-sm font-semibold text-slate-300 mb-3">Live Georgian tenders <span class="text-slate-500">{{ tenders|length }}</span></h3>
+  <div class="card-soft">
+    <h3 class="text-sm font-semibold text-slate-200 mb-3">Live Georgian tenders <span class="badge badge-slate ml-1">{{ tenders|length }}</span></h3>
     {% if tenders %}
       <div class="space-y-2">
         {% for t in tenders %}
@@ -46,14 +47,14 @@
     {% else %}<p class="text-slate-600 text-xs">None matched recently.</p>{% endif %}
   </div>
 
-  <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
-    <h3 class="text-sm font-semibold text-slate-300 mb-3">UAE suppliers <span class="text-slate-500">{{ uae|length }}</span></h3>
+  <div class="card-soft">
+    <h3 class="text-sm font-semibold text-slate-200 mb-3">UAE suppliers <span class="badge badge-slate ml-1">{{ uae|length }}</span></h3>
     {% if uae %}
       <div class="grid sm:grid-cols-2 gap-2">
         {% for s in uae[:20] %}
-          <div class="text-xs rounded border border-slate-800 p-2">
+          <div class="text-xs rounded-lg border border-slate-800 bg-slate-900/60 p-2.5">
             <div class="text-slate-200 truncate">{{ s.company }}</div>
-            <div class="text-slate-500">{{ s.city or 'UAE' }}{% if s.phones %} · <a href="tel:{{ s.phones[0] }}" class="text-sky-400 hover:underline">{{ s.phones[0] }}</a>{% endif %}</div>
+            <div class="text-slate-500">{{ s.city or 'UAE' }}{% if s.phones %} · <a href="tel:{{ s.phones[0] }}" class="link">{{ s.phones[0] }}</a>{% endif %}</div>
           </div>
         {% endfor %}
       </div>
@@ -61,15 +62,15 @@
   </div>
 </div>
 
-<div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 mt-6">
-  <h3 class="text-sm font-semibold text-slate-300 mb-3">Georgian gyms &amp; sports venues (rubber-tile buyers) <span class="text-slate-500">{{ biz_total }}</span></h3>
+<div class="card-soft mt-6">
+  <h3 class="text-sm font-semibold text-slate-200 mb-3">Georgian gyms &amp; sports venues (rubber-tile buyers) <span class="badge badge-slate ml-1">{{ biz_total }}</span></h3>
   {% if biz_contact %}
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
       {% for b in biz_contact %}
-        <div class="text-xs rounded border border-slate-800 p-2">
+        <div class="text-xs rounded-lg border border-slate-800 bg-slate-900/60 p-2.5">
           <div class="text-slate-200 truncate">{{ b.company }}</div>
           <div class="text-slate-500 truncate">{{ b.role }}{% if b.city %} · {{ b.city }}{% endif %}</div>
-          <div>{% if b.phone %}<a href="tel:{{ b.phone }}" class="text-sky-400 hover:underline">{{ b.phone }}</a>{% endif %}{% if b.website %}{% if b.phone %} · {% endif %}<a href="{{ b.website if '://' in b.website else 'https://' + b.website }}" target="_blank" rel="noopener" class="text-sky-400 hover:underline">site&#8599;</a>{% endif %}</div>
+          <div>{% if b.phone %}<a href="tel:{{ b.phone }}" class="link">{{ b.phone }}</a>{% endif %}{% if b.website %}{% if b.phone %} · {% endif %}<a href="{{ b.website if '://' in b.website else 'https://' + b.website }}" target="_blank" rel="noopener" class="link">site&#8599;</a>{% endif %}</div>
         </div>
       {% endfor %}
     </div>

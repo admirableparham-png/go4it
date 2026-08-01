@@ -1,33 +1,37 @@
 {% extends "base.html" %}
 {% set active = 'deals' %}
 {% block content %}
-<h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
-  <span>Deals</span><span class="text-sm text-slate-500">{{ rows|length }}</span>
-</h2>
+
+<div class="flex flex-wrap items-end justify-between gap-3 mb-6">
+  <div>
+    <h2 class="text-xl font-bold tracking-tight flex items-center gap-2">Deals <span class="badge badge-slate">{{ rows|length }}</span></h2>
+    <p class="text-slate-500 text-sm mt-0.5">Won leads in execution &mdash; sourcing to settlement.</p>
+  </div>
+</div>
 
 {% if rows %}
-  <div class="overflow-x-auto rounded-xl border border-slate-800">
-    <table class="w-full text-sm">
-      <thead class="bg-slate-900 text-slate-400 text-xs uppercase">
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
         <tr>
-          <th class="text-left font-medium px-3 py-2">Deal</th>
-          <th class="text-left font-medium px-3 py-2">Buyer</th>
-          <th class="text-left font-medium px-3 py-2">Product</th>
-          <th class="text-left font-medium px-3 py-2">Stage</th>
-          <th class="text-right font-medium px-3 py-2">Planned margin</th>
-          <th class="text-right font-medium px-3 py-2">Realized</th>
+          <th>Deal</th>
+          <th>Buyer</th>
+          <th>Product</th>
+          <th>Stage</th>
+          <th class="text-right">Planned margin</th>
+          <th class="text-right">Realized</th>
         </tr>
       </thead>
       <tbody>
         {% for row in rows %}
           {% set d = row.d %}
-          <tr class="border-t border-slate-800 hover:bg-slate-900/60">
-            <td class="px-3 py-2"><a href="/deals/{{ d.id }}" class="font-mono text-sky-400 hover:underline">{{ d.tracking_code }}</a></td>
-            <td class="px-3 py-2 text-slate-300">{{ row.lead.buyer_company if row.lead else '' }}</td>
-            <td class="px-3 py-2">{{ row.lead.product if row.lead else '' }}</td>
-            <td class="px-3 py-2"><span class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">{{ d.stage.replace('_', ' ') }}</span></td>
-            <td class="px-3 py-2 text-right text-slate-400">{{ '%.2f'|format(d.planned_margin) }}</td>
-            <td class="px-3 py-2 text-right {% if d.realized_margin %}text-emerald-400{% else %}text-slate-600{% endif %}">
+          <tr>
+            <td><a href="/deals/{{ d.id }}" class="font-mono link">{{ d.tracking_code }}</a></td>
+            <td class="text-slate-300">{{ row.lead.buyer_company if row.lead else '' }}</td>
+            <td>{{ row.lead.product if row.lead else '' }}</td>
+            <td><span class="badge {{ 'badge-emerald' if d.stage in ['settled','closed'] else 'badge-sky' }}">{{ d.stage.replace('_', ' ') }}</span></td>
+            <td class="text-right text-slate-400 tabular-nums">{{ '%.2f'|format(d.planned_margin) }}</td>
+            <td class="text-right tabular-nums {% if d.realized_margin %}text-emerald-400{% else %}text-slate-600{% endif %}">
               {{ '%.2f'|format(d.realized_margin) if d.realized_margin else '—' }}</td>
           </tr>
         {% endfor %}
@@ -35,6 +39,6 @@
     </table>
   </div>
 {% else %}
-  <p class="text-slate-500 text-sm">No deals yet. Mark a lead <b>Won</b> (from its detail page) and a deal opens here.</p>
+  <div class="empty">No deals yet. Mark a lead <b>Won</b> (from its detail page) and a deal opens here.</div>
 {% endif %}
 {% endblock %}

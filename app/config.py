@@ -50,3 +50,13 @@ GO4WORLD_ENABLED = bool(GO4WORLD_EMAIL and GO4WORLD_PASSWORD and GO4WORLD_PORTAL
 # Key the in-browser helper (Tampermonkey userscript) uses to POST captured leads
 # to /api/leads/raw. Change it in .env for anything beyond local use.
 INGEST_API_KEY = os.getenv("GO4IT_INGEST_KEY", "go4it-local-key")
+
+# --- Outreach email (optional SMTP) ---
+# Leave blank to use click-to-email (mailto) + click-to-WhatsApp only; set these to send
+# real email from inside go4it. For Gmail use an App Password, host smtp.gmail.com port 587.
+SMTP_HOST = os.getenv("SMTP_HOST", "").strip()
+SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
+SMTP_USER = os.getenv("SMTP_USER", "").strip()
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "").strip()
+SMTP_FROM = os.getenv("SMTP_FROM", "").strip() or SMTP_USER
+SMTP_ENABLED = bool(SMTP_HOST and SMTP_USER and SMTP_PASSWORD)

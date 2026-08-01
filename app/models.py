@@ -85,6 +85,8 @@ class Lead(SQLModel, table=True):
     owner_id: Optional[int] = Field(default=None, foreign_key="user.id")
     lost_reason: str = ""
     first_response_at: Optional[datetime] = None
+    next_action_at: Optional[datetime] = None      # follow-up date (the "contact today" queue)
+    next_action_note: str = ""
     notes: str = ""
     posted_at: Optional[datetime] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -173,6 +175,42 @@ class IngestionRun(SQLModel, table=True):
     leads_duplicate: int = 0
     status: str = "running"        # running | ok | error
     error: str = ""
+
+
+class CommandJob(SQLModel, table=True):
+    """A founder command typed into the dashboard box: free-text prompt -> parsed intent
+    (country + category) -> a background harvest that creates leads. Same observability
+    shape as IngestionRun, plus the prompt + parsed params + a human-readable result note."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    prompt: str = ""
+    action: str = ""               # harvest_uae | market | unknown
+    params: str = ""               # JSON blob of the parsed intent
+    status: str = "queued"         # queued | running | ok | error
+    note: str = ""                 # human-readable result summary
+    leads_seen: int = 0
+    leads_new: int = 0
+    leads_duplicate: int = 0
+    error: str = ""
+    owner_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    started_at: Optional[datetime] = None
+    finished_at: Optional[datetime] = None
+
+
+class Outreach(SQLModel, table=True):
+    """One buyer-contact attempt (email / whatsapp / call), logged against a lead so outreach
+    history + response speed are visible. Sent via SMTP when configured, otherwise 'logged'
+    (the operator used the click-to-email / click-to-WhatsApp link)."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    lead_id: int = Field(foreign_key="lead.id", index=True)
+    channel: str = "email"         # email | whatsapp | call | note
+    recipient: str = ""            # email address or phone
+    subject: str = ""
+    body: str = ""
+    status: str = "logged"         # logged | sent | failed
+    error: str = ""
+    user_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
 # --------------------------------------------------------------------------- post-win

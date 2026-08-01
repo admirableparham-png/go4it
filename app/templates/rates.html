@@ -1,84 +1,96 @@
 {% extends "base.html" %}
 {% set active = 'rates' %}
 {% block content %}
-{% set ic = "w-full bg-slate-800 border border-slate-700 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-slate-500" %}
+{% set ic = "input" %}
 
-<h2 class="text-lg font-semibold mb-1">Rates &amp; cost model</h2>
-<p class="text-slate-500 text-sm mb-6">These drive every quotation. Placeholder values ship in &mdash; replace them with your real numbers for a typical Iran &rarr; Georgia lane.</p>
+<div class="mb-6">
+  <h2 class="text-xl font-bold tracking-tight">Rates &amp; cost model</h2>
+  <p class="text-slate-500 text-sm mt-0.5">These drive every quotation. Placeholder values ship in &mdash; replace them with your real numbers for a typical Iran &rarr; Georgia lane.</p>
+</div>
 
-<div class="grid md:grid-cols-2 gap-8">
+<div class="grid md:grid-cols-2 gap-6">
 
   <!-- Freight -->
   <section>
-    <h3 class="font-semibold mb-3 text-sky-400">Freight (per truck)</h3>
-    <form method="post" action="/rates/cards" class="space-y-2 rounded-xl border border-slate-800 bg-slate-900 p-4">
-      <label class="block text-xs text-slate-400">Inland Iran freight / truck (USD)</label>
-      <input name="inland_per_truck" type="number" step="any" min="0" value="{{ inland.rate_per_truck if inland else 0 }}" class="{{ ic }}">
-      <label class="block text-xs text-slate-400">International freight to border / truck (USD)</label>
-      <input name="intl_per_truck" type="number" step="any" min="0" value="{{ intl.rate_per_truck if intl else 0 }}" class="{{ ic }}">
-      <label class="block text-xs text-slate-400">Truck capacity (tonnes)</label>
-      <input name="truck_capacity" type="number" step="any" min="1" value="{{ intl.truck_capacity_t if intl else 25 }}" class="{{ ic }}">
-      <label class="block text-xs text-slate-400">Destination border</label>
-      <input name="dest_border" value="{{ intl.lane_to if intl else '' }}" placeholder="e.g. Sadakhlo (GE)" class="{{ ic }}">
-      <button class="w-full bg-sky-600 hover:bg-sky-500 text-white rounded py-2 text-sm font-medium">Save freight</button>
+    <h3 class="text-sm font-semibold mb-3 text-sky-400">Freight (per truck)</h3>
+    <form method="post" action="/rates/cards" class="card space-y-3">
+      <div>
+        <label class="field-label">Inland Iran freight / truck (USD)</label>
+        <input name="inland_per_truck" type="number" step="any" min="0" value="{{ inland.rate_per_truck if inland else 0 }}" class="{{ ic }}">
+      </div>
+      <div>
+        <label class="field-label">International freight to border / truck (USD)</label>
+        <input name="intl_per_truck" type="number" step="any" min="0" value="{{ intl.rate_per_truck if intl else 0 }}" class="{{ ic }}">
+      </div>
+      <div>
+        <label class="field-label">Truck capacity (tonnes)</label>
+        <input name="truck_capacity" type="number" step="any" min="1" value="{{ intl.truck_capacity_t if intl else 25 }}" class="{{ ic }}">
+      </div>
+      <div>
+        <label class="field-label">Destination border</label>
+        <input name="dest_border" value="{{ intl.lane_to if intl else '' }}" placeholder="e.g. Sadakhlo (GE)" class="{{ ic }}">
+      </div>
+      <button class="btn btn-primary btn-block" data-busy="Saving">Save freight</button>
     </form>
   </section>
 
   <!-- Cost params -->
   <section>
-    <h3 class="font-semibold mb-3 text-emerald-400">Costs &amp; margin</h3>
-    <form method="post" action="/rates/params" class="space-y-2 rounded-xl border border-slate-800 bg-slate-900 p-4">
-      <div class="grid grid-cols-2 gap-2">
+    <h3 class="text-sm font-semibold mb-3 text-emerald-400">Costs &amp; margin</h3>
+    <form method="post" action="/rates/params" class="card space-y-3">
+      <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="block text-xs text-slate-400">Export clearance (USD/shipment)</label>
+          <label class="field-label">Export clearance (USD/shipment)</label>
           <input name="export_clearance" type="number" step="any" min="0" value="{{ p.get('export_clearance', 0) }}" class="{{ ic }}">
         </div>
         <div>
-          <label class="block text-xs text-slate-400">Certificate of origin (USD/shipment)</label>
+          <label class="field-label">Certificate of origin (USD/shipment)</label>
           <input name="coo_fee" type="number" step="any" min="0" value="{{ p.get('coo_fee', 0) }}" class="{{ ic }}">
         </div>
         <div>
-          <label class="block text-xs text-slate-400">Insurance (%)</label>
+          <label class="field-label">Insurance (%)</label>
           <input name="insurance_pct" type="number" step="any" min="0" value="{{ p.get('insurance_pct', 0) }}" class="{{ ic }}">
         </div>
         <div>
-          <label class="block text-xs text-slate-400">Financing / FX (%)</label>
+          <label class="field-label">Financing / FX (%)</label>
           <input name="financing_pct" type="number" step="any" min="0" value="{{ p.get('financing_pct', 0) }}" class="{{ ic }}">
         </div>
         <div>
-          <label class="block text-xs text-slate-400">Margin (%)</label>
+          <label class="field-label">Margin (%)</label>
           <input name="margin_pct" type="number" step="any" min="0" value="{{ p.get('margin_pct', 8) }}" class="{{ ic }}">
         </div>
         <div>
-          <label class="block text-xs text-slate-400">Margin floor (%)</label>
+          <label class="field-label">Margin floor (%)</label>
           <input name="margin_floor_pct" type="number" step="any" min="0" value="{{ p.get('margin_floor_pct', 5) }}" class="{{ ic }}">
         </div>
       </div>
-      <button class="w-full bg-emerald-600 hover:bg-emerald-500 text-white rounded py-2 text-sm font-medium">Save costs</button>
+      <button class="btn btn-primary btn-block" data-busy="Saving">Save costs</button>
     </form>
   </section>
 
   <!-- FX -->
   <section class="md:col-span-2">
-    <h3 class="font-semibold mb-3 text-amber-400">FX rates (the rate you actually get &rarr; USD)</h3>
-    <div class="flex flex-wrap gap-2 mb-3">
-      {% for fx in fxs %}
-        <span class="text-xs px-2 py-1 rounded bg-slate-800">{{ fx.base }}&rarr;{{ fx.quote }} @ {{ fx.rate }}</span>
-      {% else %}
-        <span class="text-slate-500 text-sm">No custom FX yet (defaults to 1:1 for same-currency).</span>
-      {% endfor %}
+    <h3 class="text-sm font-semibold mb-3 text-amber-400">FX rates (the rate you actually get &rarr; USD)</h3>
+    <div class="card space-y-3">
+      <div class="flex flex-wrap gap-2">
+        {% for fx in fxs %}
+          <span class="badge badge-slate">{{ fx.base }} &rarr; {{ fx.quote }} @ {{ fx.rate }}</span>
+        {% else %}
+          <span class="text-slate-500 text-sm">No custom FX yet (defaults to 1:1 for same-currency).</span>
+        {% endfor %}
+      </div>
+      <form method="post" action="/rates/fx" class="flex flex-wrap gap-3 items-end">
+        <div>
+          <label class="field-label">Base currency</label>
+          <input name="base" placeholder="e.g. IRR" class="input w-32">
+        </div>
+        <div>
+          <label class="field-label">Rate to USD</label>
+          <input name="rate" type="number" step="any" min="0" placeholder="e.g. 0.0000019" class="input w-40">
+        </div>
+        <button class="btn btn-primary" data-busy="Saving">Add / update FX</button>
+      </form>
     </div>
-    <form method="post" action="/rates/fx" class="flex flex-wrap gap-2 items-end">
-      <div>
-        <label class="block text-xs text-slate-400">Base currency</label>
-        <input name="base" placeholder="e.g. IRR" class="{{ ic }} w-32">
-      </div>
-      <div>
-        <label class="block text-xs text-slate-400">Rate to USD</label>
-        <input name="rate" type="number" step="any" min="0" placeholder="e.g. 0.0000019" class="{{ ic }} w-40">
-      </div>
-      <button class="bg-amber-600 hover:bg-amber-500 text-white rounded px-4 py-1.5 text-sm font-medium">Add / update FX</button>
-    </form>
   </section>
 
 </div>

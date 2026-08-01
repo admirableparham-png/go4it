@@ -1,0 +1,184 @@
+{
+  "hs_code": "3901",
+  "label": "Polyethylene (PE) primary",
+  "years": {
+    "2023": {
+      "tonnes": 23381.2,
+      "cif_usd": 27411464,
+      "unit_price_usd_kg": 1.172
+    },
+    "2024": {
+      "tonnes": 28558.8,
+      "cif_usd": 32503617,
+      "unit_price_usd_kg": 1.138
+    }
+  },
+  "trend_pct_first_to_last": 19,
+  "latest_year": "2024",
+  "latest_tonnes": 28558.8,
+  "latest_cif": 32503617,
+  "latest_price": 1.138,
+  "top_suppliers": [
+    {
+      "country": "Russia",
+      "code": 643,
+      "tonnes_total": 1660.1,
+      "cif_usd_total": 1700153,
+      "unit_price_usd_kg": 1.024,
+      "watch_competitor": true
+    },
+    {
+      "country": "Uzbekistan",
+      "code": 860,
+      "tonnes_total": 13589.8,
+      "cif_usd_total": 14090138,
+      "unit_price_usd_kg": 1.037,
+      "watch_competitor": true
+    },
+    {
+      "country": "Azerbaijan",
+      "code": 31,
+      "tonnes_total": 1445.2,
+      "cif_usd_total": 1626841,
+      "unit_price_usd_kg": 1.126,
+      "watch_competitor": true
+    },
+    {
+      "country": "Iran",
+      "code": 364,
+      "tonnes_total": 76737.3,
+      "cif_usd_total": 87051803,
+      "unit_price_usd_kg": 1.134,
+      "watch_competitor": false
+    },
+    {
+      "country": "Qatar",
+      "code": 634,
+      "tonnes_total": 12183.0,
+      "cif_usd_total": 14054605,
+      "unit_price_usd_kg": 1.154,
+      "watch_competitor": false
+    },
+    {
+      "country": "Oman",
+      "code": 512,
+      "tonnes_total": 333.0,
+      "cif_usd_total": 391950,
+      "unit_price_usd_kg": 1.177,
+      "watch_competitor": false
+    },
+    {
+      "country": "Saudi Arabia",
+      "code": 682,
+      "tonnes_total": 8434.6,
+      "cif_usd_total": 9957950,
+      "unit_price_usd_kg": 1.181,
+      "watch_competitor": false
+    },
+    {
+      "country": "USA",
+      "code": 842,
+      "tonnes_total": 6288.2,
+      "cif_usd_total": 7513449,
+      "unit_price_usd_kg": 1.195,
+      "watch_competitor": false
+    },
+    {
+      "country": "UAE",
+      "code": 784,
+      "tonnes_total": 8082.6,
+      "cif_usd_total": 10585361,
+      "unit_price_usd_kg": 1.31,
+      "watch_competitor": false
+    },
+    {
+      "country": "Turkey",
+      "code": 792,
+      "tonnes_total": 5918.1,
+      "cif_usd_total": 8445531,
+      "unit_price_usd_kg": 1.427,
+      "watch_competitor": true
+    },
+    {
+      "country": "Kazakhstan",
+      "code": 398,
+      "tonnes_total": 425.6,
+      "cif_usd_total": 607902,
+      "unit_price_usd_kg": 1.428,
+      "watch_competitor": true
+    },
+    {
+      "country": "China",
+      "code": 156,
+      "tonnes_total": 722.5,
+      "cif_usd_total": 1079790,
+      "unit_price_usd_kg": 1.494,
+      "watch_competitor": true
+    },
+    {
+      "country": "South Korea",
+      "code": 410,
+      "tonnes_total": 4839.8,
+      "cif_usd_total": 7419463,
+      "unit_price_usd_kg": 1.533,
+      "watch_competitor": false
+    },
+    {
+      "country": "Austria",
+      "code": 40,
+      "tonnes_total": 313.9,
+      "cif_usd_total": 578987,
+      "unit_price_usd_kg": 1.844,
+      "watch_competitor": false
+    },
+    {
+      "country": "India",
+      "code": 699,
+      "tonnes_total": 711.7,
+      "cif_usd_total": 1496982,
+      "unit_price_usd_kg": 2.103,
+      "watch_competitor": true
+    },
+    {
+      "country": "Italy",
+      "code": 380,
+      "tonnes_total": 252.9,
+      "cif_usd_total": 683907,
+      "unit_price_usd_kg": 2.704,
+      "watch_competitor": false
+    },
+    {
+      "country": "code376",
+      "code": 376,
+      "tonnes_total": 47.7,
+      "cif_usd_total": 145002,
+      "unit_price_usd_kg": 3.04,
+      "watch_competitor": false
+    },
+    {
+      "country": "Czechia",
+      "code": 203,
+      "tonnes_total": 264.4,
+      "cif_usd_total": 929650,
+      "unit_price_usd_kg": 3.516,
+      "watch_competitor": false
+    },
+    {
+      "country": "Germany",
+      "code": 276,
+      "tonnes_total": 79.7,
+      "cif_usd_total": 319077,
+      "unit_price_usd_kg": 4.003,
+      "watch_competitor": false
+    },
+    {
+      "country": "Estonia",
+      "code": 233,
+      "tonnes_total": 65.0,
+      "cif_usd_total": 446675,
+      "unit_price_usd_kg": 6.872,
+      "watch_competitor": false
+    }
+  ],
+  "total_cif": 169658796
+}

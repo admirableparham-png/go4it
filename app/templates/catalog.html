@@ -1,13 +1,20 @@
 {% extends "base.html" %}
 {% set active = 'catalog' %}
 {% block content %}
-{% set ic = "w-full bg-slate-800 border border-slate-700 rounded px-2 py-1.5 text-sm placeholder-slate-500 focus:outline-none focus:border-slate-500" %}
+{% set ic = "input" %}
+
+<div class="flex flex-wrap items-end justify-between gap-3 mb-6">
+  <div>
+    <h2 class="text-xl font-bold tracking-tight flex items-center gap-2">Catalog <span class="badge badge-slate">{{ products|length }}</span></h2>
+    <p class="text-slate-500 text-sm mt-0.5">Your quotable Iranian supply &mdash; leads match against this.</p>
+  </div>
+</div>
 
 {% if imported or updated or errors %}
-  <div class="mb-6 rounded-lg border border-slate-700 bg-slate-900 text-sm p-3">
-    CSV import: <span class="text-emerald-400">{{ imported }} added</span>,
-    <span class="text-sky-400">{{ updated }} updated</span>{% if errors %},
-    <span class="text-amber-400">{{ errors }} row error(s)</span>{% endif %}.
+  <div class="card mb-6 text-sm">
+    CSV import: <span class="text-emerald-400 font-medium">{{ imported }} added</span>,
+    <span class="text-sky-400 font-medium">{{ updated }} updated</span>{% if errors %},
+    <span class="text-amber-400 font-medium">{{ errors }} row error(s)</span>{% endif %}.
   </div>
 {% endif %}
 
@@ -16,22 +23,21 @@
   <!-- Add / import -->
   <section class="lg:col-span-1 space-y-6">
     <div>
-      <h2 class="text-lg font-semibold mb-3 text-sky-400">Import catalog CSV</h2>
-      <form method="post" action="/catalog/import" enctype="multipart/form-data"
-            class="space-y-2 rounded-xl border border-slate-800 bg-slate-900 p-4">
+      <h3 class="text-sm font-semibold mb-3 text-sky-400">Import catalog CSV</h3>
+      <form method="post" action="/catalog/import" enctype="multipart/form-data" class="card space-y-3">
         <input type="file" name="file" accept=".csv" required
-               class="block w-full text-sm text-slate-300 file:mr-3 file:rounded file:border-0 file:bg-sky-600 file:text-white file:px-3 file:py-1.5 file:text-sm">
-        <button class="w-full bg-sky-600 hover:bg-sky-500 text-white rounded py-2 text-sm font-medium">Upload &amp; import</button>
+               class="block w-full text-sm text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-sky-600 file:hover:bg-sky-500 file:text-white file:px-3 file:py-1.5 file:text-sm file:cursor-pointer">
+        <button class="btn btn-secondary btn-block" data-busy="Importing">Upload &amp; import</button>
         <p class="text-xs text-slate-500">
           Columns are matched flexibly (name/product, price/exw, moq, hs, weight, supplier&hellip;).
-          <a href="/catalog/sample.csv" class="underline text-slate-400">Download sample CSV</a>
+          <a href="/catalog/sample.csv" class="link">Download sample CSV</a>
         </p>
       </form>
     </div>
 
     <div>
-      <h2 class="text-lg font-semibold mb-3 text-emerald-400">Add one product</h2>
-      <form method="post" action="/catalog/products" class="space-y-2 rounded-xl border border-slate-800 bg-slate-900 p-4">
+      <h3 class="text-sm font-semibold mb-3 text-emerald-400">Add one product</h3>
+      <form method="post" action="/catalog/products" class="card space-y-2">
         <input name="name" required placeholder="Product name" class="{{ ic }}">
         <div class="grid grid-cols-2 gap-2">
           <input name="category" placeholder="Category" class="{{ ic }}">
@@ -52,48 +58,45 @@
           <input name="supplier" placeholder="Supplier" class="{{ ic }}">
         </div>
         <input name="packaging" placeholder="Packaging" class="{{ ic }}">
-        <button class="w-full bg-emerald-600 hover:bg-emerald-500 text-white rounded py-2 text-sm font-medium">Add product</button>
+        <button class="btn btn-primary btn-block" data-busy="Adding">Add product</button>
       </form>
     </div>
   </section>
 
   <!-- Product list -->
   <section class="lg:col-span-2">
-    <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
-      <span>Catalog</span>
-      <span class="text-sm text-slate-500">{{ products|length }}</span>
-    </h2>
+    <h3 class="text-sm font-semibold text-slate-300 mb-3">Products</h3>
     {% if products %}
-      <div class="overflow-x-auto rounded-xl border border-slate-800">
-        <table class="w-full text-sm">
-          <thead class="bg-slate-900 text-slate-400 text-xs uppercase">
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
             <tr>
-              <th class="text-left font-medium px-3 py-2">Product</th>
-              <th class="text-left font-medium px-3 py-2">Cat</th>
-              <th class="text-left font-medium px-3 py-2">HS</th>
-              <th class="text-right font-medium px-3 py-2">EXW</th>
-              <th class="text-right font-medium px-3 py-2">MOQ</th>
-              <th class="text-left font-medium px-3 py-2">Origin</th>
-              <th class="text-left font-medium px-3 py-2">Supplier</th>
+              <th>Product</th>
+              <th>Cat</th>
+              <th>HS</th>
+              <th class="text-right">EXW</th>
+              <th class="text-right">MOQ</th>
+              <th>Origin</th>
+              <th>Supplier</th>
             </tr>
           </thead>
           <tbody>
             {% for p in products %}
-              <tr class="border-t border-slate-800 {% if not p.active %}opacity-50{% endif %}">
-                <td class="px-3 py-2">{{ p.name }} <span class="text-slate-500">{{ p.spec }}</span></td>
-                <td class="px-3 py-2 text-slate-400">{{ p.category }}</td>
-                <td class="px-3 py-2 text-slate-400">{{ p.hs_code }}</td>
-                <td class="px-3 py-2 text-right">{{ p.exw_price }} {{ p.currency }}/{{ p.unit }}</td>
-                <td class="px-3 py-2 text-right text-slate-400">{{ p.min_order_qty }}</td>
-                <td class="px-3 py-2 text-slate-400">{{ p.origin_region }}</td>
-                <td class="px-3 py-2 text-slate-400">{{ suppliers[p.supplier_id].name if p.supplier_id in suppliers else '' }}</td>
+              <tr class="{% if not p.active %}opacity-50{% endif %}">
+                <td>{{ p.name }} <span class="text-slate-500">{{ p.spec }}</span></td>
+                <td class="text-slate-400">{{ p.category }}</td>
+                <td class="text-slate-400 font-mono text-xs">{{ p.hs_code }}</td>
+                <td class="text-right tabular-nums">{{ p.exw_price }} {{ p.currency }}/{{ p.unit }}</td>
+                <td class="text-right text-slate-400 tabular-nums">{{ p.min_order_qty }}</td>
+                <td class="text-slate-400">{{ p.origin_region }}</td>
+                <td class="text-slate-400">{{ suppliers[p.supplier_id].name if p.supplier_id in suppliers else '' }}</td>
               </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
     {% else %}
-      <p class="text-slate-500 text-sm">No products yet. Add one or import a CSV on the left.</p>
+      <div class="empty">No products yet. Add one or import a CSV on the left.</div>
     {% endif %}
   </section>
 

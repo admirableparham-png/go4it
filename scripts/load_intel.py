@@ -7,7 +7,6 @@ Reads the committed harvest datasets under docs/research/ and pushes them into g
   GE demand -> Lead
     * ge_tenders.json        source="ge-procurement"   (live municipal/institutional buyers)
     * ge_businesses.json     source="osm-ge"           (named gyms/sports venues = rubber buyers)
-    * tradeindia_rfqs.json   source="tradeindia-rfq"   (regional/non-India RFQs only)
   Supply -> Supplier + Product (quotable catalog)
     * suppliers_uae_iran.json  UAE only  (clean rubber-tile makers w/ phones)
       (Iran parscenter rows are noisy -> kept in the JSON as reference, NOT loaded)
@@ -107,21 +106,7 @@ def run():
                           notes=notes[:600])
             new, dup = (new + 1, dup) if ok else (new, dup + 1)
 
-        # 3) TradeIndia regional RFQs ---------------------------------------------
-        d = load("tradeindia_rfqs.json")
-        for r in (d or {}).get("leads", []):
-            if not r.get("is_regional"):
-                continue
-            pkey = r.get("product_key", "")
-            ok = add_lead(s, source="tradeindia-rfq", external_id=r.get("rfq_id", ""),
-                          product=DISPLAY.get(pkey, pkey), category=pkey,
-                          spec=(r.get("spec") or "")[:300],
-                          dest_country=r.get("country_iso") or "", dest_city=r.get("city") or "",
-                          buyer_company=(r.get("title") or "")[:160],
-                          notes=f"RFQ {r.get('date','')} | qty {r.get('qty','')}"[:400])
-            new, dup = (new + 1, dup) if ok else (new, dup + 1)
-
-        # 4) UAE suppliers -> catalog ---------------------------------------------
+        # 3) UAE suppliers -> catalog ---------------------------------------------
         d = load("suppliers_uae_iran.json")
         for sup in (d or {}).get("suppliers", []):
             if sup.get("country") != "AE":

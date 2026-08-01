@@ -10,6 +10,9 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
+# Snapshot the operational DB first (data.db is gitignored — this is its only recovery point).
+./.venv/bin/python scripts/backup_db.py 2>/dev/null || true
+
 DATE="$(date '+%Y-%m-%d %H:%M')"
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 

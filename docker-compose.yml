@@ -1,0 +1,22 @@
+# go4it — one-command deploy. `docker compose up -d --build`
+# Persists the SQLite DB + inbox in a named volume, and writes backups to ./backups on the host.
+# For a public domain + HTTPS, run Caddy/nginx in front (see docs/PRODUCTION.md).
+services:
+  app:
+    build: .
+    image: go4it:latest
+    ports:
+      - "8400:8400"
+    env_file: .env                 # SECRET_KEY, SMTP_*, TELEGRAM_*, etc. (never commit .env)
+    environment:
+      WEB_CONCURRENCY: "2"                       # SQLite is single-writer — keep low
+      DATABASE_URL: "sqlite:////app/var/go4it.db"
+      INBOX_DIR: "/app/var/inbox"
+      BASE_URL: "http://localhost:8400"          # set to your real https URL in prod
+    volumes:
+      - go4it-data:/app/var        # persists the DB + inbox across restarts
+      - ./backups:/app/backups     # DB snapshots land on the host
+    restart: unless-stopped
+
+volumes:
+  go4it-data:

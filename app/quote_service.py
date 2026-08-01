@@ -2,12 +2,15 @@
 snapshot, then build and persist a Quote. Used by both the web routes and seed.
 """
 import json
+import logging
 from datetime import datetime
 
 from sqlmodel import select
 
 from .models import CostParam, FxRate, Lead, Product, Quote, RateCard
 from .quoting import compute_quote
+
+logger = logging.getLogger("go4it")
 
 # Fallbacks if the DB has no rows yet, so the engine always produces something.
 DEFAULT_PARAMS = {
@@ -29,7 +32,13 @@ def fx_rate(session, base: str, quote: str = "USD") -> float:
     row = session.exec(
         select(FxRate).where(FxRate.base == base, FxRate.quote == quote)
     ).first()
-    return float(row.rate) if row else 1.0
+    if not row:
+        # Fail loud (in logs): silently using 1:1 for a real non-USD price is an
+        # order-of-magnitude quoting error. Set a rate in /rates for this currency.
+        logger.warning("fx_rate: no FX rate for %s->%s; defaulting to 1.0 — quote will be WRONG "
+                       "for a %s-priced product. Add the rate in Rates.", base, quote, base)
+        return 1.0
+    return float(row.rate)
 
 
 def build_params(session, quote_currency: str = "USD") -> dict:

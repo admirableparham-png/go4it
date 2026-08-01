@@ -1,0 +1,184 @@
+{
+  "hs_code": "0804",
+  "label": "Dates",
+  "years": {
+    "2023": {
+      "tonnes": 4725.2,
+      "cif_usd": 6085204,
+      "unit_price_usd_kg": 1.288
+    },
+    "2024": {
+      "tonnes": 5574.3,
+      "cif_usd": 9315108,
+      "unit_price_usd_kg": 1.671
+    }
+  },
+  "trend_pct_first_to_last": 53,
+  "latest_year": "2024",
+  "latest_tonnes": 5574.3,
+  "latest_cif": 9315108,
+  "latest_price": 1.671,
+  "top_suppliers": [
+    {
+      "country": "Saudi Arabia",
+      "code": 682,
+      "tonnes_total": 37.5,
+      "cif_usd_total": 35872,
+      "unit_price_usd_kg": 0.957,
+      "watch_competitor": false
+    },
+    {
+      "country": "Algeria",
+      "code": 12,
+      "tonnes_total": 92.0,
+      "cif_usd_total": 93019,
+      "unit_price_usd_kg": 1.011,
+      "watch_competitor": false
+    },
+    {
+      "country": "Turkey",
+      "code": 792,
+      "tonnes_total": 10769.4,
+      "cif_usd_total": 11141893,
+      "unit_price_usd_kg": 1.035,
+      "watch_competitor": true
+    },
+    {
+      "country": "Armenia",
+      "code": 51,
+      "tonnes_total": 73.9,
+      "cif_usd_total": 84310,
+      "unit_price_usd_kg": 1.14,
+      "watch_competitor": true
+    },
+    {
+      "country": "Kenya",
+      "code": 404,
+      "tonnes_total": 140.9,
+      "cif_usd_total": 171074,
+      "unit_price_usd_kg": 1.214,
+      "watch_competitor": false
+    },
+    {
+      "country": "code188",
+      "code": 188,
+      "tonnes_total": 401.0,
+      "cif_usd_total": 494873,
+      "unit_price_usd_kg": 1.234,
+      "watch_competitor": false
+    },
+    {
+      "country": "Iran",
+      "code": 364,
+      "tonnes_total": 3670.8,
+      "cif_usd_total": 4785687,
+      "unit_price_usd_kg": 1.304,
+      "watch_competitor": false
+    },
+    {
+      "country": "code604",
+      "code": 604,
+      "tonnes_total": 35.0,
+      "cif_usd_total": 52858,
+      "unit_price_usd_kg": 1.508,
+      "watch_competitor": false
+    },
+    {
+      "country": "UAE",
+      "code": 784,
+      "tonnes_total": 244.5,
+      "cif_usd_total": 450435,
+      "unit_price_usd_kg": 1.842,
+      "watch_competitor": false
+    },
+    {
+      "country": "Tunisia",
+      "code": 788,
+      "tonnes_total": 148.9,
+      "cif_usd_total": 277770,
+      "unit_price_usd_kg": 1.865,
+      "watch_competitor": false
+    },
+    {
+      "country": "Egypt",
+      "code": 818,
+      "tonnes_total": 44.3,
+      "cif_usd_total": 107366,
+      "unit_price_usd_kg": 2.425,
+      "watch_competitor": false
+    },
+    {
+      "country": "Netherlands",
+      "code": 528,
+      "tonnes_total": 5355.9,
+      "cif_usd_total": 13470951,
+      "unit_price_usd_kg": 2.515,
+      "watch_competitor": false
+    },
+    {
+      "country": "Greece",
+      "code": 300,
+      "tonnes_total": 57.7,
+      "cif_usd_total": 147795,
+      "unit_price_usd_kg": 2.563,
+      "watch_competitor": false
+    },
+    {
+      "country": "code376",
+      "code": 376,
+      "tonnes_total": 38.5,
+      "cif_usd_total": 123704,
+      "unit_price_usd_kg": 3.217,
+      "watch_competitor": false
+    },
+    {
+      "country": "Pakistan",
+      "code": 586,
+      "tonnes_total": 21.2,
+      "cif_usd_total": 96736,
+      "unit_price_usd_kg": 4.562,
+      "watch_competitor": false
+    },
+    {
+      "country": "Spain",
+      "code": 724,
+      "tonnes_total": 7.9,
+      "cif_usd_total": 38972,
+      "unit_price_usd_kg": 4.946,
+      "watch_competitor": false
+    },
+    {
+      "country": "Jordan",
+      "code": 400,
+      "tonnes_total": 39.6,
+      "cif_usd_total": 200712,
+      "unit_price_usd_kg": 5.068,
+      "watch_competitor": false
+    },
+    {
+      "country": "India",
+      "code": 699,
+      "tonnes_total": 23.4,
+      "cif_usd_total": 123826,
+      "unit_price_usd_kg": 5.299,
+      "watch_competitor": true
+    },
+    {
+      "country": "Germany",
+      "code": 276,
+      "tonnes_total": 7.8,
+      "cif_usd_total": 95367,
+      "unit_price_usd_kg": 12.225,
+      "watch_competitor": false
+    },
+    {
+      "country": "France",
+      "code": 251,
+      "tonnes_total": 2.5,
+      "cif_usd_total": 47268,
+      "unit_price_usd_kg": 18.668,
+      "watch_competitor": false
+    }
+  ],
+  "total_cif": 32128979
+}

@@ -1,0 +1,131 @@
+{
+  "hs_code": "2715",
+  "label": "Cold asphalt / bituminous mixtures",
+  "years": {
+    "2023": {
+      "tonnes": 1468.4,
+      "cif_usd": 1138657,
+      "unit_price_usd_kg": 0.775
+    }
+  },
+  "trend_pct_first_to_last": null,
+  "latest_year": "2023",
+  "latest_tonnes": 1468.4,
+  "latest_cif": 1138657,
+  "latest_price": 0.775,
+  "top_suppliers": [
+    {
+      "country": "Turkmenistan",
+      "code": 795,
+      "tonnes_total": 858.4,
+      "cif_usd_total": 304851,
+      "unit_price_usd_kg": 0.355,
+      "watch_competitor": true
+    },
+    {
+      "country": "Russia",
+      "code": 643,
+      "tonnes_total": 1705.9,
+      "cif_usd_total": 1466620,
+      "unit_price_usd_kg": 0.86,
+      "watch_competitor": true
+    },
+    {
+      "country": "Turkey",
+      "code": 792,
+      "tonnes_total": 328.7,
+      "cif_usd_total": 333824,
+      "unit_price_usd_kg": 1.016,
+      "watch_competitor": true
+    },
+    {
+      "country": "Azerbaijan",
+      "code": 31,
+      "tonnes_total": 91.9,
+      "cif_usd_total": 98288,
+      "unit_price_usd_kg": 1.069,
+      "watch_competitor": true
+    },
+    {
+      "country": "Ukraine",
+      "code": 804,
+      "tonnes_total": 13.4,
+      "cif_usd_total": 16042,
+      "unit_price_usd_kg": 1.195,
+      "watch_competitor": false
+    },
+    {
+      "country": "Armenia",
+      "code": 51,
+      "tonnes_total": 0.3,
+      "cif_usd_total": 560,
+      "unit_price_usd_kg": 1.691,
+      "watch_competitor": true
+    },
+    {
+      "country": "Greece",
+      "code": 300,
+      "tonnes_total": 14.1,
+      "cif_usd_total": 29983,
+      "unit_price_usd_kg": 2.121,
+      "watch_competitor": false
+    },
+    {
+      "country": "Belarus",
+      "code": 112,
+      "tonnes_total": 0.8,
+      "cif_usd_total": 1925,
+      "unit_price_usd_kg": 2.406,
+      "watch_competitor": false
+    },
+    {
+      "country": "Germany",
+      "code": 276,
+      "tonnes_total": 15.1,
+      "cif_usd_total": 39909,
+      "unit_price_usd_kg": 2.651,
+      "watch_competitor": false
+    },
+    {
+      "country": "Poland",
+      "code": 616,
+      "tonnes_total": 1.2,
+      "cif_usd_total": 3949,
+      "unit_price_usd_kg": 3.41,
+      "watch_competitor": false
+    },
+    {
+      "country": "Italy",
+      "code": 380,
+      "tonnes_total": 8.7,
+      "cif_usd_total": 36456,
+      "unit_price_usd_kg": 4.21,
+      "watch_competitor": false
+    },
+    {
+      "country": "UK",
+      "code": 826,
+      "tonnes_total": 0.0,
+      "cif_usd_total": 46,
+      "unit_price_usd_kg": 4.605,
+      "watch_competitor": false
+    },
+    {
+      "country": "Slovakia",
+      "code": 703,
+      "tonnes_total": 0.3,
+      "cif_usd_total": 1273,
+      "unit_price_usd_kg": 5.05,
+      "watch_competitor": false
+    },
+    {
+      "country": "Netherlands",
+      "code": 528,
+      "tonnes_total": 0.0,
+      "cif_usd_total": 78,
+      "unit_price_usd_kg": 55.48,
+      "watch_competitor": false
+    }
+  ],
+  "total_cif": 2333804
+}

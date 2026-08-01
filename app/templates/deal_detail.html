@@ -1,35 +1,35 @@
 {% extends "base.html" %}
 {% set active = 'deals' %}
 {% set can_edit = user and user.role in ['agent', 'manager', 'admin'] %}
-{% set ic = "w-full bg-slate-800 border border-slate-700 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-slate-500" %}
+{% set ic = "input" %}
 {% block content %}
 
 <a href="/deals" class="text-sm text-slate-400 hover:text-slate-200">&larr; Deals</a>
 
 {% if request.query_params.get('error') == 'docs' %}
-  <div class="mt-3 text-sm text-rose-300 bg-rose-900/20 border border-rose-800/50 rounded px-3 py-2">
+  <div class="alert-rose mt-3">
     Blocked by compliance gate — verify these documents first:
     <b>{{ request.query_params.get('need', '').replace('_', ' ').replace(',', ', ') }}</b>.
   </div>
 {% endif %}
 
-<div class="flex items-start justify-between mt-3 mb-6">
+<div class="flex items-start justify-between mt-3 mb-6 gap-4">
   <div>
-    <h2 class="text-xl font-semibold">{{ lead.product if lead else 'Deal' }}</h2>
-    <div class="text-slate-500 text-sm">{{ lead.buyer_company if lead else '' }}{% if lead and lead.dest_country %} &middot; {{ lead.dest_country }}{% endif %}</div>
+    <h2 class="text-xl font-bold tracking-tight">{{ lead.product if lead else 'Deal' }}</h2>
+    <div class="text-slate-500 text-sm mt-0.5">{{ lead.buyer_company if lead else '' }}{% if lead and lead.dest_country %} &middot; {{ lead.dest_country }}{% endif %}</div>
   </div>
-  <div class="text-right">
-    <span class="text-xs px-2 py-1 rounded-full bg-sky-500/20 text-sky-300">{{ deal.stage.replace('_', ' ') }}</span>
+  <div class="text-right shrink-0">
+    <span class="badge {{ 'badge-emerald' if deal.stage in ['settled','closed'] else 'badge-sky' }}">{{ deal.stage.replace('_', ' ') }}</span>
     <div class="text-[11px] font-mono text-slate-500 mt-1">{{ deal.tracking_code }}</div>
   </div>
 </div>
 
 <!-- Lifecycle -->
-<section class="rounded-xl border border-slate-800 bg-slate-900 p-4 mb-6">
+<section class="card mb-6">
   <div class="flex flex-wrap gap-1.5 mb-4">
     {% set cur = stages.index(deal.stage) %}
     {% for s in stages %}
-      <span class="text-[11px] px-2 py-1 rounded
+      <span class="text-[11px] px-2 py-1 rounded-md
         {% if loop.index0 < cur %}bg-emerald-500/15 text-emerald-300
         {% elif loop.index0 == cur %}bg-sky-500/25 text-sky-200 font-semibold
         {% else %}bg-slate-800 text-slate-500{% endif %}">{{ s.replace('_', ' ') }}</span>
@@ -43,7 +43,7 @@
       </div>
     {% else %}
       <form method="post" action="/deals/{{ deal.id }}/advance">
-        <button class="text-sm px-4 py-2 rounded bg-sky-600 hover:bg-sky-500 text-white font-medium">Advance to {{ next.replace('_', ' ') }}</button>
+        <button class="btn btn-secondary" data-busy="Advancing">Advance to {{ next.replace('_', ' ') }}</button>
       </form>
     {% endif %}
   {% elif not next %}
@@ -55,12 +55,12 @@
 
   <!-- Compliance -->
   <section>
-    <h3 class="font-semibold mb-3">Compliance documents</h3>
+    <h3 class="text-sm font-semibold mb-3">Compliance documents</h3>
     <p class="text-xs text-slate-500 mb-3">Export clearance requires a verified <b>certificate of origin</b> and <b>commercial invoice</b>.</p>
     <div class="space-y-2 mb-4">
       {% for doc in docs %}
         {% set expired = doc.expires_at and doc.expires_at < today %}
-        <div class="rounded-lg border border-slate-800 bg-slate-900 p-3 text-sm flex items-center justify-between">
+        <div class="rounded-lg border border-slate-800 bg-slate-900 p-3 text-sm flex items-center justify-between gap-2">
           <div>
             <div class="font-medium">{{ doc.doc_type.replace('_', ' ') }}</div>
             <div class="text-slate-500 text-xs">
@@ -69,14 +69,11 @@
               {% if doc.expires_at %} &middot; exp {{ doc.expires_at.strftime('%Y-%m-%d') }}{% endif %}
             </div>
           </div>
-          <div class="flex items-center gap-2">
-            <span class="text-xs px-2 py-0.5 rounded-full
-              {% if expired %}bg-rose-500/20 text-rose-300
-              {% elif doc.status == 'verified' %}bg-emerald-500/20 text-emerald-300
-              {% else %}bg-slate-700 text-slate-300{% endif %}">{{ 'expired' if expired else doc.status }}</span>
+          <div class="flex items-center gap-2 shrink-0">
+            <span class="badge {% if expired %}badge-rose{% elif doc.status == 'verified' %}badge-emerald{% else %}badge-slate{% endif %}">{{ 'expired' if expired else doc.status }}</span>
             {% if can_edit and doc.status != 'verified' and not expired %}
               <form method="post" action="/deals/{{ deal.id }}/docs/{{ doc.id }}/verify">
-                <button class="text-xs px-2 py-1 rounded bg-emerald-600/20 text-emerald-300 hover:bg-emerald-600/30">Verify</button>
+                <button class="btn btn-ghost-emerald btn-sm" data-busy="…">Verify</button>
               </form>
             {% endif %}
           </div>
@@ -86,8 +83,8 @@
       {% endfor %}
     </div>
     {% if can_edit %}
-      <form method="post" action="/deals/{{ deal.id }}/docs" class="space-y-2 rounded-xl border border-slate-800 bg-slate-900 p-4">
-        <select name="doc_type" class="{{ ic }}">
+      <form method="post" action="/deals/{{ deal.id }}/docs" class="card space-y-2">
+        <select name="doc_type" class="select">
           {% for t in doc_types %}<option value="{{ t }}">{{ t.replace('_', ' ') }}</option>{% endfor %}
         </select>
         <div class="grid grid-cols-2 gap-2">
@@ -95,35 +92,35 @@
           <input name="issued_by" placeholder="Issued by" class="{{ ic }}">
         </div>
         <input name="expires_at" type="date" placeholder="Expires" class="{{ ic }}">
-        <button class="w-full bg-slate-700 hover:bg-slate-600 text-white rounded py-2 text-sm font-medium">Add document</button>
+        <button class="btn btn-neutral btn-block" data-busy="Adding">Add document</button>
       </form>
     {% endif %}
   </section>
 
   <!-- Margin -->
   <section>
-    <h3 class="font-semibold mb-3">Margin</h3>
+    <h3 class="text-sm font-semibold mb-3">Margin</h3>
     <div class="grid grid-cols-2 gap-3 mb-4">
       <div class="rounded-lg border border-slate-800 bg-slate-900 p-4">
-        <div class="text-[11px] uppercase tracking-wide text-slate-500">Planned</div>
-        <div class="text-xl font-bold">{{ '%.2f'|format(deal.planned_margin) }}</div>
+        <div class="eyebrow">Planned</div>
+        <div class="text-xl font-bold mt-1 tabular-nums">{{ '%.2f'|format(deal.planned_margin) }}</div>
         <div class="text-slate-500 text-xs">rev {{ '%.2f'|format(deal.planned_revenue) }} &middot; cost {{ '%.2f'|format(deal.planned_cost) }}</div>
       </div>
       <div class="rounded-lg border {% if deal.realized_margin %}border-emerald-600{% else %}border-slate-800{% endif %} bg-slate-900 p-4">
-        <div class="text-[11px] uppercase tracking-wide text-slate-500">Realized</div>
-        <div class="text-xl font-bold {% if deal.realized_margin %}text-emerald-400{% endif %}">
+        <div class="eyebrow">Realized</div>
+        <div class="text-xl font-bold mt-1 tabular-nums {% if deal.realized_margin %}text-emerald-400{% endif %}">
           {{ '%.2f'|format(deal.realized_margin) if deal.realized_margin else '—' }}</div>
         <div class="text-slate-500 text-xs">rev {{ '%.2f'|format(deal.actual_revenue) }} &middot; cost {{ '%.2f'|format(deal.actual_cost) }}</div>
       </div>
     </div>
     {% if can_settle %}
-      <form method="post" action="/deals/{{ deal.id }}/settle" class="space-y-2 rounded-xl border border-slate-800 bg-slate-900 p-4">
-        <div class="text-[11px] uppercase tracking-wide text-slate-500">Settle (actuals)</div>
+      <form method="post" action="/deals/{{ deal.id }}/settle" class="card space-y-2">
+        <div class="eyebrow">Settle (actuals)</div>
         <div class="grid grid-cols-2 gap-2">
           <input name="actual_revenue" type="number" step="any" min="0" placeholder="Actual revenue" value="{{ deal.actual_revenue or '' }}" class="{{ ic }}">
           <input name="actual_cost" type="number" step="any" min="0" placeholder="Actual cost" value="{{ deal.actual_cost or '' }}" class="{{ ic }}">
         </div>
-        <button class="w-full bg-emerald-600 hover:bg-emerald-500 text-white rounded py-2 text-sm font-medium">Record settlement</button>
+        <button class="btn btn-primary btn-block" data-busy="Recording">Record settlement</button>
       </form>
     {% else %}
       <p class="text-slate-500 text-xs">Only a manager can record settlement.</p>

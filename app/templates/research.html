@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% set active = 'research' %}
+{% block content %}
+{% set ic = "input" %}
+{% set sc = "select" %}
+
+<div class="flex items-end justify-between mb-1">
+  <h2 class="text-lg font-semibold">&#128300; Research &mdash; real customs data, not a guess</h2>
+  <span id="spin" class="htmx-indicator text-xs text-sky-400">Pulling live UN Comtrade data&hellip;</span>
+</div>
+<p class="text-slate-500 text-sm mb-6">
+  Every number below is a country's <b>actual</b> import record (UN Comtrade) &mdash; market size, landed
+  $/kg, who already supplies it, and where Iran/UAE stand. That is what a plain ChatGPT answer can't
+  reproduce. First lookup of a new product+country pulls live (a few seconds); it's cached after.
+</p>
+
+<div class="grid lg:grid-cols-2 gap-4 mb-6">
+
+  <!-- Analyze one product -> country -->
+  <form hx-post="/research/run" hx-target="#research-result" hx-swap="innerHTML"
+        hx-indicator="#spin" hx-disabled-elt="find button"
+        class="card space-y-3">
+    <div class="text-sm font-semibold text-emerald-400">Is product X &rarr; country Y a good trade?</div>
+    <div>
+      <label class="text-[11px] uppercase tracking-wide text-slate-500">Product</label>
+      <select name="product" class="{{ sc }}">
+        <option value="">&mdash; choose a product &mdash;</option>
+        {% for key, label, hs in products %}<option value="{{ key }}">{{ label }} ({{ hs }})</option>{% endfor %}
+      </select>
+    </div>
+    <div class="grid grid-cols-2 gap-2">
+      <div>
+        <label class="text-[11px] uppercase tracking-wide text-slate-500">&hellip;or HS code</label>
+        <input name="hs" placeholder="e.g. 6907" class="{{ ic }}">
+      </div>
+      <div>
+        <label class="text-[11px] uppercase tracking-wide text-slate-500">Destination country</label>
+        <select name="reporter" class="{{ sc }}">
+          {% for name, code in countries %}<option value="{{ code }}" {% if code == default_reporter %}selected{% endif %}>{{ name }}</option>{% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="flex-1">
+        <label class="text-[11px] uppercase tracking-wide text-slate-500">Our supply angle</label>
+        <select name="sources" class="{{ sc }}">
+          <option value="both">Iran + UAE</option>
+          <option value="iran">Iran only</option>
+          <option value="uae">UAE only</option>
+        </select>
+      </div>
+      <label class="flex items-center gap-1.5 text-xs text-slate-400 mt-4"><input type="checkbox" name="refresh" value="1" class="accent-sky-500"> force refresh</label>
+    </div>
+    <button class="btn btn-primary btn-block" data-busy="Analyzing">Analyze market</button>
+  </form>
+
+  <!-- Scan a country -->
+  <form hx-post="/research/scan" hx-target="#research-result" hx-swap="innerHTML"
+        hx-indicator="#spin" hx-disabled-elt="find button"
+        class="card space-y-3">
+    <div class="text-sm font-semibold text-sky-400">What should I focus on for country Y?</div>
+    <p class="text-[12px] text-slate-500">Ranks a basket of Iran/UAE-supplyable goods by opportunity for the
+      chosen market &mdash; market size &times; growth &times; how well we can compete. Pure real data.</p>
+    <div>
+      <label class="text-[11px] uppercase tracking-wide text-slate-500">Destination country</label>
+      <select name="reporter" class="{{ sc }}">
+        {% for name, code in countries %}<option value="{{ code }}" {% if code == default_reporter %}selected{% endif %}>{{ name }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="flex-1">
+        <label class="text-[11px] uppercase tracking-wide text-slate-500">Our supply angle</label>
+        <select name="sources" class="{{ sc }}">
+          <option value="both">Iran + UAE</option>
+          <option value="iran">Iran only</option>
+          <option value="uae">UAE only</option>
+        </select>
+      </div>
+      <label class="flex items-center gap-1.5 text-xs text-slate-400 mt-4"><input type="checkbox" name="refresh" value="1" class="accent-sky-500"> force refresh</label>
+    </div>
+    <button class="btn btn-secondary btn-block" data-busy="Scanning">Scan opportunities</button>
+  </form>
+
+</div>
+
+<div id="research-result">
+  <div class="empty">
+    Choose a product + country and hit <b>Analyze</b>, or scan a country for its best opportunities.
+    Results appear here.
+  </div>
+</div>
+
+{% endblock %}

@@ -4,33 +4,157 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>go4it</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'] },
+      } }
+    };
+  </script>
   <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+
+  <!-- plain-CSS globals (scrollbar, selection, smooth scroll) -->
+  <style>
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; background:#020617; color:#f1f5f9; }
+    ::selection { background: rgba(16,185,129,.30); }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 8px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    @keyframes g4in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    .g4-in { animation: g4in .28s ease-out both; }
+  </style>
+
+  <!-- Component layer as PLAIN, resolved CSS (no compile step). The Play CDN's in-browser
+       compilation of component classes proved unreliable and left them unstyled; these render
+       everywhere. Inline utility classes (grid, spacing, colors) still come from the CDN. -->
+  <style>
+    /* surfaces */
+    .card       { border:1px solid #1e293b; background:#0f172a; border-radius:.75rem; padding:1rem; }
+    .card-soft  { border:1px solid #1e293b; background:rgba(15,23,42,.6); border-radius:.75rem; padding:1rem; }
+    .eyebrow    { font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:#64748b; font-weight:500; }
+    .link       { color:#38bdf8; text-decoration:none; }
+    .link:hover { color:#7dd3fc; text-decoration:underline; }
+
+    /* buttons */
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:.375rem; border:0;
+           border-radius:.5rem; font-family:inherit; font-size:.875rem; font-weight:500;
+           padding:.5rem .875rem; cursor:pointer; text-decoration:none; white-space:nowrap;
+           transition:background-color .15s, color .15s; }
+    .btn:focus-visible { outline:2px solid transparent; box-shadow:0 0 0 2px rgba(16,185,129,.5); }
+    .btn:disabled { opacity:.6; cursor:not-allowed; }
+    .btn-primary         { background:#059669; color:#fff; }
+    .btn-primary:hover   { background:#10b981; }
+    .btn-secondary       { background:#0284c7; color:#fff; }
+    .btn-secondary:hover { background:#0ea5e9; }
+    .btn-neutral         { background:#1e293b; color:#f1f5f9; }
+    .btn-neutral:hover   { background:#334155; }
+    .btn-ghost-sky           { background:rgba(2,132,199,.15); color:#7dd3fc; }
+    .btn-ghost-sky:hover     { background:rgba(2,132,199,.28); }
+    .btn-ghost-emerald       { background:rgba(5,150,105,.15); color:#6ee7b7; }
+    .btn-ghost-emerald:hover { background:rgba(5,150,105,.28); }
+    .btn-sm    { padding:.375rem .625rem; font-size:.75rem; }
+    .btn-block { width:100%; }
+
+    /* fields */
+    .input, .select { width:100%; background:#1e293b; border:1px solid #334155; border-radius:.5rem;
+                      padding:.5rem .75rem; font-size:.875rem; color:#f1f5f9; font-family:inherit;
+                      transition:border-color .15s, box-shadow .15s; }
+    .input::placeholder { color:#64748b; }
+    .input:focus, .select:focus { outline:none; border-color:#10b981; box-shadow:0 0 0 2px rgba(16,185,129,.3); }
+    .field-label { display:block; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:#64748b; margin-bottom:.25rem; }
+
+    /* badges — one canonical color map */
+    .badge { display:inline-flex; align-items:center; border-radius:9999px; font-size:11px; font-weight:500; padding:.125rem .5rem; }
+    .badge-slate, .badge-new, .badge-queued { background:rgba(51,65,85,.7); color:#cbd5e1; }
+    .badge-emerald, .badge-won, .badge-sent, .badge-verified, .badge-ok { background:rgba(16,185,129,.15); color:#6ee7b7; }
+    .badge-sky, .badge-quoted, .badge-approved, .badge-running { background:rgba(14,165,233,.15); color:#7dd3fc; }
+    .badge-amber, .badge-negotiating { background:rgba(245,158,11,.15); color:#fcd34d; }
+    .badge-rose, .badge-lost, .badge-error, .badge-expired { background:rgba(244,63,94,.15); color:#fda4af; }
+
+    /* tables */
+    .table-wrap { overflow-x:auto; border:1px solid #1e293b; border-radius:.75rem; }
+    .data-table { width:100%; font-size:.875rem; border-collapse:collapse; }
+    .data-table thead { background:rgba(15,23,42,.8); color:#94a3b8; font-size:11px; text-transform:uppercase; letter-spacing:.05em; }
+    .data-table th { text-align:left; font-weight:500; padding:.625rem .75rem; }
+    .data-table td { padding:.625rem .75rem; vertical-align:middle; }
+    .data-table tbody tr { border-top:1px solid #1e293b; transition:background-color .15s; }
+    .data-table tbody tr:hover { background:rgba(15,23,42,.5); }
+
+    /* misc */
+    .empty { border:1px dashed #1e293b; background:rgba(15,23,42,.4); border-radius:.75rem; padding:2rem; text-align:center; color:#64748b; font-size:.875rem; }
+    .alert-rose    { font-size:.875rem; color:#fecdd3; background:rgba(127,29,29,.2); border:1px solid rgba(153,27,27,.5); border-radius:.5rem; padding:.5rem .75rem; }
+    .alert-amber   { font-size:.875rem; color:#fde68a; background:rgba(120,53,15,.2); border:1px solid rgba(180,83,9,.5); border-radius:.5rem; padding:.5rem .75rem; }
+    .alert-emerald { font-size:.875rem; color:#a7f3d0; background:rgba(6,78,59,.2); border:1px solid rgba(5,150,105,.5); border-radius:.5rem; padding:.5rem .75rem; }
+
+    /* nav */
+    .nav-tab { padding:.375rem .75rem; border-radius:.5rem; color:#94a3b8; text-decoration:none; white-space:nowrap; transition:background-color .15s, color .15s; }
+    .nav-tab:hover { color:#f1f5f9; background:rgba(30,41,59,.7); }
+    .nav-tab-active { background:rgba(16,185,129,.15); color:#6ee7b7; }
+    .nav-divider { width:1px; height:1rem; background:#1e293b; margin:0 .25rem; flex-shrink:0; }
+  </style>
 </head>
 <body class="h-full bg-slate-950 text-slate-100 antialiased">
-  <div class="max-w-6xl mx-auto px-6 py-8">
-    <header class="flex items-end justify-between mb-8 border-b border-slate-800 pb-4">
-      <div>
-        <h1 class="text-2xl font-bold tracking-tight">go4it</h1>
-        <p class="text-slate-400 text-sm">buyer leads &rarr; Iranian catalog &rarr; act fast</p>
-      </div>
-      <div class="flex items-center gap-4">
-        <nav class="flex flex-wrap gap-1 text-sm">
-          {% set tabs = [('/', 'dashboard', 'Dashboard'), ('/leads', 'leads', 'Leads'), ('/quotes', 'quotes', 'Quotes'), ('/deals', 'deals', 'Deals'), ('/catalog', 'catalog', 'Catalog'), ('/suppliers', 'suppliers', 'Suppliers'), ('/intel', 'intel', 'Intel'), ('/georgia', 'georgia', 'Georgia'), ('/uae', 'uae', 'UAE'), ('/rates', 'rates', 'Rates'), ('/ingest', 'ingest', 'Ingest')] %}
-          {% for href, key, label in tabs %}
-            <a href="{{ href }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {% if active == key %}bg-slate-800 text-white{% else %}text-slate-400{% endif %}">{{ label }}</a>
-          {% endfor %}
-        </nav>
+
+  <header class="sticky top-0 z-30 border-b border-slate-800 bg-slate-950/85 backdrop-blur supports-[backdrop-filter]:bg-slate-950/70">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="flex items-center justify-between py-3">
+        <a href="/" class="flex items-center gap-2.5">
+          <span class="grid place-items-center w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 text-slate-950 font-extrabold text-sm shadow-lg shadow-emerald-500/20">g4</span>
+          <span class="leading-none">
+            <span class="block text-[15px] font-bold tracking-tight">go4it</span>
+            <span class="block text-[10px] text-slate-500 mt-0.5">trade desk</span>
+          </span>
+        </a>
         {% if user %}
-          <div class="flex items-center gap-2 text-sm border-l border-slate-800 pl-4">
-            <span class="text-slate-300">{{ user.name or user.email }}</span>
-            <span class="text-[10px] uppercase px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">{{ user.role }}</span>
-            <a href="/logout" class="text-slate-500 hover:text-slate-300">Logout</a>
-          </div>
+        <div class="flex items-center gap-2.5 text-sm">
+          <span class="hidden sm:block text-slate-300">{{ user.name or user.email }}</span>
+          <span class="badge badge-slate uppercase text-[10px]">{{ user.role }}</span>
+          <a href="/logout" class="text-slate-500 hover:text-slate-300">Logout</a>
+        </div>
         {% endif %}
       </div>
-    </header>
+      <nav class="flex flex-wrap items-center gap-0.5 text-[13px] pb-2.5">
+        {% set groups = [
+             [('/', 'dashboard', 'Dashboard'), ('/leads','leads','Leads'), ('/quotes','quotes','Quotes'), ('/deals','deals','Deals'), ('/catalog','catalog','Catalog')],
+             [('/research','research','Research'), ('/command','command','Command'), ('/suppliers','suppliers','Suppliers'), ('/intel','intel','Intel'), ('/georgia','georgia','Georgia'), ('/uae','uae','UAE')],
+             [('/rates','rates','Rates'), ('/ingest','ingest','Ingest')]
+           ] %}
+        {% for group in groups %}
+          {% if not loop.first %}<span class="nav-divider"></span>{% endif %}
+          {% for href, key, label in group %}
+            <a href="{{ href }}" class="nav-tab {% if active == key %}nav-tab-active{% endif %}">{{ label }}</a>
+          {% endfor %}
+        {% endfor %}
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-8 g4-in">
     {% block content %}{% endblock %}
-  </div>
+  </main>
+
+  <script>
+    // Progressive enhancement: show a spinner + disable the clicked button on full-reload
+    // form submits (skips HTMX forms, which manage their own indicators). Disable AFTER submit
+    // so the button's name/value is still sent (multi-submit forms like stage/advance).
+    document.addEventListener('submit', function (e) {
+      var f = e.target;
+      if (!(f instanceof HTMLFormElement)) return;
+      if (f.hasAttribute('hx-post') || f.hasAttribute('hx-get') || f.hasAttribute('data-no-spin')) return;
+      var btn = e.submitter || f.querySelector('button[type="submit"], button:not([type])');
+      if (!btn || btn.disabled) return;
+      var busy = btn.getAttribute('data-busy') || 'Working';
+      setTimeout(function () {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="inline-block w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin"></span><span>' + busy + '</span>';
+      }, 0);
+    }, true);
+  </script>
 </body>
 </html>

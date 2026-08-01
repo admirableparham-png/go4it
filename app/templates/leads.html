@@ -1,26 +1,26 @@
 {% extends "base.html" %}
 {% set active = 'leads' %}
 {% block content %}
-{% set ic = "w-full bg-slate-800 border border-slate-700 rounded px-2 py-1.5 text-sm placeholder-slate-500 focus:outline-none focus:border-slate-500" %}
-{% set sc = "bg-slate-800 border border-slate-700 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-slate-500" %}
-{% set pill = {'new':'bg-slate-700 text-slate-300','quoted':'bg-sky-500/20 text-sky-300','negotiating':'bg-amber-500/20 text-amber-300','won':'bg-emerald-500/20 text-emerald-300','lost':'bg-rose-500/20 text-rose-300'} %}
+{% set ic = "input" %}
 
-{% macro page_url(p) %}/leads?page={{ p }}{% if f.q %}&q={{ f.q|urlencode }}{% endif %}{% if f.stage %}&stage={{ f.stage }}{% endif %}{% if f.source %}&source={{ f.source|urlencode }}{% endif %}{% if f.category %}&category={{ f.category|urlencode }}{% endif %}{% if f.dest %}&dest={{ f.dest }}{% endif %}{% if f.owner %}&owner={{ f.owner }}{% endif %}{% if f.contact %}&contact={{ f.contact }}{% endif %}{% if f.sort %}&sort={{ f.sort }}{% endif %}{% endmacro %}
+{% macro page_url(p) %}/leads?page={{ p }}{% if f.q %}&q={{ f.q|urlencode }}{% endif %}{% if f.stage %}&stage={{ f.stage }}{% endif %}{% if f.source %}&source={{ f.source|urlencode }}{% endif %}{% if f.category %}&category={{ f.category|urlencode }}{% endif %}{% if f.dest %}&dest={{ f.dest }}{% endif %}{% if f.owner %}&owner={{ f.owner }}{% endif %}{% if f.contact %}&contact={{ f.contact }}{% endif %}{% if f.due %}&due={{ f.due }}{% endif %}{% if f.sort %}&sort={{ f.sort }}{% endif %}{% endmacro %}
 
-<div class="flex items-center justify-between mb-4">
-  <h2 class="text-lg font-semibold flex items-center gap-2"><span>&#127919; Leads</span>
-    <span class="text-sm text-slate-500">{{ total }}</span></h2>
+<div class="flex flex-wrap items-end justify-between gap-3 mb-4">
+  <div>
+    <h2 class="text-xl font-bold tracking-tight flex items-center gap-2">🎯 Leads <span class="badge badge-slate">{{ total }}</span></h2>
+    <p class="text-slate-500 text-sm mt-0.5">Your buyer pipeline &mdash; filter, sort, and work each lead.</p>
+  </div>
 </div>
 
 {% if product_count == 0 %}
-  <div class="mb-4 rounded-lg border border-amber-700/50 bg-amber-900/20 text-amber-200 text-sm p-3">
+  <div class="alert-amber mb-4">
     Your catalog is empty. <a href="/catalog" class="underline">Add products or import a CSV</a> so leads can match.
   </div>
 {% endif %}
 
 <!-- Add lead (collapsible) -->
-<details class="mb-4 rounded-xl border border-slate-800 bg-slate-900">
-  <summary class="cursor-pointer select-none px-4 py-2.5 text-sm text-emerald-400 font-medium">&#128994; Add a buyer lead</summary>
+<details class="mb-4 card !p-0">
+  <summary class="cursor-pointer select-none px-4 py-2.5 text-sm text-emerald-400 font-medium">🟢 Add a buyer lead</summary>
   <form method="post" action="/leads" class="space-y-2 p-4 pt-0">
     <input name="product" required placeholder="Product wanted (e.g. Rubber tiles)" class="{{ ic }}">
     <div class="grid grid-cols-2 gap-2">
@@ -43,87 +43,115 @@
       <input name="phone" placeholder="Phone" class="{{ ic }}">
       <input name="email" placeholder="Email" class="{{ ic }}">
     </div>
-    <button class="w-full bg-emerald-600 hover:bg-emerald-500 text-white rounded py-2 text-sm font-medium">Add lead &amp; match</button>
+    <button class="btn btn-primary btn-block" data-busy="Adding">Add lead &amp; match</button>
   </form>
 </details>
 
 <!-- Filters -->
-<form method="get" action="/leads" class="flex flex-wrap items-center gap-2 mb-4">
-  <input name="q" value="{{ f.q }}" placeholder="Search product / buyer / code" class="{{ ic }} w-56">
-  <select name="stage" class="{{ sc }}"><option value="">All stages</option>
-    {% for s in stages %}<option value="{{ s }}" {% if f.stage==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
-  <select name="source" class="{{ sc }}"><option value="">All sources</option>
-    {% for s in sources %}<option value="{{ s }}" {% if f.source==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
-  <select name="category" class="{{ sc }}"><option value="">All categories</option>
-    {% for c in categories %}<option value="{{ c }}" {% if f.category==c %}selected{% endif %}>{{ c }}</option>{% endfor %}</select>
-  <select name="dest" class="{{ sc }}"><option value="">All dest</option>
-    {% for d in dests %}<option value="{{ d }}" {% if f.dest==d %}selected{% endif %}>{{ d }}</option>{% endfor %}</select>
-  <select name="owner" class="{{ sc }}"><option value="">Any owner</option>
-    <option value="me" {% if f.owner=='me' %}selected{% endif %}>Mine</option>
-    <option value="none" {% if f.owner=='none' %}selected{% endif %}>Unassigned</option></select>
-  <select name="contact" class="{{ sc }}"><option value="">Any contact</option>
-    <option value="yes" {% if f.contact=='yes' %}selected{% endif %}>Has phone/email</option>
-    <option value="no" {% if f.contact=='no' %}selected{% endif %}>Needs enrichment</option></select>
-  <select name="sort" class="{{ sc }}">
-    <option value="new" {% if f.sort=='new' %}selected{% endif %}>Newest</option>
-    <option value="old" {% if f.sort=='old' %}selected{% endif %}>Oldest</option>
-    <option value="buyer" {% if f.sort=='buyer' %}selected{% endif %}>Buyer A-Z</option>
-    <option value="product" {% if f.sort=='product' %}selected{% endif %}>Product A-Z</option></select>
-  <button class="px-3 py-1.5 rounded bg-sky-600 hover:bg-sky-500 text-white text-sm">Filter</button>
-  <a href="/leads" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-sm text-slate-300">Clear</a>
+<form method="get" action="/leads" class="card-soft mb-4 space-y-2">
+  <input name="q" value="{{ f.q }}" placeholder="Search product / buyer / code" class="input">
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+    <select name="due" class="select"><option value="">Any follow-up</option>
+      <option value="overdue" {% if f.due=='overdue' %}selected{% endif %}>Overdue</option>
+      <option value="today" {% if f.due=='today' %}selected{% endif %}>Due by today</option></select>
+    <select name="stage" class="select"><option value="">All stages</option>
+      {% for s in stages %}<option value="{{ s }}" {% if f.stage==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
+    <select name="source" class="select"><option value="">All sources</option>
+      {% for s in sources %}<option value="{{ s }}" {% if f.source==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
+    <select name="category" class="select"><option value="">All categories</option>
+      {% for c in categories %}<option value="{{ c }}" {% if f.category==c %}selected{% endif %}>{{ c }}</option>{% endfor %}</select>
+    <select name="dest" class="select"><option value="">All dest</option>
+      {% for d in dests %}<option value="{{ d }}" {% if f.dest==d %}selected{% endif %}>{{ d }}</option>{% endfor %}</select>
+    <select name="owner" class="select"><option value="">Any owner</option>
+      <option value="me" {% if f.owner=='me' %}selected{% endif %}>Mine</option>
+      <option value="none" {% if f.owner=='none' %}selected{% endif %}>Unassigned</option></select>
+    <select name="contact" class="select"><option value="">Any contact</option>
+      <option value="yes" {% if f.contact=='yes' %}selected{% endif %}>Has phone/email</option>
+      <option value="no" {% if f.contact=='no' %}selected{% endif %}>Needs enrichment</option></select>
+    <select name="sort" class="select">
+      <option value="new" {% if f.sort=='new' %}selected{% endif %}>Newest</option>
+      <option value="old" {% if f.sort=='old' %}selected{% endif %}>Oldest</option>
+      <option value="posted" {% if f.sort=='posted' %}selected{% endif %}>Freshest RFQ</option>
+      <option value="buyer" {% if f.sort=='buyer' %}selected{% endif %}>Buyer A-Z</option>
+      <option value="product" {% if f.sort=='product' %}selected{% endif %}>Product A-Z</option></select>
+  </div>
+  <div class="flex gap-2">
+    <button class="btn btn-secondary" data-busy="Filtering">Filter</button>
+    <a href="/leads" class="btn btn-neutral">Clear</a>
+  </div>
 </form>
 
 {% if leads %}
-  <div class="overflow-x-auto rounded-xl border border-slate-800">
-    <table class="w-full text-sm">
-      <thead class="bg-slate-900 text-slate-400 text-xs uppercase">
+<form method="post" action="/leads/bulk">
+  <div class="flex flex-wrap items-center gap-2 mb-3 text-xs">
+    <span class="text-slate-500">Bulk on selected:</span>
+    <select name="action" class="select" style="width:auto">
+      <option value="assign_me">Assign to me</option>
+      <option value="assign">Assign to&hellip;</option>
+      <option value="stage">Set stage&hellip;</option>
+      <option value="followup_today">Follow up: today</option>
+      <option value="followup_week">Follow up: +7 days</option>
+      <option value="followup_clear">Clear follow-up</option>
+    </select>
+    <select name="owner_id" class="select" style="width:auto"><option value="">(owner)</option>{% for u in users %}<option value="{{ u.id }}">{{ u.name or u.email }}</option>{% endfor %}</select>
+    <select name="stage" class="select" style="width:auto"><option value="">(stage)</option>{% for s in stages %}{% if s != 'lost' %}<option value="{{ s }}">{{ s }}</option>{% endif %}{% endfor %}</select>
+    <button class="btn btn-neutral btn-sm">Apply</button>
+  </div>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
         <tr>
-          <th class="text-left font-medium px-3 py-2">Code</th>
-          <th class="text-left font-medium px-3 py-2">Product</th>
-          <th class="text-left font-medium px-3 py-2">Buyer / contact</th>
-          <th class="text-left font-medium px-3 py-2">Dest</th>
-          <th class="text-left font-medium px-3 py-2">Source</th>
-          <th class="text-left font-medium px-3 py-2">Stage</th>
-          <th class="text-left font-medium px-3 py-2">Owner</th>
-          <th class="text-right font-medium px-3 py-2">Matches</th>
+          <th class="w-8"><input type="checkbox" onclick="for(const c of document.querySelectorAll('input[name=ids]'))c.checked=this.checked"></th>
+          <th>Code</th>
+          <th>Product</th>
+          <th>Buyer / contact</th>
+          <th>Dest</th>
+          <th>Source</th>
+          <th>Posted</th>
+          <th>Stage</th>
+          <th>Owner</th>
+          <th class="text-right">Matches</th>
         </tr>
       </thead>
       <tbody>
         {% for ld in leads %}
           {% set owner = user_map.get(ld.owner_id) %}
-          <tr class="border-t border-slate-800 hover:bg-slate-900/60">
-            <td class="px-3 py-2"><a href="/leads/{{ ld.id }}" class="font-mono text-[11px] text-sky-400 hover:underline">{{ ld.tracking_code }}</a></td>
-            <td class="px-3 py-2"><a href="/leads/{{ ld.id }}" class="hover:text-sky-300">{{ ld.product }}</a>
-              {% if ld.spec %}<span class="text-slate-500 text-xs">{{ ld.spec[:40] }}</span>{% endif %}</td>
-            <td class="px-3 py-2">
+          <tr>
+            <td><input type="checkbox" name="ids" value="{{ ld.id }}"></td>
+            <td><a href="/leads/{{ ld.id }}" class="font-mono text-[11px] link">{{ ld.tracking_code }}</a></td>
+            <td><a href="/leads/{{ ld.id }}" class="hover:text-sky-300">{{ ld.product }}</a>
+              {% if ld.spec %}<span class="text-slate-500 text-xs"> {{ ld.spec[:40] }}</span>{% endif %}</td>
+            <td>
               <div class="text-slate-300">{{ ld.buyer_company or '—' }}</div>
               <div class="text-[11px] text-slate-500">
-                {% if ld.phone %}<a href="tel:{{ ld.phone }}" class="text-sky-400 hover:underline">{{ ld.phone }}</a>{% endif %}
-                {% if ld.email %}{% if ld.phone %} · {% endif %}<a href="mailto:{{ ld.email }}" class="text-sky-400 hover:underline">{{ ld.email }}</a>{% endif %}
-                {% if ld.website %} · <a href="{{ ld.website if '://' in ld.website else 'https://' + ld.website }}" target="_blank" rel="noopener" class="text-sky-400 hover:underline">site&#8599;</a>{% endif %}
+                {% if ld.phone %}<a href="tel:{{ ld.phone }}" class="link">{{ ld.phone }}</a>{% endif %}
+                {% if ld.email %}{% if ld.phone %} · {% endif %}<a href="mailto:{{ ld.email }}" class="link">{{ ld.email }}</a>{% endif %}
+                {% if ld.website %} · <a href="{{ ld.website if '://' in ld.website else 'https://' + ld.website }}" target="_blank" rel="noopener" class="link">site&#8599;</a>{% endif %}
                 {% if not ld.phone and not ld.email %}<span class="text-amber-500/70">needs enrichment</span>{% endif %}
               </div>
             </td>
-            <td class="px-3 py-2 text-slate-400">{{ ld.dest_country or '—' }}</td>
-            <td class="px-3 py-2"><span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">{{ ld.source }}</span></td>
-            <td class="px-3 py-2"><span class="text-xs px-2 py-0.5 rounded-full {{ pill.get(ld.status,'bg-slate-700 text-slate-300') }}">{{ ld.status }}</span></td>
-            <td class="px-3 py-2 text-slate-400 text-xs">{{ (owner.name or owner.email) if owner else '—' }}</td>
-            <td class="px-3 py-2 text-right text-slate-400">{{ mcounts.get(ld.id, 0) }}</td>
+            <td class="text-slate-400">{{ ld.dest_country or '—' }}</td>
+            <td><span class="badge badge-slate text-[10px]">{{ ld.source }}</span></td>
+            <td class="text-xs {% if ld.posted_at %}text-slate-300{% else %}text-slate-600{% endif %}">{{ ld.posted_at.strftime('%b %d, %Y') if ld.posted_at else '—' }}</td>
+            <td><span class="badge badge-{{ ld.status }}">{{ ld.status }}</span></td>
+            <td class="text-slate-400 text-xs">{{ (owner.name or owner.email) if owner else '—' }}</td>
+            <td class="text-right text-slate-400 tabular-nums">{{ mcounts.get(ld.id, 0) }}</td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
+</form>
 
   <!-- pagination -->
   <div class="flex items-center justify-between mt-4 text-sm text-slate-400">
     <div>Page {{ page }} of {{ pages }} · {{ total }} lead(s)</div>
     <div class="flex gap-2">
-      {% if page > 1 %}<a href="{{ page_url(page-1) }}" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700">&larr; Prev</a>{% endif %}
-      {% if page < pages %}<a href="{{ page_url(page+1) }}" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700">Next &rarr;</a>{% endif %}
+      {% if page > 1 %}<a href="{{ page_url(page-1) }}" class="btn btn-neutral btn-sm">&larr; Prev</a>{% endif %}
+      {% if page < pages %}<a href="{{ page_url(page+1) }}" class="btn btn-neutral btn-sm">Next &rarr;</a>{% endif %}
     </div>
   </div>
 {% else %}
-  <p class="text-slate-500 text-sm">No leads match these filters. <a href="/leads" class="underline">Clear filters</a>.</p>
+  <div class="empty">No leads match these filters. <a href="/leads" class="link">Clear filters</a>.</div>
 {% endif %}
 {% endblock %}

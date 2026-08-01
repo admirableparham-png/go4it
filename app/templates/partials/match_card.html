@@ -1,7 +1,7 @@
 <div class="rounded-lg border border-slate-800 bg-slate-900 p-3">
   <div class="flex items-center justify-between mb-1">
-    <span class="text-emerald-400 font-semibold text-sm">{{ m.score }}%</span>
-    {% if product and product.hs_code %}<span class="text-[11px] text-slate-500">HS {{ product.hs_code }}</span>{% endif %}
+    <span class="badge badge-emerald font-semibold">{{ m.score }}% match</span>
+    {% if product and product.hs_code %}<span class="text-[11px] text-slate-500 font-mono">HS {{ product.hs_code }}</span>{% endif %}
   </div>
   {% if product %}
     <div class="font-medium text-sm">{{ product.name }} <span class="text-slate-500 font-normal">{{ product.spec }}</span></div>
@@ -11,7 +11,7 @@
     </div>
     <div class="text-[11px] text-slate-500 mt-1">why: {{ m.reasons }}</div>
     <form method="post" action="/leads/{{ m.lead_id }}/quote/{{ product.id }}" class="mt-2">
-      <button class="text-xs px-3 py-1 rounded bg-sky-600/20 text-sky-300 hover:bg-sky-600/30">Quote this</button>
+      <button class="btn btn-ghost-sky btn-sm" data-busy="Quoting">Quote this</button>
     </form>
   {% else %}
     <div class="text-slate-600 text-sm">(product removed)</div>

@@ -3,49 +3,62 @@
 {% set can_run = user and user.role in ['manager', 'admin'] %}
 {% block content %}
 
-<div class="flex items-start justify-between mb-6">
+<div class="flex flex-wrap items-start justify-between gap-3 mb-6">
   <div>
-    <h2 class="text-lg font-semibold">Lead ingestion</h2>
-    <p class="text-slate-500 text-sm">Export buyer leads from go4worldbusiness and drop the CSV into the inbox. Re-runs skip duplicates automatically.</p>
+    <h2 class="text-xl font-bold tracking-tight">Lead ingestion</h2>
+    <p class="text-slate-500 text-sm mt-0.5">Export buyer leads from go4worldbusiness and drop the CSV into the inbox. Re-runs skip duplicates automatically.</p>
   </div>
   {% if can_run %}
     <form method="post" action="/ingest/run">
-      <button class="text-sm px-4 py-2 rounded bg-sky-600 hover:bg-sky-500 text-white font-medium">Run ingest now</button>
+      <button class="btn btn-secondary" data-busy="Running">Run ingest now</button>
     </form>
   {% endif %}
 </div>
 
-<div class="rounded-lg border border-slate-800 bg-slate-900 p-4 mb-6 text-sm">
-  <div class="text-slate-400">Inbox folder</div>
-  <div class="font-mono text-slate-300 break-all">{{ inbox }}</div>
-  <div class="mt-2 text-slate-400">Files waiting: <span class="text-slate-200">{{ pending }}</span>
-    <span class="text-slate-600">(the worker also polls this folder automatically)</span></div>
+<div class="grid md:grid-cols-2 gap-4 mb-6">
+  <div class="card text-sm">
+    <div class="eyebrow">Inbox folder</div>
+    <div class="font-mono text-slate-300 break-all mt-1">{{ inbox }}</div>
+    <div class="mt-2 text-slate-400">Files waiting: <span class="text-slate-100 font-semibold">{{ pending }}</span>
+      <span class="text-slate-600">&middot; runs when you click above (no background poller is active)</span></div>
+  </div>
+  {% if can_run %}
+  <div class="card text-sm">
+    <div class="eyebrow mb-2">Upload a CSV</div>
+    <form method="post" action="/ingest/upload" enctype="multipart/form-data" class="flex flex-wrap items-center gap-2">
+      <input type="file" name="file" accept=".csv" required
+             class="block text-sm text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-sky-600 file:hover:bg-sky-500 file:text-white file:px-3 file:py-1.5 file:text-sm file:cursor-pointer">
+      <button class="btn btn-secondary btn-sm" data-busy="Uploading">Upload &amp; ingest</button>
+    </form>
+    <p class="text-xs text-slate-500 mt-2">Drops the file into the inbox and ingests it in the background.</p>
+  </div>
+  {% endif %}
 </div>
 
-<h3 class="text-sm font-semibold text-slate-400 mb-2">Recent runs</h3>
+<h3 class="text-sm font-semibold text-slate-300 mb-2">Recent runs</h3>
 {% if runs %}
-  <div class="overflow-x-auto rounded-xl border border-slate-800">
-    <table class="w-full text-sm">
-      <thead class="bg-slate-900 text-slate-400 text-xs uppercase">
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
         <tr>
-          <th class="text-left font-medium px-3 py-2">When</th>
-          <th class="text-left font-medium px-3 py-2">Source</th>
-          <th class="text-right font-medium px-3 py-2">Seen</th>
-          <th class="text-right font-medium px-3 py-2">New</th>
-          <th class="text-right font-medium px-3 py-2">Duplicate</th>
-          <th class="text-left font-medium px-3 py-2">Status</th>
+          <th>When</th>
+          <th>Source</th>
+          <th class="text-right">Seen</th>
+          <th class="text-right">New</th>
+          <th class="text-right">Duplicate</th>
+          <th>Status</th>
         </tr>
       </thead>
       <tbody>
         {% for r in runs %}
-          <tr class="border-t border-slate-800">
-            <td class="px-3 py-2 text-slate-400">{{ r.started_at.strftime('%Y-%m-%d %H:%M') }}</td>
-            <td class="px-3 py-2">{{ r.source }}</td>
-            <td class="px-3 py-2 text-right text-slate-400">{{ r.leads_seen }}</td>
-            <td class="px-3 py-2 text-right text-emerald-400">{{ r.leads_new }}</td>
-            <td class="px-3 py-2 text-right text-slate-500">{{ r.leads_duplicate }}</td>
-            <td class="px-3 py-2">
-              <span class="text-xs px-2 py-0.5 rounded-full {% if r.status == 'ok' %}bg-emerald-500/20 text-emerald-300{% elif r.status == 'error' %}bg-rose-500/20 text-rose-300{% else %}bg-slate-700 text-slate-300{% endif %}">{{ r.status }}</span>
+          <tr>
+            <td class="text-slate-400">{{ r.started_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>{{ r.source }}</td>
+            <td class="text-right text-slate-400 tabular-nums">{{ r.leads_seen }}</td>
+            <td class="text-right text-emerald-400 tabular-nums">{{ r.leads_new }}</td>
+            <td class="text-right text-slate-500 tabular-nums">{{ r.leads_duplicate }}</td>
+            <td>
+              <span class="badge {% if r.status == 'ok' %}badge-emerald{% elif r.status == 'error' %}badge-rose{% else %}badge-slate{% endif %}">{{ r.status }}</span>
               {% if r.error %}<span class="text-rose-400 text-xs ml-1">{{ r.error }}</span>{% endif %}
             </td>
           </tr>
@@ -54,6 +67,6 @@
     </table>
   </div>
 {% else %}
-  <p class="text-slate-500 text-sm">No ingestion runs yet.</p>
+  <div class="empty">No ingestion runs yet.</div>
 {% endif %}
 {% endblock %}

@@ -12,16 +12,13 @@
 <div class="flex items-center justify-between mb-4 no-print">
   <a href="/quotes" class="text-sm text-slate-400 hover:text-slate-200">&larr; All quotes</a>
   <div class="flex items-center gap-2">
-    <span class="text-xs px-2 py-1 rounded-full
-      {% if q.status == 'sent' %}bg-emerald-500/20 text-emerald-300
-      {% elif q.status == 'approved' %}bg-sky-500/20 text-sky-300
-      {% else %}bg-slate-700 text-slate-300{% endif %}">{{ q.status }}</span>
+    <span class="badge {% if q.status == 'sent' %}badge-emerald{% elif q.status == 'approved' %}badge-sky{% else %}badge-slate{% endif %}">{{ q.status }}</span>
     {% if q.status == 'draft' %}
-      <form method="post" action="/quotes/{{ q.id }}/approve"><button class="text-sm px-3 py-1.5 rounded bg-sky-600 hover:bg-sky-500 text-white">Approve</button></form>
+      <form method="post" action="/quotes/{{ q.id }}/approve"><button class="btn btn-secondary btn-sm" data-busy="Approving">Approve</button></form>
     {% elif q.status == 'approved' %}
-      <form method="post" action="/quotes/{{ q.id }}/send"><button class="text-sm px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white">Mark sent</button></form>
+      <form method="post" action="/quotes/{{ q.id }}/send"><button class="btn btn-primary btn-sm" data-busy="Sending">Mark sent</button></form>
     {% endif %}
-    <button onclick="window.print()" class="text-sm px-3 py-1.5 rounded bg-slate-700 hover:bg-slate-600 text-white">Print / PDF</button>
+    <button onclick="window.print()" class="btn btn-neutral btn-sm">Print / PDF</button>
   </div>
 </div>
 
@@ -54,7 +51,7 @@
       <div><span class="text-slate-500">Incoterm:</span> <b>{{ q.incoterm }}</b>{% if q.dest_border %} {{ q.dest_border }}{% endif %}</div>
       <div><span class="text-slate-500">Currency:</span> {{ q.quote_currency }}</div>
       <div><span class="text-slate-500">Quantity:</span> {{ q.quantity }}{% if product %} {{ product.unit }}{% endif %}</div>
-      {% if fx.base and fx.base != fx.quote %}<div class="text-slate-400 text-xs mt-1">FX {{ fx.base }}â†’{{ fx.quote }} @ {{ fx.rate }}</div>{% endif %}
+      {% if fx.base and fx.base != fx.quote %}<div class="text-slate-400 text-xs mt-1">FX {{ fx.base }} &rarr; {{ fx.quote }} @ {{ fx.rate }}</div>{% endif %}
     </div>
   </div>
 

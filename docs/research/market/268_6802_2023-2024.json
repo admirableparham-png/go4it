@@ -1,0 +1,192 @@
+{
+  "hs_code": "6802",
+  "label": "Worked marble / stone",
+  "years": {
+    "2023": {
+      "tonnes": 4514.3,
+      "cif_usd": 2539171,
+      "unit_price_usd_kg": 0.562
+    },
+    "2024": {
+      "tonnes": 33123.3,
+      "cif_usd": 9945283,
+      "unit_price_usd_kg": 0.3
+    }
+  },
+  "trend_pct_first_to_last": 292,
+  "latest_year": "2024",
+  "latest_tonnes": 33123.3,
+  "latest_cif": 9945283,
+  "latest_price": 0.3,
+  "top_suppliers": [
+    {
+      "country": "Iran",
+      "code": 364,
+      "tonnes_total": 74319.1,
+      "cif_usd_total": 13008789,
+      "unit_price_usd_kg": 0.175,
+      "watch_competitor": false
+    },
+    {
+      "country": "Egypt",
+      "code": 818,
+      "tonnes_total": 1207.8,
+      "cif_usd_total": 238651,
+      "unit_price_usd_kg": 0.198,
+      "watch_competitor": false
+    },
+    {
+      "country": "Azerbaijan",
+      "code": 31,
+      "tonnes_total": 7971.2,
+      "cif_usd_total": 2094990,
+      "unit_price_usd_kg": 0.263,
+      "watch_competitor": true
+    },
+    {
+      "country": "Armenia",
+      "code": 51,
+      "tonnes_total": 838.7,
+      "cif_usd_total": 228727,
+      "unit_price_usd_kg": 0.273,
+      "watch_competitor": true
+    },
+    {
+      "country": "Ukraine",
+      "code": 804,
+      "tonnes_total": 7096.3,
+      "cif_usd_total": 1953788,
+      "unit_price_usd_kg": 0.275,
+      "watch_competitor": false
+    },
+    {
+      "country": "Vietnam",
+      "code": 704,
+      "tonnes_total": 216.0,
+      "cif_usd_total": 63722,
+      "unit_price_usd_kg": 0.295,
+      "watch_competitor": false
+    },
+    {
+      "country": "Turkey",
+      "code": 792,
+      "tonnes_total": 40421.5,
+      "cif_usd_total": 17999826,
+      "unit_price_usd_kg": 0.445,
+      "watch_competitor": true
+    },
+    {
+      "country": "Hong Kong",
+      "code": 344,
+      "tonnes_total": 209.7,
+      "cif_usd_total": 102377,
+      "unit_price_usd_kg": 0.488,
+      "watch_competitor": false
+    },
+    {
+      "country": "India",
+      "code": 699,
+      "tonnes_total": 10917.7,
+      "cif_usd_total": 5547132,
+      "unit_price_usd_kg": 0.508,
+      "watch_competitor": true
+    },
+    {
+      "country": "Spain",
+      "code": 724,
+      "tonnes_total": 1391.7,
+      "cif_usd_total": 846915,
+      "unit_price_usd_kg": 0.609,
+      "watch_competitor": false
+    },
+    {
+      "country": "Russia",
+      "code": 643,
+      "tonnes_total": 283.5,
+      "cif_usd_total": 198480,
+      "unit_price_usd_kg": 0.7,
+      "watch_competitor": true
+    },
+    {
+      "country": "Portugal",
+      "code": 620,
+      "tonnes_total": 773.5,
+      "cif_usd_total": 581570,
+      "unit_price_usd_kg": 0.752,
+      "watch_competitor": false
+    },
+    {
+      "country": "UAE",
+      "code": 784,
+      "tonnes_total": 57.2,
+      "cif_usd_total": 45064,
+      "unit_price_usd_kg": 0.787,
+      "watch_competitor": false
+    },
+    {
+      "country": "Greece",
+      "code": 300,
+      "tonnes_total": 384.0,
+      "cif_usd_total": 320382,
+      "unit_price_usd_kg": 0.834,
+      "watch_competitor": false
+    },
+    {
+      "country": "China",
+      "code": 156,
+      "tonnes_total": 2814.2,
+      "cif_usd_total": 2455249,
+      "unit_price_usd_kg": 0.872,
+      "watch_competitor": true
+    },
+    {
+      "country": "code76",
+      "code": 76,
+      "tonnes_total": 153.4,
+      "cif_usd_total": 241237,
+      "unit_price_usd_kg": 1.573,
+      "watch_competitor": false
+    },
+    {
+      "country": "Italy",
+      "code": 380,
+      "tonnes_total": 949.0,
+      "cif_usd_total": 2691872,
+      "unit_price_usd_kg": 2.836,
+      "watch_competitor": false
+    },
+    {
+      "country": "Netherlands",
+      "code": 528,
+      "tonnes_total": 56.5,
+      "cif_usd_total": 197572,
+      "unit_price_usd_kg": 3.494,
+      "watch_competitor": false
+    },
+    {
+      "country": "Belgium",
+      "code": 56,
+      "tonnes_total": 11.9,
+      "cif_usd_total": 62499,
+      "unit_price_usd_kg": 5.232,
+      "watch_competitor": false
+    },
+    {
+      "country": "Denmark",
+      "code": 208,
+      "tonnes_total": 4.3,
+      "cif_usd_total": 58253,
+      "unit_price_usd_kg": 13.406,
+      "watch_competitor": false
+    },
+    {
+      "country": "Slovenia",
+      "code": 705,
+      "tonnes_total": 4.5,
+      "cif_usd_total": 316836,
+      "unit_price_usd_kg": 71.199,
+      "watch_competitor": false
+    }
+  ],
+  "total_cif": 49492760
+}

@@ -1,0 +1,135 @@
+{% set tone_card = {'good':'border-emerald-600 bg-emerald-500/5','watch':'border-amber-600 bg-amber-500/5','bad':'border-rose-600 bg-rose-500/5'} %}
+{% set tone_badge = {'good':'bg-emerald-500/20 text-emerald-300','watch':'bg-amber-500/20 text-amber-300','bad':'bg-rose-500/20 text-rose-300'} %}
+{% set tone_head = {'good':'text-emerald-300','watch':'text-amber-300','bad':'text-rose-300'} %}
+
+{% macro our_buyers(n, iso, leads) %}
+  {% if iso %}
+  <div class="rounded-xl border border-slate-800 bg-slate-900 p-4 mt-4">
+    <div class="text-sm font-semibold text-slate-200 mb-1">&#128100; Buyers we already have in {{ iso }} <span class="text-slate-500">{{ n }}</span></div>
+    {% if n %}
+      <p class="text-[12px] text-slate-500 mb-2">Already harvested into your pipeline &mdash; start outreach here.
+        <a href="/leads?dest={{ iso }}" class="link">open all in Leads &#8599;</a></p>
+      <div class="flex flex-wrap gap-1.5">
+        {% for l in leads %}
+          <a href="/leads/{{ l.id }}" class="text-[11px] bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded px-2 py-0.5 text-slate-300">
+            {{ (l.buyer_company or l.product or 'lead')[:32] }}{% if l.phone or l.email %} <span class="text-emerald-400">&bull;</span>{% endif %}</a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-[12px] text-slate-500">No buyers harvested for this market yet &mdash; a Command-box harvest (coming next) will fill this in.</p>
+    {% endif %}
+  </div>
+  {% endif %}
+{% endmacro %}
+
+{% if error %}
+  <div class="alert-rose">{{ error }}</div>
+
+{% elif report %}
+  <div class="text-sm text-slate-400 mb-3">{{ query_label }} &rarr; <b class="text-slate-100">{{ report.reporter }}</b>
+    <span class="text-slate-600">· imports {{ report.years[0] }}&ndash;{{ report.years[-1] }} · supply angle {{ report.our_sources|length }} source(s)</span></div>
+
+  {% for c in report.commodities %}
+    {% set a = c.assessment %}
+    <div class="rounded-xl border {{ tone_card.get(a.tone,'border-slate-700') }} p-4 mb-4">
+      <div class="flex items-start justify-between gap-3 mb-2">
+        <div>
+          <div class="font-semibold">{{ c.label }} <span class="text-[11px] text-slate-500 font-mono">HS {{ c.hs_code }}</span></div>
+          <div class="text-sm {{ tone_head.get(a.tone,'text-slate-300') }} font-medium mt-0.5">{{ a.headline }}</div>
+        </div>
+        <div class="text-right shrink-0">
+          <div class="text-[10px] uppercase text-slate-500">score</div>
+          <div class="text-2xl font-bold {{ tone_head.get(a.tone,'text-slate-200') }}">{{ a.score }}</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
+        <div class="rounded-lg bg-slate-900/60 border border-slate-800 px-3 py-2">
+          <div class="text-[10px] uppercase text-slate-500">Market {{ c.latest_year }}</div>
+          <div class="text-sm font-semibold text-slate-100">{% if c.latest_cif %}${{ "{:,}".format(c.latest_cif) }}{% else %}&mdash;{% endif %}</div>
+        </div>
+        <div class="rounded-lg bg-slate-900/60 border border-slate-800 px-3 py-2">
+          <div class="text-[10px] uppercase text-slate-500">Volume</div>
+          <div class="text-sm font-semibold text-slate-100">{% if c.latest_tonnes %}{{ "{:,}".format(c.latest_tonnes) }} t{% else %}&mdash;{% endif %}</div>
+        </div>
+        <div class="rounded-lg bg-slate-900/60 border border-slate-800 px-3 py-2">
+          <div class="text-[10px] uppercase text-slate-500">Landed price</div>
+          <div class="text-sm font-semibold text-slate-100">{% if c.latest_price %}{{ c.latest_price }} $/kg{% else %}&mdash;{% endif %}</div>
+        </div>
+        <div class="rounded-lg bg-slate-900/60 border border-slate-800 px-3 py-2">
+          <div class="text-[10px] uppercase text-slate-500">Trend</div>
+          <div class="text-sm font-semibold {% if c.trend_pct_first_to_last and c.trend_pct_first_to_last > 0 %}text-emerald-300{% elif c.trend_pct_first_to_last and c.trend_pct_first_to_last < 0 %}text-rose-300{% else %}text-slate-100{% endif %}">
+            {% if c.trend_pct_first_to_last is not none %}{{ "%+d"|format(c.trend_pct_first_to_last) }}%{% else %}&mdash;{% endif %}</div>
+        </div>
+      </div>
+
+      {% if a.reasons %}<ul class="text-[12.5px] text-slate-400 space-y-0.5 mb-3 pl-4 list-disc">{% for r in a.reasons %}<li>{{ r }}</li>{% endfor %}</ul>{% endif %}
+
+      {% if c.top_suppliers %}
+      <div class="text-[10px] uppercase tracking-wide text-slate-500 mb-1">Who supplies {{ report.reporter }} now (cheapest first)</div>
+      <div class="overflow-x-auto rounded-lg border border-slate-800">
+        <table class="w-full text-[12.5px]">
+          <thead class="bg-slate-900 text-slate-500 text-[10px] uppercase"><tr>
+            <th class="text-left font-medium px-3 py-1.5">Source</th>
+            <th class="text-right font-medium px-3 py-1.5">$/kg</th>
+            <th class="text-right font-medium px-3 py-1.5">Tonnes</th>
+            <th class="text-right font-medium px-3 py-1.5">CIF USD</th>
+            <th class="text-left font-medium px-3 py-1.5"></th>
+          </tr></thead>
+          <tbody>
+            {% for s in c.top_suppliers[:10] %}
+              <tr class="border-t border-slate-800 {% if s.we_supply %}bg-emerald-500/10{% endif %}">
+                <td class="px-3 py-1.5 {% if s.we_supply %}text-emerald-200 font-medium{% else %}text-slate-300{% endif %}">{{ s.country }}</td>
+                <td class="px-3 py-1.5 text-right text-slate-300">{{ s.unit_price_usd_kg if s.unit_price_usd_kg is not none else '—' }}</td>
+                <td class="px-3 py-1.5 text-right text-slate-400">{{ "{:,}".format(s.tonnes_total) }}</td>
+                <td class="px-3 py-1.5 text-right text-slate-400">${{ "{:,}".format(s.cif_usd_total) }}</td>
+                <td class="px-3 py-1.5">{% if s.we_supply %}<span class="text-[10px] px-1.5 py-0.5 rounded {{ tone_badge.good }}">WE SUPPLY</span>{% elif s.watch_competitor %}<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">competitor</span>{% endif %}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+    </div>
+  {% endfor %}
+
+  {{ our_buyers(our_lead_n, our_iso, our_leads) }}
+  <p class="text-[11px] text-slate-600 mt-3">Source: UN Comtrade (annual, flow = imports). Preview endpoint caps rows; figures show the market shape, not every micro-shipment.</p>
+
+{% elif scan is defined %}
+  <div class="text-sm text-slate-400 mb-3">Best import opportunities for <b class="text-slate-100">{{ reporter_name }}</b>
+    <span class="text-slate-600">· Iran/UAE-supplyable basket · ranked by opportunity</span></div>
+  {% if scan %}
+  <div class="overflow-x-auto rounded-xl border border-slate-800 mb-2">
+    <table class="w-full text-sm">
+      <thead class="bg-slate-900 text-slate-400 text-xs uppercase"><tr>
+        <th class="text-left font-medium px-3 py-2">#</th>
+        <th class="text-left font-medium px-3 py-2">Score</th>
+        <th class="text-left font-medium px-3 py-2">Product</th>
+        <th class="text-right font-medium px-3 py-2">Market</th>
+        <th class="text-right font-medium px-3 py-2">$/kg</th>
+        <th class="text-right font-medium px-3 py-2">Trend</th>
+        <th class="text-left font-medium px-3 py-2">Read</th>
+      </tr></thead>
+      <tbody>
+        {% for r in scan %}
+          <tr class="border-t border-slate-800 hover:bg-slate-900/60">
+            <td class="px-3 py-2 text-slate-500">{{ loop.index }}</td>
+            <td class="px-3 py-2"><span class="text-xs font-bold px-2 py-0.5 rounded {{ tone_badge.get(r.tone,'bg-slate-700 text-slate-300') }}">{{ r.score }}</span></td>
+            <td class="px-3 py-2 text-slate-200">{{ r.label }} <span class="text-[10px] text-slate-600 font-mono">HS {{ r.hs_code }}</span>
+              {% if r.iran_present %}<span class="text-[9px] text-emerald-400">IR</span>{% endif %}{% if r.uae_present %}<span class="text-[9px] text-emerald-400">AE</span>{% endif %}</td>
+            <td class="px-3 py-2 text-right text-slate-300">{% if r.latest_cif %}${{ "{:,}".format(r.latest_cif) }}{% else %}&mdash;{% endif %}</td>
+            <td class="px-3 py-2 text-right text-slate-400">{{ r.latest_price if r.latest_price is not none else '—' }}</td>
+            <td class="px-3 py-2 text-right {% if r.trend and r.trend > 0 %}text-emerald-300{% elif r.trend and r.trend < 0 %}text-rose-300{% else %}text-slate-400{% endif %}">{% if r.trend is not none %}{{ "%+d"|format(r.trend) }}%{% else %}&mdash;{% endif %}</td>
+            <td class="px-3 py-2 text-[11.5px] text-slate-400">{{ r.headline[:70] }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="text-[11px] text-slate-500 mb-1">Higher score = bigger + growing market where Iran/UAE can compete. Analyze any row above for the full supplier breakdown.</p>
+  {{ our_buyers(our_lead_n, our_iso, our_leads) }}
+  {% else %}
+    <div class="rounded-xl border border-slate-800 bg-slate-900 p-6 text-slate-400 text-sm">No import data returned for this market (Comtrade may not report it, or the basket is empty here).</div>
+  {% endif %}
+{% endif %}

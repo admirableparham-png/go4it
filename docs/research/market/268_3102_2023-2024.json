@@ -1,0 +1,187 @@
+{
+  "hs_code": "3102",
+  "label": "Urea fertilizer",
+  "years": {
+    "2023": {
+      "tonnes": 14034.0,
+      "cif_usd": 4457932,
+      "unit_price_usd_kg": 0.318
+    }
+  },
+  "trend_pct_first_to_last": null,
+  "latest_year": "2023",
+  "latest_tonnes": 14034.0,
+  "latest_cif": 4457932,
+  "latest_price": 0.318,
+  "top_suppliers": [
+    {
+      "country": "Russia",
+      "code": 643,
+      "tonnes_total": 33197.0,
+      "cif_usd_total": 10414743,
+      "unit_price_usd_kg": 0.314,
+      "watch_competitor": true
+    },
+    {
+      "country": "Azerbaijan",
+      "code": 31,
+      "tonnes_total": 2815.7,
+      "cif_usd_total": 1171076,
+      "unit_price_usd_kg": 0.416,
+      "watch_competitor": true
+    },
+    {
+      "country": "Turkmenistan",
+      "code": 795,
+      "tonnes_total": 5715.5,
+      "cif_usd_total": 2408314,
+      "unit_price_usd_kg": 0.421,
+      "watch_competitor": true
+    },
+    {
+      "country": "Uzbekistan",
+      "code": 860,
+      "tonnes_total": 209.8,
+      "cif_usd_total": 91952,
+      "unit_price_usd_kg": 0.438,
+      "watch_competitor": true
+    },
+    {
+      "country": "Iran",
+      "code": 364,
+      "tonnes_total": 784.7,
+      "cif_usd_total": 363740,
+      "unit_price_usd_kg": 0.464,
+      "watch_competitor": false
+    },
+    {
+      "country": "UK",
+      "code": 826,
+      "tonnes_total": 264.0,
+      "cif_usd_total": 139920,
+      "unit_price_usd_kg": 0.53,
+      "watch_competitor": false
+    },
+    {
+      "country": "Estonia",
+      "code": 233,
+      "tonnes_total": 870.9,
+      "cif_usd_total": 465953,
+      "unit_price_usd_kg": 0.535,
+      "watch_competitor": false
+    },
+    {
+      "country": "China",
+      "code": 156,
+      "tonnes_total": 90.2,
+      "cif_usd_total": 52042,
+      "unit_price_usd_kg": 0.577,
+      "watch_competitor": true
+    },
+    {
+      "country": "Belarus",
+      "code": 112,
+      "tonnes_total": 106.5,
+      "cif_usd_total": 62478,
+      "unit_price_usd_kg": 0.586,
+      "watch_competitor": false
+    },
+    {
+      "country": "Poland",
+      "code": 616,
+      "tonnes_total": 43.3,
+      "cif_usd_total": 32844,
+      "unit_price_usd_kg": 0.758,
+      "watch_competitor": false
+    },
+    {
+      "country": "Kazakhstan",
+      "code": 398,
+      "tonnes_total": 1973.0,
+      "cif_usd_total": 1528564,
+      "unit_price_usd_kg": 0.775,
+      "watch_competitor": true
+    },
+    {
+      "country": "Slovakia",
+      "code": 703,
+      "tonnes_total": 336.0,
+      "cif_usd_total": 261444,
+      "unit_price_usd_kg": 0.778,
+      "watch_competitor": false
+    },
+    {
+      "country": "Turkey",
+      "code": 792,
+      "tonnes_total": 5251.5,
+      "cif_usd_total": 4147356,
+      "unit_price_usd_kg": 0.79,
+      "watch_competitor": true
+    },
+    {
+      "country": "Finland",
+      "code": 246,
+      "tonnes_total": 264.0,
+      "cif_usd_total": 231585,
+      "unit_price_usd_kg": 0.877,
+      "watch_competitor": false
+    },
+    {
+      "country": "Italy",
+      "code": 380,
+      "tonnes_total": 82.7,
+      "cif_usd_total": 73191,
+      "unit_price_usd_kg": 0.885,
+      "watch_competitor": false
+    },
+    {
+      "country": "Armenia",
+      "code": 51,
+      "tonnes_total": 58.0,
+      "cif_usd_total": 54110,
+      "unit_price_usd_kg": 0.933,
+      "watch_competitor": true
+    },
+    {
+      "country": "Netherlands",
+      "code": 528,
+      "tonnes_total": 85.9,
+      "cif_usd_total": 86991,
+      "unit_price_usd_kg": 1.013,
+      "watch_competitor": false
+    },
+    {
+      "country": "Germany",
+      "code": 276,
+      "tonnes_total": 632.9,
+      "cif_usd_total": 692304,
+      "unit_price_usd_kg": 1.094,
+      "watch_competitor": false
+    },
+    {
+      "country": "Spain",
+      "code": 724,
+      "tonnes_total": 58.8,
+      "cif_usd_total": 90421,
+      "unit_price_usd_kg": 1.538,
+      "watch_competitor": false
+    },
+    {
+      "country": "France",
+      "code": 251,
+      "tonnes_total": 7.6,
+      "cif_usd_total": 37584,
+      "unit_price_usd_kg": 4.915,
+      "watch_competitor": false
+    },
+    {
+      "country": "UAE",
+      "code": 784,
+      "tonnes_total": 0.8,
+      "cif_usd_total": 9894,
+      "unit_price_usd_kg": 12.413,
+      "watch_competitor": false
+    }
+  ],
+  "total_cif": 22473465
+}

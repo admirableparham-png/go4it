@@ -4,27 +4,41 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>go4it — sign in</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <style> body { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; } </style>
 </head>
 <body class="h-full bg-slate-950 text-slate-100 antialiased">
-  <div class="min-h-full flex items-center justify-center px-6">
-    <div class="w-full max-w-sm">
+  <div class="relative min-h-full flex items-center justify-center px-6 overflow-hidden">
+    <!-- ambient glow -->
+    <div class="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[36rem] h-[36rem] rounded-full bg-emerald-500/10 blur-3xl"></div>
+    <div class="relative w-full max-w-sm">
       <div class="text-center mb-6">
+        <span class="inline-grid place-items-center w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 text-slate-950 font-extrabold text-lg shadow-lg shadow-emerald-500/25 mb-3">g4</span>
         <h1 class="text-2xl font-bold tracking-tight">go4it</h1>
-        <p class="text-slate-400 text-sm">sign in to continue</p>
+        <p class="text-slate-400 text-sm mt-0.5">Trade desk &mdash; sign in to continue</p>
       </div>
-      <form method="post" action="/login" class="space-y-3 rounded-xl border border-slate-800 bg-slate-900 p-6">
+      <form method="post" action="/login" class="space-y-3 rounded-2xl border border-slate-800 bg-slate-900/80 backdrop-blur p-6 shadow-xl shadow-black/20">
         {% if error %}
-          <div class="text-sm text-rose-300 bg-rose-900/20 border border-rose-800/50 rounded px-3 py-2">
+          <div class="text-sm text-rose-200 bg-rose-900/20 border border-rose-800/50 rounded-lg px-3 py-2">
             Invalid email or password.
           </div>
         {% endif %}
-        <input name="email" type="email" required placeholder="Email"
-               class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-slate-500">
-        <input name="password" type="password" required placeholder="Password"
-               class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-slate-500">
-        <button class="w-full bg-emerald-600 hover:bg-emerald-500 text-white rounded py-2 text-sm font-medium">Sign in</button>
+        <div>
+          <label class="block text-[11px] uppercase tracking-wide text-slate-500 mb-1">Email</label>
+          <input name="email" type="email" required placeholder="you@company.com" autofocus
+                 class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 transition focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30">
+        </div>
+        <div>
+          <label class="block text-[11px] uppercase tracking-wide text-slate-500 mb-1">Password</label>
+          <input name="password" type="password" required placeholder="••••••••"
+                 class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 transition focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30">
+        </div>
+        <button class="w-full bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg py-2.5 text-sm font-semibold transition-colors shadow-lg shadow-emerald-500/20">Sign in</button>
       </form>
+      <p class="text-center text-[11px] text-slate-600 mt-4">Authorized users only</p>
     </div>
   </div>
 </body>

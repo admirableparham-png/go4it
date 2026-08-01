@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% set active = 'command' %}
+{% block content %}
+
+<div class="flex items-end justify-between mb-1">
+  <h2 class="text-xl font-bold tracking-tight">&#9889; Command &mdash; tell it what to find</h2>
+  <span id="cmdspin" class="htmx-indicator text-xs text-sky-400">dispatching&hellip;</span>
+</div>
+<p class="text-slate-500 text-sm mb-4">
+  Type what you want in plain words &mdash; the system goes and harvests real businesses into your Leads.
+  <b>UAE</b> uses the phone-rich trade directory; <b>Georgia, Qatar, Turkey, the Gulf</b> and more come
+  from OpenStreetMap. Pair it with <a href="/research" class="text-sky-400 hover:underline">Research</a>
+  to see which market is worth chasing first.
+</p>
+
+{% if can_run %}
+<form hx-post="/command/run" hx-target="#jobs" hx-swap="afterbegin"
+      hx-indicator="#cmdspin" hx-disabled-elt="find button"
+      hx-on::after-request="this.reset()" class="mb-3">
+  <div class="flex gap-2">
+    <input id="cmd" name="prompt" autocomplete="off" required
+           placeholder="e.g. find hotel suppliers in UAE"
+           class="input flex-1">
+    <button class="btn btn-primary px-6">Run</button>
+  </div>
+</form>
+<div class="flex flex-wrap gap-1.5 mb-8 text-[11px]">
+  <span class="text-slate-600">try:</span>
+  {% for ex in ["hotel suppliers in UAE", "perfume buyers in UAE", "furniture shops in Georgia", "hardware in Turkey", "tile shops in Qatar", "supermarkets in Kuwait"] %}
+    <button type="button" onclick="document.getElementById('cmd').value=this.textContent.trim();document.getElementById('cmd').focus()"
+            class="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded px-2 py-0.5 text-slate-300">{{ ex }}</button>
+  {% endfor %}
+</div>
+{% else %}
+<div class="alert-amber mb-6">Agent role or higher is required to run commands. You can view past runs below.</div>
+{% endif %}
+
+<h3 class="text-sm font-semibold text-slate-300 mb-2">Recent commands</h3>
+<div id="jobs" class="space-y-2">
+  {% for job in jobs %}{% include 'partials/command_job.html' %}{% endfor %}
+  {% if not jobs %}<p class="text-slate-600 text-sm">No commands run yet. Type one above.</p>{% endif %}
+</div>
+
+{% endblock %}

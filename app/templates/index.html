@@ -1,29 +1,31 @@
 {% extends "base.html" %}
 {% set active = 'dashboard' %}
 {% block content %}
-{% set pill = {'new':'bg-slate-700 text-slate-300','quoted':'bg-sky-500/20 text-sky-300','negotiating':'bg-amber-500/20 text-amber-300','won':'bg-emerald-500/20 text-emerald-300','lost':'bg-rose-500/20 text-rose-300'} %}
 {% set stage_bar = {'new':'bg-slate-500','quoted':'bg-sky-500','negotiating':'bg-amber-500','won':'bg-emerald-500','lost':'bg-rose-500'} %}
 
-{% macro kpi(label, value, sub='', accent='text-slate-100') %}
-<div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
-  <div class="text-[11px] uppercase tracking-wide text-slate-500">{{ label }}</div>
-  <div class="text-2xl font-bold {{ accent }} leading-tight mt-1">{{ value }}</div>
+{% macro kpi(label, value, sub='', accent='text-slate-100', icon='') %}
+<div class="card">
+  <div class="flex items-start justify-between">
+    <div class="eyebrow">{{ label }}</div>
+    {% if icon %}<span class="text-base leading-none opacity-80">{{ icon }}</span>{% endif %}
+  </div>
+  <div class="text-[26px] font-bold {{ accent }} leading-tight mt-1 tabular-nums">{{ value }}</div>
   {% if sub %}<div class="text-xs text-slate-500 mt-0.5">{{ sub }}</div>{% endif %}
 </div>
 {% endmacro %}
 
 {% macro bars(title, items, colors=None) %}
-<div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
-  <h3 class="text-sm font-semibold text-slate-300 mb-3">{{ title }}</h3>
+<div class="card-soft">
+  <h3 class="text-sm font-semibold text-slate-200 mb-3">{{ title }}</h3>
   {% if items %}
-    <div class="space-y-1.5">
+    <div class="space-y-2">
       {% for it in items %}
-        <div class="flex items-center gap-2 text-xs">
-          <div class="w-28 truncate text-slate-400" title="{{ it.label }}">{{ it.label }}</div>
-          <div class="flex-1 bg-slate-800 rounded h-4 overflow-hidden">
-            <div class="h-4 rounded {{ colors.get(it.label, 'bg-sky-600') if colors else 'bg-sky-600' }}" style="width: {{ it.pct }}%"></div>
+        <div class="flex items-center gap-3 text-xs">
+          <div class="w-24 truncate text-slate-400" title="{{ it.label }}">{{ it.label }}</div>
+          <div class="flex-1 bg-slate-800/70 rounded-full h-2.5 overflow-hidden">
+            <div class="h-2.5 rounded-full {{ colors.get(it.label, 'bg-sky-500') if colors else 'bg-gradient-to-r from-sky-500 to-sky-400' }}" style="width: {{ it.pct }}%"></div>
           </div>
-          <div class="w-8 text-right tabular-nums text-slate-300">{{ it.count }}</div>
+          <div class="w-8 text-right tabular-nums text-slate-300 font-medium">{{ it.count }}</div>
         </div>
       {% endfor %}
     </div>
@@ -33,29 +35,76 @@
 </div>
 {% endmacro %}
 
-<div class="flex items-center justify-between mb-6">
-  <h2 class="text-lg font-semibold">Overview</h2>
-  <div class="flex gap-2 text-sm">
-    <a href="/leads" class="px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-medium">+ Add / view leads</a>
-    <a href="/quotes" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700">Quotes</a>
-    <a href="/catalog" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700">Catalog</a>
+<div class="flex flex-wrap items-end justify-between gap-3 mb-6">
+  <div>
+    <h2 class="text-xl font-bold tracking-tight">Overview</h2>
+    <p class="text-slate-500 text-sm mt-0.5">Live snapshot of your pipeline and demand.</p>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <a href="/leads" class="btn btn-primary">+ Add / view leads</a>
+    <a href="/command" class="btn btn-neutral">Find buyers</a>
+    <a href="/research" class="btn btn-neutral">Research</a>
   </div>
 </div>
 
 <!-- KPI cards -->
-<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
-  {{ kpi('Total leads', total, contactable ~ ' contactable') }}
-  {{ kpi('Open pipeline', open_pipeline, 'new + quoted + negotiating', 'text-sky-300') }}
-  {{ kpi('Quotes sent', quotes_sent, quotes_total ~ ' total (' ~ quotes_draft ~ ' draft)') }}
-  {{ kpi('Deals open', deals_open, deals_total ~ ' total', 'text-emerald-300') }}
-  {{ kpi('Win rate', (win_rate ~ '%') if win_rate is not none else '—', won ~ 'W / ' ~ lost ~ 'L') }}
-  {{ kpi('Need enrichment', needs_enrichment, 'no phone or email', 'text-amber-300') }}
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+  {{ kpi('Total leads', total, contactable ~ ' contactable', icon='🎯') }}
+  {{ kpi('Open pipeline', open_pipeline, 'new + quoted + negotiating', 'text-sky-300', icon='📊') }}
+  {{ kpi('Quotes sent', quotes_sent, quotes_total ~ ' total (' ~ quotes_draft ~ ' draft)', icon='📄') }}
+  {{ kpi('Deals open', deals_open, deals_total ~ ' total', 'text-emerald-300', icon='🤝') }}
+  {{ kpi('Win rate', (win_rate ~ '%') if win_rate is not none else '—', won ~ 'W / ' ~ lost ~ 'L', icon='🏆') }}
+  {{ kpi('Need enrichment', needs_enrichment, 'no phone or email', 'text-amber-300', icon='⚠️') }}
 </div>
 
-{% if pipeline_value %}
-<div class="rounded-xl border border-emerald-800/40 bg-emerald-900/10 p-4 mb-8">
-  <span class="text-xs uppercase tracking-wide text-emerald-500">Pipeline value (best quote per active lead)</span>
-  <span class="text-xl font-bold text-emerald-300 ml-2">{{ '{:,.0f}'.format(pipeline_value) }} USD</span>
+<div class="relative overflow-hidden rounded-xl border border-emerald-700/40 bg-gradient-to-r from-emerald-900/40 via-emerald-900/10 to-slate-900 p-6 mb-8">
+  <div class="absolute -right-8 -top-10 w-56 h-56 rounded-full bg-emerald-500/10 blur-3xl"></div>
+  <div class="relative flex flex-wrap items-end justify-between gap-4">
+    {% if pipeline_value %}
+    <div>
+      <div class="text-[11px] uppercase tracking-wide font-medium text-emerald-400/80">Pipeline value</div>
+      <div class="text-4xl font-extrabold text-emerald-300 tabular-nums mt-1 leading-none">{{ '{:,.0f}'.format(pipeline_value) }} <span class="text-xl font-bold text-emerald-400/70">USD</span></div>
+      <div class="text-xs text-slate-500 mt-1.5">best quote per active lead</div>
+    </div>
+    <a href="/quotes" class="btn btn-ghost-emerald">View quotes &rarr;</a>
+    {% else %}
+    <div>
+      <div class="text-[11px] uppercase tracking-wide font-medium text-emerald-400/80">Active pipeline</div>
+      <div class="text-4xl font-extrabold text-emerald-300 tabular-nums mt-1 leading-none">{{ '{:,}'.format(open_pipeline) }} <span class="text-xl font-bold text-emerald-400/70">leads</span></div>
+      <div class="text-xs text-slate-500 mt-1.5">{{ contactable }} contactable &middot; {{ needs_enrichment }} awaiting enrichment</div>
+    </div>
+    <div class="flex gap-2">
+      <a href="/command" class="btn btn-ghost-emerald">Find buyers &rarr;</a>
+      <a href="/leads" class="btn btn-neutral">Open leads</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% if market_cards %}
+<div class="mb-8">
+  <div class="flex items-center justify-between mb-3">
+    <h3 class="text-sm font-semibold text-slate-200">Market opportunities <span class="text-slate-500 font-normal">&middot; Iran &rarr; Georgia, live customs</span></h3>
+    <a href="/research" class="text-xs link">open Research &rarr;</a>
+  </div>
+  <div class="grid md:grid-cols-3 gap-4">
+    {% for c in market_cards %}
+      {% set tc = {'good':'border-emerald-600/60 bg-emerald-500/5','watch':'border-amber-600/60 bg-amber-500/5','bad':'border-rose-600/60 bg-rose-500/5'} %}
+      {% set hc = {'good':'text-emerald-300','watch':'text-amber-300','bad':'text-rose-300'} %}
+      <div class="rounded-xl border {{ tc.get(c.tone,'border-slate-800') }} p-4">
+        <div class="flex items-baseline justify-between gap-2">
+          <div class="font-semibold text-sm">{{ c.name }}</div>
+          <span class="text-[11px] font-mono text-slate-500">{{ c.hs }}</span>
+        </div>
+        <div class="text-[13px] font-medium mt-1.5 {{ hc.get(c.tone,'text-slate-300') }}">{{ c.verdict }}</div>
+        <div class="flex items-center gap-2 mt-3 text-xs text-slate-400">
+          {% if c.cif %}<span class="tabular-nums">{{ '${:,.0f}'.format(c.cif) }}</span>{% endif %}
+          {% if c.price %}<span class="text-slate-600">&middot;</span><span class="tabular-nums">{{ c.price }} $/kg</span>{% endif %}
+          <span class="ml-auto badge {{ 'badge-emerald' if c.iran else 'badge-rose' }}">Iran {{ 'in' if c.iran else 'out' }}</span>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
 </div>
 {% endif %}
 
@@ -72,38 +121,57 @@
 
   <!-- recent -->
   <div class="space-y-4">
-    <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+    {% if due_leads %}
+    <div class="rounded-xl border border-amber-700/40 bg-amber-900/10 p-4">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="text-sm font-semibold text-amber-200">&#128276; Follow-ups due <span class="badge badge-amber ml-1">{{ due_leads|length }}</span></h3>
+        <a href="/leads?due=today" class="text-xs link">work the queue &rarr;</a>
+      </div>
+      <div class="divide-y divide-amber-900/30">
+        {% for ld in due_leads %}
+          <a href="/leads/{{ ld.id }}" class="flex items-center justify-between py-1.5 -mx-1.5 px-1.5 rounded-lg hover:bg-amber-900/20 transition-colors">
+            <div class="min-w-0">
+              <div class="text-sm truncate">{{ ld.buyer_company or ld.product }}</div>
+              <div class="text-[11px] text-slate-500 truncate">{{ ld.next_action_note or ld.product }}</div>
+            </div>
+            <span class="shrink-0 ml-2 text-[11px] {% if ld.next_action_at.date() < today %}text-rose-300{% else %}text-amber-300{% endif %}">{{ ld.next_action_at.strftime('%b %d') }}</span>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    <div class="card-soft">
       <div class="flex items-center justify-between mb-3">
-        <h3 class="text-sm font-semibold text-slate-300">Recent leads</h3>
-        <a href="/leads" class="text-xs text-sky-400 hover:underline">view all &rarr;</a>
+        <h3 class="text-sm font-semibold text-slate-200">Recent leads</h3>
+        <a href="/leads" class="text-xs link">view all &rarr;</a>
       </div>
       {% if recent_leads %}
         <div class="divide-y divide-slate-800">
           {% for ld in recent_leads %}
-            <a href="/leads/{{ ld.id }}" class="flex items-center justify-between py-2 hover:bg-slate-800/40 -mx-1 px-1 rounded">
+            <a href="/leads/{{ ld.id }}" class="flex items-center justify-between py-2 hover:bg-slate-800/40 -mx-1.5 px-1.5 rounded-lg transition-colors">
               <div class="min-w-0">
                 <div class="text-sm truncate">{{ ld.product }}</div>
                 <div class="text-xs text-slate-500 truncate">{{ ld.buyer_company or 'unknown buyer' }}{% if ld.dest_country %} · {{ ld.dest_country }}{% endif %} · <span class="text-slate-600">{{ ld.source }}</span></div>
               </div>
-              <span class="shrink-0 ml-2 text-[10px] px-2 py-0.5 rounded-full {{ pill.get(ld.status,'bg-slate-700 text-slate-300') }}">{{ ld.status }}</span>
+              <span class="badge badge-{{ ld.status }} shrink-0 ml-2">{{ ld.status }}</span>
             </a>
           {% endfor %}
         </div>
       {% else %}<p class="text-slate-600 text-xs">No leads yet.</p>{% endif %}
     </div>
 
-    <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
-      <h3 class="text-sm font-semibold text-slate-300 mb-3">Recent activity</h3>
+    <div class="card-soft">
+      <h3 class="text-sm font-semibold text-slate-200 mb-3">Recent activity</h3>
       {% if acts %}
-        <div class="space-y-2">
-          {% for a in acts %}
+        <div class="space-y-2.5">
+          {% for a in acts[:8] %}
             {% set ld = lead_map.get(a.lead_id) %}
             {% set who = user_map.get(a.user_id) %}
             <div class="flex items-start gap-2 text-xs">
-              <span class="mt-0.5 text-[10px] uppercase px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 shrink-0">{{ a.kind.replace('_',' ') }}</span>
-              <div class="min-w-0 flex-1">
-                <span class="text-slate-300">{{ a.body or '' }}</span>
-                {% if ld %}<a href="/leads/{{ ld.id }}" class="text-sky-400 hover:underline font-mono">{{ ld.tracking_code }}</a>{% endif %}
+              <span class="badge badge-slate shrink-0 rounded-md text-[10px] uppercase">{{ a.kind.replace('_',' ') }}</span>
+              <div class="min-w-0 flex-1 truncate">
+                <span class="text-slate-300">{{ (a.body or '')[:70] }}{% if (a.body or '')|length > 70 %}&hellip;{% endif %}</span>
+                {% if ld %}<a href="/leads/{{ ld.id }}" class="link font-mono">{{ ld.tracking_code }}</a>{% endif %}
                 <span class="text-slate-600">· {{ who.name if who else 'system' }} · {{ a.created_at.strftime('%m-%d %H:%M') }}</span>
               </div>
             </div>

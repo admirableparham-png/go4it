@@ -1,4 +1,4 @@
-.PHONY: install run seed test save clean worker ingest ingest-portal
+.PHONY: install run prod seed test save backup db-migrate clean worker ingest ingest-portal
 
 # One-time setup: create a virtualenv and install dependencies.
 install:
@@ -10,6 +10,11 @@ install:
 # Start the app with auto-reload on http://localhost:8400
 run:
 	./.venv/bin/uvicorn app.main:app --reload --port 8400
+
+# Production server: migrate, then gunicorn + uvicorn workers (no reload). WEB_CONCURRENCY sets workers.
+prod:
+	./.venv/bin/python scripts/migrate.py
+	./.venv/bin/gunicorn app.main:app -k uvicorn.workers.UvicornWorker -w $${WEB_CONCURRENCY:-2} -b 0.0.0.0:8400 --timeout 120
 
 # Load demo demands & offers so you can see matching immediately.
 seed:
@@ -35,6 +40,14 @@ ingest-portal:
 # End-of-day save: commit everything and push to GitHub with a status report.
 save:
 	./save.sh
+
+# Apply lightweight idempotent schema migrations (adds any missing columns).
+db-migrate:
+	./.venv/bin/python scripts/migrate.py
+
+# Timestamped SQLite backup into ./backups (online-consistent, keeps last 14).
+backup:
+	./.venv/bin/python scripts/backup_db.py
 
 # Remove the local database (start fresh).
 clean:

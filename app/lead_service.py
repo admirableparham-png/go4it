@@ -41,9 +41,13 @@ def find_duplicate(session: Session, lead: Lead):
     return session.exec(select(Lead).where(Lead.content_hash == lead.content_hash)).first()
 
 
-def run_matching(session: Session, lead: Lead):
-    """Match a lead against the active catalog, persist matches, alert, and
-    auto-draft a quote for the best match."""
+def run_matching(session: Session, lead: Lead, auto_quote: bool = True):
+    """Match a lead against the active catalog and persist matches (idempotent — clears any
+    prior matches for this lead first, so it doubles as a re-match). When auto_quote is True
+    (the live web-form/ingest path) it also alerts and auto-drafts a quote for the best match;
+    backfills/re-matches pass auto_quote=False to avoid mass quote/alert spam."""
+    for m in session.exec(select(Match).where(Match.lead_id == lead.id)).all():
+        session.delete(m)
     saved = []
     for product in session.exec(select(Product).where(Product.active == True)).all():  # noqa: E712
         score, reasons = score_lead_product(lead, product)
@@ -53,12 +57,15 @@ def run_matching(session: Session, lead: Lead):
     session.commit()
     if saved:
         saved.sort(key=lambda t: t[1], reverse=True)
+    if saved and auto_quote:
         notify_lead_matches(lead, saved[:5])
-        try:
-            quote = create_quote(session, lead, saved[0][0])
-            notify_quote_ready(quote, lead, saved[0][0])
-        except Exception:
-            logger.warning("auto-quote failed for lead %s", lead.id, exc_info=True)
+        best = saved[0][0]
+        if (best.exw_price or 0) > 0 and (best.weight_kg_per_unit or 0) > 0:  # don't quote unpriced
+            try:
+                quote = create_quote(session, lead, best)
+                notify_quote_ready(quote, lead, best)
+            except Exception:
+                logger.warning("auto-quote failed for lead %s", lead.id, exc_info=True)
     return saved
 
 

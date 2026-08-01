@@ -111,7 +111,7 @@ def market_cards(stats):
     return "".join(cards)
 
 
-def demand_section(tenders, businesses, tirfq):
+def demand_section(tenders, businesses):
     parts = []
     # live tenders
     tl = tenders.get("tenders", [])
@@ -141,13 +141,6 @@ def demand_section(tenders, businesses, tirfq):
             f'<p class="fine">{len(withc)} have a phone/website (shown below); '
             f'{len(bl)-len(withc)} more are named venues awaiting contact enrichment.</p>'
             f'<div class="grid">{cards}</div>')
-    # regional RFQs
-    rr = [r for r in tirfq.get("leads", []) if r.get("is_regional")]
-    if rr:
-        rows = "".join(f'<li>{esc(r.get("country_iso"))} - {esc(r.get("title"))[:80]} '
-                       f'({esc(r.get("city"))}, {esc(r.get("date"))})</li>' for r in rr)
-        parts.append(f'<h3>\U0001F310 Regional marketplace RFQs <span class="count">{len(rr)}</span></h3>'
-                     f'<ul class="rfq">{rows}</ul>')
     return "".join(parts)
 
 
@@ -174,7 +167,6 @@ def run():
     stats = load("trade_stats_georgia.json")
     tenders = load("ge_tenders.json")
     businesses = load("ge_businesses.json")
-    tirfq = load("tradeindia_rfqs.json")
     sup = load("suppliers_uae_iran.json")
 
     css = """
@@ -219,7 +211,7 @@ def run():
         "customs records, the state procurement portal, OpenStreetMap and B2B directories.</div></header>"
         "<section><h2>1 &middot; Market reality (Georgia customs records)</h2>"
         "<div class=opps>" + market_cards(stats) + "</div></section>"
-        "<section><h2>2 &middot; Live Georgian demand</h2>" + demand_section(tenders, businesses, tirfq) + "</section>"
+        "<section><h2>2 &middot; Live Georgian demand</h2>" + demand_section(tenders, businesses) + "</section>"
         "<section><h2>3 &middot; Supply we can quote</h2>" + supply_section(sup) + "</section>"
         "</div></body></html>"
     )
@@ -239,10 +231,6 @@ def run():
                 continue
             w.writerow(["GE venue", "Rubber tiles (buyer)", b.get("company"), "GE", b.get("city"),
                         b.get("phone"), as_url(b.get("website")), b.get("role")])
-        for r in tirfq.get("leads", []):
-            if r.get("is_regional"):
-                w.writerow(["Regional RFQ", PRODUCTS.get(r.get("product_key"), ("",))[0], r.get("title"),
-                            r.get("country_iso"), r.get("city"), "", "", r.get("date")])
         for s in sup.get("suppliers", []):
             if s.get("country") != "AE":
                 continue

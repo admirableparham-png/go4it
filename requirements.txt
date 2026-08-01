@@ -11,6 +11,10 @@ rapidfuzz>=3.13,<4
 python-dotenv>=1.2,<2
 itsdangerous>=2.1,<3
 playwright>=1.40,<2
+gunicorn>=21,<24            # production process manager (runs uvicorn workers)
 
 # Dev / test
 pytest>=8.0,<9
+
+# Optional (production): Postgres driver — enable by switching DATABASE_URL.
+#   pip install "psycopg[binary]>=3.1"
