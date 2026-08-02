@@ -84,7 +84,8 @@ class Lead(SQLModel, table=True):
     status: str = "new"            # new | quoted | negotiating | won | lost
     owner_id: Optional[int] = Field(default=None, foreign_key="user.id")
     lost_reason: str = ""
-    first_response_at: Optional[datetime] = None
+    first_response_at: Optional[datetime] = None   # OUR first touch (outreach/note/call)
+    buyer_replied_at: Optional[datetime] = None    # the buyer's first inbound reply (email/whatsapp)
     next_action_at: Optional[datetime] = None      # follow-up date (the "contact today" queue)
     next_action_note: str = ""
     notes: str = ""
@@ -198,16 +199,20 @@ class CommandJob(SQLModel, table=True):
 
 
 class Outreach(SQLModel, table=True):
-    """One buyer-contact attempt (email / whatsapp / call), logged against a lead so outreach
-    history + response speed are visible. Sent via SMTP when configured, otherwise 'logged'
-    (the operator used the click-to-email / click-to-WhatsApp link)."""
+    """One message in a lead's conversation thread. OUTBOUND = a contact we made (email/whatsapp/
+    call/note; SMTP-sent when configured, else 'logged'); INBOUND = a buyer reply threaded in by the
+    IMAP poller (app/inbound_email.py). direction + from_addr + message_id turn this into a two-way
+    thread; the /leads/{id} Conversation panel renders these as bubbles."""
     id: Optional[int] = Field(default=None, primary_key=True)
     lead_id: int = Field(foreign_key="lead.id", index=True)
+    direction: str = "out"         # out (we sent) | in (buyer replied)
     channel: str = "email"         # email | whatsapp | call | note
-    recipient: str = ""            # email address or phone
+    recipient: str = ""            # email address or phone we sent to
+    from_addr: str = ""            # inbound sender (email / phone)
     subject: str = ""
     body: str = ""
-    status: str = "logged"         # logged | sent | failed
+    message_id: str = Field(default="", index=True)   # email Message-ID (inbound dedup + threading)
+    status: str = "logged"         # logged | sent | failed | received
     error: str = ""
     user_id: Optional[int] = Field(default=None, foreign_key="user.id")
     created_at: datetime = Field(default_factory=datetime.utcnow)

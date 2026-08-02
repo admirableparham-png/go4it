@@ -268,6 +268,7 @@ def dashboard(request: Request):
             "cat_bars": _bars(by_cat, top=8, drop_empty=True),
             "acts": acts, "lead_map": lead_map, "user_map": user_map,
             "recent_leads": recent_leads, "market_cards": _intel_cards(),
+            "offer_lines": _offer_lines(),
             "due_leads": due_leads, "today": datetime.utcnow().date(),
         }
     return templates.TemplateResponse("index.html", ctx)
@@ -604,35 +605,78 @@ def georgia(request: Request):
     return templates.TemplateResponse("georgia.html", ctx)
 
 
-@app.get("/uae", response_class=HTMLResponse)
-def uae(request: Request):
-    """UAE buyers for the Decora Store home-decor range (what we offer + who buys it)."""
-    with Session(engine) as session:
-        user = current_user(request, session)
-    data = _load_research("uae_decor_buyers.json")
-    prod = _load_research("decora_products.json")
+# UAE product lines shown in the /uae hub. Each line = one product family set + its harvested
+# buyers + optional posted RFQs + the buyer-category display order. Adding a line later is just one
+# entry here plus its docs/research JSONs — the hub, dashboard strip, and export all pick it up.
+UAE_LINES = [
+    {"key": "cd-dvd", "label": "CD & DVD",
+     "products": "optical_media_products.json", "buyers": "uae_optical_buyers.json",
+     "rfqs": "uae_optical_rfqs.json",
+     "order": ["Recording studio", "Audio-visual", "Digital printing", "Printing press",
+               "Photography / photo studio", "Computer supplies", "Computer accessories",
+               "IT products", "Computer hardware", "Electronics", "Office supplies",
+               "Stationery", "Consumer electronics", "General trading"]},
+    {"key": "decoration", "label": "Decoration",
+     "products": "decora_products.json", "buyers": "uae_decor_buyers.json",
+     "rfqs": "uae_decor_rfqs.json",
+     "order": ["Home-decor retailer", "Tableware / serveware", "Crockery", "Housewares",
+               "Handicrafts", "Lighting shop", "Gift / corporate-gift", "Gift shop",
+               "Hotel & hospitality supplier"]},
+]
+
+
+def _uae_line_ctx(line):
+    """Render context for one UAE product line, from its buyers + products JSONs."""
+    data = _load_research(line["buyers"])
+    prod = _load_research(line["products"])
     buyers = data.get("buyers", [])
-    order = ["Home-decor retailer", "Tableware / serveware", "Crockery", "Housewares",
-             "Handicrafts", "Lighting shop", "Gift / corporate-gift", "Gift shop",
-             "Hotel & hospitality supplier"]
     groups = {}
     for b in buyers:
         groups.setdefault((b.get("categories") or ["Other"])[0], []).append(b)
     for c in groups:
         groups[c].sort(key=lambda x: -x.get("match_score", 0))
-    grouped = ([(c, groups[c]) for c in order if c in groups]
-               + [(c, groups[c]) for c in groups if c not in order])
+    grouped = ([(c, groups[c]) for c in line["order"] if c in groups]
+               + [(c, groups[c]) for c in groups if c not in line["order"]])
     ranked = sorted([b for b in buyers if b.get("match_score", 0) >= 75],
                     key=lambda x: -x.get("match_score", 0))
-    rfqs = _load_research("uae_decor_rfqs.json").get("rfqs", [])
-    ctx = {
-        "request": request, "user": user, "active": "uae",
-        "store": prod.get("store", {}), "families": prod.get("families", []),
+    return {
+        "head": prod.get("meta") or prod.get("store") or {},
+        "families": prod.get("families", []),
         "buyers": buyers, "grouped": grouped,
-        "ranked": ranked[:60], "high_n": len(ranked), "rfqs": rfqs,
+        "ranked": ranked[:60], "high_n": len(ranked),
+        "rfqs": _load_research(line["rfqs"]).get("rfqs", []),
         "with_phone": data.get("with_phone", 0), "with_email": data.get("with_email", 0),
         "with_website": data.get("with_website", 0), "has_data": bool(buyers),
+        "bulk_n": data.get("bulk_likely_count", 0),
     }
+
+
+def _offer_lines():
+    """Compact 'what we offer' family cards per UAE line, for the dashboard strip (no fetch)."""
+    out = []
+    for line in UAE_LINES:
+        prod = _load_research(line["products"])
+        fams = [{"name": f.get("name", ""), "brands": f.get("brands", []),
+                 "specs": f.get("specs", ""), "price": f.get("price_usd", "")}
+                for f in prod.get("families", [])]
+        if fams:
+            out.append({"key": line["key"], "label": line["label"], "families": fams})
+    return out
+
+
+@app.get("/uae", response_class=HTMLResponse)
+def uae(request: Request, line: str = "cd-dvd"):
+    """UAE buyers hub — categorized product lines (CD & DVD, Decoration) + what we offer + who buys."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+    lines_meta = [{"key": l["key"], "label": l["label"],
+                   "count": len(_load_research(l["buyers"]).get("buyers", []))} for l in UAE_LINES]
+    current = next((l for l in UAE_LINES if l["key"] == line), UAE_LINES[0])
+    if not _load_research(current["buyers"]).get("buyers"):     # requested line empty -> first with data
+        current = next((l for l in UAE_LINES if _load_research(l["buyers"]).get("buyers")), current)
+    ctx = {"request": request, "user": user, "active": "uae",
+           "lines": lines_meta, "line": {"key": current["key"], "label": current["label"]}}
+    ctx.update(_uae_line_ctx(current))
     return templates.TemplateResponse("uae.html", ctx)
 
 
@@ -791,23 +835,34 @@ def lead_detail(request: Request, lead_id: int):
         ).all()
         umap = {u.id: u for u in session.exec(select(User)).all()}
         owner = umap.get(lead.owner_id)
-        timeline = [{"a": a, "user": umap.get(a.user_id)} for a in acts]
+        # Full audit timeline — EXCLUDE 'outreach' (those messages now live in the Conversation panel)
+        timeline = [{"a": a, "user": umap.get(a.user_id)} for a in acts if a.kind != "outreach"]
+        outreach = session.exec(
+            select(Outreach).where(Outreach.lead_id == lead_id).order_by(Outreach.id.desc())
+        ).all()
+        # Conversation thread: messages (in/out) + key system events, oldest -> newest (chat order)
+        thread = ([{"kind": "msg", "at": o.created_at, "o": o, "user": umap.get(o.user_id)}
+                   for o in outreach]
+                  + [{"kind": "event", "at": a.created_at, "a": a}
+                     for a in acts if a.kind in ("status_change", "quote_sent")])
+        thread.sort(key=lambda x: x["at"] or datetime.min)
         quotable = sorted(
             (p for p in products.values() if _quotable(p)),
             key=lambda p: p.name)
         latest_q = quotes[0] if quotes else None
         latest_p = products.get(latest_q.product_id) if latest_q else None
         default_subject, default_body = default_message(lead, latest_q, latest_p)
-        outreach = session.exec(
-            select(Outreach).where(Outreach.lead_id == lead_id).order_by(Outreach.id.desc())
-        ).all()
+        # newest buyer-safe quote link to drop into a message (approved/sent quotes only)
+        share_q = next((q for q in quotes if q.status in ("approved", "sent") and q.share_token), None)
+        latest_share_url = f"{BASE_URL}/p/{share_q.share_token}" if share_q else ""
     return templates.TemplateResponse(
         "lead_detail.html",
         {"request": request, "user": user, "lead": lead, "owner": owner,
          "users": users, "products": products, "quotable": quotable,
          "matches": [{"m": m, "product": products.get(m.product_id)} for m in matches],
-         "quotes": quotes, "timeline": timeline, "outreach": outreach,
+         "quotes": quotes, "timeline": timeline, "outreach": outreach, "thread": thread,
          "default_subject": default_subject, "default_body": default_body,
+         "latest_share_url": latest_share_url,
          "smtp_enabled": SMTP_ENABLED, "today": datetime.utcnow().date(),
          "next_stages": sorted(TRANSITIONS.get(lead.status, set()))},
     )
@@ -1028,15 +1083,15 @@ def lead_outreach(request: Request, lead_id: int, channel: str = Form("email"),
         lead = session.get(Lead, lead_id)
         if not lead:
             return HTMLResponse("Not found", status_code=404)
-        status, error = "logged", ""
+        status, error, mid = "logged", "", ""
         if send and channel == "email":
-            ok, error = send_email(recipient or lead.email, subject, body)
+            ok, error, mid = send_email(recipient or lead.email, subject, body)
             status = "sent" if ok else "failed"
         session.add(Outreach(
-            lead_id=lead.id, channel=channel,
+            lead_id=lead.id, direction="out", channel=channel,
             recipient=(recipient or lead.email or lead.phone or "")[:200],
             subject=subject[:200], body=body[:4000], status=status, error=error,
-            user_id=user.id if user else None))
+            message_id=mid, user_id=user.id if user else None))
         _log(session, lead, user, "outreach",
              f"{channel} to {recipient or lead.email or lead.phone or '?'} - {status}")
         session.commit()

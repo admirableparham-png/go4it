@@ -89,6 +89,7 @@ PRODUCT_HS: Dict[str, Tuple[str, List[str]]] = {
     "saffron": ("Saffron", ["091020"]),
     "carpets": ("Carpets (knotted / woven)", ["5701", "5702"]),
     "detergents": ("Soap / organic surfactants", ["3401", "3402"]),
+    "optical-media": ("Blank optical media (CD-R / DVD-R / Blu-ray)", ["852341"]),
 }
 
 # Curated shortlist the "what should I focus on for country Y?" scan ranks — goods Iran/UAE

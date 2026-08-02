@@ -17,6 +17,7 @@
   <div>
     <h2 class="text-xl font-bold tracking-tight">{{ lead.product if lead else 'Deal' }}</h2>
     <div class="text-slate-500 text-sm mt-0.5">{{ lead.buyer_company if lead else '' }}{% if lead and lead.dest_country %} &middot; {{ lead.dest_country }}{% endif %}</div>
+    {% if lead %}<a href="/leads/{{ lead.id }}#conversation" class="link text-xs mt-1 inline-block">&#128172; Conversation &amp; quotes &rarr;</a>{% endif %}
   </div>
   <div class="text-right shrink-0">
     <span class="badge {{ 'badge-emerald' if deal.stage in ['settled','closed'] else 'badge-sky' }}">{{ deal.stage.replace('_', ' ') }}</span>

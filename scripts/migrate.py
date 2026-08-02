@@ -17,6 +17,10 @@ MIGRATIONS = [
     ("lead", "next_action_at", "TIMESTAMP"),
     ("lead", "next_action_note", "VARCHAR DEFAULT ''"),
     ("quote", "share_token", "VARCHAR DEFAULT ''"),
+    ("lead", "buyer_replied_at", "TIMESTAMP"),
+    ("outreach", "direction", "VARCHAR DEFAULT 'out'"),
+    ("outreach", "from_addr", "VARCHAR DEFAULT ''"),
+    ("outreach", "message_id", "VARCHAR DEFAULT ''"),
 ]
 
 
@@ -36,7 +40,8 @@ def run():
     # Indexes the models declare (Field(index=True)) that ALTER TABLE ADD COLUMN doesn't create.
     # create_all() makes them on fresh DBs; migrated DBs need them here to match (else full scans).
     tables = {r[0] for r in cur.execute("SELECT name FROM sqlite_master WHERE type='table'")}
-    for idx, table, column in [("ix_quote_share_token", "quote", "share_token")]:
+    for idx, table, column in [("ix_quote_share_token", "quote", "share_token"),
+                               ("ix_outreach_message_id", "outreach", "message_id")]:
         if table in tables:
             cur.execute(f"CREATE INDEX IF NOT EXISTS {idx} ON {table}({column})")
     con.commit()

@@ -3,8 +3,10 @@ dedup, tracking code, and the match -> auto-quote -> alert chain.
 """
 import hashlib
 import logging
+import re
 from datetime import datetime
 
+from sqlalchemy import func
 from sqlmodel import Session, select
 
 from .config import MATCH_THRESHOLD
@@ -23,6 +25,25 @@ def content_hash(lead: Lead) -> str:
              lead.buyer_company, lead.contact_name, lead.email]
     key = "|".join(str(p).strip().lower() for p in parts)
     return hashlib.sha1(key.encode("utf-8")).hexdigest()
+
+
+def find_lead_by_contact(session: Session, email: str = "", phone: str = ""):
+    """Find the Lead an inbound message belongs to, by sender email (then phone). Used by the IMAP
+    poller to THREAD a buyer reply onto its lead — NOT create_lead (which drops dups, never attaches).
+    Returns the most recent matching Lead, or None (unmatched inbound is skipped, not auto-created)."""
+    email = (email or "").strip().lower()
+    if email:
+        lead = session.exec(
+            select(Lead).where(func.lower(Lead.email) == email).order_by(Lead.id.desc())).first()
+        if lead:
+            return lead
+    digits = re.sub(r"[^\d]", "", phone or "")
+    if len(digits) >= 7:
+        tail = digits[-9:]      # match on the last 9 digits (ignore country-code / formatting)
+        for lead in session.exec(select(Lead).where(Lead.phone != "").order_by(Lead.id.desc())).all():
+            if re.sub(r"[^\d]", "", lead.phone or "")[-9:] == tail:
+                return lead
+    return None
 
 
 def find_duplicate(session: Session, lead: Lead):

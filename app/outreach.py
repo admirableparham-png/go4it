@@ -5,6 +5,7 @@ click-to-WhatsApp links and record the attempt as 'logged'. send_email never rai
 import smtplib
 import ssl
 from email.message import EmailMessage
+from email.utils import make_msgid
 
 from .config import (BASE_URL, SMTP_ENABLED, SMTP_FROM, SMTP_HOST, SMTP_PASSWORD,
                      SMTP_PORT, SMTP_USER)
@@ -34,13 +35,19 @@ def default_message(lead, quote=None, product=None):
 
 
 def send_email(to_addr, subject, body):
-    """Send via SMTP. Returns (ok: bool, error: str) — never raises."""
+    """Send via SMTP. Returns (ok: bool, error: str, message_id: str) — never raises.
+
+    The Message-ID is stamped on the sent mail and returned so the outbound row can store it; a
+    buyer reply's In-Reply-To then threads back to this message. message_id is "" when not sent."""
     if not SMTP_ENABLED:
-        return False, "SMTP not configured"
+        return False, "SMTP not configured", ""
     if not (to_addr or "").strip():
-        return False, "no recipient email"
+        return False, "no recipient email", ""
     try:
+        domain = SMTP_FROM.split("@")[-1] if "@" in (SMTP_FROM or "") else "go4it.local"
+        mid = make_msgid(domain=domain)
         msg = EmailMessage()
+        msg["Message-ID"] = mid
         msg["From"] = SMTP_FROM
         msg["To"] = to_addr
         msg["Subject"] = subject or "(no subject)"
@@ -49,6 +56,6 @@ def send_email(to_addr, subject, body):
             s.starttls(context=ssl.create_default_context())
             s.login(SMTP_USER, SMTP_PASSWORD)
             s.send_message(msg)
-        return True, ""
+        return True, "", mid
     except Exception as e:  # noqa: BLE001
-        return False, str(e)[:300]
+        return False, str(e)[:300], ""

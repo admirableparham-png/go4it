@@ -35,5 +35,5 @@ def test_default_message_includes_buyer_link_when_quote_shared():
 
 
 def test_send_email_disabled_returns_reason():
-    ok, err = send_email("buyer@example.com", "Hi", "Body")
-    assert ok is False and "not configured" in err.lower()   # SMTP off in tests
+    ok, err, mid = send_email("buyer@example.com", "Hi", "Body")
+    assert ok is False and "not configured" in err.lower() and mid == ""   # SMTP off in tests

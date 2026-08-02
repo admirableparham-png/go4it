@@ -36,12 +36,19 @@
   </div>
 </div>
 
-<!-- Outreach -->
+<!-- Conversation (Close Deal panel) -->
 <section class="card mb-6">
   <div class="flex items-center justify-between mb-3">
-    <div class="eyebrow">&#9889; Contact this buyer</div>
-    <div class="text-[11px] text-slate-500">{% if smtp_enabled %}SMTP on &mdash; can send from go4it{% else %}opens your email / WhatsApp{% endif %}</div>
+    <div class="eyebrow">&#128172; Conversation</div>
+    <div class="text-[11px] text-slate-500">
+      {% if lead.buyer_replied_at %}<span class="text-emerald-400">&#9679; buyer replied</span>
+      {% elif lead.first_response_at %}<span class="text-amber-400/80">awaiting reply</span>
+      {% else %}not contacted yet{% endif %}
+      {% if smtp_enabled %} &middot; SMTP on{% endif %}
+    </div>
   </div>
+
+  <!-- Quick actions -->
   <div class="flex flex-wrap items-center gap-2 mb-3">
     {% if lead.email %}<a href="mailto:{{ lead.email }}?subject={{ default_subject|urlencode }}&amp;body={{ default_body|urlencode }}" class="btn btn-secondary btn-sm">&#9993; Email</a>{% endif %}
     {% if lead.phone %}
@@ -52,11 +59,41 @@
     {% if can_edit and lead.website and not lead.email %}
       <form method="post" action="/leads/{{ lead.id }}/enrich" class="inline">
         <button class="btn btn-ghost-sky btn-sm" data-busy="Scanning site&hellip;"
-                title="Scrape the buyer's own site for a role mailbox (info@/sales@) &mdash; no credits">
-          &#128269; Find email from website</button>
+                title="Scrape the buyer's own site for a role mailbox &mdash; no credits">&#128269; Find email from website</button>
       </form>
     {% endif %}
   </div>
+
+  <!-- Thread -->
+  {% if thread %}
+  <div class="border border-slate-800 rounded-xl bg-slate-950/40 p-3 mb-3 max-h-[420px] overflow-y-auto space-y-2">
+    {% for item in thread %}
+      {% if item.kind == 'event' %}
+        <div class="text-center my-1">
+          <span class="text-[10px] uppercase tracking-wide text-slate-500 bg-slate-800/60 rounded-full px-2 py-0.5">
+            {% if item.a.kind == 'quote_sent' %}&#128196; {% else %}&#8644; {% endif %}{{ item.a.body or item.a.kind }} &middot; {{ item.a.created_at.strftime('%m-%d %H:%M') }}</span>
+        </div>
+      {% else %}
+        {% set o = item.o %}
+        <div class="flex {% if o.direction == 'in' %}justify-start{% else %}justify-end{% endif %}">
+          <div class="max-w-[82%] rounded-2xl px-3 py-2 {% if o.direction == 'in' %}bg-slate-800 rounded-tl-sm{% else %}bg-emerald-600/15 border border-emerald-600/30 rounded-tr-sm{% endif %}">
+            <div class="flex items-center gap-1.5 mb-0.5 text-[10px] uppercase tracking-wide {% if o.direction == 'in' %}text-slate-400{% else %}text-emerald-300/80{% endif %}">
+              <span>{% if o.direction == 'in' %}&#8592; Buyer{% else %}{{ item.user.name or item.user.email if item.user else 'You' }}{% endif %}</span>
+              <span class="normal-case text-slate-500">&middot; {{ o.channel }}{% if o.status in ('sent','failed','received') %} &middot; <span class="{% if o.status == 'failed' %}text-rose-400{% endif %}">{{ o.status }}</span>{% endif %}</span>
+            </div>
+            {% if o.subject %}<div class="font-medium text-[13px] text-slate-100 mb-0.5">{{ o.subject }}</div>{% endif %}
+            {% if o.body %}<div class="whitespace-pre-wrap break-words text-[13px] text-slate-300/90">{{ o.body }}</div>{% endif %}
+            <div class="text-[10px] text-slate-500 mt-1">{{ o.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-slate-500 text-sm mb-3 border border-dashed border-slate-800 rounded-xl p-4 text-center">No messages yet &mdash; start the conversation below.</div>
+  {% endif %}
+
+  <!-- Compose -->
   {% if can_edit %}
   <form method="post" action="/leads/{{ lead.id }}/outreach" class="space-y-2">
     <div class="grid sm:grid-cols-3 gap-2">
@@ -64,29 +101,28 @@
         <option value="email">Email</option>
         <option value="whatsapp">WhatsApp</option>
         <option value="call">Call</option>
+        <option value="note">Note</option>
       </select>
       <input name="recipient" value="{{ lead.email or lead.phone or '' }}" placeholder="to" class="input sm:col-span-2">
     </div>
     <input name="subject" value="{{ default_subject }}" placeholder="Subject" class="input">
-    <textarea name="body" rows="4" class="input">{{ default_body }}</textarea>
+    <textarea name="body" id="msgBody" rows="4" class="input">{{ default_body }}</textarea>
     <div class="flex flex-wrap items-center gap-2">
-      <button name="send" value="" class="btn btn-neutral btn-sm" data-busy="Logging">Log outreach</button>
+      <button name="send" value="" class="btn btn-neutral btn-sm" data-busy="Logging">Log</button>
       {% if smtp_enabled %}<button name="send" value="1" class="btn btn-primary btn-sm" data-busy="Sending">Send email + log</button>{% endif %}
-      <span class="text-[11px] text-slate-500">Logging stamps first-response + the timeline{% if not smtp_enabled %}; use the buttons above to actually send{% endif %}.</span>
+      {% if latest_share_url %}<button type="button" class="btn btn-ghost-sky btn-sm" onclick="attachQuote()">&#128196; Attach quotation</button>{% endif %}
+      <span class="text-[11px] text-slate-500 ml-auto">Every message is threaded above &amp; tracked.{% if not smtp_enabled %} Set SMTP to send email in-app.{% endif %}</span>
     </div>
   </form>
+  {% if latest_share_url %}
+  <script>
+    function attachQuote(){
+      var b=document.getElementById('msgBody'), url="{{ latest_share_url }}";
+      if(b.value.indexOf(url)<0){ b.value=b.value.replace(/\s+$/,'')+"\n\nView your quotation: "+url; }
+      b.focus();
+    }
+  </script>
   {% endif %}
-  {% if outreach %}
-  <div class="mt-3 border-t border-slate-800 pt-3 space-y-1.5">
-    <div class="eyebrow mb-1">History</div>
-    {% for o in outreach %}
-      <div class="text-xs text-slate-400 flex items-center gap-2">
-        <span class="badge {{ {'sent':'badge-emerald','failed':'badge-rose'}.get(o.status,'badge-slate') }} text-[10px] uppercase">{{ o.channel }} {{ o.status }}</span>
-        <span class="truncate">{{ o.subject or o.body[:60] }}</span>
-        <span class="text-slate-600 ml-auto shrink-0">{{ o.created_at.strftime('%m-%d %H:%M') }}</span>
-      </div>
-    {% endfor %}
-  </div>
   {% endif %}
 </section>
 

@@ -33,6 +33,15 @@ DEBUG_DIR = os.path.join(_PROJECT_ROOT, "debug")
 ENRICH_INTERVAL = int(os.getenv("ENRICH_INTERVAL", "0"))    # seconds between enrich passes; 0 = disabled
 ENRICH_BATCH = int(os.getenv("ENRICH_BATCH", "40"))         # max leads scraped per pass (stay polite)
 
+# Inbound buyer email (IMAP): the worker threads replies into the Conversation panel (app/inbound_email).
+# OFF by default. Set IMAP_HOST/USER/PASSWORD (e.g. imap.gmail.com + an App Password) + IMAP_INTERVAL>0.
+IMAP_HOST = os.getenv("IMAP_HOST", "").strip()
+IMAP_PORT = int(os.getenv("IMAP_PORT", "993"))
+IMAP_USER = os.getenv("IMAP_USER", "").strip()
+IMAP_PASSWORD = os.getenv("IMAP_PASSWORD", "").strip()
+IMAP_ENABLED = bool(IMAP_HOST and IMAP_USER and IMAP_PASSWORD)
+IMAP_INTERVAL = int(os.getenv("IMAP_INTERVAL", "0"))        # seconds between inbox polls; 0 = disabled
+
 # --- go4worldbusiness authenticated portal scraper (browser bot) ---
 # Credentials for YOUR OWN paid account. Set in .env (gitignored) — never in code.
 # Automated access may conflict with go4worldbusiness Terms / risk the account.
