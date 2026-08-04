@@ -22,7 +22,8 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from .auth import current_user, role_at_least, verify_password
 from .command_service import parse_command, run_command_job
-from .config import BASE_URL, DEBUG_DIR, INBOX_DIR, INGEST_API_KEY, SECRET_KEY, SMTP_ENABLED
+from .config import (BASE_URL, CORS_ORIGINS, DEBUG_DIR, INBOX_DIR, INGEST_API_KEY, IS_LOCAL,
+                     SECRET_KEY, SMTP_ENABLED, insecure_default_secrets)
 from .csv_import import parse_products
 from .db import engine, init_db
 from .enrich_service import clean_site, enrich_lead
@@ -92,7 +93,7 @@ app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY, same_site="lax")
 # safe: a caller still needs the key, and the server only listens on localhost.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=CORS_ORIGINS,          # capture-helper + localhost by default; lock down via CORS_ORIGINS
     allow_methods=["*"],
     allow_headers=["*"],
     max_age=3600,
@@ -113,6 +114,17 @@ async def private_network_access(request: Request, call_next):
 @app.on_event("startup")
 def on_startup() -> None:
     init_db()
+    # Fail-fast: never run on a PUBLIC BASE_URL with the shipped default secrets (forgeable session /
+    # open ingest key). Localhost dev is exempt; there it's just a warning.
+    bad = insecure_default_secrets()
+    if bad and not IS_LOCAL:
+        raise RuntimeError(
+            f"Refusing to start: BASE_URL={BASE_URL} is public but these secrets are still the "
+            f"shipped defaults: {', '.join(bad)}. Set them in .env before deploying "
+            f"(see docs/PRODUCTION.md).")
+    if bad:
+        logger.warning("Using DEFAULT %s - fine on localhost, MUST be set before deploy.",
+                       ", ".join(bad))
 
 
 # ----------------------------------------------------------------------------- helpers

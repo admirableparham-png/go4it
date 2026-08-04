@@ -77,3 +77,23 @@ SMTP_USER = os.getenv("SMTP_USER", "").strip()
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "").strip()
 SMTP_FROM = os.getenv("SMTP_FROM", "").strip() or SMTP_USER
 SMTP_ENABLED = bool(SMTP_HOST and SMTP_USER and SMTP_PASSWORD)
+
+# --- Production safety -------------------------------------------------------
+# Refuse to boot on a PUBLIC BASE_URL while still using the shipped default secrets (a forgeable
+# admin session / open ingest key). Local dev (localhost/127.0.0.1) is exempt so nothing changes there.
+IS_LOCAL = any(h in BASE_URL for h in ("localhost", "127.0.0.1", "0.0.0.0"))
+_DEFAULT_SECRETS = {"SECRET_KEY": ("dev-insecure-change-me", SECRET_KEY),
+                    "GO4IT_INGEST_KEY": ("go4it-local-key", INGEST_API_KEY)}
+
+
+def insecure_default_secrets():
+    """Names of secrets still left at their shipped default (empty list = all overridden)."""
+    return [name for name, (default, val) in _DEFAULT_SECRETS.items() if val == default]
+
+
+# CORS origins allowed to call the browser-capture API. Default covers the go4world capture helper +
+# localhost dev; set a comma-separated CORS_ORIGINS in prod to lock it down (avoid "*" behind a domain).
+CORS_ORIGINS = [o.strip() for o in os.getenv(
+    "CORS_ORIGINS",
+    "https://www.go4worldbusiness.com,https://go4worldbusiness.com,http://localhost:8400"
+).split(",") if o.strip()]
