@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% set active = 'uae' %}
 {% block content %}
 
 {% macro contact(b) %}
@@ -16,19 +15,19 @@
     {% if b.website %}<a href="{{ b.website if '://' in b.website else 'https://' + b.website }}" target="_blank" rel="noopener" class="{% if b.bulk_likely %}text-amber-300{% else %}text-sky-300{% endif %} hover:underline">{{ b.company }}</a>{% else %}<span class="{% if b.bulk_likely %}text-amber-300{% endif %}">{{ b.company }}</span>{% endif %}
     {% if b.match_score is defined %}<span class="float-right text-[10px] font-bold bg-emerald-500/15 text-emerald-300 rounded px-1.5">{{ b.match_score }}</span>{% endif %}
   </div>
-  <div class="text-[11px] text-slate-500 truncate">{{ b.categories | join(', ') }} · {{ b.city or 'UAE' }}</div>
+  <div class="text-[11px] text-slate-500 truncate">{{ b.categories | join(', ') }} · {{ b.city or (line.label) }}</div>
   <div class="text-xs mb-1">{{ contact(b) }}</div>
   {% if b.buys %}<div class="flex flex-wrap gap-1"><span class="text-[9px] text-slate-500 uppercase mr-1">buys</span>{% for f in b.buys %}<span class="text-[10px] bg-sky-500/15 text-sky-300 border border-sky-500/20 rounded px-1.5">{{ f }}</span>{% endfor %}</div>{% endif %}
 </div>
 {% endmacro %}
 
-<h2 class="text-xl font-bold tracking-tight mb-1">UAE buyers</h2>
-<p class="text-slate-500 text-sm mb-4">Categorized by product line. Pick a category to see what we offer and who buys it in the UAE.</p>
+<h2 class="text-xl font-bold tracking-tight mb-1">Buyers by product line</h2>
+<p class="text-slate-500 text-sm mb-4">Each line is a product x destination. Pick one to see what we offer and who buys it.</p>
 
-<!-- Category (product-line) switcher -->
+<!-- Product-line switcher -->
 <div class="flex flex-wrap gap-2 mb-6">
   {% for l in lines %}
-    <a href="/uae?line={{ l.key }}" class="px-3 py-1.5 rounded-lg text-sm font-medium border transition
+    <a href="{{ l.url }}" class="px-3 py-1.5 rounded-lg text-sm font-medium border transition
        {% if l.key == line.key %}bg-emerald-500/15 text-emerald-300 border-emerald-500/40{% else %}bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-200{% endif %}">
       {{ l.label }} <span class="text-[11px] {% if l.key == line.key %}text-emerald-400/70{% else %}text-slate-600{% endif %}">{{ l.count }}</span>
     </a>
@@ -56,7 +55,7 @@
 
 {% if not has_data %}
   <div class="rounded-xl border border-slate-800 bg-slate-900 p-6 text-slate-400 text-sm">
-    No data yet for this line. Run its harvest + enrich + load scripts.
+    No data yet for this line. Run <code>harvest_line.py {{ line.key }}</code> &rarr; <code>enrich_line.py {{ line.key }}</code> &rarr; <code>load_line.py {{ line.key }}</code>.
   </div>
 {% else %}
 
@@ -77,7 +76,7 @@
 
 <!-- High-rate matches -->
 <h3 class="text-sm font-semibold text-emerald-400 mb-1">&#128293; High-rate matches <span class="text-slate-500">{{ high_n }}</span></h3>
-<p class="text-slate-500 text-xs mb-3">Best product-fit &mdash; specialists (duplication / media / IT sellers) ranked above generic listings. Top {{ ranked|length }}.</p>
+<p class="text-slate-500 text-xs mb-3">Best product-fit &mdash; specialists ranked above generic listings. Top {{ ranked|length }}.</p>
 {% if ranked %}
   <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-8">{% for b in ranked %}{{ card(b) }}{% endfor %}</div>
 {% else %}<p class="text-slate-600 text-sm mb-8">Enrichment/scoring not run yet.</p>{% endif %}
@@ -106,11 +105,11 @@
     </table>
   </div>
 {% else %}
-  <p class="text-slate-500 text-sm mb-8">No public UAE buy-requests scanned for this line (gated / thin). The high-rate matches above are the actionable demand &mdash; approach them as direct outreach.</p>
+  <p class="text-slate-500 text-sm mb-8">No public buy-requests scanned for this line yet. The high-rate matches above are the actionable demand &mdash; approach them as direct outreach, or run the demand scout.</p>
 {% endif %}
 
 <!-- All buyers grouped -->
-<h3 class="text-sm font-semibold text-slate-300 mb-3">All UAE buyers <span class="text-slate-500">{{ buyers|length }}</span></h3>
+<h3 class="text-sm font-semibold text-slate-300 mb-3">All buyers <span class="text-slate-500">{{ buyers|length }}</span></h3>
 {% for cat, items in grouped %}
   <div class="mb-6">
     <div class="text-[11px] uppercase tracking-wide text-slate-500 mb-2">{{ cat }} <span class="text-slate-600">{{ items|length }}</span></div>

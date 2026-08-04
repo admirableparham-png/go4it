@@ -1,0 +1,131 @@
+{
+  "slug": "cd-dvd",
+  "label": "CD & DVD",
+  "product": "Printable blank optical media (CD-R / DVD-R / Blu-ray)",
+  "category": "cd-dvd",
+  "hs_codes": ["852341"],
+  "dest": { "iso": "AE", "m49": 784, "name": "UAE", "directory": "uae" },
+  "source": "uae-optical-buyer",
+  "rfq_source": "uae-optical-rfq",
+  "buyers_file": "uae_optical_buyers.json",
+  "rfqs_file": "uae_optical_rfqs.json",
+  "meta": {
+    "name": "Printable blank optical media",
+    "positioning": "White full-face inkjet-PRINTABLE blank CD-R / DVD-R / Blu-ray - the buyer prints their own logo and burns their own data. In stock, bulk.",
+    "brands": ["Bingo", "Arita", "Princo", "RiDATA", "Sony"],
+    "note": "Main use: medical imaging (MRI / CT / radiology / diagnostic labs) burning patient scans onto a logo-printed disc; also photo studios and disc duplication/resale. We supply the blank printable stock in volume.",
+    "owner_contact": ""
+  },
+  "families": [
+    {
+      "key": "cd-r",
+      "name": "Printable CD-R",
+      "price_usd": "",
+      "brands": ["Bingo", "Arita", "Princo (if available)", "RiDATA (if available)"],
+      "specs": "700 MB · white full-face inkjet-printable",
+      "fit_buyers": ["Radiology / imaging", "Hospital", "Medical laboratory", "Clinic", "Dental clinic", "Medical centre", "Laboratory", "Healthcare", "Photography / photo studio", "Medical equipment supplier", "IT distributor", "Computer supplies", "Distributor"],
+      "items": [
+        "Printable CD-R 700 MB (white full-face inkjet)",
+        "Patient imaging discs (clinic logo + scan / report)",
+        "Bulk spindles (50 / 100 pack)",
+        "For radiology / diagnostic labs / clinics"
+      ]
+    },
+    {
+      "key": "dvd-r",
+      "name": "Printable DVD-R",
+      "price_usd": "",
+      "brands": ["Bingo", "Princo", "Sony"],
+      "specs": "4.7 GB · white full-face inkjet-printable",
+      "fit_buyers": ["Radiology / imaging", "Hospital", "Medical laboratory", "Medical centre", "Clinic", "Laboratory", "Healthcare", "Photography / photo studio", "Medical equipment supplier", "IT distributor", "Computer supplies", "Distributor"],
+      "items": [
+        "Printable DVD-R 4.7 GB (white inkjet)",
+        "Larger CT / MRI study sets (DICOM)",
+        "Patient data discs with printed logo",
+        "Bulk spindles (25 / 50 / 100 pack)"
+      ]
+    },
+    {
+      "key": "bd-r",
+      "name": "Printable Blu-ray (BD-R)",
+      "price_usd": "",
+      "brands": ["Bingo", "RiDATA"],
+      "specs": "25 GB & 50 GB · printable",
+      "fit_buyers": ["Radiology / imaging", "Hospital", "Medical laboratory", "IT distributor", "Distributor", "Medical equipment supplier", "Computer supplies"],
+      "items": [
+        "Printable BD-R 25 GB / 50 GB",
+        "Large imaging archives / long-term patient data",
+        "High-capacity duplication",
+        "Bulk"
+      ]
+    }
+  ],
+  "harvest": {
+    "slugs": {
+      "medical-equipment-suppliers": { "label": "Medical equipment supplier", "fit": "all printable", "max_pages": 10 },
+      "medical-equipment":           { "label": "Medical equipment supplier", "fit": "all printable", "max_pages": 8 },
+      "medical-equipment-trading":   { "label": "Medical equipment supplier", "fit": "all printable", "max_pages": 3 },
+      "it-distributors":             { "label": "IT distributor", "fit": "all printable", "max_pages": 8 },
+      "computer-supplies":           { "label": "Computer supplies", "fit": "all printable", "max_pages": 6 },
+      "distributors":                { "label": "Distributor", "fit": "all printable", "max_pages": 2 },
+      "hospitals":                   { "label": "Hospital", "fit": "cd-r + dvd-r", "max_pages": 8 },
+      "medical-centers":             { "label": "Medical centre", "fit": "cd-r + dvd-r", "max_pages": 8 },
+      "medical-laboratories":        { "label": "Medical laboratory", "fit": "cd-r + dvd-r", "max_pages": 8 },
+      "medical-labs":                { "label": "Medical laboratory", "fit": "cd-r + dvd-r", "max_pages": 3 },
+      "laboratories":                { "label": "Laboratory", "fit": "cd-r + dvd-r", "max_pages": 8 },
+      "radiology":                   { "label": "Radiology / imaging", "fit": "all printable", "max_pages": 2 },
+      "mri":                         { "label": "Radiology / imaging", "fit": "all printable", "max_pages": 1 },
+      "clinics":                     { "label": "Clinic", "fit": "cd-r + dvd-r", "max_pages": 8 },
+      "dental-clinics":              { "label": "Dental clinic", "fit": "cd-r + dvd-r", "max_pages": 6 },
+      "healthcare":                  { "label": "Healthcare", "fit": "cd-r + dvd-r", "max_pages": 6 },
+      "polyclinics":                 { "label": "Polyclinic", "fit": "cd-r + dvd-r", "max_pages": 1 },
+      "photography":                 { "label": "Photography / photo studio", "fit": "cd-r + dvd-r", "max_pages": 4 },
+      "photo-studios":               { "label": "Photography / photo studio", "fit": "cd-r + dvd-r", "max_pages": 2 },
+      "photography-studios":         { "label": "Photography / photo studio", "fit": "cd-r + dvd-r", "max_pages": 2 },
+      "recording-studios":           { "label": "Recording studio", "fit": "cd-r + dvd-r", "max_pages": 2 }
+    }
+  },
+  "scoring": {
+    "min_enrich": 55,
+    "default_base": 55,
+    "cat_base": {
+      "Medical equipment supplier": 90, "IT distributor": 88, "Distributor": 86, "Computer supplies": 80,
+      "Radiology / imaging": 86, "Medical laboratory": 82, "Hospital": 80, "Medical centre": 76,
+      "Healthcare": 74, "Laboratory": 74, "Clinic": 70, "Dental clinic": 68, "Polyclinic": 66,
+      "Photography / photo studio": 60, "Recording studio": 56
+    },
+    "families_for": {
+      "Medical equipment supplier": ["Printable CD-R", "Printable DVD-R", "Printable Blu-ray (BD-R)"],
+      "IT distributor": ["Printable CD-R", "Printable DVD-R", "Printable Blu-ray (BD-R)"],
+      "Distributor": ["Printable CD-R", "Printable DVD-R", "Printable Blu-ray (BD-R)"],
+      "Computer supplies": ["Printable CD-R", "Printable DVD-R", "Printable Blu-ray (BD-R)"],
+      "Radiology / imaging": ["Printable CD-R", "Printable DVD-R", "Printable Blu-ray (BD-R)"],
+      "Medical laboratory": ["Printable CD-R", "Printable DVD-R"],
+      "Hospital": ["Printable CD-R", "Printable DVD-R"],
+      "Medical centre": ["Printable CD-R", "Printable DVD-R"],
+      "Healthcare": ["Printable CD-R", "Printable DVD-R"],
+      "Laboratory": ["Printable CD-R", "Printable DVD-R"],
+      "Clinic": ["Printable CD-R", "Printable DVD-R"],
+      "Dental clinic": ["Printable CD-R", "Printable DVD-R"],
+      "Polyclinic": ["Printable CD-R", "Printable DVD-R"],
+      "Photography / photo studio": ["Printable CD-R", "Printable DVD-R"],
+      "Recording studio": ["Printable CD-R", "Printable DVD-R"]
+    },
+    "boost": ["medical", "mri", "radiology", "diagnostic", "imaging", "scan", "laborator", "lab ",
+              "clinic", "hospital", "dental", "health", "pharma", "printable", "disc", "media",
+              "cd", "dvd", "blu-ray", "bluray", "recordable", "blank", "optical", "data", "archive",
+              "photo", "distribut", "wholesale", "supplies", "supplier", "trading", "equipment", "computer"],
+    "penalty": ["printing", "printers", "print shop", "press", "signage", "advertising", "typography",
+                "banner", "flex", "sticker", "repair", "maintenance", "rental", "real estate", "cleaning",
+                "restaurant", "cafe", "garment", "textile", "furniture", "cargo", "logistics", "travel",
+                "construction", "cosmetic", "perfume", "jewel"]
+  },
+  "bulk_signals": ["distribut", "wholesale", "whole sale", " fze", " fzc", "fz llc", "fz-llc",
+                   "general trading", " traders", "import", "export", " media",
+                   "medical equipment", "equipment suppl", "equipment trading", "medical suppl",
+                   "it distribut", "healthcare"],
+  "display_order": ["Medical equipment supplier", "IT distributor", "Distributor", "Computer supplies",
+                    "Radiology / imaging", "Medical laboratory", "Hospital", "Medical centre",
+                    "Healthcare", "Laboratory", "Clinic", "Dental clinic", "Polyclinic",
+                    "Photography / photo studio", "Recording studio"]
+}

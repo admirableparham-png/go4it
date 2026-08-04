@@ -32,6 +32,9 @@ DEBUG_DIR = os.path.join(_PROJECT_ROOT, "debug")
 # OFF by default (0). Set ENRICH_INTERVAL to e.g. 3600 (hourly) to keep harvested leads outreach-ready.
 ENRICH_INTERVAL = int(os.getenv("ENRICH_INTERVAL", "0"))    # seconds between enrich passes; 0 = disabled
 ENRICH_BATCH = int(os.getenv("ENRICH_BATCH", "40"))         # max leads scraped per pass (stay polite)
+# After a command-box harvest, immediately web-enrich that many of the just-found leads (fill blank
+# email/phone from their own site) so a "find X in Y" reaches the same quality as the curated lines.
+COMMAND_ENRICH_BATCH = int(os.getenv("COMMAND_ENRICH_BATCH", "40"))   # 0 = off
 
 # Inbound buyer email (IMAP): the worker threads replies into the Conversation panel (app/inbound_email).
 # OFF by default. Set IMAP_HOST/USER/PASSWORD (e.g. imap.gmail.com + an App Password) + IMAP_INTERVAL>0.

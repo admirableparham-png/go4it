@@ -30,6 +30,7 @@ from .deal_service import (DEAL_STAGES, DOC_TYPES, REQUIRED_DOCS, create_deal,
                            missing_docs_for, next_stage)
 from .ingest import ingest_source
 from .lead_service import create_lead, run_matching
+from .line_spec import all_specs
 from .models import (Activity, CommandJob, ComplianceDoc, CostParam, Deal,
                      FxRate, IngestionRun, Lead, Match, Outreach, Product,
                      Quote, RateCard, Supplier, User)
@@ -605,46 +606,33 @@ def georgia(request: Request):
     return templates.TemplateResponse("georgia.html", ctx)
 
 
-# UAE product lines shown in the /uae hub. Each line = one product family set + its harvested
-# buyers + optional posted RFQs + the buyer-category display order. Adding a line later is just one
-# entry here plus its docs/research JSONs — the hub, dashboard strip, and export all pick it up.
-UAE_LINES = [
-    {"key": "cd-dvd", "label": "CD & DVD",
-     "products": "optical_media_products.json", "buyers": "uae_optical_buyers.json",
-     "rfqs": "uae_optical_rfqs.json",
-     "order": ["Recording studio", "Audio-visual", "Digital printing", "Printing press",
-               "Photography / photo studio", "Computer supplies", "Computer accessories",
-               "IT products", "Computer hardware", "Electronics", "Office supplies",
-               "Stationery", "Consumer electronics", "General trading"]},
-    {"key": "decoration", "label": "Decoration",
-     "products": "decora_products.json", "buyers": "uae_decor_buyers.json",
-     "rfqs": "uae_decor_rfqs.json",
-     "order": ["Home-decor retailer", "Tableware / serveware", "Crockery", "Housewares",
-               "Handicrafts", "Lighting shop", "Gift / corporate-gift", "Gift shop",
-               "Hotel & hospitality supplier"]},
-]
+# ---------------------------------------------------------------------- product-line hub (generic)
+# Each product line is ONE spec file in docs/research/lines/<slug>.json (families + meta + harvested
+# buyers file + RFQs file + display order). Adding a line = drop a spec + run harvest_line ->
+# enrich_line -> load_line; the /lines hub, the /uae alias, and the dashboard "what we offer" strip
+# all pick it up automatically — no code change. See app/line_spec.py.
 
 
-def _uae_line_ctx(line):
-    """Render context for one UAE product line, from its buyers + products JSONs."""
-    data = _load_research(line["buyers"])
-    prod = _load_research(line["products"])
+def _line_ctx(spec):
+    """Render context for one product line, from its spec (families/meta/order) + buyers/rfqs JSON."""
+    data = _load_research(spec.get("buyers_file", ""))
     buyers = data.get("buyers", [])
+    order = spec.get("display_order", [])
     groups = {}
     for b in buyers:
         groups.setdefault((b.get("categories") or ["Other"])[0], []).append(b)
     for c in groups:
         groups[c].sort(key=lambda x: -x.get("match_score", 0))
-    grouped = ([(c, groups[c]) for c in line["order"] if c in groups]
-               + [(c, groups[c]) for c in groups if c not in line["order"]])
+    grouped = ([(c, groups[c]) for c in order if c in groups]
+               + [(c, groups[c]) for c in groups if c not in order])
     ranked = sorted([b for b in buyers if b.get("match_score", 0) >= 75],
                     key=lambda x: -x.get("match_score", 0))
     return {
-        "head": prod.get("meta") or prod.get("store") or {},
-        "families": prod.get("families", []),
+        "head": dict(spec.get("meta", {})),
+        "families": spec.get("families", []),
         "buyers": buyers, "grouped": grouped,
         "ranked": ranked[:60], "high_n": len(ranked),
-        "rfqs": _load_research(line["rfqs"]).get("rfqs", []),
+        "rfqs": _load_research(spec.get("rfqs_file", "")).get("rfqs", []),
         "with_phone": data.get("with_phone", 0), "with_email": data.get("with_email", 0),
         "with_website": data.get("with_website", 0), "has_data": bool(buyers),
         "bulk_n": data.get("bulk_likely_count", 0),
@@ -652,32 +640,65 @@ def _uae_line_ctx(line):
 
 
 def _offer_lines():
-    """Compact 'what we offer' family cards per UAE line, for the dashboard strip (no fetch)."""
+    """Compact 'what we offer' family cards per line, for the dashboard strip (no fetch)."""
     out = []
-    for line in UAE_LINES:
-        prod = _load_research(line["products"])
+    for spec in all_specs():
         fams = [{"name": f.get("name", ""), "brands": f.get("brands", []),
                  "specs": f.get("specs", ""), "price": f.get("price_usd", "")}
-                for f in prod.get("families", [])]
+                for f in spec.get("families", [])]
         if fams:
-            out.append({"key": line["key"], "label": line["label"], "families": fams})
+            out.append({"key": spec["slug"], "label": spec.get("label", spec["slug"]),
+                        "families": fams})
     return out
+
+
+def _line_switcher(specs, hub_base):
+    """Switcher pills for the hub. hub_base '/uae' -> ?line= links; else /lines/<slug> links."""
+    out = []
+    for s in specs:
+        key = s["slug"]
+        url = f"/uae?line={key}" if hub_base == "/uae" else f"/lines/{key}"
+        out.append({"key": key, "label": s.get("label", key), "url": url,
+                    "count": len(_load_research(s.get("buyers_file", "")).get("buyers", []))})
+    return out
+
+
+def _render_line_hub(request, user, active, hub_base, want_slug, specs):
+    """Shared renderer for /lines/<slug> and the /uae alias. Falls back to the first line with data."""
+    empty = {"head": {}, "families": [], "buyers": [], "grouped": [], "ranked": [], "high_n": 0,
+             "rfqs": [], "with_phone": 0, "with_email": 0, "with_website": 0, "bulk_n": 0,
+             "has_data": False}
+    if not specs:
+        ctx = {"request": request, "user": user, "active": active, "hub_base": hub_base,
+               "lines": [], "line": {"key": "", "label": ""}}
+        ctx.update(empty)
+        return templates.TemplateResponse("lines.html", ctx)
+    current = next((s for s in specs if s["slug"] == want_slug), specs[0])
+    if not _load_research(current.get("buyers_file", "")).get("buyers"):   # empty -> first with data
+        current = next((s for s in specs if _load_research(s.get("buyers_file", "")).get("buyers")),
+                       current)
+    ctx = {"request": request, "user": user, "active": active, "hub_base": hub_base,
+           "lines": _line_switcher(specs, hub_base),
+           "line": {"key": current["slug"], "label": current.get("label", current["slug"])}}
+    ctx.update(_line_ctx(current))
+    return templates.TemplateResponse("lines.html", ctx)
+
+
+@app.get("/lines/{slug}", response_class=HTMLResponse)
+def lines_hub(request: Request, slug: str):
+    """Generic product-line buyers hub — ANY line defined by a spec in docs/research/lines/."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+    return _render_line_hub(request, user, "lines", "/lines", slug, all_specs())
 
 
 @app.get("/uae", response_class=HTMLResponse)
 def uae(request: Request, line: str = "cd-dvd"):
-    """UAE buyers hub — categorized product lines (CD & DVD, Decoration) + what we offer + who buys."""
+    """UAE buyers hub (alias) — the UAE-destination product lines (CD & DVD, Decoration, ...)."""
     with Session(engine) as session:
         user = current_user(request, session)
-    lines_meta = [{"key": l["key"], "label": l["label"],
-                   "count": len(_load_research(l["buyers"]).get("buyers", []))} for l in UAE_LINES]
-    current = next((l for l in UAE_LINES if l["key"] == line), UAE_LINES[0])
-    if not _load_research(current["buyers"]).get("buyers"):     # requested line empty -> first with data
-        current = next((l for l in UAE_LINES if _load_research(l["buyers"]).get("buyers")), current)
-    ctx = {"request": request, "user": user, "active": "uae",
-           "lines": lines_meta, "line": {"key": current["key"], "label": current["label"]}}
-    ctx.update(_uae_line_ctx(current))
-    return templates.TemplateResponse("uae.html", ctx)
+    ae = [s for s in all_specs() if s.get("dest", {}).get("iso") == "AE"]
+    return _render_line_hub(request, user, "uae", "/uae", line, ae)
 
 
 # ----------------------------------------------------------------------------- research console

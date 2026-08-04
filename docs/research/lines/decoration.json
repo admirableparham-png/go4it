@@ -1,0 +1,118 @@
+{
+  "slug": "decoration",
+  "label": "Decoration",
+  "product": "Decorative homeware / giftware (gold & silver serveware, clocks, lamps, decor)",
+  "category": "home-decor",
+  "hs_codes": ["761510", "830621", "940540"],
+  "dest": { "iso": "AE", "m49": 784, "name": "UAE", "directory": "uae" },
+  "source": "uae-decor-buyer",
+  "rfq_source": "uae-decor-rfq",
+  "buyers_file": "uae_decor_buyers.json",
+  "rfqs_file": "uae_decor_rfqs.json",
+  "meta": {
+    "name": "Decora Store",
+    "positioning": "Affordable-luxury home decor / decorative giftware (cast-aluminium gold/silver serveware, clocks, lamps).",
+    "brands": [],
+    "note": "Retail-only storefront in Tehran; a B2B/export deal is opened directly with the owner. We broker the UAE side.",
+    "owner_contact": "WhatsApp +98 992 400 5980 · Instagram @Decora_store1 · Tehran showroom (Aghdasieh, Parnian Center)"
+  },
+  "families": [
+    {
+      "key": "serveware",
+      "name": "Serveware & tableware",
+      "price_usd": "18-165",
+      "fit_buyers": ["Tableware / serveware", "Crockery", "Hotel & hospitality supplier", "Housewares"],
+      "items": [
+        "Gold & silver trays (round / rectangular)",
+        "Candy & chocolate dishes (gold; stone-lid; Line collection)",
+        "Footed / pedestal bowls",
+        "Conical fruit bowls & fruit platters",
+        "Appetizer / nut platters",
+        "Two-tiered serving dish",
+        "Shell-design dishes",
+        "Tissue holders",
+        "Silver drink dispenser (Coleman)"
+      ]
+    },
+    {
+      "key": "decor-objects",
+      "name": "Decorative objects",
+      "price_usd": "39-300",
+      "fit_buyers": ["Gift shop", "Gift / corporate-gift", "Home-decor retailer", "Handicrafts"],
+      "items": [
+        "World globes (gold; gold & silver)",
+        "Photo frames (gold / silver)",
+        "Decorative vases (aluminium gold-plated; ceramic)",
+        "Candlesticks (aluminium + crystal - by request)",
+        "Decorative horse statue (by request)"
+      ]
+    },
+    {
+      "key": "clocks",
+      "name": "Clocks",
+      "price_usd": "36-88",
+      "fit_buyers": ["Home-decor retailer", "Gift shop", "Gift / corporate-gift"],
+      "items": [
+        "'Lotus' antique wall clocks (gold / silver)",
+        "Desk / table clocks (silver, gold, green-gold, pyramid)",
+        "Wall clocks (gray / black)"
+      ]
+    },
+    {
+      "key": "lighting",
+      "name": "Lighting",
+      "price_usd": "131+",
+      "fit_buyers": ["Lighting shop", "Home-decor retailer", "Interior designer"],
+      "items": [
+        "Table lamps (gold & black - Line collection)",
+        "Floor / standing lamps (by request)",
+        "Chandeliers (by request)"
+      ]
+    }
+  ],
+  "harvest": {
+    "slugs": {
+      "home-decor":     { "label": "Home-decor retailer", "fit": "all families", "max_pages": 44 },
+      "tableware":      { "label": "Tableware / serveware", "fit": "serveware/tableware", "max_pages": 11 },
+      "crockery":       { "label": "Crockery", "fit": "serveware/tableware", "max_pages": 6 },
+      "housewares":     { "label": "Housewares", "fit": "serveware + decor", "max_pages": 3 },
+      "handicrafts":    { "label": "Handicrafts", "fit": "decor objects + serveware", "max_pages": 1 },
+      "lightings":      { "label": "Lighting shop", "fit": "lighting (lamps/chandeliers)", "max_pages": 2 },
+      "gift-items":     { "label": "Gift / corporate-gift", "fit": "decor objects + clocks + gifting", "max_pages": 13 },
+      "gift-shops":     { "label": "Gift shop", "fit": "decor objects + clocks", "max_pages": 1 },
+      "hotel-supplies": { "label": "Hotel & hospitality supplier", "fit": "serveware/tableware", "max_pages": 9 }
+    }
+  },
+  "scoring": {
+    "min_enrich": 55,
+    "default_base": 55,
+    "cat_base": {
+      "Tableware / serveware": 90, "Crockery": 88, "Gift shop": 90,
+      "Hotel & hospitality supplier": 85, "Housewares": 80, "Handicrafts": 78,
+      "Lighting shop": 68, "Gift / corporate-gift": 70, "Home-decor retailer": 60
+    },
+    "families_for": {
+      "Tableware / serveware": ["Serveware & tableware"],
+      "Crockery": ["Serveware & tableware"],
+      "Hotel & hospitality supplier": ["Serveware & tableware"],
+      "Housewares": ["Serveware & tableware", "Decorative objects"],
+      "Gift shop": ["Decorative objects", "Clocks", "Serveware & tableware"],
+      "Gift / corporate-gift": ["Decorative objects", "Clocks", "Serveware & tableware"],
+      "Handicrafts": ["Decorative objects", "Serveware & tableware"],
+      "Lighting shop": ["Lighting"],
+      "Home-decor retailer": ["Serveware & tableware", "Decorative objects", "Clocks", "Lighting"]
+    },
+    "boost": ["trading", "general trading", "gift", "gifts", "home", "homeware", "houseware",
+              "decor", "crockery", "tableware", "kitchen", "glass", "luxury", "hospitality",
+              "hotel", "souvenir", "handicraft", "gallery", "porcelain", "chinaware"],
+    "penalty": ["interior", "maintenance", "fit out", "fit-out", "fitout", "contracting",
+                "contractor", "construction", "designer", "signage", "advertising",
+                "promotional", "promotion", "printing", "media", "technical", "engineering",
+                "cleaning", "facility", "real estate", "consultan"]
+  },
+  "bulk_signals": ["distribut", "wholesale", "whole sale", " fze", " fzc", "fz llc", "fz-llc",
+                   "general trading", " traders", "import", "export", "hotel", "hospitality"],
+  "display_order": ["Home-decor retailer", "Tableware / serveware", "Crockery", "Housewares",
+                    "Handicrafts", "Lighting shop", "Gift / corporate-gift", "Gift shop",
+                    "Hotel & hospitality supplier"]
+}

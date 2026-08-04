@@ -9,21 +9,24 @@ Honest scope: we have a live buyer directory for the UAE (yellowpages-uae, any c
 For countries without a wired directory the job returns a clear note pointing at /research for
 market stats rather than silently finding nothing.
 """
-import html
 import json
 import os
 import re
 import sys
-import time
-import urllib.parse
-import urllib.request
 from datetime import datetime
 
 from sqlmodel import Session
 
+from .config import COMMAND_ENRICH_BATCH
 from .db import engine
+from .enrich_service import run_web_enrichment
+from .harvest_lib import (MAX_PAGES, OSM_CAP, harvest_osm_directory, harvest_uae_directory,
+                          parse_uae_cards as _parse_cards)
 from .lead_service import create_lead
 from .models import CommandJob, Lead
+
+# harvest_uae_directory / harvest_osm_directory / _parse_cards now live in app/harvest_lib (shared
+# with the line pipeline); imported above so this module stays the command-box INTENT router.
 
 # Reuse the Georgian->Latin transliterator so OSM names come out English (founder req).
 _SCRIPTS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts")
@@ -34,17 +37,6 @@ try:
 except Exception:  # noqa: BLE001
     def translit_any(s):
         return (s or "").strip()
-
-UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) go4it-command"
-# Public Overpass instances get overloaded (504s) - try mirrors in order until one answers.
-OVERPASS_ENDPOINTS = [
-    "https://overpass-api.de/api/interpreter",
-    "https://overpass.kumi.systems/api/interpreter",
-    "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
-    "https://overpass.private.coffee/api/interpreter",
-]
-MAX_PAGES = 10          # yellowpages page cap (bound each UAE harvest)
-OSM_CAP = 2000          # OSM element cap per country query (raised from 500; cap is reported, not silent)
 
 # country token -> (M49 code, ISO2, directory kind: "uae"=yellowpages, "osm"=OpenStreetMap).
 # UAE keeps its rich phone directory; every other country is served globally via OSM Overpass.
@@ -239,118 +231,6 @@ def parse_command(prompt):
     return base
 
 
-# --------------------------------------------------------------------- yellowpages-uae harvester
-
-def _get(url):
-    for i in range(3):
-        try:
-            return urllib.request.urlopen(
-                urllib.request.Request(url, headers={"User-Agent": UA}), timeout=30
-            ).read().decode("utf-8", "ignore")
-        except Exception:  # noqa: BLE001
-            if i == 2:
-                return ""
-            time.sleep(1.5)
-    return ""
-
-
-_EMIRATES = ["Dubai", "Sharjah", "Abu Dhabi", "Ajman", "Ras Al Khaimah",
-             "Umm Al Quwain", "Fujairah", "Al Ain"]
-
-
-def _city(text):
-    for e in _EMIRATES:
-        if e.lower() in (text or "").lower():
-            return e
-    return ""
-
-
-def _parse_cards(h):
-    """Yield {cid, company, city, phones, website, profile} from a yellowpages-uae list page."""
-    anchors = list(re.finditer(r'title="([^"]+)"[^>]*href="(/[a-z0-9-]+-(\d{4,7}))\?p=', h))
-    out = []
-    for idx, m in enumerate(anchors):
-        seg = h[m.end(): anchors[idx + 1].start() if idx + 1 < len(anchors) else m.end() + 1600]
-        loc = re.search(r'Location\s*:\s*</span><span[^>]*>([^<]+)', seg)
-        loc = html.unescape(loc.group(1)).strip() if loc else ""
-        phones = []
-        for p in re.findall(r'tel:([+\d]{7,})', seg):
-            if p not in phones:
-                phones.append(p)
-        web = re.search(r'href="(https?://(?!www\.yellowpages-uae)[^"]+)"[^>]*>\s*(?:website|visit)', seg, re.I)
-        out.append({"cid": m.group(3), "company": html.unescape(m.group(1)).strip(),
-                    "city": _city(loc), "phones": phones[:3],
-                    "website": web.group(1) if web else "", "profile": m.group(2)})
-    return out
-
-
-def harvest_uae_directory(slug, max_pages=MAX_PAGES):
-    """Pull unique UAE buyers for a category slug (bounded). Returns (buyers, pages_fetched)."""
-    seen, buyers, pages = set(), [], 0
-    for page in range(1, max_pages + 1):
-        url = f"https://www.yellowpages-uae.com/uae/{slug}" + (f"?page={page}" if page > 1 else "")
-        cards = _parse_cards(_get(url))
-        pages = page
-        if not cards:
-            break
-        page_new = 0
-        for c in cards:
-            if c["cid"] in seen:
-                continue
-            seen.add(c["cid"])
-            page_new += 1
-            buyers.append(c)
-        time.sleep(0.4)
-        if page_new == 0:          # site repeats page 1 past the last real page -> stop
-            break
-    return buyers, pages
-
-
-# ----------------------------------------------------------------- OpenStreetMap (any country)
-
-def harvest_osm_directory(iso, selectors, cap=OSM_CAP):
-    """Pull named businesses of the given category in a country from OpenStreetMap Overpass
-    (free, global, no key). Returns (rows, capped) where each row is
-    {osmid, company, city, phone, website} and `capped` is True if the query hit `cap` (more exist).
-    Names come out Latin (name:en / int_name, else any-script transliteration); a name that can't be
-    Latinized at all is skipped rather than leaking non-Latin into the CRM."""
-    parts = "".join(f"{s}(area.a);" for s in selectors)
-    ql = ('[out:json][timeout:60];area["ISO3166-1"="%s"][admin_level=2]->.a;(%s);out center tags %d;'
-          % (iso, parts, cap))
-    data = urllib.parse.urlencode({"data": ql}).encode()
-    els = []
-    for endpoint in OVERPASS_ENDPOINTS:      # fall through mirrors on 504/timeout
-        try:
-            raw = urllib.request.urlopen(
-                urllib.request.Request(endpoint, data=data, headers={"User-Agent": UA}),
-                timeout=90).read()
-            els = json.loads(raw).get("elements", []) or []
-            if els:
-                break
-        except Exception:  # noqa: BLE001
-            time.sleep(1.5)
-            continue
-    capped = len(els) >= cap
-    out, seen = [], set()
-    for e in els:
-        t = e.get("tags", {})
-        # prefer an explicit Latin/English tag, else the local name; ALWAYS run it through
-        # translit_any (a no-op for real Latin) because name:en/int_name sometimes hold non-Latin.
-        name = translit_any(t.get("name:en") or t.get("int_name") or t.get("name:latin")
-                            or t.get("name") or "").strip()
-        key = name.lower()
-        if not name or key in seen:          # no name, or non-Latinizable -> skip (don't leak)
-            continue
-        seen.add(key)
-        phone = t.get("phone") or t.get("contact:phone") or t.get("contact:mobile") or ""
-        web = t.get("website") or t.get("contact:website") or t.get("url") or ""
-        city = t.get("addr:city") or t.get("addr:place") or ""
-        out.append({"osmid": f"{(e.get('type') or 'x')[:1]}{e.get('id')}", "company": name,
-                    "city": translit_any(city).title() if city else "",
-                    "phone": phone, "website": web})
-    return out, capped
-
-
 # --------------------------------------------------------------------------- background job
 
 def run_command_job(job_id):
@@ -431,6 +311,20 @@ def run_command_job(job_id):
                                 f"(furniture, hardware, hotel, restaurant, supermarket, pharmacy).")
             else:
                 job.status = "ok"          # unknown: note already explains how to phrase it
+
+            # Post-harvest: fill blank contacts on the just-harvested command leads (generic +
+            # SSRF-safe web enrich) so a command-box find reaches the same "has email" quality as the
+            # curated product lines. Bounded + polite (COMMAND_ENRICH_BATCH, 0 = off).
+            if COMMAND_ENRICH_BATCH > 0 and job.status == "ok" and (job.leads_new or 0) > 0:
+                try:
+                    summ = run_web_enrichment(session, source="command",
+                                              limit=COMMAND_ENRICH_BATCH, skip_attempted=True,
+                                              log=lambda *a: None)
+                    if summ.get("enriched"):
+                        job.note = (job.note or "") + \
+                            f" +{summ['enriched']} enriched with email/phone from their site."
+                except Exception:  # noqa: BLE001
+                    pass
         except Exception as exc:           # noqa: BLE001
             job.status = "error"
             job.error = str(exc)[:400]
