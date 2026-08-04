@@ -86,6 +86,7 @@ class Lead(SQLModel, table=True):
     lost_reason: str = ""
     first_response_at: Optional[datetime] = None   # OUR first touch (outreach/note/call)
     buyer_replied_at: Optional[datetime] = None    # the buyer's first inbound reply (email/whatsapp)
+    accepted_at: Optional[datetime] = None         # buyer accepted a quote on the public pro-forma
     next_action_at: Optional[datetime] = None      # follow-up date (the "contact today" queue)
     next_action_note: str = ""
     notes: str = ""
@@ -285,4 +286,6 @@ class Quote(SQLModel, table=True):
     version: int = 1
     created_by: str = ""
     approved_by: str = ""
+    accepted_at: Optional[datetime] = None     # buyer accepted this pro-forma on the public link
+    buyer_response: str = ""                    # "" | accepted | changes (buyer's action on /p/)
     created_at: datetime = Field(default_factory=datetime.utcnow)

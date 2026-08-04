@@ -43,3 +43,6 @@ capture_access.log
 
 # paid customs export CSVs (raw data; parsed result committed as ge_customs.json)
 docs/customs_inbox/*.csv
+
+# uploaded trade documents (P3.2)
+deal_docs/

@@ -10,6 +10,7 @@ Sending stays in app/outreach.py (SMTP); this module is receive-only.
 import email as emaillib
 import imaplib
 import logging
+import re
 from datetime import datetime
 from email.utils import parseaddr
 
@@ -17,10 +18,26 @@ from sqlmodel import Session, select
 
 from .config import (BASE_URL, IMAP_ENABLED, IMAP_HOST, IMAP_PASSWORD, IMAP_PORT, IMAP_USER)
 from .lead_service import find_lead_by_contact
-from .models import IngestionRun, Outreach
+from .models import IngestionRun, Lead, Outreach
 from .telegram import send_message
 
 logger = logging.getLogger("go4it")
+
+
+def _msgid(s):
+    """Extract the first <...> Message-ID token from a header value (In-Reply-To / References)."""
+    m = re.search(r"<[^>]+>", s or "")
+    return m.group(0) if m else (s or "").strip()
+
+
+def _referenced_lead(session: Session, in_reply_to: str):
+    """The lead a reply belongs to by its In-Reply-To — matched to the outbound Outreach we sent
+    (its Message-ID). More reliable than sender identity when the buyer replies from another address."""
+    if not in_reply_to:
+        return None
+    o = session.exec(select(Outreach).where(Outreach.message_id == in_reply_to)
+                     .order_by(Outreach.id.desc())).first()
+    return session.get(Lead, o.lead_id) if o else None
 
 
 def _plain_body(msg) -> str:
@@ -39,24 +56,31 @@ def _plain_body(msg) -> str:
 
 
 def parse_email(raw: bytes):
-    """Parse a raw RFC822 message -> (from_addr, subject, body, message_id)."""
+    """Parse a raw RFC822 message -> (from_addr, subject, body, message_id, in_reply_to).
+    in_reply_to is the <Message-ID> this replies to (In-Reply-To, else last of References)."""
     msg = emaillib.message_from_bytes(raw)
     from_addr = (parseaddr(msg.get("From", ""))[1] or "").strip().lower()
     subject = str(msg.get("Subject", "")).strip()
     message_id = (msg.get("Message-ID", "") or "").strip()
-    return from_addr, subject, _plain_body(msg), message_id
+    irt = (msg.get("In-Reply-To", "") or "").strip()
+    if not irt:
+        refs = (msg.get("References", "") or "").strip().split()
+        irt = refs[-1] if refs else ""
+    return from_addr, subject, _plain_body(msg), message_id, _msgid(irt)
 
 
 def handle_inbound(session: Session, from_addr: str, subject: str, body: str,
-                   message_id: str = "") -> str:
+                   message_id: str = "", in_reply_to: str = "") -> str:
     """Thread one parsed inbound email onto its lead. Returns 'threaded' | 'duplicate' | 'unmatched'.
+    Matches by the In-Reply-To header first (the outbound we sent), then by sender email/phone.
     Pure of IMAP so it's unit-testable without a live mailbox."""
     from_addr = (from_addr or "").strip().lower()
     message_id = (message_id or "").strip()
+    in_reply_to = _msgid(in_reply_to)
     if message_id and session.exec(select(Outreach).where(
             Outreach.message_id == message_id, Outreach.direction == "in")).first():
         return "duplicate"
-    lead = find_lead_by_contact(session, email=from_addr)
+    lead = _referenced_lead(session, in_reply_to) or find_lead_by_contact(session, email=from_addr)
     if lead is None:
         return "unmatched"
     session.add(Outreach(
@@ -95,8 +119,8 @@ def poll_inbox(session: Session, log=logger.info) -> dict:
             if not msgdata or not msgdata[0]:
                 continue
             summary["seen"] += 1
-            frm, subj, body, mid = parse_email(msgdata[0][1])
-            summary[handle_inbound(session, frm, subj, body, mid)] += 1
+            frm, subj, body, mid, irt = parse_email(msgdata[0][1])
+            summary[handle_inbound(session, frm, subj, body, mid, irt)] += 1
             M.store(num, "+FLAGS", "\\Seen")
         M.logout()
         run.status = "ok"

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Thank you — go4it</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+         color: #0f172a; background: #f1f5f9; line-height: 1.5; }
+  .wrap { max-width: 520px; margin: 0 auto; padding: 64px 16px; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px;
+          box-shadow: 0 10px 30px -12px rgba(15,23,42,.18); padding: 40px; text-align: center; }
+  .mark { width: 54px; height: 54px; border-radius: 14px; margin: 0 auto 18px; color: #fff;
+          font-size: 26px; display: flex; align-items: center; justify-content: center; }
+  .ok { background: #059669; } .info { background: #0369a1; }
+  h1 { font-size: 22px; margin: 0 0 8px; }
+  p { color: #475569; font-size: 15px; margin: 0 0 6px; }
+  .code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 700; }
+  .foot { text-align: center; color: #94a3b8; font-size: 12px; margin-top: 22px; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      {% if accepted %}
+        <div class="mark ok">&#10003;</div>
+        <h1>Thank you — order confirmed on our side</h1>
+        <p>You accepted pro-forma <span class="code">{{ code }}</span>.</p>
+        <p>Our team has been notified and will reach out to finalise payment terms and shipping.</p>
+      {% else %}
+        <div class="mark info">&#9998;</div>
+        <h1>Thanks — we&rsquo;ll revise and get back to you</h1>
+        <p>We&rsquo;ve logged your request for changes to <span class="code">{{ code }}</span>.</p>
+        <p>Our team will follow up shortly with an updated quotation.</p>
+      {% endif %}
+    </div>
+    <div class="foot">go4it &middot; sourcing &amp; delivered trade</div>
+  </div>
+</body>
+</html>

@@ -21,6 +21,9 @@ MIGRATIONS = [
     ("outreach", "direction", "VARCHAR DEFAULT 'out'"),
     ("outreach", "from_addr", "VARCHAR DEFAULT ''"),
     ("outreach", "message_id", "VARCHAR DEFAULT ''"),
+    ("lead", "accepted_at", "TIMESTAMP"),
+    ("quote", "accepted_at", "TIMESTAMP"),
+    ("quote", "buyer_response", "VARCHAR DEFAULT ''"),
 ]
 
 

@@ -61,9 +61,19 @@
   .expired { display: inline-block; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca;
              border-radius: 999px; padding: 2px 10px; font-size: 12px; font-weight: 600; margin-top: 6px; }
   .foot { text-align: center; color: #94a3b8; font-size: 12px; margin-top: 22px; }
+  .respbox { margin-top: 22px; padding: 14px 18px; border-radius: 12px; font-size: 14px; font-weight: 600; }
+  .respbox.accepted { background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857; }
+  .respbox.changes { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; }
+  .respond { margin-top: 24px; border-top: 1px solid var(--line); padding-top: 20px; }
+  .respond-h { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+  .respond-row { margin-bottom: 12px; }
+  .respond-changes textarea { width: 100%; font: inherit; font-size: 14px; padding: 10px 12px;
+    border: 1px solid var(--line); border-radius: 8px; resize: vertical; margin-bottom: 8px; }
+  .btn-accept { background: var(--brand); color: #fff; border-color: var(--brand); font-size: 15px; padding: 11px 20px; width: 100%; }
+  .btn-changes { background: #fff; color: #334155; }
   @media print {
     body { background: #fff; }
-    .toolbar, .foot { display: none; }
+    .toolbar, .foot, .respond { display: none; }
     .doc { box-shadow: none; border: none; padding: 0; }
     .wrap { padding: 0; }
   }
@@ -155,6 +165,26 @@
         stated Incoterm; import duty and VAT at destination are the buyer's account unless agreed otherwise.
         Final terms are confirmed on order.
       </div>
+
+      <!-- Buyer response — captured on-platform -->
+      {% if q.buyer_response == 'accepted' %}
+        <div class="respbox accepted">&#10003; You accepted this quotation{% if q.accepted_at %} on {{ q.accepted_at.strftime('%d %b %Y') }}{% endif %}. Our team will be in touch to finalise.</div>
+      {% elif q.buyer_response == 'changes' %}
+        <div class="respbox changes">&#9998; You requested changes. We&rsquo;ll send a revised quotation shortly.</div>
+      {% elif not (expires and today > expires) %}
+        <div class="respond">
+          <div class="respond-h">Ready to proceed?</div>
+          <form method="post" action="/p/{{ q.share_token }}/respond" class="respond-row">
+            <input type="hidden" name="action" value="accept">
+            <button class="btn btn-accept" type="submit">&#10003; Accept this quotation</button>
+          </form>
+          <form method="post" action="/p/{{ q.share_token }}/respond" class="respond-changes">
+            <input type="hidden" name="action" value="changes">
+            <textarea name="message" rows="2" placeholder="Or tell us what to change (quantity, terms, price target)&hellip;"></textarea>
+            <button class="btn btn-changes" type="submit">Request changes</button>
+          </form>
+        </div>
+      {% endif %}
     </div>
 
     <div class="foot">go4it &middot; sourcing &amp; delivered trade</div>

@@ -40,7 +40,7 @@ from .research_engine import (PARTNERS, country_options, market_report,
                               product_options, rank_opportunities, recommend_destinations,
                               resolve_query)
 from .sources.go4world_csv import Go4WorldCsvSource
-from .telegram import notify_quote_ready, notify_status_change
+from .telegram import notify_quote_ready, notify_status_change, send_message
 
 logger = logging.getLogger("go4it")
 BASE_DIR = Path(__file__).parent
@@ -935,6 +935,10 @@ def change_stage(request: Request, lead_id: int, status: str = Form(...), reason
             return RedirectResponse(f"/leads/{lead_id}?error=transition", status_code=303)
         if status == "lost" and not reason.strip():
             return RedirectResponse(f"/leads/{lead_id}?error=reason", status_code=303)
+        # Gate 'won' on a real buyer commitment: an on-platform acceptance (lead.accepted_at, set
+        # when the buyer accepts the pro-forma at /p/) OR an explicit override note. No silent wins.
+        if status == "won" and lead.accepted_at is None and not reason.strip():
+            return RedirectResponse(f"/leads/{lead_id}?error=accept", status_code=303)
         lead.status = status
         if status == "lost":
             lead.lost_reason = reason.strip()
@@ -1250,6 +1254,58 @@ def public_proforma(request: Request, token: str):
     )
 
 
+@app.post("/p/{token}/respond", response_class=HTMLResponse)
+def public_proforma_respond(request: Request, token: str, action: str = Form(...),
+                            message: str = Form("")):
+    """Buyer ACCEPTS or requests CHANGES on the public pro-forma — captured ON-PLATFORM (this is the
+    'buyer said yes' moment). Public (auth-exempt, under /p/). Records the response on the quote +
+    lead, threads an inbound message into the Conversation, alerts the team. No internal data shown."""
+    action = (action or "").strip().lower()
+    if action not in ("accept", "changes"):
+        return HTMLResponse("Bad request", status_code=400)
+    with Session(engine) as session:
+        q = session.exec(select(Quote).where(Quote.share_token == token)).first()
+        if not q or q.status not in ("approved", "sent"):
+            return HTMLResponse("This quotation link is not available.", status_code=404)
+        lead = session.get(Lead, q.lead_id)
+        now = datetime.utcnow()
+        msg = (message or "").strip()[:2000]
+        if action == "accept":
+            q.buyer_response = "accepted"
+            q.accepted_at = now
+            if lead:
+                lead.accepted_at = lead.accepted_at or now
+                if lead.status in ("new", "quoted"):
+                    lead.status = "negotiating"
+            body = f"Buyer ACCEPTED pro-forma {q.tracking_code}." + (f" Note: {msg}" if msg else "")
+            kind, alert = "quote_accepted", f"BUYER ACCEPTED {q.tracking_code}"
+        else:
+            q.buyer_response = "changes"
+            if lead and lead.status in ("new", "quoted"):
+                lead.status = "negotiating"
+            body = f"Buyer requested CHANGES on {q.tracking_code}." + (f" {msg}" if msg else "")
+            kind, alert = "quote_changes", f"Buyer requested changes on {q.tracking_code}"
+        session.add(q)
+        if lead:
+            if lead.buyer_replied_at is None:
+                lead.buyer_replied_at = now
+            session.add(Outreach(lead_id=lead.id, direction="in", channel="portal",
+                                 from_addr=(lead.email or "buyer"),
+                                 subject=f"Pro-forma {q.tracking_code}", body=body, status="received"))
+            _log(session, lead, None, kind, body)
+            session.add(lead)
+        code = q.tracking_code
+        lead_company = lead.buyer_company if lead else ""
+        lead_code = lead.tracking_code if lead else ""
+        session.commit()
+    try:
+        send_message(f"{alert} - {lead_company or 'buyer'} ({lead_code})")
+    except Exception:  # noqa: BLE001
+        pass
+    return templates.TemplateResponse("proforma_thanks.html",
+        {"request": request, "accepted": action == "accept", "code": code})
+
+
 @app.post("/quotes/{quote_id}/approve")
 def approve_quote(request: Request, quote_id: int):
     with Session(engine) as session:
@@ -1356,9 +1412,35 @@ def advance_deal(request: Request, deal_id: int):
     return RedirectResponse(f"/deals/{deal_id}", status_code=303)
 
 
+# Trade-document storage. Files live OUTSIDE the repo tree's tracked area (deal_docs/ is gitignored);
+# they are served only to agent+ via the guarded download route below, never publicly.
+DEAL_DOCS_DIR = BASE_DIR.parent / "deal_docs"
+MAX_DOC_BYTES = 20 * 1024 * 1024
+
+
+def _safe_name(name):
+    base = os.path.basename(name or "")
+    keep = "".join(ch if (ch.isalnum() or ch in "._-") else "_" for ch in base).strip("._")
+    return (keep or "file")[:80]
+
+
+def _save_deal_doc(deal_id, doc_id, upload):
+    """Persist an uploaded trade document under deal_docs/<deal_id>/<doc_id>_<name>. Returns the
+    stored relative path, or '' when empty/too large (the doc then stays metadata-only)."""
+    data = upload.file.read(MAX_DOC_BYTES + 1)
+    if not data or len(data) > MAX_DOC_BYTES:
+        return ""
+    dest_dir = DEAL_DOCS_DIR / str(deal_id)
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    fname = f"{doc_id}_{_safe_name(upload.filename)}"
+    (dest_dir / fname).write_bytes(data)
+    return f"{deal_id}/{fname}"
+
+
 @app.post("/deals/{deal_id}/docs")
 def add_doc(request: Request, deal_id: int, doc_type: str = Form(...),
-            reference_no: str = Form(""), issued_by: str = Form(""), expires_at: str = Form("")):
+            reference_no: str = Form(""), issued_by: str = Form(""), expires_at: str = Form(""),
+            file: UploadFile = File(None)):
     with Session(engine) as session:
         if not role_at_least(current_user(request, session), "agent"):
             return _forbidden()
@@ -1370,10 +1452,35 @@ def add_doc(request: Request, deal_id: int, doc_type: str = Form(...),
                 exp = datetime.strptime(expires_at.strip(), "%Y-%m-%d")
             except ValueError:
                 exp = None
-        session.add(ComplianceDoc(deal_id=deal_id, doc_type=doc_type, reference_no=reference_no,
-                                  issued_by=issued_by, expires_at=exp, status="received"))
+        doc = ComplianceDoc(deal_id=deal_id, doc_type=doc_type, reference_no=reference_no,
+                            issued_by=issued_by, expires_at=exp, status="received")
+        session.add(doc)
         session.commit()
+        session.refresh(doc)
+        if file is not None and (file.filename or "").strip():
+            rel = _save_deal_doc(deal_id, doc.id, file)
+            if rel:
+                doc.file_path = rel
+                session.add(doc)
+                session.commit()
     return RedirectResponse(f"/deals/{deal_id}", status_code=303)
+
+
+@app.get("/deals/{deal_id}/docs/{doc_id}/file")
+def download_doc(request: Request, deal_id: int, doc_id: int):
+    """Download a trade document's attached file — agent+ only, never public. Path is built by us
+    (deal_docs/<deal>/<doc>_<name>), and re-validated to stay inside DEAL_DOCS_DIR (no traversal)."""
+    with Session(engine) as session:
+        if not role_at_least(current_user(request, session), "agent"):
+            return _forbidden()
+        doc = session.get(ComplianceDoc, doc_id)
+        if not doc or doc.deal_id != deal_id or not doc.file_path:
+            return HTMLResponse("Not found", status_code=404)
+        path = (DEAL_DOCS_DIR / doc.file_path).resolve()
+        if not str(path).startswith(str(DEAL_DOCS_DIR.resolve()) + os.sep) or not path.exists():
+            return HTMLResponse("Not found", status_code=404)
+        fname = os.path.basename(doc.file_path)
+    return FileResponse(str(path), filename=fname)
 
 
 @app.post("/deals/{deal_id}/docs/{doc_id}/verify")

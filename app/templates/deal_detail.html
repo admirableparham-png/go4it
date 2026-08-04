@@ -71,6 +71,7 @@
             </div>
           </div>
           <div class="flex items-center gap-2 shrink-0">
+            {% if doc.file_path %}<a href="/deals/{{ deal.id }}/docs/{{ doc.id }}/file" class="link text-xs" title="Download attached file">&#128206; file</a>{% endif %}
             <span class="badge {% if expired %}badge-rose{% elif doc.status == 'verified' %}badge-emerald{% else %}badge-slate{% endif %}">{{ 'expired' if expired else doc.status }}</span>
             {% if can_edit and doc.status != 'verified' and not expired %}
               <form method="post" action="/deals/{{ deal.id }}/docs/{{ doc.id }}/verify">
@@ -84,7 +85,7 @@
       {% endfor %}
     </div>
     {% if can_edit %}
-      <form method="post" action="/deals/{{ deal.id }}/docs" class="card space-y-2">
+      <form method="post" action="/deals/{{ deal.id }}/docs" enctype="multipart/form-data" class="card space-y-2">
         <select name="doc_type" class="select">
           {% for t in doc_types %}<option value="{{ t }}">{{ t.replace('_', ' ') }}</option>{% endfor %}
         </select>
@@ -93,6 +94,8 @@
           <input name="issued_by" placeholder="Issued by" class="{{ ic }}">
         </div>
         <input name="expires_at" type="date" placeholder="Expires" class="{{ ic }}">
+        <label class="text-[11px] uppercase tracking-wide text-slate-500">Attach file (PDF / image, optional)</label>
+        <input name="file" type="file" class="{{ ic }} text-xs" accept=".pdf,.png,.jpg,.jpeg,.webp,.tiff,.doc,.docx,.xls,.xlsx">
         <button class="btn btn-neutral btn-block" data-busy="Adding">Add document</button>
       </form>
     {% endif %}

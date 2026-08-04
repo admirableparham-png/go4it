@@ -62,7 +62,24 @@ def test_handle_inbound_unmatched_is_skipped(session):
 
 def test_parse_email_extracts_fields():
     raw = (b"From: Buyer <buyer@acme.ge>\r\nSubject: Re: tiles\r\n"
-           b"Message-ID: <abc@acme.ge>\r\nContent-Type: text/plain\r\n\r\nHello there\r\n")
-    frm, subj, body, mid = parse_email(raw)
+           b"Message-ID: <abc@acme.ge>\r\nIn-Reply-To: <out99@go4it.local>\r\n"
+           b"Content-Type: text/plain\r\n\r\nHello there\r\n")
+    frm, subj, body, mid, irt = parse_email(raw)
     assert frm == "buyer@acme.ge" and subj == "Re: tiles"
     assert "Hello there" in body and mid == "<abc@acme.ge>"
+    assert irt == "<out99@go4it.local>"
+
+
+def test_handle_inbound_threads_by_in_reply_to_header(session):
+    # buyer replies from a DIFFERENT address than the lead's stored email; the In-Reply-To header
+    # (matching the outbound we sent) must still route the reply onto the right lead.
+    lead = _lead(session, email="buyer@acme.ge", buyer_company="ACME")
+    session.add(Outreach(lead_id=lead.id, direction="out", channel="email",
+                         message_id="<sent1@go4it.local>", status="sent"))
+    session.commit()
+    r = handle_inbound(session, "assistant@acme-corp.com", "Re: quote", "We accept",
+                       "<reply1@acme-corp.com>", "<sent1@go4it.local>")
+    assert r == "threaded"
+    msgs = session.exec(select(Outreach).where(Outreach.lead_id == lead.id,
+                                               Outreach.direction == "in")).all()
+    assert len(msgs) == 1 and msgs[0].from_addr == "assistant@acme-corp.com"
