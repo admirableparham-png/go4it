@@ -1,0 +1,28 @@
+{
+  "note": "Open-web demand-scout candidates for cd-dvd (fed to scripts/demand_scout.py). Produced by a web-search pass; each row is an RFQ-shaped demand signal. Re-run the search + the scout to refresh.",
+  "candidates": [
+    {
+      "buyer": "Whizz Online (whizz.ae)",
+      "product": "Blank DVD+R / CD-R media - UAE online reseller (resale / distribution channel for blank optical media)",
+      "city": "Dubai",
+      "country": "AE",
+      "posted": "active 2025",
+      "phone": "",
+      "email": "",
+      "website": "whizz.ae",
+      "note": "UAE e-commerce reseller stocking blank optical media - bulk resale channel; approach as distributor.",
+      "contact_gated": true,
+      "verified": false
+    },
+    {
+      "buyer": "Altimus Office (altimus.ae)",
+      "product": "Sony white inkjet hub-printable DVD-R 4.7GB - already stocked",
+      "city": "Dubai",
+      "country": "AE",
+      "posted": "active 2025",
+      "website": "altimus.ae",
+      "note": "duplicate of curated entry - should be deduped by the scout",
+      "verified": false
+    }
+  ]
+}

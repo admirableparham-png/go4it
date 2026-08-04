@@ -14,7 +14,7 @@
   reproduce. First lookup of a new product+country pulls live (a few seconds); it's cached after.
 </p>
 
-<div class="grid lg:grid-cols-2 gap-4 mb-6">
+<div class="grid lg:grid-cols-2 gap-4 mb-4">
 
   <!-- Analyze one product -> country -->
   <form hx-post="/research/run" hx-target="#research-result" hx-swap="innerHTML"
@@ -82,6 +82,39 @@
   </form>
 
 </div>
+
+<!-- Where should I SELL product X? (rank destination countries) -->
+<form hx-post="/research/recommend" hx-target="#research-result" hx-swap="innerHTML"
+      hx-indicator="#spin" hx-disabled-elt="find button" class="card space-y-3 mb-6">
+  <div class="text-sm font-semibold text-violet-300">Where should I SELL product X? &mdash; best destination countries</div>
+  <p class="text-[12px] text-slate-500">Pick a product; go4it ranks real import markets (a basket of export
+    targets) by size &times; growth &times; where Iran/UAE can compete &mdash; turning "any country" into a shortlist.</p>
+  <div class="grid sm:grid-cols-3 gap-2">
+    <div>
+      <label class="text-[11px] uppercase tracking-wide text-slate-500">Product</label>
+      <select name="product" class="{{ sc }}">
+        <option value="">&mdash; choose a product &mdash;</option>
+        {% for key, label, hs in products %}<option value="{{ key }}">{{ label }} ({{ hs }})</option>{% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="text-[11px] uppercase tracking-wide text-slate-500">&hellip;or HS code</label>
+      <input name="hs" placeholder="e.g. 852341" class="{{ ic }}">
+    </div>
+    <div>
+      <label class="text-[11px] uppercase tracking-wide text-slate-500">Our supply angle</label>
+      <select name="sources" class="{{ sc }}">
+        <option value="both">Iran + UAE</option>
+        <option value="iran">Iran only</option>
+        <option value="uae">UAE only</option>
+      </select>
+    </div>
+  </div>
+  <div class="flex items-center gap-3">
+    <button class="btn btn-primary" data-busy="Ranking countries">Rank destination countries</button>
+    <label class="flex items-center gap-1.5 text-xs text-slate-400"><input type="checkbox" name="refresh" value="1" class="accent-sky-500"> force refresh</label>
+  </div>
+</form>
 
 <div id="research-result">
   <div class="empty">

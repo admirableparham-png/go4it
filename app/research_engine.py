@@ -53,6 +53,13 @@ PARTNERS = {
     368: "Iraq", 586: "Pakistan", 887: "Yemen", 12: "Algeria", 504: "Morocco",
     788: "Tunisia", 434: "Libya", 231: "Ethiopia", 404: "Kenya", 800: "Uganda",
     834: "Tanzania", 894: "Zambia", 716: "Zimbabwe", 710: "South Africa",
+    # Wider destination coverage (South/Central Asia, MENA, Sub-Saharan Africa, LATAM) so the
+    # recommender + dropdown can name more export targets instead of showing code{n}.
+    762: "Tajikistan", 417: "Kyrgyzstan", 760: "Syria", 275: "Palestine", 50: "Bangladesh",
+    144: "Sri Lanka", 524: "Nepal", 104: "Myanmar", 608: "Philippines", 116: "Cambodia",
+    496: "Mongolia", 566: "Nigeria", 288: "Ghana", 384: "Cote d'Ivoire", 686: "Senegal",
+    24: "Angola", 508: "Mozambique", 729: "Sudan", 32: "Argentina", 76: "Brazil",
+    152: "Chile", 170: "Colombia", 484: "Mexico", 604: "Peru", 646: "Rwanda",
     # UN Comtrade legacy/specific partner codes that differ from plain M49:
     699: "India", 842: "USA", 840: "USA", 251: "France", 757: "Switzerland",
     579: "Norway", 490: "Other Asia (Taiwan)", 381: "Italy", 58: "Belgium-Lux",
@@ -140,6 +147,7 @@ def _raw_commodity(reporter_code, cmd, years):
     years_data = {}
     partner_totals = {}                      # partnerCode -> {"kg":.., "usd":..}
     incomplete = False                       # any year fetch failed -> don't cache as 'dead'
+    unit_basis = None                        # "kg" when netWgt reported, else the qty unit (m²/units)
     for year in years:
         rows = _fetch(reporter_code, cmd, year)
         if rows is None:
@@ -148,7 +156,10 @@ def _raw_commodity(reporter_code, cmd, years):
         time.sleep(0.6)                      # be polite to the free endpoint
         world = next((r for r in rows if r.get("partnerCode") == 0), None)
         if world:
-            kg = world.get("netWgt") or world.get("qty") or 0   # netWgt is kg; qty may be m²/units
+            net = world.get("netWgt") or 0
+            kg = net or world.get("qty") or 0   # netWgt is kg; qty may be m²/units for some HS
+            if unit_basis is None:
+                unit_basis = "kg" if net else ((world.get("qtyUnitAbbr") or "unit").strip() or "unit")
             usd = world.get("primaryValue") or 0
             years_data[str(year)] = {"tonnes": round(kg / 1000, 1), "cif_usd": round(usd),
                                      "unit_price_usd_kg": _unit_price(usd, kg)}
@@ -201,6 +212,7 @@ def _raw_commodity(reporter_code, cmd, years):
         "latest_price": latest.get("unit_price_usd_kg"),
         "top_suppliers": suppliers,
         "total_cif": total_cif,
+        "unit_basis": unit_basis or "kg",
         "_incomplete": incomplete,
     }
 
@@ -231,6 +243,7 @@ def _assess(raw, our_sources):
     """Deterministic direction call from the real numbers. Returns tone/headline/reasons +
     a 0-100 opportunity score and the Iran/UAE position — all derived, nothing invented."""
     suppliers = raw.get("top_suppliers") or []
+    ub = raw.get("unit_basis") or "kg"       # price basis: $/kg, or $/m², $/unit for non-weight HS
     cif = raw.get("latest_cif") or 0
     trend = raw.get("trend_pct_first_to_last")
     total = raw.get("total_cif") or sum(s["cif_usd_total"] for s in suppliers) or 0
@@ -260,7 +273,7 @@ def _assess(raw, our_sources):
         headline = "Tiny market — not worth opening a lane."
     elif our_best and cheapest and our_best["code"] == cheapest["code"]:
         tone = "good"
-        headline = f"{our_best['country']} is ALREADY the cheapest supplier ({our_best['unit_price_usd_kg']} $/kg) — proven lane."
+        headline = f"{our_best['country']} is ALREADY the cheapest supplier ({our_best['unit_price_usd_kg']} $/{ub}) — proven lane."
     elif our_best:
         cp = cheapest["unit_price_usd_kg"] if cheapest else None
         if cp and our_best["unit_price_usd_kg"] and our_best["unit_price_usd_kg"] <= cp * 1.1:
@@ -269,8 +282,8 @@ def _assess(raw, our_sources):
         else:
             tone = "watch"
             headline = (f"{our_best['country']} present but above {cheapest['country']}'s "
-                        f"{cheapest['unit_price_usd_kg']} $/kg — win on logistics/terms, not price.")
-        reasons.append(f"Our best source {our_best['country']} lands at {our_best['unit_price_usd_kg']} $/kg.")
+                        f"{cheapest['unit_price_usd_kg']} $/{ub} — win on logistics/terms, not price.")
+        reasons.append(f"Our best source {our_best['country']} lands at {our_best['unit_price_usd_kg']} $/{ub}.")
     else:
         if top_share >= 60 and leader:
             tone = "bad"
@@ -282,7 +295,7 @@ def _assess(raw, our_sources):
                         "room to enter.")
         if cheapest:
             reasons.append(f"Cheapest material incumbent: {cheapest['country']} at "
-                           f"{cheapest['unit_price_usd_kg']} $/kg. Leader {leader['country']} "
+                           f"{cheapest['unit_price_usd_kg']} $/{ub}. Leader {leader['country']} "
                            f"holds {top_share}%.")
 
     if trend is not None and trend < -25:
@@ -305,6 +318,7 @@ def _assess(raw, our_sources):
     return {
         "tone": tone, "headline": headline, "reasons": reasons, "score": score,
         "cheapest": cheapest, "leader": leader, "our_best": our_best, "top_share": top_share,
+        "unit_basis": ub,
         "iran_present": next((s for s in suppliers if s["code"] == 364), None),
         "uae_present": next((s for s in suppliers if s["code"] == 784), None),
     }
@@ -353,7 +367,8 @@ def rank_opportunities(reporter_code, our_sources=OUR_SOURCES_DEFAULT,
             "product_key": k, "label": label, "hs_code": best["hs_code"],
             "score": a["score"], "tone": a["tone"], "headline": a["headline"],
             "latest_cif": best["latest_cif"], "latest_tonnes": best["latest_tonnes"],
-            "latest_price": best["latest_price"], "trend": best["trend_pct_first_to_last"],
+            "latest_price": best["latest_price"], "unit_basis": best.get("unit_basis", "kg"),
+            "trend": best["trend_pct_first_to_last"],
             "cheapest": a["cheapest"], "iran_present": bool(a["iran_present"]),
             "uae_present": bool(a["uae_present"]),
         }
@@ -362,6 +377,44 @@ def rank_opportunities(reporter_code, our_sources=OUR_SOURCES_DEFAULT,
         rows = [r for r in ex.map(_one, keys) if r]
     rows.sort(key=lambda r: -r["score"])
     return rows
+
+
+# Destination markets the "where should I SELL product X?" recommender sweeps. Bounded so a first
+# (uncached) sweep stays tolerable; each (country, HS) result caches like every other lookup.
+RECOMMEND_TARGETS = [268, 792, 51, 31, 398, 860, 795, 762, 417, 634, 682, 512, 414, 48, 400,
+                     368, 818, 4, 586, 643, 356, 887]
+
+
+def recommend_destinations(hs_codes, our_sources=OUR_SOURCES_DEFAULT, targets=None,
+                           years=None, refresh=False, limit=15):
+    """Inverse of market_report: for a PRODUCT (HS code[s]), rank the best destination COUNTRIES to
+    sell into — from real Comtrade imports: market size + growth + where Iran/UAE can compete. This
+    is the "where should I sell product X?" view that turns 'any country' into a guided shortlist.
+    Sweeps RECOMMEND_TARGETS concurrently (first sweep is live, then cached)."""
+    targets = targets or RECOMMEND_TARGETS
+    years = years or DEFAULT_YEARS[-2:]
+    hs_list = hs_codes if isinstance(hs_codes, (list, tuple)) else [hs_codes]
+    hs = str(hs_list[0]).strip()
+
+    def _one(code):
+        raw = dict(_commodity(code, hs, years, refresh=refresh))
+        if not raw.get("latest_cif"):
+            return None
+        a = _assess(raw, our_sources)
+        return {
+            "code": code, "country": PARTNERS.get(code, f"code{code}"),
+            "score": a["score"], "tone": a["tone"], "headline": a["headline"],
+            "latest_cif": raw.get("latest_cif"), "latest_tonnes": raw.get("latest_tonnes"),
+            "latest_price": raw.get("latest_price"), "unit_basis": a["unit_basis"],
+            "trend": raw.get("trend_pct_first_to_last"),
+            "our_best": a["our_best"], "cheapest": a["cheapest"],
+            "iran_present": bool(a["iran_present"]), "uae_present": bool(a["uae_present"]),
+        }
+
+    with ThreadPoolExecutor(max_workers=6) as ex:
+        rows = [r for r in ex.map(_one, targets) if r]
+    rows.sort(key=lambda r: -r["score"])
+    return rows[:limit]
 
 
 # --------------------------------------------------------------------------- lookup helpers (UI)

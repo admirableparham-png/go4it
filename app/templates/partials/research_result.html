@@ -54,7 +54,7 @@
         </div>
         <div class="rounded-lg bg-slate-900/60 border border-slate-800 px-3 py-2">
           <div class="text-[10px] uppercase text-slate-500">Landed price</div>
-          <div class="text-sm font-semibold text-slate-100">{% if c.latest_price %}{{ c.latest_price }} $/kg{% else %}&mdash;{% endif %}</div>
+          <div class="text-sm font-semibold text-slate-100">{% if c.latest_price %}{{ c.latest_price }} $/{{ c.unit_basis or 'kg' }}{% else %}&mdash;{% endif %}</div>
         </div>
         <div class="rounded-lg bg-slate-900/60 border border-slate-800 px-3 py-2">
           <div class="text-[10px] uppercase text-slate-500">Trend</div>
@@ -71,7 +71,7 @@
         <table class="w-full text-[12.5px]">
           <thead class="bg-slate-900 text-slate-500 text-[10px] uppercase"><tr>
             <th class="text-left font-medium px-3 py-1.5">Source</th>
-            <th class="text-right font-medium px-3 py-1.5">$/kg</th>
+            <th class="text-right font-medium px-3 py-1.5">$/{{ c.unit_basis or 'kg' }}</th>
             <th class="text-right font-medium px-3 py-1.5">Tonnes</th>
             <th class="text-right font-medium px-3 py-1.5">CIF USD</th>
             <th class="text-left font-medium px-3 py-1.5"></th>
@@ -131,5 +131,49 @@
   {{ our_buyers(our_lead_n, our_iso, our_leads) }}
   {% else %}
     <div class="rounded-xl border border-slate-800 bg-slate-900 p-6 text-slate-400 text-sm">No import data returned for this market (Comtrade may not report it, or the basket is empty here).</div>
+  {% endif %}
+
+{% elif recommend is defined %}
+  <div class="text-sm text-slate-400 mb-3">Best destination countries for <b class="text-slate-100">{{ query_label }}</b>
+    <span class="text-slate-600">· ranked by market size &times; growth &times; Iran/UAE fit · real Comtrade imports</span></div>
+  {% if recommend %}
+  <div class="overflow-x-auto rounded-xl border border-slate-800 mb-2">
+    <table class="w-full text-sm">
+      <thead class="bg-slate-900 text-slate-400 text-xs uppercase"><tr>
+        <th class="text-left font-medium px-3 py-2">#</th>
+        <th class="text-left font-medium px-3 py-2">Score</th>
+        <th class="text-left font-medium px-3 py-2">Country</th>
+        <th class="text-right font-medium px-3 py-2">Market</th>
+        <th class="text-right font-medium px-3 py-2">Price</th>
+        <th class="text-right font-medium px-3 py-2">Trend</th>
+        <th class="text-left font-medium px-3 py-2">Read</th>
+        <th class="px-3 py-2"></th>
+      </tr></thead>
+      <tbody>
+        {% for r in recommend %}
+          <tr class="border-t border-slate-800 hover:bg-slate-900/60">
+            <td class="px-3 py-2 text-slate-500">{{ loop.index }}</td>
+            <td class="px-3 py-2"><span class="text-xs font-bold px-2 py-0.5 rounded {{ tone_badge.get(r.tone,'bg-slate-700 text-slate-300') }}">{{ r.score }}</span></td>
+            <td class="px-3 py-2 text-slate-200 font-medium">{{ r.country }}
+              {% if r.iran_present %}<span class="text-[9px] text-emerald-400">IR</span>{% endif %}{% if r.uae_present %}<span class="text-[9px] text-emerald-400">AE</span>{% endif %}</td>
+            <td class="px-3 py-2 text-right text-slate-300">{% if r.latest_cif %}${{ "{:,}".format(r.latest_cif) }}{% else %}&mdash;{% endif %}</td>
+            <td class="px-3 py-2 text-right text-slate-400">{% if r.latest_price is not none %}{{ r.latest_price }} <span class="text-slate-600">$/{{ r.unit_basis or 'kg' }}</span>{% else %}&mdash;{% endif %}</td>
+            <td class="px-3 py-2 text-right {% if r.trend and r.trend > 0 %}text-emerald-300{% elif r.trend and r.trend < 0 %}text-rose-300{% else %}text-slate-400{% endif %}">{% if r.trend is not none %}{{ "%+d"|format(r.trend) }}%{% else %}&mdash;{% endif %}</td>
+            <td class="px-3 py-2 text-[11.5px] text-slate-400">{{ r.headline[:60] }}</td>
+            <td class="px-3 py-2 text-right">
+              <form hx-post="/research/run" hx-target="#research-result" hx-swap="innerHTML" hx-indicator="#spin" class="inline">
+                <input type="hidden" name="hs" value="{{ recommend_hs }}">
+                <input type="hidden" name="reporter" value="{{ r.code }}">
+                <button class="link text-[11px]" title="Full supplier breakdown for this country">analyze &#8599;</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="text-[11px] text-slate-500 mb-1">Higher score = bigger + growing market where Iran/UAE can compete. Click <b>analyze</b> to see who supplies a country now, then harvest its buyers via the Command box.</p>
+  {% else %}
+    <div class="rounded-xl border border-slate-800 bg-slate-900 p-6 text-slate-400 text-sm">No import data across the target markets for this product (Comtrade may not report this HS, or try a different code).</div>
   {% endif %}
 {% endif %}

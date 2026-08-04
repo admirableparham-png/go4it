@@ -1,0 +1,138 @@
+{
+  "hs_code": "852341",
+  "label": "Blank optical media (CD-R / DVD-R / Blu-ray)",
+  "years": {
+    "2023": {
+      "tonnes": 0.0,
+      "cif_usd": 4803,
+      "unit_price_usd_kg": 4803.0
+    },
+    "2024": {
+      "tonnes": 0.0,
+      "cif_usd": 13,
+      "unit_price_usd_kg": 13.0
+    }
+  },
+  "trend_pct_first_to_last": -100,
+  "latest_year": "2024",
+  "latest_tonnes": 0.0,
+  "latest_cif": 13,
+  "latest_price": 13.0,
+  "top_suppliers": [
+    {
+      "country": "UK",
+      "code": 826,
+      "tonnes_total": 0.1,
+      "cif_usd_total": 168,
+      "unit_price_usd_kg": 3.0,
+      "watch_competitor": false
+    },
+    {
+      "country": "Vietnam",
+      "code": 704,
+      "tonnes_total": 2210.1,
+      "cif_usd_total": 10275632,
+      "unit_price_usd_kg": 4.649,
+      "watch_competitor": false
+    },
+    {
+      "country": "Other Asia (Taiwan)",
+      "code": 490,
+      "tonnes_total": 2182.8,
+      "cif_usd_total": 10571712,
+      "unit_price_usd_kg": 4.843,
+      "watch_competitor": false
+    },
+    {
+      "country": "China",
+      "code": 156,
+      "tonnes_total": 287.8,
+      "cif_usd_total": 1711440,
+      "unit_price_usd_kg": 5.946,
+      "watch_competitor": true
+    },
+    {
+      "country": "UAE",
+      "code": 784,
+      "tonnes_total": 39.9,
+      "cif_usd_total": 248336,
+      "unit_price_usd_kg": 6.225,
+      "watch_competitor": false
+    },
+    {
+      "country": "Austria",
+      "code": 40,
+      "tonnes_total": 0.0,
+      "cif_usd_total": 1816,
+      "unit_price_usd_kg": 75.667,
+      "watch_competitor": false
+    },
+    {
+      "country": "Spain",
+      "code": 724,
+      "tonnes_total": 0.0,
+      "cif_usd_total": 912,
+      "unit_price_usd_kg": 114.0,
+      "watch_competitor": false
+    },
+    {
+      "country": "South Korea",
+      "code": 410,
+      "tonnes_total": 0.0,
+      "cif_usd_total": 3192,
+      "unit_price_usd_kg": 133.0,
+      "watch_competitor": false
+    },
+    {
+      "country": "code392",
+      "code": 392,
+      "tonnes_total": 0.5,
+      "cif_usd_total": 66936,
+      "unit_price_usd_kg": 141.814,
+      "watch_competitor": false
+    },
+    {
+      "country": "France",
+      "code": 251,
+      "tonnes_total": 0.0,
+      "cif_usd_total": 5488,
+      "unit_price_usd_kg": 171.5,
+      "watch_competitor": false
+    },
+    {
+      "country": "Germany",
+      "code": 276,
+      "tonnes_total": 0.7,
+      "cif_usd_total": 213880,
+      "unit_price_usd_kg": 293.791,
+      "watch_competitor": false
+    },
+    {
+      "country": "USA",
+      "code": 842,
+      "tonnes_total": 0.2,
+      "cif_usd_total": 58248,
+      "unit_price_usd_kg": 383.211,
+      "watch_competitor": false
+    },
+    {
+      "country": "Singapore",
+      "code": 702,
+      "tonnes_total": 0.0,
+      "cif_usd_total": 3480,
+      "unit_price_usd_kg": 435.0,
+      "watch_competitor": false
+    },
+    {
+      "country": "Italy",
+      "code": 380,
+      "tonnes_total": 0.0,
+      "cif_usd_total": 38424,
+      "unit_price_usd_kg": 4803.0,
+      "watch_competitor": false
+    }
+  ],
+  "total_cif": 23199664,
+  "unit_basis": "kg",
+  "_incomplete": false
+}

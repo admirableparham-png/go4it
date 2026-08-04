@@ -37,7 +37,8 @@ from .models import (Activity, CommandJob, ComplianceDoc, CostParam, Deal,
 from .outreach import default_message, send_email
 from .quote_service import create_quote
 from .research_engine import (PARTNERS, country_options, market_report,
-                              product_options, rank_opportunities, resolve_query)
+                              product_options, rank_opportunities, recommend_destinations,
+                              resolve_query)
 from .sources.go4world_csv import Go4WorldCsvSource
 from .telegram import notify_quote_ready, notify_status_change
 
@@ -761,6 +762,21 @@ def research_run(request: Request, reporter: str = Form(...), product: str = For
                "our_leads": our_leads, "our_lead_n": our_lead_n,
                "our_iso": M49_ISO.get(code, "")}
     return templates.TemplateResponse("partials/research_result.html", ctx)
+
+
+@app.post("/research/recommend", response_class=HTMLResponse)
+def research_recommend(request: Request, product: str = Form(""), hs: str = Form(""),
+                       sources: str = Form("both"), refresh: str = Form("")):
+    """Where should I SELL product X? Rank the best destination countries (HTMX fragment)."""
+    label, hs_codes, _ = resolve_query(product, hs)
+    if not hs_codes:
+        return templates.TemplateResponse("partials/research_result.html",
+            {"request": request, "error": "Pick a product from the list or type an HS code."})
+    rows = recommend_destinations(hs_codes, our_sources=_sources_tuple(sources), refresh=bool(refresh))
+    with Session(engine) as session:
+        current_user(request, session)
+    return templates.TemplateResponse("partials/research_result.html",
+        {"request": request, "recommend": rows, "query_label": label, "recommend_hs": hs_codes[0]})
 
 
 @app.post("/research/scan", response_class=HTMLResponse)
