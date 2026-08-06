@@ -1,0 +1,72 @@
+{
+  "source": "verified-hunt-2025+",
+  "total": 3,
+  "with_phone": 0,
+  "with_email": 0,
+  "with_website": 0,
+  "buyers": [
+    {
+      "company": "EspaceAgro buyer, listing ref 699801 (France, spice-sourcing business project; advertiser identity behind free login)",
+      "categories": [
+        "France"
+      ],
+      "city": "France",
+      "dest_iso": "FR",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Explicitly seeks Iranian saffron ('safran iranien') plus Mor"
+      ],
+      "wants": "Explicitly seeks Iranian saffron ('safran iranien') plus Moroccan/Spanish; all origins to be evaluated. Sourcing/evaluation stage, no fixed grade or quantity. Directly names Iranian saffron, so most on-target for Sargol/Pushal.",
+      "posted": "2025-07-31",
+      "source_url": "https://www.espaceagro.com/epices-aromates/safran-iranien_i699801.html",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "EspaceAgro buyer, listing ref 711213 (Spain wholesaler / 'grossiste')",
+      "categories": [
+        "Spain"
+      ],
+      "city": "Spain",
+      "dest_iso": "ES",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Bulk saffron for commercial use: high quality, intense red c"
+      ],
+      "wants": "Bulk saffron for commercial use: high quality, intense red color, strong aroma, WHOLE FILAMENTS (Negin-type), competitive per-kg pricing. Origin open, so Iranian Sargol/Negin qualifies. Spain is a top destination for Iranian saffron.",
+      "posted": "2026-03-16",
+      "source_url": "https://www.espaceagro.com/epices-aromates/azafran_i711213.html",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "EspaceAgro buyer, listing ref 715651 (France, distribution France/Spain)",
+      "categories": [
+        "France"
+      ],
+      "city": "France",
+      "dest_iso": "FR",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Superior-quality or certified-organic saffron in genuine bul"
+      ],
+      "wants": "Superior-quality or certified-organic saffron in genuine bulk: 10 kg and 50 kg lots scaling toward ~1 tonne/year; wants delivery + payment terms; delivery France or Spain. Origin open, so Iranian Sargol/Negin qualifies. Strongest volume signal of the surviving set.",
+      "posted": "2026-05-07",
+      "source_url": "https://www.espaceagro.com/epices-aromates/bsafran-b_i715651.html",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    }
+  ]
+}

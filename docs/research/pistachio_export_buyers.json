@@ -1,0 +1,97 @@
+{
+  "source": "verified-hunt-2025+",
+  "total": 4,
+  "with_phone": 2,
+  "with_email": 1,
+  "with_website": 1,
+  "buyers": [
+    {
+      "company": "Jktrade0 (Korean pistachio buyer)",
+      "categories": [
+        "South Korea"
+      ],
+      "city": "South Korea",
+      "dest_iso": "KR",
+      "phones": [
+        "+82 10 3040 4802"
+      ],
+      "email": "jktrade0@naver.com",
+      "website": "naver.com",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Pistachios, 20 tons/month (~200 t/yr)"
+      ],
+      "wants": "Pistachios, 20 tons/month (~200 t/yr)",
+      "posted": "Mar 10, 2026",
+      "source_url": "https://importer.tradekey.com/pistachios-importer.html",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Mario Yedid",
+      "categories": [
+        "Argentina"
+      ],
+      "city": "Argentina",
+      "dest_iso": "AR",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Roasted & salted pistachios, size 18/22, 10kg bags, 1x20ft c"
+      ],
+      "wants": "Roasted & salted pistachios, size 18/22, 10kg bags, 1x20ft container (snack grade), L/C",
+      "posted": "Jul 24, 2026",
+      "source_url": "https://www.go4worldbusiness.com/buyleads/pistachio.html",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Bingo International Trade (Changzhou)",
+      "categories": [
+        "China"
+      ],
+      "city": "China",
+      "dest_iso": "",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Hazelnut kernel + pistachio + almond, 200 MT/month each (~2,"
+      ],
+      "wants": "Hazelnut kernel + pistachio + almond, 200 MT/month each (~2,500 t/yr)",
+      "posted": "Oct 24, 2025",
+      "source_url": "https://importer.tradekey.com/pistachio-kernel-importer.html",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Anonymous Poland importer (handle 05280808072)",
+      "categories": [
+        "Poland"
+      ],
+      "city": "Poland",
+      "dest_iso": "PL",
+      "phones": [
+        "05280808072"
+      ],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Raw unshelled (in-shell) pistachios, 540 tons"
+      ],
+      "wants": "Raw unshelled (in-shell) pistachios, 540 tons",
+      "posted": "Mar 20, 2025",
+      "source_url": "https://importer.tradekey.com/iran-pistachio-importer.html",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    }
+  ]
+}

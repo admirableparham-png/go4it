@@ -1,0 +1,51 @@
+{
+  "source": "verified-hunt-2025+",
+  "total": 2,
+  "with_phone": 0,
+  "with_email": 0,
+  "with_website": 0,
+  "buyers": [
+    {
+      "company": "Apg",
+      "categories": [
+        "Germany"
+      ],
+      "city": "Germany",
+      "dest_iso": "DE",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Kilim rugs and carpets"
+      ],
+      "wants": "Kilim rugs and carpets",
+      "posted": "Jul 16, 2026",
+      "source_url": "https://importer.tradekey.com/germany/carpet.htm",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Trade Co. MIL",
+      "categories": [
+        "Germany"
+      ],
+      "city": "Germany",
+      "dest_iso": "DE",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Kilim / Kelim flat-weave carpets & rugs"
+      ],
+      "wants": "Kilim / Kelim flat-weave carpets & rugs",
+      "posted": "Jun 09, 2026",
+      "source_url": "https://importer.tradekey.com/germany/carpet.htm",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "source": "verified-hunt-2025+",
+  "total": 6,
+  "with_phone": 3,
+  "with_email": 2,
+  "with_website": 5,
+  "buyers": [
+    {
+      "company": "NHS Blood and Transplant (NHSBT)",
+      "categories": [
+        "United Kingdom"
+      ],
+      "city": "United Kingdom",
+      "dest_iso": "GB",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Framework Agreement for the Supply of Copper Sulphate SOLUTI"
+      ],
+      "wants": "Framework Agreement for the Supply of Copper Sulphate SOLUTION for Blood Donor Haemoglobin Screening (in-vitro semi-quantitative reagent for capillary Hb acceptance). Est. GBP 2.25M ex-VAT over 4 yrs.",
+      "posted": "2025-12-23 (tender notice; preliminary market engagement 2025-09-04)",
+      "source_url": "https://www.find-tender.service.gov.uk/procurement/ocds-h6vhtk-0593fd",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "PT Mitraindo Adi Perkasa",
+      "categories": [
+        "Indonesia"
+      ],
+      "city": "Indonesia",
+      "dest_iso": "ID",
+      "phones": [
+        "+62 811-300-685"
+      ],
+      "email": "mitraindo2023@gmail.com",
+      "website": "gmail.com",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Copper sulphate importer/buy request (Premium-gated on Trade"
+      ],
+      "wants": "Copper sulphate importer/buy request (Premium-gated on TradeKey). Surabaya water-treatment chemicals distributor whose line (TCCA, calcium hypochlorite, H2O2, alum, caustic soda, chlorine) makes CuSO4 a plausible algaecide add.",
+      "posted": "2025-04-23",
+      "source_url": "https://importer.tradekey.com/copper-sulphate-importer.html",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Fairfax Water (Fairfax County Water Authority)",
+      "categories": [
+        "United States"
+      ],
+      "city": "United States",
+      "dest_iso": "US",
+      "phones": [],
+      "email": "",
+      "website": "fairfaxwater.org",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Copper Sulfate in 50 lb bags (priced per ton) for drinking-w"
+      ],
+      "wants": "Copper Sulfate in 50 lb bags (priced per ton) for drinking-water/algae treatment; recurring annual public-utility requirement.",
+      "posted": "2025-02-03 (Notice of Intent to Award)",
+      "source_url": "https://www.fairfaxwater.org/contracts",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "City of Watertown, New York — Water Treatment Plant",
+      "categories": [
+        "United States"
+      ],
+      "city": "United States",
+      "dest_iso": "US",
+      "phones": [
+        "315) 785-7749"
+      ],
+      "email": "tbartlettbearup@watertown-ny.gov",
+      "website": "watertown-ny.gov",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Process chemicals for the municipal Water Treatment Plant (B"
+      ],
+      "wants": "Process chemicals for the municipal Water Treatment Plant (Bid #2025-06); candidate lists copper sulfate (Size B), ~1 ton, alongside chlorine, sodium silicate, hydrofluosilicic acid, alum, PAC.",
+      "posted": "2025-04-29 (bid opening)",
+      "source_url": "https://www.watertown-ny.gov/events/37260/",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "City of Middletown, Connecticut — Charles Bacon Water Treatment Plant",
+      "categories": [
+        "United States"
+      ],
+      "city": "United States",
+      "dest_iso": "US",
+      "phones": [],
+      "email": "",
+      "website": "middletownct.gov",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Copper sulfate pentahydrate, NSF grade, medium crystal, 2,00"
+      ],
+      "wants": "Copper sulfate pentahydrate, NSF grade, medium crystal, 2,000 lb bags (5 bags / ~5,000 lb) delivered to Charles Bacon WTP — Bid# 2026-011 Purchase of Various Water Treatment Chemicals.",
+      "posted": "2026 (Bid# 2026-011)",
+      "source_url": "https://www.middletownct.gov/DocumentCenter/View/27702/Bid-2026-011-Purchase-of-Water-Treatment-Chemicals",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Sattenapalle Municipality — Head Water Works",
+      "categories": [
+        "India"
+      ],
+      "city": "India",
+      "dest_iso": "IN",
+      "phones": [
+        "49040399"
+      ],
+      "email": "",
+      "website": "apeprocurement.gov.in",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Copper sulphate bundled with chlorine gas, alum and bleachin"
+      ],
+      "wants": "Copper sulphate bundled with chlorine gas, alum and bleaching powder — supply/delivery to head water works for water-supply maintenance, FY 2025-26.",
+      "posted": "2025-05-16 (FY 2025-26 tender)",
+      "source_url": "https://www.tender247.com/tender-details/88195809?searchtext=chlorine+gas",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    }
+  ]
+}

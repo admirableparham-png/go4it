@@ -1,0 +1,72 @@
+{
+  "source": "verified-hunt-2025+",
+  "total": 3,
+  "with_phone": 0,
+  "with_email": 0,
+  "with_website": 1,
+  "buyers": [
+    {
+      "company": "East Coast Carry",
+      "categories": [
+        "United States"
+      ],
+      "city": "United States",
+      "dest_iso": "US",
+      "phones": [],
+      "email": "",
+      "website": "eastcoastcarry.com",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Turquoise / Native American / Southwestern sterling silver j"
+      ],
+      "wants": "Turquoise / Native American / Southwestern sterling silver jewelry — turquoise, spiny oyster, rings, cuffs, Navajo pearls, squash blossoms, najas. Monthly buyer, PayPal, ships to US.",
+      "posted": "May 21, 2025 (TradeKey detail page shows a Jun 29, 2026 bump)",
+      "source_url": "https://importer.tradekey.com/buyoffer/Southwestern-And-Native-American-Sterling-Silver-Jewelry-3722959.html",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "313 Rings (TradeKey handle, unverified)",
+      "categories": [
+        "Canada"
+      ],
+      "city": "Canada",
+      "dest_iso": "",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Semi-precious stones in bulk, primarily Yemeni aqeeq (agate)"
+      ],
+      "wants": "Semi-precious stones in bulk, primarily Yemeni aqeeq (agate); feroza (turquoise) and dur najaf explicitly 'all fine'. Quarterly, PayPal.",
+      "posted": "Jan 25, 2026 (detail page shows a Jul 23, 2026 bump)",
+      "source_url": "https://importer.tradekey.com/buyoffer/Looking-For-Aqeeq-Stones-In-Bulk-3791597.html",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Zee links",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Pakistan",
+      "dest_iso": "",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Feroza (turquoise) in bulk quantity."
+      ],
+      "wants": "Feroza (turquoise) in bulk quantity.",
+      "posted": "Mar 28, 2025 (companion post Mar 22; detail page shows a Jul 13, 2026 bump)",
+      "source_url": "https://importer.tradekey.com/buyoffer/Need-Feroza-3695597.html",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    }
+  ]
+}

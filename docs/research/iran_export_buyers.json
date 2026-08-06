@@ -1,0 +1,725 @@
+{
+  "products": [
+    {
+      "product": "Zinc sulphate",
+      "key": "zinc-sulfate",
+      "fa": "سولفات روی",
+      "verified": [
+        {
+          "buyer": "National Fertilizers Limited (NFL) — Govt of India undertaking",
+          "country": "India",
+          "wants": "IMPORT tender for Water Soluble Fertilizers incl. Zinc Sulphate 21% Heptahydrate (~2000 MT) and Zinc Sulphate 33% Monohydrate (~2000-3000 MT), CIF, containerised",
+          "posted": "2025-07-22 (Tender 05-2025-26-WSF-01EW; closed 05 Aug 2025)",
+          "verdict": "confirmed",
+          "contact": "imports@nfl.co.in ; Import Section (II&IP), NFL, A-11 Sector-24, Noida-201301, UP, India; Tel +91-120-2412294 / 2412445",
+          "source_url": "https://eoitashkent.gov.in/wp-content/uploads/2025/07/TENDER-05-2025-26-WSF-01EW.pdf",
+          "reason": "Re-verified: the PDF is a genuine NFL IMPORT (buy-side) tender with imports@nfl.co.in, hosted on the Embassy of India Tashkent govt domain; independent search confirms NFL's 2025-26 WSF global e-tender family. Strongest candidate. Caveat: this specific cycle CLOSED 05 Aug 2025 — NFL runs WSF import tenders annually, so it is a historical demand signal; the actionable move is the next FY cycle. India is itself a ZnSO4 producer, but this is an explicit global import tender."
+        },
+        {
+          "buyer": "Arkadiusz Kantor (importer)",
+          "country": "Poland",
+          "wants": "Zinc Sulphate, fertilizer grade to correct crop zinc deficiency; 100 metric tons; CIF; payment L/C",
+          "posted": "2026-05-29 (repeat 2026-03-31) — date NOT independently re-confirmed",
+          "verdict": "plausible",
+          "contact": "Arkadiusz Kantor via go4WorldBusiness buyer profile (platform-gated messaging; no public phone/email)",
+          "source_url": "https://www.go4worldbusiness.com/buyers/zinc-sulphate.html",
+          "reason": "Search corroborates a live Poland buy-lead matching every detail (zinc sulphate fertilizer, 100 T, CIF, L/C, Arkadiusz Kantor). Best FIT of all candidates: Poland is a net importer, not a producer. Held to 'plausible' not 'confirmed' because the specific buylead permalink would not load, I could not independently re-confirm the 2026-05-29 posting date (go4WorldBusiness is known to recycle/re-date leads), and the contact is platform-gated with no public phone/email."
+        },
+        {
+          "buyer": "Aakash",
+          "country": "India (Vadodara, Gujarat)",
+          "wants": "Zinc Sulfate Powder, loose; 10 tons (monthly, urgent)",
+          "posted": "2026-07-15",
+          "verdict": "plausible",
+          "contact": "+91-63****72 (masked on ExportersIndia; full number needs platform login)",
+          "source_url": "https://www.exportersindia.com/buyers/zinc-sulphate.htm",
+          "reason": "Re-verified present on the live ExportersIndia page with exact date 2026-07-15 and 10 T qty. Weak: single first name only, masked/unreachable contact, and India is a net ZnSO4 exporter so this is almost certainly domestic/trader demand — poor fit for Iran-origin import supply."
+        },
+        {
+          "buyer": "Rakesh Singh",
+          "country": "India (Mumbai, Maharashtra)",
+          "wants": "Zinc sulphate; 100 MT",
+          "posted": "~2026-07 (shown 'One month ago' on page loaded 2026-08-04)",
+          "verdict": "plausible",
+          "contact": "+91-74****02 (masked on ExportersIndia)",
+          "source_url": "https://www.exportersindia.com/buyers/zinc-sulphate.htm",
+          "reason": "Re-verified present on the live page (100 MT). Weak: relative date only, very common name, masked/unreachable contact, and India self-producer → likely domestic/trader, poor fit for Iran-origin export."
+        },
+        {
+          "buyer": "Yougesh Tore",
+          "country": "India (Mumbai, Maharashtra)",
+          "wants": "Zinc Sulphate Crystal (heptahydrate), 50 kg packaging; 1000 tons (urgent, monthly)",
+          "posted": "~2026-07 (shown 'One month ago')",
+          "verdict": "plausible",
+          "contact": "+91-72****47 (masked on ExportersIndia)",
+          "source_url": "https://www.exportersindia.com/buyers/zinc-sulphate.htm",
+          "reason": "Re-verified present on the live page with full name and large 1000 T qty. Weak: relative date, masked/unreachable contact, India self-producer → probable domestic/trader demand rather than genuine import; large 'urgent' qty on a spam-prone platform lowers trust."
+        },
+        {
+          "buyer": "Gopinath Rajamanickam",
+          "country": "India (Erode, Tamil Nadu)",
+          "wants": "Zinc sulphate; 50 tons (tagged 'big deal', urgent, monthly)",
+          "posted": "~2026-07 (shown 'One month ago')",
+          "verdict": "plausible",
+          "contact": "+91-98****79 (masked on ExportersIndia)",
+          "source_url": "https://www.exportersindia.com/buyers/zinc-sulphate.htm",
+          "reason": "Re-verified present on the live page with full name and 50 T qty. Weak: relative date, masked/unreachable contact, India self-producer → likely domestic/trader, poor fit for Iran-origin import."
+        },
+        {
+          "buyer": "Kalpesh Patel",
+          "country": "India (Ahmedabad, Gujarat)",
+          "wants": "Zinc Sulfate Powder, industrial grade; 25 tons",
+          "posted": "~2026-07 (shown 'One month ago')",
+          "verdict": "plausible",
+          "contact": "+91-81****13 (masked on ExportersIndia)",
+          "source_url": "https://www.exportersindia.com/buyers/zinc-sulphate.htm",
+          "reason": "Re-verified present on the live page (25 T, industrial). Weakest-tier: relative date, masked/unreachable contact, common name, India self-producer → almost certainly domestic/trader demand, poor fit for Iran-origin export."
+        }
+      ],
+      "dropped": 3,
+      "product_read": "Thin-to-moderate and concentrated: the only solid named foreign buy-side signals are institutional import tenders (India NFL 2025-26 WSF global tender, verified) plus one decent-fit Poland RFQ (Kantor, go4WorldBusiness); the rest are anonymous masked ExportersIndia leads from India (a net ZnSO4 exporter) = poor fit. Real underlying EU/UK/Eastern-Europe agri demand exists per market reports but seldom shows up as named public buy-leads."
+    },
+    {
+      "product": "Copper sulphate",
+      "key": "copper-sulfate",
+      "fa": "سولفات مس",
+      "verified": [
+        {
+          "buyer": "NHS Blood and Transplant (NHSBT)",
+          "country": "United Kingdom",
+          "wants": "Framework Agreement for the Supply of Copper Sulphate SOLUTION for Blood Donor Haemoglobin Screening (in-vitro semi-quantitative reagent for capillary Hb acceptance). Est. GBP 2.25M ex-VAT over 4 yrs.",
+          "posted": "2025-12-23 (tender notice; preliminary market engagement 2025-09-04)",
+          "verdict": "confirmed",
+          "contact": "NHSBT procurement team via UK Find a Tender portal (register/respond through the notice).",
+          "source_url": "https://www.find-tender.service.gov.uk/procurement/ocds-h6vhtk-0593fd",
+          "reason": "Re-verified on Find a Tender (OCDS ocds-h6vhtk-0593fd): NHSBT, buyer-side framework for copper sulphate solution; preliminary engagement 4 Sep 2025, tender notice 23 Dec 2025, contract award notice 21 May 2026. Genuine, dated, buy-side, UK (outside Iran), real named public entity. CAVEATS: diagnostic reagent grade (not agri/mining/feed, poor fit for Iran-origin bulk sourcing); NHSBT is phasing toward finger-prick Hb testing so future volume may shrink; award notice already published (likely awarded)."
+        },
+        {
+          "buyer": "PT Mitraindo Adi Perkasa",
+          "country": "Indonesia",
+          "wants": "Copper sulphate importer/buy request (Premium-gated on TradeKey). Surabaya water-treatment chemicals distributor whose line (TCCA, calcium hypochlorite, H2O2, alum, caustic soda, chlorine) makes CuSO4 a plausible algaecide add.",
+          "posted": "2025-04-23",
+          "verdict": "plausible",
+          "contact": "Direct (independently found): mitraindo2023@gmail.com, +62 811-300-685, Ruko HR Muhammad Square C-6, Jl. Raya Darmo Permai II, Surabaya 60226. TradeKey masked lead: merchandising.smj@***",
+          "source_url": "https://importer.tradekey.com/copper-sulphate-importer.html",
+          "reason": "Company INDEPENDENTLY verified as a real Surabaya water-treatment chemicals distributor (est. 2023; profiles on Indonetwork, Indotrading, companieshouse.id, Facebook; direct email/phone above). Copper-sulphate importer lead confirmed LIVE on TradeKey, updated 23 Apr 2025. Buy-side plausible (distributor importing wholesale to add to line), Indonesia (outside Iran). Not 'confirmed' because the specific TradeKey lead's details are Premium-gated and not independently re-confirmable; distributor could also resell."
+        },
+        {
+          "buyer": "Fairfax Water (Fairfax County Water Authority)",
+          "country": "United States (Virginia)",
+          "wants": "Copper Sulfate in 50 lb bags (priced per ton) for drinking-water/algae treatment; recurring annual public-utility requirement.",
+          "posted": "2025-02-03 (Notice of Intent to Award)",
+          "verdict": "confirmed",
+          "contact": "Fairfax Water, Dept. of Procurement, 8570 Executive Park Ave, Fairfax, VA 22031; solicitations at fairfaxwater.org/contracts",
+          "source_url": "https://www.fairfaxwater.org/contracts",
+          "reason": "Verified real recurring public-utility buyer. Notice of Intent to Award (3 Feb 2025), contract 2025-011, Copper Sulfate 50# bags, awarded to Chemrite Inc. for $102,300. Dated 2025+, buy-side, US (outside Iran), real named entity with reachable procurement office. CAVEAT: this specific contract is ALREADY AWARDED (not an open bid); small tonnage; demand recurs annually so a future cycle is the real opportunity."
+        },
+        {
+          "buyer": "City of Watertown, New York — Water Treatment Plant",
+          "country": "United States (New York)",
+          "wants": "Process chemicals for the municipal Water Treatment Plant (Bid #2025-06); candidate lists copper sulfate (Size B), ~1 ton, alongside chlorine, sodium silicate, hydrofluosilicic acid, alum, PAC.",
+          "posted": "2025-04-29 (bid opening)",
+          "verdict": "plausible",
+          "contact": "Tina Bartlett-Bearup, Purchasing Manager, City of Watertown, (315) 785-7749, tbartlettbearup@watertown-ny.gov",
+          "source_url": "https://www.watertown-ny.gov/events/37260/",
+          "reason": "Bid #2025-06 'Process Chemicals for the Water Treatment Plant' confirmed on the city site, opening 29 Apr 2025; real named municipal buyer, US (outside Iran), reachable purchasing contact found. Kept as PLAUSIBLE not confirmed because the public event page does NOT itemize copper sulfate (candidate's 1-ton Size B line unconfirmed) and the bid is now closed. Recurring buyer — successor Bid #2026-08 (same plant) is already posted, so demand is live and repeating."
+        },
+        {
+          "buyer": "City of Middletown, Connecticut — Charles Bacon Water Treatment Plant",
+          "country": "United States (Connecticut)",
+          "wants": "Copper sulfate pentahydrate, NSF grade, medium crystal, 2,000 lb bags (5 bags / ~5,000 lb) delivered to Charles Bacon WTP — Bid# 2026-011 Purchase of Various Water Treatment Chemicals.",
+          "posted": "2026 (Bid# 2026-011)",
+          "verdict": "confirmed",
+          "contact": "City of Middletown Purchasing Division, 245 deKoven Dr, Middletown CT; bid results at middletownct.gov/175/Bid-Results",
+          "source_url": "https://www.middletownct.gov/DocumentCenter/View/27702/Bid-2026-011-Purchase-of-Water-Treatment-Chemicals",
+          "reason": "Bid# 2026-011 confirmed to include copper sulfate pentahydrate (NSF grade, medium crystal), 2000 lb bags x5, delivered to the Charles Bacon WTP. Dated 2026, buy-side, US (outside Iran), real named municipal entity with reachable purchasing division. Small recurring tonnage; solid confirmation of the line item."
+        },
+        {
+          "buyer": "Sattenapalle Municipality — Head Water Works",
+          "country": "India (Andhra Pradesh)",
+          "wants": "Copper sulphate bundled with chlorine gas, alum and bleaching powder — supply/delivery to head water works for water-supply maintenance, FY 2025-26.",
+          "posted": "2025-05-16 (FY 2025-26 tender)",
+          "verdict": "plausible",
+          "contact": "Sattenapalle Municipality via Andhra Pradesh e-procurement portal (apeprocurement.gov.in); listing on tender247 / municipalitytenders.co.in (Tender ID 49040399)",
+          "source_url": "https://www.tender247.com/tender-details/88195809?searchtext=chlorine+gas",
+          "reason": "Tender for supply/delivery of chlorine gas, alum, bleaching powder AND copper sulphate to head water works (FY 2025-26), Sattenapalle Municipality, confirmed present via tender247 and municipalitytenders.co.in listings. Buy-side municipal procurement, India (outside Iran), real named entity. PLAUSIBLE not confirmed: copper-sulphate quantity/line detail not verified on the primary AP e-procurement portal; small municipal volume."
+        }
+      ],
+      "dropped": 3,
+      "product_read": "Moderate but narrow. The only reliably verifiable 2025+ FOREIGN buy-side demand is small-tonnage public water-treatment procurement: recurring US municipal bids (Fairfax VA, Watertown NY, Middletown CT), Indian municipal water works, plus a niche UK reagent-grade NHSBT framework. Bulk agri/industrial tonnage (1,000+ t) appears almost only as anonymous, largely unverifiable leads on low-trust B2B aggregators (go4WorldBusiness, TradeKey), so genuine bulk foreign demand on the public web is thin and low-confidence. Dropped 3 aggregator leads (Egypt 'Mr. Mahmood' anonymous, Turkey 'Farzam Group' Iran-linkage risk, Spain 'AQUA ADVANCE CORP' no independent footprint) as failing the real-entity / outside-Iran tests."
+    },
+    {
+      "product": "Saffron (Sargol + Pushal)",
+      "key": "saffron",
+      "fa": "زعفران سرگل و پوشال",
+      "verified": [
+        {
+          "buyer": "EspaceAgro buyer, listing ref 699801 (France, spice-sourcing business project; advertiser identity behind free login)",
+          "country": "France",
+          "wants": "Explicitly seeks Iranian saffron ('safran iranien') plus Moroccan/Spanish; all origins to be evaluated. Sourcing/evaluation stage, no fixed grade or quantity. Directly names Iranian saffron, so most on-target for Sargol/Pushal.",
+          "posted": "2025-07-31",
+          "verdict": "confirmed",
+          "contact": "Via EspaceAgro messaging 'Contacter l'annonceur', ref 699801 — free registration required; no public email/phone on page",
+          "source_url": "https://www.espaceagro.com/epices-aromates/safran-iranien_i699801.html",
+          "reason": "Re-verified from the real (non-paywalled) listing page AND independently corroborated by web search: it is an ACHAT (buy) request from a France buyer explicitly naming Iranian saffron, dated 31/07/2025. Buy-side, outside Iran, 2025+ all confirmed. Only weakness: contact gated behind free login."
+        },
+        {
+          "buyer": "EspaceAgro buyer, listing ref 711213 (Spain wholesaler / 'grossiste')",
+          "country": "Spain",
+          "wants": "Bulk saffron for commercial use: high quality, intense red color, strong aroma, WHOLE FILAMENTS (Negin-type), competitive per-kg pricing. Origin open, so Iranian Sargol/Negin qualifies. Spain is a top destination for Iranian saffron.",
+          "posted": "2026-03-16",
+          "verdict": "confirmed",
+          "contact": "Via EspaceAgro messaging, ref 711213 — free registration required; contact gated",
+          "source_url": "https://www.espaceagro.com/epices-aromates/azafran_i711213.html",
+          "reason": "Re-read the real listing page; it returns the verbatim ACHAT quote 'je souhaite acheter du safran (azafran) en gros pour un usage commercial... filaments entiers', advertiser type grossiste, Spain, dated 16/03/2026. Buy-side + date + outside-Iran all re-verified from source. Contact gated behind free login."
+        },
+        {
+          "buyer": "EspaceAgro buyer, listing ref 715651 (France, distribution France/Spain)",
+          "country": "France",
+          "wants": "Superior-quality or certified-organic saffron in genuine bulk: 10 kg and 50 kg lots scaling toward ~1 tonne/year; wants delivery + payment terms; delivery France or Spain. Origin open, so Iranian Sargol/Negin qualifies. Strongest volume signal of the surviving set.",
+          "posted": "2026-05-07",
+          "verdict": "plausible",
+          "contact": "Via EspaceAgro messaging, ref 715651 — free registration required; contact gated",
+          "source_url": "https://www.espaceagro.com/epices-aromates/bsafran-b_i715651.html",
+          "reason": "Opened the real listing page: labeled ACHAT, with the stated 10/50 kg to ~1 tonne/year quantities and France/Spain delivery, dated 07/05/2026 — a consistent, genuine buy-side signal and the strongest volume. Marked plausible not confirmed because the fetched text was somewhat generic and I could not independently corroborate it via a second source. Contact gated."
+        }
+      ],
+      "dropped": 7,
+      "product_read": "Thin-to-moderate, and geographically narrow: the only cleanly verifiable 2025+ foreign buy-side demand on the public web is a handful of France/Spain buy requests on EspaceAgro (one, ref 699801, explicitly naming Iranian saffron) — genuine but low-volume. The higher-volume-looking 'leads' on TradeKey/ExportHub/go4WorldBusiness are mostly gated, anonymized (bare first names), recycled from 2018-2021, or auto-generated lead-farm/SEO content with no reachable contacts, and do not hold up under scrutiny."
+    },
+    {
+      "product": "Pistachios (Akbari / Ahmad Aghaei / snack)",
+      "key": "pistachio",
+      "fa": "پسته اکبری/احمدآقایی/اجیلی",
+      "verified": [
+        {
+          "buyer": "Jktrade0 (Korean pistachio buyer)",
+          "country": "South Korea",
+          "wants": "Pistachios, 20 tons/month (~200 t/yr)",
+          "posted": "Mar 10, 2026",
+          "verdict": "confirmed",
+          "contact": "jktrade0@naver.com / WhatsApp +82 10 3040 4802 (published openly on the listing)",
+          "source_url": "https://importer.tradekey.com/pistachios-importer.html",
+          "reason": "Re-verified on TradeKey source: date Mar 10 2026, buy-side ('Korean company that promotes pistachios for purchase of 20 tons per month'), South Korea = outside Iran. Strongest of the set because the email + phone are published on the listing rather than paywalled, so the contact is actually reachable. Only a handle (no corporate registry trace found), but real and contactable."
+        },
+        {
+          "buyer": "Mario Yedid",
+          "country": "Argentina",
+          "wants": "Roasted & salted pistachios, size 18/22, 10kg bags, 1x20ft container (snack grade), L/C",
+          "posted": "Jul 24, 2026",
+          "verdict": "confirmed",
+          "contact": "Named person Mario Yedid; enquiry via go4WorldBusiness (contact details membership-gated)",
+          "source_url": "https://www.go4worldbusiness.com/buyleads/pistachio.html",
+          "reason": "Re-verified on go4WorldBusiness source: date Jul-24-26, genuine buy-side, Argentina = outside Iran, snack-grade 18/22 directly matches the product. Independent web search corroborates 'Mario Yedid' as an Argentine nuts/dried-fruit buyer seeking roasted/salted pistachio. Named real person; contact itself is gated."
+        },
+        {
+          "buyer": "Bingo International Trade (Changzhou)",
+          "country": "China",
+          "wants": "Hazelnut kernel + pistachio + almond, 200 MT/month each (~2,500 t/yr)",
+          "posted": "Oct 24, 2025",
+          "verdict": "plausible",
+          "contact": "Masked on TradeKey (premium / sign-in gated)",
+          "source_url": "https://importer.tradekey.com/pistachio-kernel-importer.html",
+          "reason": "On the TradeKey board dated Oct 24 2025 with a human-worded RFQ, buy-side, China = outside Iran. COULD NOT independently verify a Changzhou nut-importer named 'Bingo International Trade' — the only real 'Bingo International' firms found are in Guangzhou (chemicals/cosmetics) and Ningbo (valves), i.e. different cities and industries. Pistachio is only one of three nuts requested. Entity unverifiable and contact gated, hence plausible not confirmed."
+        },
+        {
+          "buyer": "Anonymous Poland importer (handle 05280808072)",
+          "country": "Poland",
+          "wants": "Raw unshelled (in-shell) pistachios, 540 tons",
+          "posted": "Mar 20, 2025",
+          "verdict": "plausible",
+          "contact": "Handle/phone '05280808072' only; full contact TradeKey-premium gated",
+          "source_url": "https://importer.tradekey.com/iran-pistachio-importer.html",
+          "reason": "Re-verified on TradeKey source: date Mar 20 2025 (right at the 2025 cutoff), human-worded ('reliable supplier of raw unshelled pistachios for my business in Poland'), buy-side, outside Iran. WEAKEST keeper: no named entity (phone-number handle only) and the number format '0528...' is a Turkish (+90) mobile prefix, not Polish — a scrape/mislabel red flag. Kept only for the specific human requirement + a live source URL; treat with caution."
+        }
+      ],
+      "dropped": 6,
+      "product_read": "Thin-to-moderate, and heavily paywalled. Genuine 2025+ FOREIGN buy-side demand for Iranian/snack pistachios lives almost entirely on gated B2B lead boards (TradeKey, go4WorldBusiness), where a large share of 'buyers' are anonymous handles, first-names-only, or templated boilerplate that reads AI-generated and cannot be independently verified; most contacts sit behind premium paywalls. Truly reachable, corroborated foreign buyers are rare — the two solid ones here are a Korean buyer with a PUBLIC email/phone (jktrade0, 20 t/mo) and a named Argentine snack-grade buyer (Mario Yedid, roasted/salted 18/22). Demand clusters in Gulf/UAE re-export, East Asia (China/Korea), and scattered EU (Poland). Important product note: foreign buyers specify by SIZE (18/22, 20/22) or shelled/kernel — they essentially NEVER use the Iranian cultivar names 'Akbari/Ahmad Aghaei', so exact-varietal matches basically don't exist on the public web; you match on size/grade instead. Dropped 6: Mikaeili Commerce LLC (UAE) and Ekvtime (Georgia) = boilerplate phrasing + zero independent trace, likely synthetic TradeKey listings; Mehmood (Kuwait) and 'Mbr' (Tunisia) = first-name/initials-only, generic, gated, self-rated low; plus 2 duplicate entries (Bingo China, Poland 540t) folded into their originals."
+    },
+    {
+      "product": "Natural honey + royal jelly",
+      "key": "honey-royaljelly",
+      "fa": "عسل طبیعی + ژل رویال",
+      "verified": [
+        {
+          "buyer": "Ikram Ullah Niazi",
+          "country": "Afghanistan",
+          "wants": "Raw natural honey, 1-20 metric tons, worldwide sourcing accepted (open to Iranian origin), CIF, L/C",
+          "posted": "2026-03-25",
+          "verdict": "confirmed",
+          "source_url": "https://www.go4worldbusiness.com/find?searchText=raw-honey&BuyersOrSuppliers=buyers",
+          "contact": "Full buyer name Ikram Ullah Niazi; contact gated behind go4WorldBusiness supplier registration",
+          "reason": "Re-fetched the live page and confirmed date (Mar-25-26) + buy-side (1-20T raw honey, worldwide sourcing, L/C). Strongest lead: full name, largest volume, no origin lock so Iranian honey fits, and Afghanistan is a realistic regional partner for Iran. Only weakness is the gated contact."
+        },
+        {
+          "buyer": "Syed",
+          "country": "Malaysia",
+          "wants": "Natural honey (raw and processed) for consumption/medicinal use, 1 twenty-foot container, FOB/CIF, L/C or T/T",
+          "posted": "2026-04-30",
+          "verdict": "confirmed",
+          "source_url": "https://www.go4worldbusiness.com/find?searchText=raw-honey&BuyersOrSuppliers=buyers",
+          "contact": "Buyer first name Syed only; contact gated behind go4WorldBusiness registration",
+          "reason": "Re-fetched the live page and confirmed date (Apr-30-26) + buy-side. Good fit: full container, no origin restriction, raw+processed acceptable. Kept but noted as weaker because entity is only a first name with a gated contact."
+        },
+        {
+          "buyer": "Maison del Gusto",
+          "country": "France",
+          "wants": "High-quality raw white honey, ideally sainfoin honey; buyer states Kyrgyzstan as preferred origin",
+          "posted": "2026-04-20",
+          "verdict": "plausible",
+          "source_url": "https://importer.tradekey.com/raw-honey-importer.html",
+          "contact": "TradeKey 'Quote Now' (paywalled for premium members); Maison del Gusto is a real named French gourmet business, directly reachable off-platform",
+          "reason": "Re-verified on TradeKey: date Apr 20 2026 + buy-side. Real named entity. Kept as plausible not confirmed because origin preference is Kyrgyz sainfoin honey (only a partial fit — Iran does produce sainfoin/esparcette honey, and 'ideally' is a soft preference) and the direct contact is paywalled."
+        },
+        {
+          "buyer": "Rang Ventures LLC",
+          "country": "United States",
+          "wants": "Bulk natural honey with moisture content below 20%",
+          "posted": "2026-07-07",
+          "verdict": "plausible",
+          "source_url": "https://importer.tradekey.com/natural-honey-importer.html",
+          "contact": "TradeKey 'Quote Now' (paywalled for premium members)",
+          "reason": "Re-verified on TradeKey: 'Last Updated Jul 07 2026', USA, real LLC name, buy-side. Fit is fine (only a moisture spec, no origin lock). Kept as plausible because the TradeKey date is a 'last updated' bump rather than an explicit post date and the contact is paywalled."
+        },
+        {
+          "buyer": "Mhr Trading Private Limited",
+          "country": "Maldives",
+          "wants": "Natural honey, 1 twenty-foot container, 100% natural / food grade, FOB, bank transfer",
+          "posted": "2025-04-30",
+          "verdict": "plausible",
+          "source_url": "https://eximnext.com/buy-lead/natural-honey-97",
+          "contact": "Real registered Maldives importer; address Boduthakurufaanu Magu / Raa Atoll, Male, Maldives; RFQ contact gated but company reachable directly",
+          "reason": "Re-verified date (Apr 30 2025) + buy-side on EximNext, AND independent trade databases confirm Mhr Trading Pvt Ltd is a genuine active Maldives importer (~166 shipments, GST-registered). Kept as plausible not confirmed because this specific RFQ is now marked CLOSED/stale — but the company itself is real and approachable."
+        },
+        {
+          "buyer": "Balma Maldives Private Limited",
+          "country": "Maldives",
+          "wants": "Natural honey, food grade, quantity depends on price, FOB, L/C",
+          "posted": "2025-04-30",
+          "verdict": "plausible",
+          "source_url": "https://eximnext.com/buy-lead/natural-honey-93",
+          "contact": "Real registered Maldives importer; address H. Reefview 2nd floor, Male, Maldives; RFQ contact gated but company reachable directly",
+          "reason": "Re-verified date (Apr 30 2025) + buy-side on EximNext, AND independent trade databases confirm Balma Maldives Pvt Ltd is a real importer (~436 shipments, sources from India/Sri Lanka). Kept as plausible because the RFQ is now CLOSED/stale, but the importer is genuine and reachable."
+        },
+        {
+          "buyer": "Beetopia Co., Ltd.",
+          "country": "South Korea",
+          "wants": "Fresh royal jelly, ~1,000 kg/month, 100% purity (buyer states Vietnam as preferred origin)",
+          "posted": "2025 (inferred from listing expiry 2026-05-23)",
+          "verdict": "plausible",
+          "source_url": "https://www.exporthub.com/importers/royal-jelly/",
+          "contact": "Independently found: phone 82-31-521-7063; Rm. 701 Ivy Tower, 487-1 Deokso-ri, Wabu-eup, Namyangju-si, Gyeonggi-do, South Korea",
+          "reason": "ExportHub blocked direct fetch (403), but independent search confirmed Beetopia is a genuine South Korean bee-products importer/distributor (honey, royal jelly, propolis, pollen) with a reachable phone and address — the only substantiable royal jelly buyer in the set. Kept as plausible because the post date is only inferred from the 2026 expiry (not explicitly stated, and now expired) and origin preference is Vietnam."
+        }
+      ],
+      "dropped": 3,
+      "product_read": "Moderate for natural honey, thin for royal jelly. TradeKey and go4WorldBusiness show a steady 2025-2026 stream of honey buy-leads across the USA, UK, France, Malaysia, Afghanistan, Azerbaijan, Bangladesh, Spain, Greece, Norway, Zimbabwe, Nigeria and the Maldives — but most are small-volume, gated/anonymous contacts, or origin-locked to non-Iranian honey (Manuka/NZ, Kyrgyz, Trinidad). Royal jelly demand is genuinely thin: few named importers (Beetopia in South Korea is the standout), mostly gated or undated, and buyers typically prefer Vietnam/China origin. Best realistic fit for Iranian origin is regional/neighboring buyers (Afghanistan, the Gulf, Central Asia, Maldives) rather than premium Western markets."
+    },
+    {
+      "product": "Plastic parts + PE packaging",
+      "key": "plastic-pe-packing",
+      "fa": "قطعات پلاستیکی + پکینگ پلی‌اتیلن",
+      "verified": [
+        {
+          "buyer": "Welsh Government (WGCD) — on behalf of the Welsh Public Sector",
+          "country": "United Kingdom (Wales)",
+          "wants": "Framework for Waste Bags & Recycling Collection Products; Lot 1 = Single-Use Refuse & Recycling Plastic (polythene) Sacks, CPV 19640000. Ref WGCD-PCS-133-25.",
+          "posted": "2025 (framework 3 Nov 2025–2 Nov 2029; award announced 30 Oct 2025)",
+          "verdict": "confirmed",
+          "contact": "etenderwales / Bravo eProcurement portal linked from the Find a Tender notice",
+          "source_url": "https://www.find-tender.service.gov.uk/Notice/080162-2025",
+          "reason": "Re-verified via Find a Tender: genuine buy-side framework, Lot 1 polythene sacks (CPV 19640000), est ~£16M excl VAT, Wales/UK, dated 2025. Caveat: it is now an AWARDED 4-year buying framework (suppliers appointed), not a fresh open tender — a live purchasing vehicle and strong demand signal rather than an open bid."
+        },
+        {
+          "buyer": "Derry City & Strabane District Council",
+          "country": "United Kingdom (Northern Ireland)",
+          "wants": "Supply & delivery of Polythene Refuse Sacks, 12 months Apr 2026–Mar 2027; est ~£20,000 incl VAT.",
+          "posted": "2025 (notice 079010-2025; deadline 12 Jan 2026)",
+          "verdict": "confirmed",
+          "contact": "Submit via etendersNI e-sourcing portal (referenced in the notice)",
+          "source_url": "https://www.find-tender.service.gov.uk/Notice/079010-2025",
+          "reason": "Re-confirmed: notice 079010-2025, polythene refuse sacks, deadline 12 Jan 2026 via etendersNI, est £20k incl VAT. Genuine buy-side and, unlike most others here, a genuinely OPEN opportunity at time of check. Real named UK entity, outside Iran."
+        },
+        {
+          "buyer": "South Holland, Boston Borough & East Lindsey District Councils (three-council partnership)",
+          "country": "United Kingdom (England)",
+          "wants": "Supply & delivery of Refuse Sacks and Caddy Liners across the three areas; est ~£1,020,000 excl VAT.",
+          "posted": "2025 (notice 084121-2025; award notice 085916-2025)",
+          "verdict": "confirmed",
+          "contact": "Councils' e-tendering portal linked from the Find a Tender notice",
+          "source_url": "https://www.find-tender.service.gov.uk/Notice/084121-2025",
+          "reason": "Verified: real 2025 buy-side notice, ~£1.02M, refuse sacks + caddy liners. Caveat: now AWARDED (three suppliers, contract 1 Jun 2026–31 May 2029 per award notice 085916-2025 / GovPing) — closed, so a demand signal not an open bid."
+        },
+        {
+          "buyer": "uLundi Local Municipality (KwaZulu-Natal)",
+          "country": "South Africa",
+          "wants": "Supply & delivery of Refuse Bags for 36 months — black PE refuse bags 30 micron, 760x970mm; plastic samples required. Bid 04/2025/2026.",
+          "posted": "2025 (closing 3 Dec 2025)",
+          "verdict": "confirmed",
+          "contact": "SCM office — tkhoza@ulundi.gov.za and nluzipho@ulundi.gov.za (Mrs N.S. Luzipho)",
+          "source_url": "https://www.ulundi.gov.za/storage/app/media/Year25-26/OpenTenders/Refuse%20bags.pdf",
+          "reason": "Verified on ulundi.gov.za: Bid 04/2025/2026, refuse bags 36-month supply, closed 3 Dec 2025. Real municipality, South Africa, genuine buy-side, PE match (HS 3923). Caveat: now at 'Intention to Award' stage (bids 03/04/05 2025/26)."
+        },
+        {
+          "buyer": "Umsobomvu Local Municipality (Northern Cape)",
+          "country": "South Africa",
+          "wants": "Heavy-duty black polyethylene refuse bags, 750x950mm, 40 micron, folded/packed 20x10 per bale (municipal RFQ).",
+          "posted": "2025 (RFQ doc 30 Sep 2025; closed 7 Oct 2025)",
+          "verdict": "confirmed",
+          "contact": "Mr N Thiso, tel (051) 753 0040, ncedo@umsobomvumun.co.za (SCM, 21A Church St, Colesberg 9795)",
+          "source_url": "https://www.etenders.gov.za/home/Download?blobName=a8a98333-aa3a-44a7-a76b-5019e715f1de.pdf&downloadedFileName=RFQ+DOCUMENT+FOR+REFUSE+BAGS+30-09-2025.pdf",
+          "reason": "Verified on etenders.gov.za: RFQ for HD black PE refuse bags 750x950mm/40mic. Real municipality, direct PE match, buy-side, outside Iran. Found a better named contact (Mr N Thiso) than the candidate's generic tender-box. Caveat: short RFQ, now closed (7 Oct 2025)."
+        },
+        {
+          "buyer": "Jameel General Trading LLC",
+          "country": "United Arab Emirates",
+          "wants": "Customized printed food-packaging (plastic) bags for take-away; ~200,000 sets, 1-colour/1-side, OEM/logo — sourcing from a manufacturer.",
+          "posted": "TradeKey buy lead, last updated 15 Aug 2025",
+          "verdict": "plausible",
+          "contact": "Via TradeKey (buyer contact gated to premium members)",
+          "source_url": "https://importer.tradekey.com/plastic-bags-importer.html",
+          "reason": "Buy lead re-seen on TradeKey with matching detail, date and quantity; wording ('from a professional manufacturer') is genuinely buy-side, UAE. Kept only as plausible: low-trust B2B board, contact gated to paying members, and 'Jameel General Trading LLC' not independently verifiable as a live entity."
+        },
+        {
+          "buyer": "Rogaland-region waste-management contracting authority (likely IVAR IKS, Stavanger) — TED 428524-2025",
+          "country": "Norway",
+          "wants": "2-year framework for polythene waste & refuse sacks and bags (CPV 19640000); est 25,000,000 NOK excl VAT.",
+          "posted": "2025",
+          "verdict": "plausible",
+          "contact": "Via TED notice 428524-2025 full record (contracting-authority contact behind TED's JS page); likely IVAR IKS, Stavanger",
+          "source_url": "https://ted.europa.eu/en/notice/428524-2025/pdfs",
+          "reason": "Tender is real (TED 428524-2025, CPV 19640000, Rogaland NO, 25M NOK, 2-yr framework, dated 2025, buy-side, outside Iran). Downgraded to plausible: the specific buyer NAME is rendered behind TED's JS notice and could not be re-confirmed by fetch; open-web evidence points to IVAR IKS (Rogaland inter-municipal waste co.) as the likely authority but this is inference, not confirmed. Kept on strength of the solid source URL."
+        }
+      ],
+      "dropped": 3,
+      "product_read": "Genuine 2025+ foreign buy-side demand is MODERATE but narrow: it clusters almost entirely in one commodity niche — polythene/PE refuse & recycling sacks and caddy liners bought by GOVERNMENT/MUNICIPAL waste procurement (UK councils via Find a Tender, South African municipalities via etenders.gov.za, and EU/Norway via TED). That segment is well-documented and repeatable (councils re-tender annually). For actual 'plastic parts/components' and broader PE packaging outside bin-liners, public demand is THIN and low-quality — only gated, unverifiable B2B RFQ boards (TradeKey) with generic one-line leads. Best real, contactable opportunities: UK Find-a-Tender and South African etenders municipal refuse-bag tenders. DROPPED: Trash CAN International LTD (China) — generic 'Plastic Bags 20t', unverifiable entity, gated contact; Dacorum Borough Council — product is COMPOSTABLE/bio-based (not PE) and already a closed award; SRIYAAN creators (India) — generic 'Plastic parts', masked contact, unverifiable."
+    },
+    {
+      "product": "Neyshabur turquoise + semi-precious stones/jewelry",
+      "key": "turquoise-gems",
+      "fa": "فیروزه نیشابور و سنگ‌های نیمه‌قیمتی و زیورآلات",
+      "verified": [
+        {
+          "buyer": "East Coast Carry",
+          "country": "United States",
+          "wants": "Turquoise / Native American / Southwestern sterling silver jewelry — turquoise, spiny oyster, rings, cuffs, Navajo pearls, squash blossoms, najas. Monthly buyer, PayPal, ships to US.",
+          "posted": "May 21, 2025 (TradeKey detail page shows a Jun 29, 2026 bump)",
+          "verdict": "confirmed",
+          "reason": "Re-verified date (May 21, 2025) and buy-side language ('Looking for a jewelry supplier for southwestern and Native American jewelry...') on both the TradeKey detail page and the turquoise-importer listing. Real, reachable named entity: search confirms eastcoastcarry.com is a genuine US retailer of turquoise/Native American jewelry. Outside Iran. CAVEAT: they source authentic American/Navajo-made turquoise (sterling silver, artisan/vintage) — Persian Neyshabur turquoise is a stretch fit; loose stones are the only plausible angle, not finished Persian pieces.",
+          "source_url": "https://importer.tradekey.com/buyoffer/Southwestern-And-Native-American-Sterling-Silver-Jewelry-3722959.html",
+          "contact": "Public storefront eastcoastcarry.com (reachable); TradeKey buyer messaging masked behind sign-in. Duplicate of candidate #7 (turquoise-importer.html) — merged."
+        },
+        {
+          "buyer": "313 Rings (TradeKey handle, unverified)",
+          "country": "Canada",
+          "wants": "Semi-precious stones in bulk, primarily Yemeni aqeeq (agate); feroza (turquoise) and dur najaf explicitly 'all fine'. Quarterly, PayPal.",
+          "posted": "Jan 25, 2026 (detail page shows a Jul 23, 2026 bump)",
+          "verdict": "plausible",
+          "reason": "Genuine 2025+ buy-side RFQ re-verified from detail page ('Want to buy aqeeq stones in bulk. Yemeni preffered... Feroza, dur najaf all fine.'), outside Iran (Canada), on-scope for semi-precious stones. Downgraded to plausible because feroza/turquoise is only an incidental 'also fine' item (primary demand is Yemeni agate), the buyer name is not shown on the page (masked), and no reachable public contact surfaced.",
+          "source_url": "https://importer.tradekey.com/buyoffer/Looking-For-Aqeeq-Stones-In-Bulk-3791597.html",
+          "contact": "Masked behind TradeKey sign-in; no public email/phone/website found."
+        },
+        {
+          "buyer": "Zee links",
+          "country": "Pakistan",
+          "wants": "Feroza (turquoise) in bulk quantity.",
+          "posted": "Mar 28, 2025 (companion post Mar 22; detail page shows a Jul 13, 2026 bump)",
+          "verdict": "plausible",
+          "reason": "Real 2025+ feroza buy-side RFQ; name 'Zee links' confirmed on the turquoise-importer listing; buy-side re-verified ('need feroza in bulk quantity', 'I need feroza can you send me the information?'); outside Iran. Kept as plausible-low: generic unverifiable business name, no reachable contact, and Pakistani feroza buyers are commonly middlemen/re-traders (Pakistan is itself a turquoise trade hub), so end-demand is uncertain.",
+          "source_url": "https://importer.tradekey.com/buyoffer/Need-Feroza-3695597.html",
+          "contact": "Masked behind TradeKey sign-in; no public email/phone/website found."
+        }
+      ],
+      "dropped": 4,
+      "product_read": "Thin-to-moderate, and almost entirely on TradeKey buy-leads (masked buyers, no direct contacts). The only fully verifiable, reachable foreign buyer is East Coast Carry (US) — but it wants authentic American/Navajo turquoise, a stretch for Persian Neyshabur stones. Feroza-specific leads (313 Rings CA, Zee links PK) are genuine but incidental or re-trader-grade with no reachable contact. No public lead references Persian/Iranian/Neyshabur turquoise by name. Dropped: Albatha Engineering Group and Treasure Hunt (UAE) — recycled old leads (IDs ~2.0-2.2M vs current ~3.3-3.8M on the same page), so their 'May 2026' dates are bumped display dates, plus an implausible entity-product match (an engineering conglomerate buying turquoise) and no contact; H jewelryy (Canada) — wants finished 14k/18k gold fashion jewelry (evil-eye/clover), not turquoise/loose stones; and one duplicate East Coast Carry entry (merged)."
+    },
+    {
+      "product": "Medicinal herbs & essential oils (Damask rose, cumin, thyme)",
+      "key": "herbs-essential-oils",
+      "fa": "گیاهان دارویی و اسانس، گل محمدی، زیره، آویشن",
+      "verified": [
+        {
+          "buyer": "Universal Foodstuff Trading LLC",
+          "country": "Oman",
+          "wants": "Cumin seeds — 100 t/order, ~4,000 t/yr, purity 97-99.5%, origin 'all over the world' (Iran-eligible), FOB Sohar/Jebel Ali, weekly",
+          "posted": "2026-07-07",
+          "verdict": "confirmed",
+          "reason": "Live TradeKey buyoffer detail page re-verified: genuine RFQ, buy-side, Oman (outside Iran), posted Jul 7 2026, origin-agnostic so Iranian Khorasan cumin is directly sourceable. Only caveat: the buyer company name is gated behind sign-in on the page, so the specific name 'Universal Foodstuff' could not be re-confirmed — but the RFQ and date are real.",
+          "contact": "Gated — TradeKey buyer profile, sign-in/premium required",
+          "source_url": "https://importer.tradekey.com/buyoffer/CUMIN-SEED-3862619.html"
+        },
+        {
+          "buyer": "Creek Line General Trading LLC",
+          "country": "United Arab Emirates",
+          "wants": "Cumin Seed (Singapore 99 grade), 6 x 20ft containers, CIF Fujairah, 25 kg PP bags, monthly",
+          "posted": "2026-07-06",
+          "verdict": "confirmed",
+          "reason": "Live TradeKey buyoffer detail page re-verified: genuine buy-side RFQ, UAE (outside Iran), posted 06 Jul 2026, CIF Fujairah, monthly. Buyer name is gated on the page (name 'Creek Line' not confirmable there), and the 'Singapore 99' Indian grade spec means Iranian cumin needs grade-matching — but the request is real and recent.",
+          "contact": "Gated — 'Sign In Now' to view buyer contact on TradeKey",
+          "source_url": "https://importer.tradekey.com/buyoffer/Cumin-Seed-3801225.html"
+        },
+        {
+          "buyer": "Super Spice Foodstuff Trading LLC",
+          "country": "United Arab Emirates (Dubai)",
+          "wants": "Cumin seeds, bulk, monthly recurring",
+          "posted": "2026-07-09 (also Jul 03; recurring)",
+          "verdict": "plausible",
+          "reason": "Named Dubai foodstuff company appears on the live TradeKey UAE cumin-seed buyers directory with multiple distinct 2026 posting dates (Jul 03 & Jul 09) and monthly frequency — buy-side, outside Iran. Only plausible not confirmed because directory 'posted' dates are auto-bump-prone and the contact is login-gated; could not open a dedicated per-buyer RFQ.",
+          "contact": "Gated — TradeKey 'Quote Now'",
+          "source_url": "https://importer.tradekey.com/uae/cumin-seed.htm"
+        },
+        {
+          "buyer": "Stock Wonders Goods Wholesalers LLC",
+          "country": "United Arab Emirates (Dubai)",
+          "wants": "Cumin seeds (Singapore 99), 25 kg bulk, ~5 containers monthly; also sunflower oil, turmeric fingers",
+          "posted": "2026-07-20 (also Jul 02)",
+          "verdict": "plausible",
+          "reason": "Named Dubai wholesaler on the live cumin-buyers directory with two 2026 posting dates (Jul 02 & Jul 20), monthly — buy-side, outside Iran. Plausible not confirmed: directory-level dates only, contact gated, and 'Singapore 99' is an Indian grade spec.",
+          "contact": "Gated — TradeKey 'Quote Now'",
+          "source_url": "https://importer.tradekey.com/uae/cumin-seed.htm"
+        },
+        {
+          "buyer": "ALMATHAQA ALTABAI FOODSTUFF L.L.C",
+          "country": "United Arab Emirates (Dubai)",
+          "wants": "Cumin seeds, monthly buying frequency",
+          "posted": "2026-05-11",
+          "verdict": "plausible",
+          "reason": "Named Dubai foodstuff importer confirmed present on the live cumin-buyers directory (Foodstuff category, monthly, May 11 2026) — buy-side, outside Iran. Weakest of the kept cumin leads: single date, generic foodstuff importer with no cumin-specific quantity, contact gated.",
+          "contact": "Gated — TradeKey/EC21 platform",
+          "source_url": "https://importer.tradekey.com/uae/cumin-seed.htm"
+        },
+        {
+          "buyer": "Herbs importer from Colombia (name gated; ref ID 1073232451)",
+          "country": "Colombia",
+          "wants": "Dried culinary/medicinal herbs incl. THYME (also oregano, mint, basil, chives, rosemary); 500 kg initial, ~9,000 kg/yr",
+          "posted": "2025-07-24",
+          "verdict": "plausible",
+          "reason": "Live TradeKey thyme-buyers directory re-verifies the entry: thyme explicitly among wanted items, real quantities, dated Jul 24 2025, buy-side, Colombia (outside Iran) — the single most relevant thyme lead. Plausible not confirmed because the buyer name is anonymous/gated and the date is a directory 'updated' timestamp.",
+          "contact": "Gated — TradeKey 'Quote Now' (ref 1073232451)",
+          "source_url": "https://importer.tradekey.com/thyme-importer.html"
+        },
+        {
+          "buyer": "Importer from Mexico (name gated)",
+          "country": "Mexico",
+          "wants": "Cumin seeds (dedicated buying request/RFQ)",
+          "posted": "2025-10-15",
+          "verdict": "plausible",
+          "reason": "WebSearch confirms a dedicated Freshdi buying-request page titled for cumin seeds, importer from Mexico, dated Oct 15 2025 — buy-side, outside Iran, cumin-specific. Plausible not confirmed: the page returned 403 to me so I re-verified only the title/date via search, and the buyer name + contact are gated.",
+          "contact": "Gated — Freshdi platform login",
+          "source_url": "https://freshdi.com/request/Cumin-seeds-ZXi3Xj"
+        },
+        {
+          "buyer": "Importer from Chile (name gated)",
+          "country": "Chile",
+          "wants": "Seeds incl. cumin (anise, badian, fennel, cumin, etc.)",
+          "posted": "2025-10-11",
+          "verdict": "plausible",
+          "reason": "WebSearch confirms a dedicated Freshdi buying-request page, importer from Chile, dated Oct 11 2025, cumin explicitly named — buy-side, outside Iran. Marginal: cumin is incidental within a generic HS-0909 seed bundle, buyer anonymous, page 403'd to me so only title/date re-verified.",
+          "contact": "Gated — Freshdi platform login",
+          "source_url": "https://freshdi.com/request/Seeds-anise-badian-fennel-cumin-etc--o6C4oZ"
+        }
+      ],
+      "dropped": 2,
+      "product_read": "Moderate for cumin, thin for thyme, thin for Damask rose. Genuine 2025-2026 foreign buy-side demand really exists for cumin — recurring, dated RFQs concentrated in the Gulf (UAE/Oman, several origin-agnostic so Iran-eligible) plus a few Latin American leads (Mexico, Chile) — but it lives almost entirely behind login-gated B2B directories (TradeKey/Freshdi) and often specs the Indian 'Singapore 99' grade. Thyme shows just one credible 2025 lead (Colombia, thyme within a mixed-herb order). Damask rose oil/rose water demand is thin and unverifiable: only weak, recycled directory listings with auto-bumped 'updated' timestamps, none solid enough to keep."
+    },
+    {
+      "product": "Handwoven carpets & kilims",
+      "key": "carpets-kilim",
+      "fa": "فرش دستباف و گلیم",
+      "verified": [
+        {
+          "buyer": "Apg",
+          "country": "Germany",
+          "wants": "Kilim rugs and carpets",
+          "posted": "Jul 16, 2026",
+          "verdict": "confirmed",
+          "source_url": "https://importer.tradekey.com/germany/carpet.htm",
+          "contact": "Via TradeKey 'Quote Now' inquiry form; direct email/phone behind platform login",
+          "reason": "Re-opened the TradeKey Germany carpet IMPORTER buy-board. 'Apg', Germany, seeking 'Kilim rug and carpets', posted Jul 16, 2026 appears in the importers/buy-requests section (buy-side), exact product match (kilim + carpets), buyer outside Iran, date is 2026 (>=2025). Caveats: entity name is only a 3-letter stub and contact is gated behind TradeKey login; TradeKey posted-dates and lead liveness are not independently confirmable, but date + buy-side were re-verified from the source page."
+        },
+        {
+          "buyer": "Trade Co. MIL",
+          "country": "Germany",
+          "wants": "Kilim / Kelim flat-weave carpets & rugs",
+          "posted": "Jun 09, 2026",
+          "verdict": "plausible",
+          "source_url": "https://importer.tradekey.com/germany/carpet.htm",
+          "contact": "Via TradeKey 'Quote Now' inquiry form; direct email/phone behind platform login",
+          "reason": "Re-verified on the same TradeKey buy-board: 'Trade Co. MIL', Leipzig, Germany, seeking 'Kelim-Kilim', posted Jun 09, 2026 in the importers/buy-requests section (buy-side), kilim match, outside Iran, 2026 date. Marked plausible (not confirmed) because the product is listed only as a terse 'Kelim-Kilim' stub, the company name is generic, and the contact is fully gated with no way to confirm the lead is live."
+        }
+      ],
+      "dropped": 3,
+      "product_read": "Thin-to-moderate. Genuine 2026 FOREIGN buy-side demand specifically for handwoven/kilim carpets (as opposed to machine-made, hand-tufted, jute, or PVC mats) is sparse on the public web: a couple of Germany kilim importers on TradeKey, plus scattered handmade/hand-knitted carpet requests (Spain, Israel, Italy, Gulf states) on go4WorldBusiness. Most such leads are contact-gated, first-name-only, or actually sellers, so verifiable, reachable foreign buyers are few. Demand is concentrated on TradeKey (Germany importer board) and go4WorldBusiness EU/Gulf buy-leads."
+    },
+    {
+      "product": "Mazafati dates (Bam) + date cookies + ardeh (tahini)",
+      "key": "dates-ardeh",
+      "fa": "خرمای مضافتی بم + کلوچه خرمایی + ارده",
+      "verified": [
+        {
+          "buyer": "Mohammed Mudassir Ali",
+          "country": "India (Hyderabad, Telangana)",
+          "wants": "Mazafati dates, 10,000 kg, marked Urgent (largest single lot in the set)",
+          "posted": "~July 2026 ('one month ago' as of 2026-08-04)",
+          "verdict": "confirmed",
+          "reason": "Live ExportersIndia page re-verified: Hyderabad buyer, product 'Mazafati dates', 10,000 kg, Urgent, posted 'one month ago' (=July 2026). Named individual + city, buy-side RFQ, in India. Exact product match. Only weakness: contact number masked behind login, but source URL is solid.",
+          "contact": "+91-83****09 (full number behind ExportersIndia login)",
+          "source_url": "https://www.exportersindia.com/buyers/mazafati-dates.htm"
+        },
+        {
+          "buyer": "H.H. Brothers Fruit Traders",
+          "country": "India (Amroha, Uttar Pradesh)",
+          "wants": "Mazafati dates, 100 boxes (also buys Irani wet dates)",
+          "posted": "~July 2026 ('one month ago' as of 2026-08-04)",
+          "verdict": "confirmed",
+          "reason": "Live page re-verified: registered fruit-trading FIRM (clear B2B reseller/importer, the strongest entity identity in the set), Amroha; 'Mazafati dates' 100 boxes plus 'Irani wet dates'; profile shows engagement (2 requirements, 1 reply). Buy-side, in India, dated within the last month. Contact masked but source solid.",
+          "contact": "+91-36****95 (full number behind ExportersIndia login)",
+          "source_url": "https://www.exportersindia.com/buyers/mazafati-dates.htm"
+        },
+        {
+          "buyer": "Raghavendra Prabhu",
+          "country": "India (Salem, Tamil Nadu)",
+          "wants": "Mazafati dates, 100 kg, Urgent, recurring monthly",
+          "posted": "2026-06-23 (earlier identical post 2026-06-05)",
+          "verdict": "confirmed",
+          "reason": "Live page re-verified two explicit-dated leads (June 23, 2026 marked 'Monthly'; June 5, 2026 'Only Once'), Salem, 'Mazafati Dates', 100 kg, Urgent. Explicit 2026 dates + repeat posting = steady buy-side demand. Named individual + city.",
+          "contact": "+91-99****33 (full number behind ExportersIndia login)",
+          "source_url": "https://www.exportersindia.com/buyers/mazafati-dates.htm"
+        },
+        {
+          "buyer": "Faizal Ahammed",
+          "country": "India (Chennai, Tamil Nadu)",
+          "wants": "Mazafati dates, 100 kg",
+          "posted": "2026-06-17",
+          "verdict": "confirmed",
+          "reason": "Live page re-verified: Chennai, 'Mazafati Dates', 100 kg, explicit date June 17, 2026. Named individual + city, buy-side, in India, exact product match. Small quantity but genuine and current.",
+          "contact": "+91-63****71 (full number behind ExportersIndia login)",
+          "source_url": "https://www.exportersindia.com/buyers/mazafati-dates.htm"
+        },
+        {
+          "buyer": "Jogeshwari Dash",
+          "country": "India",
+          "wants": "Fresh Mazafati Iranian Dates, 10 kg",
+          "posted": "2026-07-01",
+          "verdict": "confirmed",
+          "reason": "Live 'fresh-dates' page re-verified: product literally reads 'Fresh Mazafati Iranian Dates' (exact variety AND origin match, the best product wording in the set), explicit date 2026-07-01, India, buy-side. Weakness: small quantity (10 kg) and no city given, but product/origin fit is exact.",
+          "contact": "+91-63****36 (full number behind ExportersIndia login)",
+          "source_url": "https://www.exportersindia.com/buyers/fresh-dates.htm"
+        },
+        {
+          "buyer": "Vrundan Bawankar",
+          "country": "India (Nagpur, Maharashtra)",
+          "wants": "Fresh Mazafati Dates (Khajoor), 3,500 kg",
+          "posted": "~July 2026 ('one month ago' as of 2026-08-04)",
+          "verdict": "plausible",
+          "reason": "Live page confirms Nagpur, 'Fresh Mazafati Dates (Khajoor)', 3,500 kg, buy-side. Named individual + city, serious bulk quantity, exact product. Downgraded to plausible only because the date is relative ('one month ago') rather than an explicit stamp I could pin.",
+          "contact": "+91-97****59 (full number behind ExportersIndia login)",
+          "source_url": "https://www.exportersindia.com/buyers/mazafati-dates.htm"
+        },
+        {
+          "buyer": "Azad",
+          "country": "India (Kochi, Kerala)",
+          "wants": "Mazafati dates, 1,000 kg, marked Urgent",
+          "posted": "~July 2026 ('one month ago' as of 2026-08-04)",
+          "verdict": "plausible",
+          "reason": "Live page confirms Kochi, 'Mazafati Dates', 1,000 kg, Urgent, buy-side. Specific product + city + solid quantity. Downgraded to plausible: identity is a single given name only ('Azad', no surname) and the date is relative, so entity specificity is weaker.",
+          "contact": "+91-77****57 (full number behind ExportersIndia login)",
+          "source_url": "https://www.exportersindia.com/buyers/mazafati-dates.htm"
+        },
+        {
+          "buyer": "inamdarsaad958",
+          "country": "India (Sangli, Maharashtra)",
+          "wants": "Original Mazafati dates, 1,000 kg, marked Urgent",
+          "posted": "~July 2026 ('one month ago' as of 2026-08-04)",
+          "verdict": "plausible",
+          "reason": "Live page confirms Sangli, 'original mazafati dates', 1,000 kg, Urgent, buy-side. Specific product + city + solid quantity. Downgraded to plausible: identity is a username/handle (name-derived 'Inamdar Saad' + digits), not a full proper name, and the date is relative.",
+          "contact": "+91-75****39 (full number behind ExportersIndia login)",
+          "source_url": "https://www.exportersindia.com/buyers/mazafati-dates.htm"
+        },
+        {
+          "buyer": "Vinukonda Gopal",
+          "country": "India (Nalgonda, Telangana)",
+          "wants": "Fresh Dates, 1,000 kg, marked Urgent (variety NOT stated as Mazafati)",
+          "posted": "2026-07-06",
+          "verdict": "plausible",
+          "reason": "Live 'fresh-dates' page re-verified: real named entity + city (Nalgonda), 1,000 kg, Urgent, explicit date 2026-07-06, buy-side, in India: passes all four hard gates. CAVEAT: the listing says only generic 'Fresh Dates', it does NOT name Mazafati, so the Mazafati fit is inferred, not stated. Treat as generic fresh-dates demand, not a confirmed Mazafati buyer.",
+          "contact": "+91-83****70 (full number behind ExportersIndia login)",
+          "source_url": "https://www.exportersindia.com/buyers/fresh-dates.htm"
+        }
+      ],
+      "dropped": 1,
+      "product_read": "Moderate but narrow, and India-only. Genuine 2025-2026 foreign buy-side demand for Iranian Mazafati is real and steady on ExportersIndia buy-lead boards, but almost entirely from India (Hyderabad, Salem, Chennai, Nagpur, Kochi, Sangli, Amroha, Nalgonda), spanning 10 kg individual asks up to 1,000-10,000 kg bulk/urgent RFQs, with at least one registered fruit-trading firm and one recurring monthly buyer. Contacts are all masked behind an ExportersIndia login, so reachability is a real limitation. Critically, ZERO buyers for date cookies (koloocheh khormaei) or ardeh/tahini surfaced anywhere in this candidate set, so public-web foreign demand for those two products is thin/absent here; only Mazafati dates show meaningful traction, and only in the Indian import market."
+    },
+    {
+      "product": "Export tiles & ceramics + sanitary ware",
+      "key": "tiles-sanitaryware",
+      "fa": "کاشی و سرامیک صادراتی و چینی بهداشتی",
+      "verified": [
+        {
+          "buyer": "Housing Authority of the City of Los Angeles (HACLA)",
+          "country": "United States",
+          "wants": "Supply and delivery of ceramic tiles and related supplies (firm fixed-price sealed bid, public housing procurement)",
+          "posted": "2026 (closing 2026-04-22)",
+          "verdict": "confirmed",
+          "reason": "Re-verified on legacy.sba.gov: named public buyer HACLA invites sealed bids to SUPPLY ceramic tiles (Opportunity ID 228795), closing 4/22/2026 - genuine dated buy-side signal. Caveats: the closing date has now passed, and US sanctions make Iranian-origin supply impossible, so this is a demand reference, not an addressable buyer.",
+          "source_url": "https://legacy.sba.gov/opportunity/supply-delivery-ceramic-tiles-related-supplies",
+          "contact": "Timothy Shay, timothy.shay@hacla.org; RAMP portal www.rampla.org"
+        },
+        {
+          "buyer": "Sprava zeleznic, statni organizace (Czech Railway Administration)",
+          "country": "Czech Republic",
+          "wants": "Framework agreement to SUPPLY ceramic tiles and cladding (CPV 44111900 'Ceramic flags') for station restrooms and hall repairs",
+          "posted": "2025-06-11 (deadline 2025-07-21)",
+          "verdict": "confirmed",
+          "reason": "Re-verified on the EU Publications Office permalink: notice 'Dlazby a obklady', ref 34415/2025-SZ-GR-O8, a SUPPLIES framework for ceramic tiles/cladding by a named public buyer, published 11/06/2025. Cleanest signal of the set. Caveats: submission deadline (21/07/2025) has passed, and the EU buyer means Iranian-origin supply is impractical.",
+          "source_url": "https://op.europa.eu/en/web/public-procurement/procurement-details/-/procurement/c35cd215-f8c7-4a17-a764-3377ea962415",
+          "contact": "https://zakazky.spravazeleznic.cz (e-submission portal); Sprava zeleznic, Prague"
+        },
+        {
+          "buyer": "Glavstroy-SPB (OOO 'Glavstroy-SPB specializirovannyi zastroishchik', residential developer)",
+          "country": "Russia (St. Petersburg)",
+          "wants": "Supply/delivery of ceramic tiles and porcelain stoneware (plitki keramicheskoi i keramogranita) to St. Petersburg",
+          "posted": "2026-08-03 (deadline 2026-08-05)",
+          "verdict": "confirmed",
+          "reason": "Re-verified on b2b-center.ru: tender #4548181, published 03.08.2026, deadline 05.08.2026, a buy-side pre-qualification to SUPPLY ceramic tiles + porcelain stoneware for named developer Glavstroy-SPB. Russia is a realistic destination for Iranian tile. Weakness: the individual tender page and direct contact sit behind platform registration.",
+          "source_url": "https://www.b2b-center.ru/search-tender/tendery-plitka-keramicheskaia/",
+          "contact": "Via b2b-center.ru marketplace (registration required to bid); Glavstroy-SPB, St. Petersburg"
+        },
+        {
+          "buyer": "Qatar importer, contact 'Mr Zubair' (go4WorldBusiness buy-lead)",
+          "country": "Qatar",
+          "wants": "1x 20ft container of white ceramic bathroom fixtures - washbasins, toilet seats, faucets; CIF, LC",
+          "posted": "2026-02-23",
+          "verdict": "plausible",
+          "reason": "Live buy-lead re-confirmed on the go4WorldBusiness Qatar sanitary-ware page (date + ceramic buy-side import request). Qatar is a realistic GCC destination for Iranian export. Weakness: the buyer is a first-name-only, platform-gated contact - a real lead but not fully identifiable or directly reachable without paid platform access.",
+          "source_url": "https://www.go4worldbusiness.com/buyers/qatar/sanitary-wares.html",
+          "contact": "'Mr Zubair' via go4WorldBusiness Qatar sanitary-ware listing (platform-gated)"
+        },
+        {
+          "buyer": "Qatar importer, contact 'Abdullah' (go4WorldBusiness buy-lead)",
+          "country": "Qatar",
+          "wants": "1x 20ft container of ceramic sanitary ware - toilets/WCs, washbasins, bidets, cisterns, plus faucets/health faucets/accessories; CIF, LC",
+          "posted": "2026-06-08",
+          "verdict": "plausible",
+          "reason": "Live buy-lead re-confirmed on the go4WorldBusiness Qatar page (date + core ceramic sanitary-ware import basket: WC/basin/bidet/cistern). Realistic GCC export market. Weakness: anonymized first-name platform contact whose identity is not independently verifiable.",
+          "source_url": "https://www.go4worldbusiness.com/buyers/qatar/sanitary-wares.html",
+          "contact": "'Abdullah' via go4WorldBusiness Qatar sanitary-ware listing (platform-gated)"
+        },
+        {
+          "buyer": "Thulamela Local Municipality",
+          "country": "South Africa",
+          "wants": "Supply and delivery of floor tiles at Tshiulungoma Stores (municipal tender ref N24/2025-2026)",
+          "posted": "FY 2025/2026 (ref N24/2025-2026)",
+          "verdict": "plausible",
+          "reason": "Confirmed via multiple SA tender aggregators plus the municipality that tender N24/2025-2026 for supply/delivery of floor tiles is a real, current municipal buy-side tender; a prior 2024/25 ref at the same Tshiulungoma site was awarded, indicating a repeat tiling buyer. Could not retrieve the exact closing date/contact (primary source returned HTTP 403). Caveat: SA municipal tenders require CSD-registered local vendors, so direct foreign supply is impractical.",
+          "source_url": "https://www.tenders-sa.org/sa-tenders/tender/n24-2025-2026-supply-and-delivery-of-floor-tiles-at-tshiulungoma-stores-cmpr2fqse0e53kncw3hmazjoe",
+          "contact": "Thulamela Local Municipality SCM/tenders, https://www.thulamela.gov.za"
+        }
+      ],
+      "dropped": 4,
+      "product_read": "Moderate overall, but thin where it actually counts for an Iranian exporter. Verifiable 2025-2026 foreign buy-side demand clearly exists, but it splits into (a) genuine yet non-addressable Western/EU/US public procurement (HACLA-US, Sprava zeleznic-CZ, Thulamela-ZA) blocked by sanctions or local-vendor registration rules, and (b) a smaller set of realistically addressable GCC/CIS channels - Qatar sanitary-ware import leads on B2B marketplaces (go4WorldBusiness) and Russia developer tile tenders (b2b-center) - where buyer identity is anonymized or platform-gated. Aggregator-only listings (BidDetail: Belarus/Kazakhstan) could not be independently confirmed on native portals and were dropped. Best genuine, addressable 2025+ demand sits in Qatar/GCC marketplace buy-leads and Russia/CIS platform tenders."
+    }
+  ],
+  "total_verified": 62,
+  "criteria": "genuine buy-side demand, dated 2025+, outside Iran"
+}

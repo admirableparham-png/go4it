@@ -65,7 +65,8 @@ def run(line_slug):
             lead = Lead(
                 source=source, external_id=f"{source}:{ext}",
                 product=product, category=category,
-                spec=buys[:300], dest_country=spec.get("dest", {}).get("iso", ""),
+                spec=buys[:300],
+                dest_country=(b.get("dest_iso") or spec.get("dest", {}).get("iso", "")),
                 dest_city=b.get("city") or "",
                 buyer_company=company, phone=(phones[0] if phones else ""),
                 email=b.get("email") or "", website=b.get("website") or "", notes=notes[:600],

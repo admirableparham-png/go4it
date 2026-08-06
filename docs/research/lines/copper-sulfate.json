@@ -1,0 +1,36 @@
+{
+  "slug": "copper-sulfate",
+  "label": "Copper sulphate",
+  "product": "Copper sulphate (Iran-sourced) - verified 2025+ foreign buy-requests",
+  "category": "export-copper-sulfate",
+  "dest": {
+    "iso": "",
+    "m49": 0,
+    "name": "Export (multi-country)",
+    "directory": "none"
+  },
+  "source": "iran-export-copper-sulfate",
+  "rfq_source": "iran-export-copper-sulfate-rfq",
+  "buyers_file": "copper-sulfate_export_buyers.json",
+  "rfqs_file": "",
+  "meta": {
+    "name": "Copper sulphate",
+    "positioning": "Real 2025+ foreign buy-side demand for this Iran-sourced product (verified + de-noised).",
+    "brands": [],
+    "note": "Moderate but narrow. The only reliably verifiable 2025+ FOREIGN buy-side demand is small-tonnage public water-treatment procurement: recurring US municipal bids (Fairfax VA, Watertown NY, Middletown CT), Indian municipal water works, plus a niche UK reagent-grade NHSBT framework. Bulk agri/industrial tonnage (1,000+ t) appears almost only as anonymous, largely unverifiable leads on low-trust B2B aggregators (go4WorldBusiness, TradeKey), so genuine bulk foreign demand on the public web is thin and low-confidence. Dropped 3 aggregator leads (Egypt 'Mr. Mahmood' anonymous, Turkey 'Farzam Group' Iran-linkage risk, Spain 'AQUA ADVANCE CORP' no independent footprint) as failing the real-entity / outside-Iran tests."
+  },
+  "families": [],
+  "scoring": {
+    "default_base": 70,
+    "cat_base": {},
+    "families_for": {},
+    "boost": [],
+    "penalty": []
+  },
+  "display_order": [
+    "United States",
+    "United Kingdom",
+    "Indonesia",
+    "India"
+  ]
+}

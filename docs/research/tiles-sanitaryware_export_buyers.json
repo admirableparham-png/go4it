@@ -1,0 +1,135 @@
+{
+  "source": "verified-hunt-2025+",
+  "total": 6,
+  "with_phone": 0,
+  "with_email": 1,
+  "with_website": 3,
+  "buyers": [
+    {
+      "company": "Housing Authority of the City of Los Angeles (HACLA)",
+      "categories": [
+        "United States"
+      ],
+      "city": "United States",
+      "dest_iso": "US",
+      "phones": [],
+      "email": "timothy.shay@hacla.org",
+      "website": "timothy.shay",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Supply and delivery of ceramic tiles and related supplies (f"
+      ],
+      "wants": "Supply and delivery of ceramic tiles and related supplies (firm fixed-price sealed bid, public housing procurement)",
+      "posted": "2026 (closing 2026-04-22)",
+      "source_url": "https://legacy.sba.gov/opportunity/supply-delivery-ceramic-tiles-related-supplies",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Sprava zeleznic, statni organizace (Czech Railway Administration)",
+      "categories": [
+        "Czech Republic"
+      ],
+      "city": "Czech Republic",
+      "dest_iso": "CZ",
+      "phones": [],
+      "email": "",
+      "website": "zakazky.spravazeleznic.cz",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Framework agreement to SUPPLY ceramic tiles and cladding (CP"
+      ],
+      "wants": "Framework agreement to SUPPLY ceramic tiles and cladding (CPV 44111900 'Ceramic flags') for station restrooms and hall repairs",
+      "posted": "2025-06-11 (deadline 2025-07-21)",
+      "source_url": "https://op.europa.eu/en/web/public-procurement/procurement-details/-/procurement/c35cd215-f8c7-4a17-a764-3377ea962415",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Glavstroy-SPB (OOO 'Glavstroy-SPB specializirovannyi zastroishchik', residential developer)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Russia",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Supply/delivery of ceramic tiles and porcelain stoneware (pl"
+      ],
+      "wants": "Supply/delivery of ceramic tiles and porcelain stoneware (plitki keramicheskoi i keramogranita) to St. Petersburg",
+      "posted": "2026-08-03 (deadline 2026-08-05)",
+      "source_url": "https://www.b2b-center.ru/search-tender/tendery-plitka-keramicheskaia/",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Qatar importer, contact 'Mr Zubair' (go4WorldBusiness buy-lead)",
+      "categories": [
+        "Qatar"
+      ],
+      "city": "Qatar",
+      "dest_iso": "QA",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "1x 20ft container of white ceramic bathroom fixtures - washb"
+      ],
+      "wants": "1x 20ft container of white ceramic bathroom fixtures - washbasins, toilet seats, faucets; CIF, LC",
+      "posted": "2026-02-23",
+      "source_url": "https://www.go4worldbusiness.com/buyers/qatar/sanitary-wares.html",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Qatar importer, contact 'Abdullah' (go4WorldBusiness buy-lead)",
+      "categories": [
+        "Qatar"
+      ],
+      "city": "Qatar",
+      "dest_iso": "QA",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "1x 20ft container of ceramic sanitary ware - toilets/WCs, wa"
+      ],
+      "wants": "1x 20ft container of ceramic sanitary ware - toilets/WCs, washbasins, bidets, cisterns, plus faucets/health faucets/accessories; CIF, LC",
+      "posted": "2026-06-08",
+      "source_url": "https://www.go4worldbusiness.com/buyers/qatar/sanitary-wares.html",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Thulamela Local Municipality",
+      "categories": [
+        "South Africa"
+      ],
+      "city": "South Africa",
+      "dest_iso": "ZA",
+      "phones": [],
+      "email": "",
+      "website": "www.thulamela.gov",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Supply and delivery of floor tiles at Tshiulungoma Stores (m"
+      ],
+      "wants": "Supply and delivery of floor tiles at Tshiulungoma Stores (municipal tender ref N24/2025-2026)",
+      "posted": "FY 2025/2026 (ref N24/2025-2026)",
+      "source_url": "https://www.tenders-sa.org/sa-tenders/tender/n24-2025-2026-supply-and-delivery-of-floor-tiles-at-tshiulungoma-stores-cmpr2fqse0e53kncw3hmazjoe",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    }
+  ]
+}

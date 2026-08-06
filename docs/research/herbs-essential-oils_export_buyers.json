@@ -1,0 +1,179 @@
+{
+  "source": "verified-hunt-2025+",
+  "total": 8,
+  "with_phone": 1,
+  "with_email": 0,
+  "with_website": 0,
+  "buyers": [
+    {
+      "company": "Universal Foodstuff Trading LLC",
+      "categories": [
+        "Oman"
+      ],
+      "city": "Oman",
+      "dest_iso": "OM",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Cumin seeds — 100 t/order, ~4,000 t/yr, purity 97-99.5%, ori"
+      ],
+      "wants": "Cumin seeds — 100 t/order, ~4,000 t/yr, purity 97-99.5%, origin 'all over the world' (Iran-eligible), FOB Sohar/Jebel Ali, weekly",
+      "posted": "2026-07-07",
+      "source_url": "https://importer.tradekey.com/buyoffer/CUMIN-SEED-3862619.html",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Creek Line General Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "United Arab Emirates",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Cumin Seed (Singapore 99 grade), 6 x 20ft containers, CIF Fu"
+      ],
+      "wants": "Cumin Seed (Singapore 99 grade), 6 x 20ft containers, CIF Fujairah, 25 kg PP bags, monthly",
+      "posted": "2026-07-06",
+      "source_url": "https://importer.tradekey.com/buyoffer/Cumin-Seed-3801225.html",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Super Spice Foodstuff Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "United Arab Emirates",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Cumin seeds, bulk, monthly recurring"
+      ],
+      "wants": "Cumin seeds, bulk, monthly recurring",
+      "posted": "2026-07-09 (also Jul 03; recurring)",
+      "source_url": "https://importer.tradekey.com/uae/cumin-seed.htm",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Stock Wonders Goods Wholesalers LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "United Arab Emirates",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Cumin seeds (Singapore 99), 25 kg bulk, ~5 containers monthl"
+      ],
+      "wants": "Cumin seeds (Singapore 99), 25 kg bulk, ~5 containers monthly; also sunflower oil, turmeric fingers",
+      "posted": "2026-07-20 (also Jul 02)",
+      "source_url": "https://importer.tradekey.com/uae/cumin-seed.htm",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "ALMATHAQA ALTABAI FOODSTUFF L.L.C",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "United Arab Emirates",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Cumin seeds, monthly buying frequency"
+      ],
+      "wants": "Cumin seeds, monthly buying frequency",
+      "posted": "2026-05-11",
+      "source_url": "https://importer.tradekey.com/uae/cumin-seed.htm",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Herbs importer from Colombia (name gated; ref ID 1073232451)",
+      "categories": [
+        "Colombia"
+      ],
+      "city": "Colombia",
+      "dest_iso": "CO",
+      "phones": [
+        "1073232451"
+      ],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Dried culinary/medicinal herbs incl. THYME (also oregano, mi"
+      ],
+      "wants": "Dried culinary/medicinal herbs incl. THYME (also oregano, mint, basil, chives, rosemary); 500 kg initial, ~9,000 kg/yr",
+      "posted": "2025-07-24",
+      "source_url": "https://importer.tradekey.com/thyme-importer.html",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Importer from Mexico (name gated)",
+      "categories": [
+        "Mexico"
+      ],
+      "city": "Mexico",
+      "dest_iso": "MX",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Cumin seeds (dedicated buying request/RFQ)"
+      ],
+      "wants": "Cumin seeds (dedicated buying request/RFQ)",
+      "posted": "2025-10-15",
+      "source_url": "https://freshdi.com/request/Cumin-seeds-ZXi3Xj",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Importer from Chile (name gated)",
+      "categories": [
+        "Chile"
+      ],
+      "city": "Chile",
+      "dest_iso": "CL",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Seeds incl. cumin (anise, badian, fennel, cumin, etc.)"
+      ],
+      "wants": "Seeds incl. cumin (anise, badian, fennel, cumin, etc.)",
+      "posted": "2025-10-11",
+      "source_url": "https://freshdi.com/request/Seeds-anise-badian-fennel-cumin-etc--o6C4oZ",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    }
+  ]
+}

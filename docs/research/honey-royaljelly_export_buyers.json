@@ -1,0 +1,158 @@
+{
+  "source": "verified-hunt-2025+",
+  "total": 7,
+  "with_phone": 1,
+  "with_email": 0,
+  "with_website": 3,
+  "buyers": [
+    {
+      "company": "Ikram Ullah Niazi",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Afghanistan",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Raw natural honey, 1-20 metric tons, worldwide sourcing acce"
+      ],
+      "wants": "Raw natural honey, 1-20 metric tons, worldwide sourcing accepted (open to Iranian origin), CIF, L/C",
+      "posted": "2026-03-25",
+      "source_url": "https://www.go4worldbusiness.com/find?searchText=raw-honey&BuyersOrSuppliers=buyers",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Syed",
+      "categories": [
+        "Malaysia"
+      ],
+      "city": "Malaysia",
+      "dest_iso": "MY",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Natural honey (raw and processed) for consumption/medicinal "
+      ],
+      "wants": "Natural honey (raw and processed) for consumption/medicinal use, 1 twenty-foot container, FOB/CIF, L/C or T/T",
+      "posted": "2026-04-30",
+      "source_url": "https://www.go4worldbusiness.com/find?searchText=raw-honey&BuyersOrSuppliers=buyers",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Maison del Gusto",
+      "categories": [
+        "France"
+      ],
+      "city": "France",
+      "dest_iso": "FR",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "High-quality raw white honey, ideally sainfoin honey; buyer "
+      ],
+      "wants": "High-quality raw white honey, ideally sainfoin honey; buyer states Kyrgyzstan as preferred origin",
+      "posted": "2026-04-20",
+      "source_url": "https://importer.tradekey.com/raw-honey-importer.html",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Rang Ventures LLC",
+      "categories": [
+        "United States"
+      ],
+      "city": "United States",
+      "dest_iso": "US",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Bulk natural honey with moisture content below 20%"
+      ],
+      "wants": "Bulk natural honey with moisture content below 20%",
+      "posted": "2026-07-07",
+      "source_url": "https://importer.tradekey.com/natural-honey-importer.html",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Mhr Trading Private Limited",
+      "categories": [
+        "Maldives"
+      ],
+      "city": "Maldives",
+      "dest_iso": "",
+      "phones": [],
+      "email": "",
+      "website": "eximnext.com",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Natural honey, 1 twenty-foot container, 100% natural / food "
+      ],
+      "wants": "Natural honey, 1 twenty-foot container, 100% natural / food grade, FOB, bank transfer",
+      "posted": "2025-04-30",
+      "source_url": "https://eximnext.com/buy-lead/natural-honey-97",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Balma Maldives Private Limited",
+      "categories": [
+        "Maldives"
+      ],
+      "city": "Maldives",
+      "dest_iso": "",
+      "phones": [],
+      "email": "",
+      "website": "eximnext.com",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Natural honey, food grade, quantity depends on price, FOB, L"
+      ],
+      "wants": "Natural honey, food grade, quantity depends on price, FOB, L/C",
+      "posted": "2025-04-30",
+      "source_url": "https://eximnext.com/buy-lead/natural-honey-93",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Beetopia Co., Ltd.",
+      "categories": [
+        "South Korea"
+      ],
+      "city": "South Korea",
+      "dest_iso": "KR",
+      "phones": [
+        "82-31-521-7063"
+      ],
+      "email": "",
+      "website": "exporthub.com",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Fresh royal jelly, ~1,000 kg/month, 100% purity (buyer state"
+      ],
+      "wants": "Fresh royal jelly, ~1,000 kg/month, 100% purity (buyer states Vietnam as preferred origin)",
+      "posted": "2025 (inferred from listing expiry 2026-05-23)",
+      "source_url": "https://www.exporthub.com/importers/royal-jelly/",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "slug": "dates-ardeh",
+  "label": "Dates & ardeh",
+  "product": "Dates & ardeh (Iran-sourced) - verified 2025+ foreign buy-requests",
+  "category": "export-dates-ardeh",
+  "dest": {
+    "iso": "",
+    "m49": 0,
+    "name": "Export (multi-country)",
+    "directory": "none"
+  },
+  "source": "iran-export-dates-ardeh",
+  "rfq_source": "iran-export-dates-ardeh-rfq",
+  "buyers_file": "dates-ardeh_export_buyers.json",
+  "rfqs_file": "",
+  "meta": {
+    "name": "Dates & ardeh",
+    "positioning": "Real 2025+ foreign buy-side demand for this Iran-sourced product (verified + de-noised).",
+    "brands": [],
+    "note": "Moderate but narrow, and India-only. Genuine 2025-2026 foreign buy-side demand for Iranian Mazafati is real and steady on ExportersIndia buy-lead boards, but almost entirely from India (Hyderabad, Salem, Chennai, Nagpur, Kochi, Sangli, Amroha, Nalgonda), spanning 10 kg individual asks up to 1,000-10,000 kg bulk/urgent RFQs, with at least one registered fruit-trading firm and one recurring monthly buyer. Contacts are all masked behind an ExportersIndia login, so reachability is a real limitation. Critically, ZERO buyers for date cookies (koloocheh khormaei) or ardeh/tahini surfaced anywhere in this candidate set, so public-web foreign demand for those two products is thin/absent here; only Mazafati dates show meaningful traction, and only in the Indian import market."
+  },
+  "families": [],
+  "scoring": {
+    "default_base": 70,
+    "cat_base": {},
+    "families_for": {},
+    "boost": [],
+    "penalty": []
+  },
+  "display_order": [
+    "India"
+  ]
+}

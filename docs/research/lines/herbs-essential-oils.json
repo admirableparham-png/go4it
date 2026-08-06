@@ -1,0 +1,37 @@
+{
+  "slug": "herbs-essential-oils",
+  "label": "Herbs & essential oils",
+  "product": "Herbs & essential oils (Iran-sourced) - verified 2025+ foreign buy-requests",
+  "category": "export-herbs-essential-oils",
+  "dest": {
+    "iso": "",
+    "m49": 0,
+    "name": "Export (multi-country)",
+    "directory": "none"
+  },
+  "source": "iran-export-herbs-essential-oils",
+  "rfq_source": "iran-export-herbs-essential-oils-rfq",
+  "buyers_file": "herbs-essential-oils_export_buyers.json",
+  "rfqs_file": "",
+  "meta": {
+    "name": "Herbs & essential oils",
+    "positioning": "Real 2025+ foreign buy-side demand for this Iran-sourced product (verified + de-noised).",
+    "brands": [],
+    "note": "Moderate for cumin, thin for thyme, thin for Damask rose. Genuine 2025-2026 foreign buy-side demand really exists for cumin — recurring, dated RFQs concentrated in the Gulf (UAE/Oman, several origin-agnostic so Iran-eligible) plus a few Latin American leads (Mexico, Chile) — but it lives almost entirely behind login-gated B2B directories (TradeKey/Freshdi) and often specs the Indian 'Singapore 99' grade. Thyme shows just one credible 2025 lead (Colombia, thyme within a mixed-herb order). Damask rose oil/rose water demand is thin and unverifiable: only weak, recycled directory listings with auto-bumped 'updated' timestamps, none solid enough to keep."
+  },
+  "families": [],
+  "scoring": {
+    "default_base": 70,
+    "cat_base": {},
+    "families_for": {},
+    "boost": [],
+    "penalty": []
+  },
+  "display_order": [
+    "United Arab Emirates",
+    "Oman",
+    "Colombia",
+    "Mexico",
+    "Chile"
+  ]
+}

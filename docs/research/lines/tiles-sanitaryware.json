@@ -1,0 +1,37 @@
+{
+  "slug": "tiles-sanitaryware",
+  "label": "Tiles & sanitaryware",
+  "product": "Tiles & sanitaryware (Iran-sourced) - verified 2025+ foreign buy-requests",
+  "category": "export-tiles-sanitaryware",
+  "dest": {
+    "iso": "",
+    "m49": 0,
+    "name": "Export (multi-country)",
+    "directory": "none"
+  },
+  "source": "iran-export-tiles-sanitaryware",
+  "rfq_source": "iran-export-tiles-sanitaryware-rfq",
+  "buyers_file": "tiles-sanitaryware_export_buyers.json",
+  "rfqs_file": "",
+  "meta": {
+    "name": "Tiles & sanitaryware",
+    "positioning": "Real 2025+ foreign buy-side demand for this Iran-sourced product (verified + de-noised).",
+    "brands": [],
+    "note": "Moderate overall, but thin where it actually counts for an Iranian exporter. Verifiable 2025-2026 foreign buy-side demand clearly exists, but it splits into (a) genuine yet non-addressable Western/EU/US public procurement (HACLA-US, Sprava zeleznic-CZ, Thulamela-ZA) blocked by sanctions or local-vendor registration rules, and (b) a smaller set of realistically addressable GCC/CIS channels - Qatar sanitary-ware import leads on B2B marketplaces (go4WorldBusiness) and Russia developer tile tenders (b2b-center) - where buyer identity is anonymized or platform-gated. Aggregator-only listings (BidDetail: Belarus/Kazakhstan) could not be independently confirmed on native portals and were dropped. Best genuine, addressable 2025+ demand sits in Qatar/GCC marketplace buy-leads and Russia/CIS platform tenders."
+  },
+  "families": [],
+  "scoring": {
+    "default_base": 70,
+    "cat_base": {},
+    "families_for": {},
+    "boost": [],
+    "penalty": []
+  },
+  "display_order": [
+    "Qatar",
+    "United States",
+    "Czech Republic",
+    "Russia",
+    "South Africa"
+  ]
+}

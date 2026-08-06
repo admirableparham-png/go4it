@@ -1,0 +1,158 @@
+{
+  "source": "verified-hunt-2025+",
+  "total": 7,
+  "with_phone": 1,
+  "with_email": 1,
+  "with_website": 1,
+  "buyers": [
+    {
+      "company": "National Fertilizers Limited (NFL) — Govt of India undertaking",
+      "categories": [
+        "India"
+      ],
+      "city": "India",
+      "dest_iso": "IN",
+      "phones": [
+        "+91-120-2412294"
+      ],
+      "email": "imports@nfl.co.in",
+      "website": "nfl.co.in",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "IMPORT tender for Water Soluble Fertilizers incl. Zinc Sulph"
+      ],
+      "wants": "IMPORT tender for Water Soluble Fertilizers incl. Zinc Sulphate 21% Heptahydrate (~2000 MT) and Zinc Sulphate 33% Monohydrate (~2000-3000 MT), CIF, containerised",
+      "posted": "2025-07-22 (Tender 05-2025-26-WSF-01EW; closed 05 Aug 2025)",
+      "source_url": "https://eoitashkent.gov.in/wp-content/uploads/2025/07/TENDER-05-2025-26-WSF-01EW.pdf",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Arkadiusz Kantor (importer)",
+      "categories": [
+        "Poland"
+      ],
+      "city": "Poland",
+      "dest_iso": "PL",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Zinc Sulphate, fertilizer grade to correct crop zinc deficie"
+      ],
+      "wants": "Zinc Sulphate, fertilizer grade to correct crop zinc deficiency; 100 metric tons; CIF; payment L/C",
+      "posted": "2026-05-29 (repeat 2026-03-31) — date NOT independently re-confirmed",
+      "source_url": "https://www.go4worldbusiness.com/buyers/zinc-sulphate.html",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Aakash",
+      "categories": [
+        "India"
+      ],
+      "city": "India",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Zinc Sulfate Powder, loose; 10 tons (monthly, urgent)"
+      ],
+      "wants": "Zinc Sulfate Powder, loose; 10 tons (monthly, urgent)",
+      "posted": "2026-07-15",
+      "source_url": "https://www.exportersindia.com/buyers/zinc-sulphate.htm",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Rakesh Singh",
+      "categories": [
+        "India"
+      ],
+      "city": "India",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Zinc sulphate; 100 MT"
+      ],
+      "wants": "Zinc sulphate; 100 MT",
+      "posted": "~2026-07 (shown 'One month ago' on page loaded 2026-08-04)",
+      "source_url": "https://www.exportersindia.com/buyers/zinc-sulphate.htm",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Yougesh Tore",
+      "categories": [
+        "India"
+      ],
+      "city": "India",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Zinc Sulphate Crystal (heptahydrate), 50 kg packaging; 1000 "
+      ],
+      "wants": "Zinc Sulphate Crystal (heptahydrate), 50 kg packaging; 1000 tons (urgent, monthly)",
+      "posted": "~2026-07 (shown 'One month ago')",
+      "source_url": "https://www.exportersindia.com/buyers/zinc-sulphate.htm",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Gopinath Rajamanickam",
+      "categories": [
+        "India"
+      ],
+      "city": "India",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Zinc sulphate; 50 tons (tagged 'big deal', urgent, monthly)"
+      ],
+      "wants": "Zinc sulphate; 50 tons (tagged 'big deal', urgent, monthly)",
+      "posted": "~2026-07 (shown 'One month ago')",
+      "source_url": "https://www.exportersindia.com/buyers/zinc-sulphate.htm",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Kalpesh Patel",
+      "categories": [
+        "India"
+      ],
+      "city": "India",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Zinc Sulfate Powder, industrial grade; 25 tons"
+      ],
+      "wants": "Zinc Sulfate Powder, industrial grade; 25 tons",
+      "posted": "~2026-07 (shown 'One month ago')",
+      "source_url": "https://www.exportersindia.com/buyers/zinc-sulphate.htm",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    }
+  ]
+}

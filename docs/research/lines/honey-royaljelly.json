@@ -1,0 +1,38 @@
+{
+  "slug": "honey-royaljelly",
+  "label": "Honey & royal jelly",
+  "product": "Honey & royal jelly (Iran-sourced) - verified 2025+ foreign buy-requests",
+  "category": "export-honey-royaljelly",
+  "dest": {
+    "iso": "",
+    "m49": 0,
+    "name": "Export (multi-country)",
+    "directory": "none"
+  },
+  "source": "iran-export-honey-royaljelly",
+  "rfq_source": "iran-export-honey-royaljelly-rfq",
+  "buyers_file": "honey-royaljelly_export_buyers.json",
+  "rfqs_file": "",
+  "meta": {
+    "name": "Honey & royal jelly",
+    "positioning": "Real 2025+ foreign buy-side demand for this Iran-sourced product (verified + de-noised).",
+    "brands": [],
+    "note": "Moderate for natural honey, thin for royal jelly. TradeKey and go4WorldBusiness show a steady 2025-2026 stream of honey buy-leads across the USA, UK, France, Malaysia, Afghanistan, Azerbaijan, Bangladesh, Spain, Greece, Norway, Zimbabwe, Nigeria and the Maldives — but most are small-volume, gated/anonymous contacts, or origin-locked to non-Iranian honey (Manuka/NZ, Kyrgyz, Trinidad). Royal jelly demand is genuinely thin: few named importers (Beetopia in South Korea is the standout), mostly gated or undated, and buyers typically prefer Vietnam/China origin. Best realistic fit for Iranian origin is regional/neighboring buyers (Afghanistan, the Gulf, Central Asia, Maldives) rather than premium Western markets."
+  },
+  "families": [],
+  "scoring": {
+    "default_base": 70,
+    "cat_base": {},
+    "families_for": {},
+    "boost": [],
+    "penalty": []
+  },
+  "display_order": [
+    "Maldives",
+    "Afghanistan",
+    "Malaysia",
+    "France",
+    "United States",
+    "South Korea"
+  ]
+}

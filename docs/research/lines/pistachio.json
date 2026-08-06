@@ -1,0 +1,36 @@
+{
+  "slug": "pistachio",
+  "label": "Pistachios",
+  "product": "Pistachios (Iran-sourced) - verified 2025+ foreign buy-requests",
+  "category": "export-pistachio",
+  "dest": {
+    "iso": "",
+    "m49": 0,
+    "name": "Export (multi-country)",
+    "directory": "none"
+  },
+  "source": "iran-export-pistachio",
+  "rfq_source": "iran-export-pistachio-rfq",
+  "buyers_file": "pistachio_export_buyers.json",
+  "rfqs_file": "",
+  "meta": {
+    "name": "Pistachios",
+    "positioning": "Real 2025+ foreign buy-side demand for this Iran-sourced product (verified + de-noised).",
+    "brands": [],
+    "note": "Thin-to-moderate, and heavily paywalled. Genuine 2025+ FOREIGN buy-side demand for Iranian/snack pistachios lives almost entirely on gated B2B lead boards (TradeKey, go4WorldBusiness), where a large share of 'buyers' are anonymous handles, first-names-only, or templated boilerplate that reads AI-generated and cannot be independently verified; most contacts sit behind premium paywalls. Truly reachable, corroborated foreign buyers are rare — the two solid ones here are a Korean buyer with a PUBLIC email/phone (jktrade0, 20 t/mo) and a named Argentine snack-grade buyer (Mario Yedid, roasted/salted 18/22). Demand clusters in Gulf/UAE re-export, East Asia (China/Korea), and scattered EU (Poland). Important product note: foreign buyers specify by SIZE (18/22, 20/22) or shelled/kernel — they essentially NEVER use the Iranian cultivar names 'Akbari/Ahmad Aghaei', so exact-varietal matches basically don't exist on the public web; you match on size/grade instead. Dropped 6: Mikaeili Commerce LLC (UAE) and Ekvtime (Georgia) = boilerplate phrasing + zero independent trace, likely synthetic TradeKey listings; Mehmood (Kuwait) and 'Mbr' (Tunisia) = first-name/initials-only, generic, gated, self-rated low; plus 2 duplicate entries (Bingo China, Poland 540t) folded into their originals."
+  },
+  "families": [],
+  "scoring": {
+    "default_base": 70,
+    "cat_base": {},
+    "families_for": {},
+    "boost": [],
+    "penalty": []
+  },
+  "display_order": [
+    "South Korea",
+    "Argentina",
+    "China",
+    "Poland"
+  ]
+}

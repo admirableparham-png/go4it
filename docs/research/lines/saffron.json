@@ -1,0 +1,34 @@
+{
+  "slug": "saffron",
+  "label": "Saffron",
+  "product": "Saffron (Iran-sourced) - verified 2025+ foreign buy-requests",
+  "category": "export-saffron",
+  "dest": {
+    "iso": "",
+    "m49": 0,
+    "name": "Export (multi-country)",
+    "directory": "none"
+  },
+  "source": "iran-export-saffron",
+  "rfq_source": "iran-export-saffron-rfq",
+  "buyers_file": "saffron_export_buyers.json",
+  "rfqs_file": "",
+  "meta": {
+    "name": "Saffron",
+    "positioning": "Real 2025+ foreign buy-side demand for this Iran-sourced product (verified + de-noised).",
+    "brands": [],
+    "note": "Thin-to-moderate, and geographically narrow: the only cleanly verifiable 2025+ foreign buy-side demand on the public web is a handful of France/Spain buy requests on EspaceAgro (one, ref 699801, explicitly naming Iranian saffron) — genuine but low-volume. The higher-volume-looking 'leads' on TradeKey/ExportHub/go4WorldBusiness are mostly gated, anonymized (bare first names), recycled from 2018-2021, or auto-generated lead-farm/SEO content with no reachable contacts, and do not hold up under scrutiny."
+  },
+  "families": [],
+  "scoring": {
+    "default_base": 70,
+    "cat_base": {},
+    "families_for": {},
+    "boost": [],
+    "penalty": []
+  },
+  "display_order": [
+    "France",
+    "Spain"
+  ]
+}

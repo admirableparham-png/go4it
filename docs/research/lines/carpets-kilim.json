@@ -1,0 +1,33 @@
+{
+  "slug": "carpets-kilim",
+  "label": "Carpets & kilims",
+  "product": "Carpets & kilims (Iran-sourced) - verified 2025+ foreign buy-requests",
+  "category": "export-carpets-kilim",
+  "dest": {
+    "iso": "",
+    "m49": 0,
+    "name": "Export (multi-country)",
+    "directory": "none"
+  },
+  "source": "iran-export-carpets-kilim",
+  "rfq_source": "iran-export-carpets-kilim-rfq",
+  "buyers_file": "carpets-kilim_export_buyers.json",
+  "rfqs_file": "",
+  "meta": {
+    "name": "Carpets & kilims",
+    "positioning": "Real 2025+ foreign buy-side demand for this Iran-sourced product (verified + de-noised).",
+    "brands": [],
+    "note": "Thin-to-moderate. Genuine 2026 FOREIGN buy-side demand specifically for handwoven/kilim carpets (as opposed to machine-made, hand-tufted, jute, or PVC mats) is sparse on the public web: a couple of Germany kilim importers on TradeKey, plus scattered handmade/hand-knitted carpet requests (Spain, Israel, Italy, Gulf states) on go4WorldBusiness. Most such leads are contact-gated, first-name-only, or actually sellers, so verifiable, reachable foreign buyers are few. Demand is concentrated on TradeKey (Germany importer board) and go4WorldBusiness EU/Gulf buy-leads."
+  },
+  "families": [],
+  "scoring": {
+    "default_base": 70,
+    "cat_base": {},
+    "families_for": {},
+    "boost": [],
+    "penalty": []
+  },
+  "display_order": [
+    "Germany"
+  ]
+}

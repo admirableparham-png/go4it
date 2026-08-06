@@ -1,0 +1,35 @@
+{
+  "slug": "turquoise-gems",
+  "label": "Turquoise & gems",
+  "product": "Turquoise & gems (Iran-sourced) - verified 2025+ foreign buy-requests",
+  "category": "export-turquoise-gems",
+  "dest": {
+    "iso": "",
+    "m49": 0,
+    "name": "Export (multi-country)",
+    "directory": "none"
+  },
+  "source": "iran-export-turquoise-gems",
+  "rfq_source": "iran-export-turquoise-gems-rfq",
+  "buyers_file": "turquoise-gems_export_buyers.json",
+  "rfqs_file": "",
+  "meta": {
+    "name": "Turquoise & gems",
+    "positioning": "Real 2025+ foreign buy-side demand for this Iran-sourced product (verified + de-noised).",
+    "brands": [],
+    "note": "Thin-to-moderate, and almost entirely on TradeKey buy-leads (masked buyers, no direct contacts). The only fully verifiable, reachable foreign buyer is East Coast Carry (US) — but it wants authentic American/Navajo turquoise, a stretch for Persian Neyshabur stones. Feroza-specific leads (313 Rings CA, Zee links PK) are genuine but incidental or re-trader-grade with no reachable contact. No public lead references Persian/Iranian/Neyshabur turquoise by name. Dropped: Albatha Engineering Group and Treasure Hunt (UAE) — recycled old leads (IDs ~2.0-2.2M vs current ~3.3-3.8M on the same page), so their 'May 2026' dates are bumped display dates, plus an implausible entity-product match (an engineering conglomerate buying turquoise) and no contact; H jewelryy (Canada) — wants finished 14k/18k gold fashion jewelry (evil-eye/clover), not turquoise/loose stones; and one duplicate East Coast Carry entry (merged)."
+  },
+  "families": [],
+  "scoring": {
+    "default_base": 70,
+    "cat_base": {},
+    "families_for": {},
+    "boost": [],
+    "penalty": []
+  },
+  "display_order": [
+    "United States",
+    "Canada",
+    "Pakistan"
+  ]
+}

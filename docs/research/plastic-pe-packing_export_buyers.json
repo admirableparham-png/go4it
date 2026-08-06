@@ -1,0 +1,160 @@
+{
+  "source": "verified-hunt-2025+",
+  "total": 7,
+  "with_phone": 2,
+  "with_email": 2,
+  "with_website": 1,
+  "buyers": [
+    {
+      "company": "Welsh Government (WGCD) — on behalf of the Welsh Public Sector",
+      "categories": [
+        "United Kingdom"
+      ],
+      "city": "United Kingdom",
+      "dest_iso": "GB",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Framework for Waste Bags & Recycling Collection Products; Lo"
+      ],
+      "wants": "Framework for Waste Bags & Recycling Collection Products; Lot 1 = Single-Use Refuse & Recycling Plastic (polythene) Sacks, CPV 19640000. Ref WGCD-PCS-133-25.",
+      "posted": "2025 (framework 3 Nov 2025–2 Nov 2029; award announced 30 Oct 2025)",
+      "source_url": "https://www.find-tender.service.gov.uk/Notice/080162-2025",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Derry City & Strabane District Council",
+      "categories": [
+        "United Kingdom"
+      ],
+      "city": "United Kingdom",
+      "dest_iso": "GB",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Supply & delivery of Polythene Refuse Sacks, 12 months Apr 2"
+      ],
+      "wants": "Supply & delivery of Polythene Refuse Sacks, 12 months Apr 2026–Mar 2027; est ~£20,000 incl VAT.",
+      "posted": "2025 (notice 079010-2025; deadline 12 Jan 2026)",
+      "source_url": "https://www.find-tender.service.gov.uk/Notice/079010-2025",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "South Holland, Boston Borough & East Lindsey District Councils (three-council partnership)",
+      "categories": [
+        "United Kingdom"
+      ],
+      "city": "United Kingdom",
+      "dest_iso": "GB",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Supply & delivery of Refuse Sacks and Caddy Liners across th"
+      ],
+      "wants": "Supply & delivery of Refuse Sacks and Caddy Liners across the three areas; est ~£1,020,000 excl VAT.",
+      "posted": "2025 (notice 084121-2025; award notice 085916-2025)",
+      "source_url": "https://www.find-tender.service.gov.uk/Notice/084121-2025",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "uLundi Local Municipality (KwaZulu-Natal)",
+      "categories": [
+        "South Africa"
+      ],
+      "city": "South Africa",
+      "dest_iso": "ZA",
+      "phones": [],
+      "email": "tkhoza@ulundi.gov.za",
+      "website": "",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Supply & delivery of Refuse Bags for 36 months — black PE re"
+      ],
+      "wants": "Supply & delivery of Refuse Bags for 36 months — black PE refuse bags 30 micron, 760x970mm; plastic samples required. Bid 04/2025/2026.",
+      "posted": "2025 (closing 3 Dec 2025)",
+      "source_url": "https://www.ulundi.gov.za/storage/app/media/Year25-26/OpenTenders/Refuse%20bags.pdf",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Umsobomvu Local Municipality (Northern Cape)",
+      "categories": [
+        "South Africa"
+      ],
+      "city": "South Africa",
+      "dest_iso": "ZA",
+      "phones": [
+        "051) 753 0040"
+      ],
+      "email": "ncedo@umsobomvumun.co.za",
+      "website": "umsobomvumun.co.za",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Heavy-duty black polyethylene refuse bags, 750x950mm, 40 mic"
+      ],
+      "wants": "Heavy-duty black polyethylene refuse bags, 750x950mm, 40 micron, folded/packed 20x10 per bale (municipal RFQ).",
+      "posted": "2025 (RFQ doc 30 Sep 2025; closed 7 Oct 2025)",
+      "source_url": "https://www.etenders.gov.za/home/Download?blobName=a8a98333-aa3a-44a7-a76b-5019e715f1de.pdf&downloadedFileName=RFQ+DOCUMENT+FOR+REFUSE+BAGS+30-09-2025.pdf",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Jameel General Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "United Arab Emirates",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Customized printed food-packaging (plastic) bags for take-aw"
+      ],
+      "wants": "Customized printed food-packaging (plastic) bags for take-away; ~200,000 sets, 1-colour/1-side, OEM/logo — sourcing from a manufacturer.",
+      "posted": "TradeKey buy lead, last updated 15 Aug 2025",
+      "source_url": "https://importer.tradekey.com/plastic-bags-importer.html",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Rogaland-region waste-management contracting authority (likely IVAR IKS, Stavanger) — TED 428524-2025",
+      "categories": [
+        "Norway"
+      ],
+      "city": "Norway",
+      "dest_iso": "",
+      "phones": [
+        "428524-2025"
+      ],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "2-year framework for polythene waste & refuse sacks and bags"
+      ],
+      "wants": "2-year framework for polythene waste & refuse sacks and bags (CPV 19640000); est 25,000,000 NOK excl VAT.",
+      "posted": "2025",
+      "source_url": "https://ted.europa.eu/en/notice/428524-2025/pdfs",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    }
+  ]
+}

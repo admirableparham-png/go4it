@@ -1,0 +1,36 @@
+{
+  "slug": "plastic-pe-packing",
+  "label": "Plastic & PE packaging",
+  "product": "Plastic & PE packaging (Iran-sourced) - verified 2025+ foreign buy-requests",
+  "category": "export-plastic-pe-packing",
+  "dest": {
+    "iso": "",
+    "m49": 0,
+    "name": "Export (multi-country)",
+    "directory": "none"
+  },
+  "source": "iran-export-plastic-pe-packing",
+  "rfq_source": "iran-export-plastic-pe-packing-rfq",
+  "buyers_file": "plastic-pe-packing_export_buyers.json",
+  "rfqs_file": "",
+  "meta": {
+    "name": "Plastic & PE packaging",
+    "positioning": "Real 2025+ foreign buy-side demand for this Iran-sourced product (verified + de-noised).",
+    "brands": [],
+    "note": "Genuine 2025+ foreign buy-side demand is MODERATE but narrow: it clusters almost entirely in one commodity niche — polythene/PE refuse & recycling sacks and caddy liners bought by GOVERNMENT/MUNICIPAL waste procurement (UK councils via Find a Tender, South African municipalities via etenders.gov.za, and EU/Norway via TED). That segment is well-documented and repeatable (councils re-tender annually). For actual 'plastic parts/components' and broader PE packaging outside bin-liners, public demand is THIN and low-quality — only gated, unverifiable B2B RFQ boards (TradeKey) with generic one-line leads. Best real, contactable opportunities: UK Find-a-Tender and South African etenders municipal refuse-bag tenders. DROPPED: Trash CAN International LTD (China) — generic 'Plastic Bags 20t', unverifiable entity, gated contact; Dacorum Borough Council — product is COMPOSTABLE/bio-based (not PE) and already a closed award; SRIYAAN creators (India) — generic 'Plastic parts', masked contact, unverifiable."
+  },
+  "families": [],
+  "scoring": {
+    "default_base": 70,
+    "cat_base": {},
+    "families_for": {},
+    "boost": [],
+    "penalty": []
+  },
+  "display_order": [
+    "United Kingdom",
+    "South Africa",
+    "United Arab Emirates",
+    "Norway"
+  ]
+}

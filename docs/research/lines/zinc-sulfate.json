@@ -1,0 +1,34 @@
+{
+  "slug": "zinc-sulfate",
+  "label": "Zinc sulphate",
+  "product": "Zinc sulphate (Iran-sourced) - verified 2025+ foreign buy-requests",
+  "category": "export-zinc-sulfate",
+  "dest": {
+    "iso": "",
+    "m49": 0,
+    "name": "Export (multi-country)",
+    "directory": "none"
+  },
+  "source": "iran-export-zinc-sulfate",
+  "rfq_source": "iran-export-zinc-sulfate-rfq",
+  "buyers_file": "zinc-sulfate_export_buyers.json",
+  "rfqs_file": "",
+  "meta": {
+    "name": "Zinc sulphate",
+    "positioning": "Real 2025+ foreign buy-side demand for this Iran-sourced product (verified + de-noised).",
+    "brands": [],
+    "note": "Thin-to-moderate and concentrated: the only solid named foreign buy-side signals are institutional import tenders (India NFL 2025-26 WSF global tender, verified) plus one decent-fit Poland RFQ (Kantor, go4WorldBusiness); the rest are anonymous masked ExportersIndia leads from India (a net ZnSO4 exporter) = poor fit. Real underlying EU/UK/Eastern-Europe agri demand exists per market reports but seldom shows up as named public buy-leads."
+  },
+  "families": [],
+  "scoring": {
+    "default_base": 70,
+    "cat_base": {},
+    "families_for": {},
+    "boost": [],
+    "penalty": []
+  },
+  "display_order": [
+    "India",
+    "Poland"
+  ]
+}

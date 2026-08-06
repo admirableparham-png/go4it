@@ -1,0 +1,198 @@
+{
+  "source": "verified-hunt-2025+",
+  "total": 9,
+  "with_phone": 0,
+  "with_email": 0,
+  "with_website": 0,
+  "buyers": [
+    {
+      "company": "Mohammed Mudassir Ali",
+      "categories": [
+        "India"
+      ],
+      "city": "India",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Mazafati dates, 10,000 kg, marked Urgent (largest single lot"
+      ],
+      "wants": "Mazafati dates, 10,000 kg, marked Urgent (largest single lot in the set)",
+      "posted": "~July 2026 ('one month ago' as of 2026-08-04)",
+      "source_url": "https://www.exportersindia.com/buyers/mazafati-dates.htm",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "H.H. Brothers Fruit Traders",
+      "categories": [
+        "India"
+      ],
+      "city": "India",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Mazafati dates, 100 boxes (also buys Irani wet dates)"
+      ],
+      "wants": "Mazafati dates, 100 boxes (also buys Irani wet dates)",
+      "posted": "~July 2026 ('one month ago' as of 2026-08-04)",
+      "source_url": "https://www.exportersindia.com/buyers/mazafati-dates.htm",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Raghavendra Prabhu",
+      "categories": [
+        "India"
+      ],
+      "city": "India",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Mazafati dates, 100 kg, Urgent, recurring monthly"
+      ],
+      "wants": "Mazafati dates, 100 kg, Urgent, recurring monthly",
+      "posted": "2026-06-23 (earlier identical post 2026-06-05)",
+      "source_url": "https://www.exportersindia.com/buyers/mazafati-dates.htm",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Faizal Ahammed",
+      "categories": [
+        "India"
+      ],
+      "city": "India",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Mazafati dates, 100 kg"
+      ],
+      "wants": "Mazafati dates, 100 kg",
+      "posted": "2026-06-17",
+      "source_url": "https://www.exportersindia.com/buyers/mazafati-dates.htm",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Jogeshwari Dash",
+      "categories": [
+        "India"
+      ],
+      "city": "India",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "buys": [
+        "Fresh Mazafati Iranian Dates, 10 kg"
+      ],
+      "wants": "Fresh Mazafati Iranian Dates, 10 kg",
+      "posted": "2026-07-01",
+      "source_url": "https://www.exportersindia.com/buyers/fresh-dates.htm",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Vrundan Bawankar",
+      "categories": [
+        "India"
+      ],
+      "city": "India",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Fresh Mazafati Dates (Khajoor), 3,500 kg"
+      ],
+      "wants": "Fresh Mazafati Dates (Khajoor), 3,500 kg",
+      "posted": "~July 2026 ('one month ago' as of 2026-08-04)",
+      "source_url": "https://www.exportersindia.com/buyers/mazafati-dates.htm",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Azad",
+      "categories": [
+        "India"
+      ],
+      "city": "India",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Mazafati dates, 1,000 kg, marked Urgent"
+      ],
+      "wants": "Mazafati dates, 1,000 kg, marked Urgent",
+      "posted": "~July 2026 ('one month ago' as of 2026-08-04)",
+      "source_url": "https://www.exportersindia.com/buyers/mazafati-dates.htm",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "inamdarsaad958",
+      "categories": [
+        "India"
+      ],
+      "city": "India",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Original Mazafati dates, 1,000 kg, marked Urgent"
+      ],
+      "wants": "Original Mazafati dates, 1,000 kg, marked Urgent",
+      "posted": "~July 2026 ('one month ago' as of 2026-08-04)",
+      "source_url": "https://www.exportersindia.com/buyers/mazafati-dates.htm",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Vinukonda Gopal",
+      "categories": [
+        "India"
+      ],
+      "city": "India",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 80,
+      "verdict": "plausible",
+      "buys": [
+        "Fresh Dates, 1,000 kg, marked Urgent (variety NOT stated as "
+      ],
+      "wants": "Fresh Dates, 1,000 kg, marked Urgent (variety NOT stated as Mazafati)",
+      "posted": "2026-07-06",
+      "source_url": "https://www.exportersindia.com/buyers/fresh-dates.htm",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    }
+  ]
+}
