@@ -1,0 +1,837 @@
+{
+  "products": [
+    {
+      "product": "Zinc sulphate",
+      "key": "zinc-sulfate",
+      "fa": "سولفات روی",
+      "countries": [
+        {
+          "country": "Pakistan",
+          "fit": "strong",
+          "why_import": "One of the top three global destinations for zinc-sulphate monohydrate (Volza). Severe, structural agronomic need: calcareous Punjab/Sindh soils at pH 8+ lock up zinc, and ZnSO4 is the front-line defense against 'Khaira' disease in the rice belt and a standard input for wheat/cotton. Large, recurring seasonal fertilizer demand, not a one-off.",
+          "iran_angle": "This is Iran's single best fit: shared land border and CHEAP zinc feedstock (Angouran/Zanjan) beat freight-in Chinese/Indian product. Sanctions are navigable here because Iran-Pakistan trade runs on a BARTER mechanism that bypasses banking entirely - in March 2025 Islamabad let land shipments move without mandatory banking instruments.",
+          "demand_signal": "2025-26 border build-out: Taftan formalized as a land customs station (FBR SRO1055 of 2026), Kohak-Cheedgi crossing opened Jan 2025, Gabd-Rimdan Dec 2024; both governments targeting $10B bilateral trade by 2030 (from ~$3B in 2025)."
+        },
+        {
+          "country": "Iraq",
+          "fit": "strong",
+          "why_import": "Massive latent agronomic demand: a soil study found 77% of Iraqi soil samples below the critical zinc limit, and calcareous soils choke zinc availability for wheat and date palm - ZnSO4 is the cheapest standard correction. Iraq imports the bulk of its agri-inputs and foodstuffs, with Iran already a dominant supplier.",
+          "iran_angle": "Iraq is Iran's #1 regional export market and one of its most sanctions-navigable channels (dinar/rial settlement, established land lanes). Iran already ships wheat flour, chemicals and food across the border; zinc sulphate slots straight onto existing trucking routes and distributor networks. Proximity + incumbency + price.",
+          "demand_signal": "~30% of global fertilizer trade transited the Strait of Hormuz in 2024, underscoring the Gulf/Iraq fertilizer pull; Iranian organic-chemical and food exports to Iraq remain a large, steady flow."
+        },
+        {
+          "country": "Afghanistan",
+          "fit": "strong",
+          "why_import": "Agriculture-dependent economy (food + coal = ~75% of exports) with almost no domestic chemical production, so it imports micronutrients. Chemical imports jumped 51% YoY in 2024. Absolute market is small, but Iran effectively owns it.",
+          "iran_angle": "Iran is Afghanistan's LARGEST import source (~30% of all imports); Iranian exports to Afghanistan grew 31% YoY (Mar-Jun 2024). Direct land border (Islam Qala/Dogharoun) and Chabahar access, informal hawala/barter settlement, and no Western-vendor registration to clear. Iran wins here almost by default on proximity and lane control.",
+          "demand_signal": "Iran's ~$517M of exports to Afghanistan in a single 2024 quarter (+31% YoY) with chemicals a fast-growing line; Kabul actively diversifying away from Pakistan toward Iran/Central Asia."
+        },
+        {
+          "country": "Russia",
+          "fit": "moderate",
+          "why_import": "A top-three importer under HS 283329 globally, with a large agricultural base needing zinc micronutrients. Real, sizeable volumes.",
+          "iran_angle": "Most sanctions-navigable large market: both countries are sanctioned, so trade settles in ruble/rial outside Western banking, and the INSTC North-South corridor gives Iran a direct rail/road+Caspian lane. Bilateral trade topped $4B in 2024. Iran's edge is corridor access and payment channel rather than being the cheapest - it must beat domestic Russian and Kazakh supply on landed cost/lead time.",
+          "demand_signal": "INSTC cargo rose 19% to 26.9M tons in 2024; Russia-Iran-Kazakhstan-Turkmenistan roadmap targets 15M t/yr corridor capacity by 2027, lowering freight friction for exactly this kind of bulk chemical."
+        },
+        {
+          "country": "Bangladesh",
+          "fit": "moderate",
+          "why_import": "One of the top three global destinations for zinc-sulphate monohydrate (Volza). ZnSO4 is a mainstream rice fertilizer used across the aman and boro seasons; ~80% of the country's ~6M t/yr fertilizer demand is imported. Importantly, ZnSO4 is NOT a heavily subsidized/state-channeled product like urea/TSP - so it is a genuinely open private-import market a private exporter can enter.",
+          "iran_angle": "Demand is large and real, but Iran has no land lane and must compete head-on with India and China on a sea route from Bandar Abbas, plus route payment through UAE/third-country. Iran's only lever is cheap zinc feedstock; treat as a price-driven, UAE-settled sea play rather than a relationship market.",
+          "demand_signal": "USDA/FAS 2025 fertilizer reporting confirms ZnSO4 as a commonly used input and ~80% import dependence for total fertilizer needs."
+        },
+        {
+          "country": "Turkey",
+          "fit": "moderate",
+          "why_import": "Sizeable chemical + agricultural economy on Iran's doorstep; agriculture is ~52% of global ZnSO4 use and Turkey mirrors that. But the domestic ZnSO4 heptahydrate market is modest (~$3.4M in 2024, ~6% CAGR) and Turkey has its own producers, so it is as much a competitor/re-exporter as a buyer.",
+          "iran_angle": "Strong, established Iran-Turkey land trade lane (Bazargan/Gurbulak) already carries Iranian zinc metal. Best framed as selling cheap bulk ZnSO4 or zinc feedstock to Turkish processors/re-exporters rather than to end-farmers. Payment is workable via Turkish banks but tightened after the Oct 2025 snapback - use it as a transit/processing partner more than a final market.",
+          "demand_signal": "Iran already supplies zinc/lead ingots to Turkey among its main metal buyers; Turkish ZnSO4 heptahydrate market growing ~6.2% CAGR."
+        },
+        {
+          "country": "Turkmenistan",
+          "fit": "watch",
+          "why_import": "Cotton- and wheat-driven agriculture with recognized micronutrient needs, but the specific ZnSO4 import signal is thin and Central Asia is actively building its own fertilizer capacity (urea/ammonia heavy).",
+          "iran_angle": "Cleanest single Central Asian land lane for Iran: direct border at Sarakhs and an INSTC node, so Iran can beat Chinese/Russian supply on proximity for the western/southern cotton belt. Barter and rial/manat settlement avoid Western banking. Small volumes, but a low-friction neighbour beachhead into the wider Uzbekistan/Central Asia cotton market.",
+          "demand_signal": "Central Asia fertilizer trade is expanding and re-orienting through new corridors (2026 reporting); Iran-Turkmenistan transit growing under the INSTC roadmap."
+        },
+        {
+          "country": "United Arab Emirates",
+          "fit": "moderate",
+          "why_import": "Small as an end-consumer of ZnSO4, but the decisive re-export and payment GATEWAY - Dubai/Jebel Ali re-exports to Africa, India, Iran and the CIS. Volume 'bought' here is largely destined onward.",
+          "iran_angle": "~90% of Iran's external trade already moves through Jebel Ali; Iran-UAE trade exceeded $27B in 2024-25. For a sanctions-exposed exporter the UAE is the practical banking/logistics bridge - invoice, blend origin paperwork, and trans-ship to buyers who won't take direct Iranian shipments. List it as a channel to reach Africa/South Asia, not as final demand.",
+          "demand_signal": "Iran-UAE bilateral trade $27B+ (2024-25) and rising; Jebel Ali/DMCC/Hamriyah free zones are the standing re-export machinery for Iranian-origin chemicals."
+        },
+        {
+          "country": "Azerbaijan",
+          "fit": "watch",
+          "why_import": "Neighbouring agricultural market (cereals, cotton, horticulture) with micronutrient needs, though specific ZnSO4 import data is thin and volumes are modest.",
+          "iran_angle": "Direct land border at Astara and a core INSTC node, so proximity and corridor access are Iran's edge; settlement possible in rial/manat outside Western banking. A low-volume, low-friction adjacency play rather than a major revenue market.",
+          "demand_signal": "Astara rail/road and the INSTC western branch are being upgraded under the 2024-27 corridor roadmap, cutting Iran-Azerbaijan freight friction."
+        }
+      ],
+      "blocked": [
+        "United States - despite being the #1-2 global importer of zinc-sulphate monohydrate, it is fully CLOSED to Iranian-origin goods under the 1987 import embargo (EO 12613) and OFAC's comprehensive Iran program plus 2025-26 metals-sector designations. Do not chase.",
+        "European Union + United Kingdom - the Sept/Oct 2025 UN snapback reimposed EU nuclear-related sanctions: Central Bank of Iran and major commercial banks re-frozen, correspondent banking and fund transfers to/from Iranian institutions banned. Even where a chemical isn't listed, no bank will clear the payment. Effectively closed.",
+        "Canada / Australia - Western-aligned autonomous Iran sanctions plus banking de-risking; not worth pursuing for Iranian-origin ZnSO4.",
+        "China and India (not sanctions-blocked, but do not chase as BUYERS) - they are the world's #1 and #2 ZnSO4 producers/exporters and are self-sufficient net exporters. Iran's realistic role there is as a seller of raw zinc metal/feedstock, not finished zinc sulphate.",
+        "Vietnam - a top raw-HS-283329 importer (feed/aquaculture/agri), but no Iran trade lane, banking is gated, and it sits next to China's cheap surplus; realistically out of reach for Iranian origin."
+      ],
+      "summary": "Honest framing: Iran's real strength is upstream - it is a regional zinc-metal titan (Angouran/Mehdiabad mines, Zanjan smelting hub, 320k+ t/yr lead-zinc), which gives it CHEAP feedstock for zinc sulphate; but finished-ZnSO4 export is still nascent and one Iranian source flags these specialty compounds as 'difficult to export.' So the winning plays are NOT the biggest global importers (US, EU, China, India) - those are either sanctions-closed or self-sufficient net exporters - but Iran's NEIGHBOURS that combine (a) genuine agronomic zinc deficiency and (b) a land/barter lane that dodges Western banking. Tier 1 (strong): Pakistan (top-3 global ZnSO4 buyer + severe Punjab/Sindh zinc deficiency + border barter trade, no banking needed), Iraq (77% of soils zinc-deficient, Iran already the dominant supplier), and Afghanistan (Iran = 30% of its imports, chemical imports +51% in 2024, small but locked-in). Tier 2 (moderate): Russia (top-3 importer, INSTC corridor + ruble/rial settlement make it the most navigable LARGE market, but Iran competes on freight not price), Bangladesh (top-3 global ZnSO4 destination and an unsubsidized open private-import market, but a pure price/sea play via UAE), Turkey (better as a feedstock/re-export partner than an end-market), and the UAE (not real end-demand but the essential Jebel Ali re-export + payment gateway to Africa/South Asia). Tier 3 (watch): Turkmenistan and Azerbaijan - low-volume but low-friction neighbour beachheads via the INSTC. Where demand is thin, it concentrates in the cotton/wheat belts reachable overland. Do NOT chase the US, EU/UK, Canada/Australia (sanctions-closed) or China/India (net exporters). Evidence: Volza/Eximpedia trade data, USDA/FAS Bangladesh fertilizer report, Iraqi soil-zinc study, Iran-Pakistan border/barter measures (2024-26), INSTC 2024 volumes, and the Sept-Oct 2025 EU/UN snapback sanctions."
+    },
+    {
+      "product": "Copper sulphate",
+      "key": "copper-sulfate",
+      "fa": "سولفات مس",
+      "countries": [
+        {
+          "country": "Iraq",
+          "fit": "strong",
+          "why_import": "Large, import-dependent agri economy with a booming palm/date sector (national date exports surged past 600,000 tons in FY2025) plus citrus and vegetable farming that leans on copper fungicides (Bordeaux mixture), and chronic water-treatment needs. Little domestic copper-sulphate production, so almost everything is imported.",
+          "iran_angle": "Iraq is Iran's single biggest copper-products market (~29% share) and shares a long land border with multiple crossings. Price + proximity win outright: short truck lanes from Iranian smelters, and a live goods-for-goods framework already exists (Iraq's oil/gas barter with Iran, defended by Baghdad as sanctions-compliant; Iraq also carries ~$11B in trade balances owed to Tehran). Payment can settle in dinar/rial/barter rather than USD.",
+          "demand_signal": "2025: Iraqi date/palm exports over 600,000 tons (rising fungicide/micronutrient need); Iran-Iraq energy barter reaffirmed as non-sanction-violating; Iraq structurally dependent on Iranian supply."
+        },
+        {
+          "country": "Pakistan",
+          "fit": "strong",
+          "why_import": "Huge agricultural base (cotton, rice, citrus, mango, potato) that consumes copper fungicides and micronutrient fertilizers, plus growing water-treatment demand for a 240M population. Historically imports chemicals from Iran.",
+          "iran_angle": "Direct neighbor with 2025 agreement to run Taftan/Mirjaveh border crossings 24/7 and a stated $10B bilateral trade target. Islamabad formally authorized barter trade with Iran (2023), bypassing dollar banking. Iran already ships minerals/chemicals across this border, so copper sulphate slots into an existing, expanding lane on price and proximity.",
+          "demand_signal": "2025: Pakistan-Iran agree round-the-clock border operations to spur trade; $10B target; barter mechanism live. Friction to note: container detention at Karachi Port and quarantine/standards gaps."
+        },
+        {
+          "country": "Afghanistan",
+          "fit": "strong",
+          "why_import": "Grape/raisin, pomegranate and orchard agriculture that needs copper fungicide (Bordeaux mixture) plus basic water treatment. Almost no domestic chemical production; a landlocked market that must import overland.",
+          "iran_angle": "Afghanistan is Iran's #2 copper-products destination (~17% share) and Iranian goods already dominate western Afghan markets (Herat via Islam Qala/Dogharun). Iran already exports sulphuric acid there. Iran wins on being the nearest supplier with an established informal/barter payment ecosystem. Caveat: market is small and politically unstable, so treat size as modest even though the lane is excellent.",
+          "demand_signal": "Iran holds ~17% of copper-product exports to Afghanistan; documented Iranian sulphuric-acid flows into Afghanistan; Pakistan's 2023 barter authorization also covers Afghan transit."
+        },
+        {
+          "country": "Turkey",
+          "fit": "moderate",
+          "why_import": "Major viticulture (grapes/wine/raisins), hazelnut, citrus and greenhouse sectors are heavy Bordeaux-mixture users; organic-farming growth is lifting copper-fungicide demand. One of Iran's top-3 copper markets historically.",
+          "iran_angle": "Neighbor with a high-volume land corridor (Bazargan/Gurbulak) and long-standing Iran-Turkey trade. Iran can compete on price and short freight. But Turkey has its own copper-sulphate producers and established distributors (e.g., Brenntag), is more standards/quality-sensitive, and banking is more scrutinized (post-Halkbank), so margins and volumes are harder to capture than in Iraq/Pakistan.",
+          "demand_signal": "Bordeaux-mixture market ~$1.2B (2024) heading to ~$2.5B by 2034 at 7.5% CAGR, driven partly by organic viticulture that Turkey is well-represented in."
+        },
+        {
+          "country": "United Arab Emirates",
+          "fit": "moderate",
+          "why_import": "Genuine local demand in water treatment, aquaculture and industry, but the bigger value is as the region's re-export gateway to Africa, India, the CIS and back into Iran-linked flows.",
+          "iran_angle": "Historically ~90% of Iran's external trade routed through Jebel Ali; UAE imported ~$103M of organic chemicals from Iran in 2024. Best used as a relabel/re-export and payment-settlement hub (DMCC/Jebel Ali/Hamriyah free zones) that softens sanctions and banking friction. Downside: it is a conduit more than an end market, so margins are thin and it adds a middleman.",
+          "demand_signal": "2024: UAE-Iran organic-chemical trade ~$103M; Jebel Ali reaffirmed as Iran's primary trade gateway and re-export platform."
+        },
+        {
+          "country": "Turkmenistan",
+          "fit": "moderate",
+          "why_import": "Cotton-centric agriculture and irrigation systems that use copper micronutrients/fungicides; a landlocked economy that depends on transit routes for chemical imports.",
+          "iran_angle": "Rail and road networks from Turkmenistan run through Iran (Sarakhs/Incheh Borun), making Iran the natural supplier and transit provider; Iranian consumer and agri goods already move north through Turkmen territory. Analysts flagged Turkmenistan as the Central Asian economy 'most exposed' to Iran-route disruption, i.e. most dependent on the Iran lane.",
+          "demand_signal": "2025 reporting: Iran-route disruptions hit Central Asian trade with Turkmenistan most exposed, confirming heavy reliance on the Iranian corridor."
+        },
+        {
+          "country": "Uzbekistan",
+          "fit": "watch",
+          "why_import": "Large cotton and horticulture sector needing copper micronutrient/fungicide inputs; a double-landlocked market reliant on corridors for chemical supply.",
+          "iran_angle": "Iranian goods (dairy, dried fruit, household) already reach Uzbek markets via Turkmen/Iranian rail, so an Iran-origin copper-sulphate lane is plausible via the same route and the Middle Corridor. But Russian/Chinese/Kazakh supply competes hard and the extra transit leg erodes Iran's price edge, so treat as a secondary, opportunistic target.",
+          "demand_signal": "Iranian goods widely sold in Uzbekistan arriving north through Turkmenistan; Middle Corridor / Trans-Caspian expansion opening more Iran-linked routing."
+        },
+        {
+          "country": "India",
+          "fit": "watch",
+          "why_import": "Real, growing end-demand: India's copper-sulphate market was ~14.45 kilotons in 2024, forecast to ~17.44 kt by 2033, driven by fungicide/micronutrient agriculture and electroplating; pesticide demand growing ~4.5%/yr.",
+          "iran_angle": "Existing Iran-India trade lane (Chabahar port) and a history of non-dollar payment experiments (rupee/barter) give a foothold. BUT India has large domestic copper-sulphate production, buys mostly refined copper (not sulphate) from Iran, and Indian banks are cautious on Iran exposure under US secondary-sanctions pressure, so the Iran-specific win is weak versus domestic and Chinese supply.",
+          "demand_signal": "2024-2033: India market 14.45 kt to 17.44 kt; India repeatedly 'exploring new Iran trade payment mechanisms,' underscoring banking friction rather than a clear opening."
+        },
+        {
+          "country": "Brazil",
+          "fit": "watch",
+          "why_import": "One of the world's largest copper-sulphate consumers via soybean/coffee/citrus agriculture and animal feed; a top global importer with structural, growing demand.",
+          "iran_angle": "Demand is huge but the Iran fit is genuinely weak: no established Iran-Brazil shipping lane, long ocean freight erases Iran's price/proximity advantage, and USD-clearing plus vendor-registration create banking friction. Chase only opportunistically (e.g., via a UAE re-export intermediary), not as a core target. This is where 'big market, wrong supplier' honesty matters.",
+          "demand_signal": "Brazil cited as a primary global copper-sulphate consumer for agriculture and animal feed amid industrial expansion; but no meaningful Iran-origin flow exists today."
+        }
+      ],
+      "blocked": [
+        "United States - the world's #2 importer of copper sulphate (~$103M in 2024) but under comprehensive OFAC sanctions Iranian-origin goods are banned outright; no realistic path.",
+        "Belgium and the wider EU - Belgium is the single largest global importer (~$184M, a feed/battery-grade processing and re-export hub), but EU restrictions, loss of euro/SWIFT clearing for Iran, EU REACH chemical registration, and vendor onboarding make Iranian-origin sales effectively impossible. Same logic closes the big EU vineyard buyers (Spain, Italy, France) that are heavy copper-sulphate users.",
+        "Australia - a top-3 importer (~$46.3M) but maintains autonomous sanctions aligned with the US, closed banking channels, and long freight; not navigable for Iranian origin.",
+        "Canada, Japan, South Korea - solvent, compliant importers whose banks and importers enforce US/EU sanctions screening and origin/vendor registration, making Iranian-origin copper sulphate a non-starter despite real demand."
+      ],
+      "summary": "Global copper-sulphate (HS 283325) trade was ~$863M in 2024, up 6% YoY, but the three biggest buyers - Belgium ($184M), the US ($103M) and Australia ($46.3M) - are exactly the markets that are closed to Iranian origin (OFAC/EU/Australian sanctions, euro-USD clearing loss, REACH/vendor registration). Iran is also NOT a global cost-leader in copper sulphate specifically: the top exporters are South Africa, Taiwan and Mexico, and Iran's own copper-sulphate production is still nascent (small lines, 'first line being installed'), even though Iran is a giant copper miner with cheap smelter feedstock, sulphuric acid and energy. So the real, winnable opportunity is regional: neighbors on existing land lanes where Iran competes on price + proximity and can settle in barter/rial rather than dollars. Best bets in order: Iraq (Iran's #1 copper market ~29%, booming date/palm agriculture, live oil-for-goods barter), Pakistan (24/7 borders, $10B trade target, authorized barter, huge cotton/rice/citrus fungicide demand), and Afghanistan (Iran's #2 copper market ~17%, grape/orchard fungicide need, Iranian goods already dominant - excellent lane but small, unstable). Second tier: Turkey (real viticulture demand but domestic producers and banking scrutiny cap the win) and the UAE (best as a Jebel Ali re-export/payment gateway rather than an end market). Watch list: Turkmenistan and Uzbekistan (Central Asian cotton agriculture reachable only via the Iran/Trans-Caspian corridor), India (strong and growing ~14-17 kt demand but domestic supply plus cautious Iran-exposed banks), and Brazil (enormous demand but no Iran lane - big market, wrong supplier). Concentrate effort on Iraq, Pakistan and Afghanistan first."
+    },
+    {
+      "product": "Saffron (Sargol + Pushal)",
+      "key": "saffron",
+      "fa": "زعفران سرگل و پوشال",
+      "countries": [
+        {
+          "country": "United Arab Emirates",
+          "fit": "strong",
+          "why_import": "Import-dependent high-value spice market AND the Gulf's #1 re-export hub. Iran's single largest saffron destination: ~67,120 kg (~$50M) in 2024-25. Dubai re-exports onward to Europe, the wider Gulf and Asia; top-grade Persian wholesaled at AED 9,200-12,800/kg in 2025.",
+          "iran_angle": "Shortest existing Iran lane (Gulf sea/dhow + air freight), the deepest and most established Iranian bulk channel, and Dubai's hawala/exchange-house network makes payment the most sanctions-navigable anywhere. Large Iranian merchant diaspora. Effectively the default clearing house for Iranian red gold.",
+          "demand_signal": "Khaleej Times 2025: 'Dubai emerged as a global hub for saffron'; UAE took ~67t of Iranian saffron in 2024-25."
+        },
+        {
+          "country": "China",
+          "fit": "strong",
+          "why_import": "~95 tons/yr consumption, one of the world's biggest markets; imported ~$30M in 2024-25 and forecast to grow ~8% CAGR on traditional-Chinese-medicine (TCM) inputs and luxury gifting. Already one of Iran's top direct destinations (~49,200 kg in 2024).",
+          "iran_angle": "Iran-China 25-year strategic partnership plus yuan/CIPS non-dollar settlement makes payment sanctions-navigable; direct Iran-China trade is expanding, with Hong Kong as a parallel side-door. Price-competitive Iranian bulk feeds Chinese extract/nutraceutical and TCM makers.",
+          "demand_signal": "FMI projects China ~8% CAGR on 'insatiable demand for traditional-medicine inputs and luxury gifting'; medical-saffron segment ~17.8% CAGR."
+        },
+        {
+          "country": "Spain",
+          "fit": "strong",
+          "why_import": "World's #1 saffron importer ($56M / 45,351 kg in 2024). Buys Iranian bulk, repackages/rebrands as premium 'Spanish saffron' and re-exports at up to 4x. Took ~43,820 kg of Iranian saffron in the year to March 2024.",
+          "iran_angle": "Iran is Spain's main raw supplier; a decades-old established bulk lane. The EU imposes NO food sanction on Iranian saffron, so it is legal to land — banking friction is the only hurdle and is routinely handled via third-country/UAE settlement. Persian sargol/pushal quality is exactly what the repackers want.",
+          "demand_signal": "Oct-2024 industry reporting that Iran is Spain's main supplier sold on as 'Spanish'; EU saffron import spend hit a record in 2025."
+        },
+        {
+          "country": "Afghanistan",
+          "fit": "moderate",
+          "why_import": "Neighbour that buys 40+ tons of Iranian saffron to rebrand as 'Afghan' and re-export to India, Saudi, UAE, US, Canada, Turkey, Netherlands, UK and Hong Kong. Afghan-origin enjoys zero tariff into India and a 'clean-origin' reputation that Iranian-origin lacks in sanctioned markets.",
+          "iran_angle": "Land border (Herat/Dogharoun), informal cash/barter payment with no formal banking needed — Iran's cheapest, lowest-friction export lane; ~10t/month reportedly moves this way. Honest caveat: Afghan middlemen capture the branding margin and launder the origin, so you sell cheap and lose the value chain.",
+          "demand_signal": "Iranian officials in 2024 complained Afghanistan bought 40t of Iranian saffron to resell in Iran's own target markets; Afghanistan exported 46t (~$36M) Jan-Sep 2024 plus 635t (~$77.5M) to Hong Kong."
+        },
+        {
+          "country": "India",
+          "fit": "moderate",
+          "why_import": "Structural deficit market: produces only ~6-7t (Kashmir/Kishtwar) against huge household, HoReCa, confectionery, pharma and gifting demand; imports ~$37.6M and was a top importer by volume (58,009 kg in 2024).",
+          "iran_angle": "Proximity plus the Chabahar corridor and a historic rupee-rial settlement mechanism. BUT high Indian import tariffs on direct Iranian-origin saffron make it uncompetitive, so most Iranian product routes in via zero-tariff Afghanistan. Direct Iranian wins mainly on price for bulk/industrial grades.",
+          "demand_signal": "Persistent 2025 supply-demand gap met 'largely through imports from Iran, Afghanistan and Spain-origin channels'; India a top-3 importer by volume in 2024-25."
+        },
+        {
+          "country": "Qatar",
+          "fit": "moderate",
+          "why_import": "Wealthy, import-dependent Gulf market with surging culinary and medicinal saffron demand.",
+          "iran_angle": "Warm Iran-Qatar relations (shared South Pars gas field; Qatar never joined the Iran boycott), short Gulf air/sea lane, and Gulf exchange-house / UAE-routed payment make it sanctions-navigable. Persian-cuisine and diaspora demand favour Iranian-origin.",
+          "demand_signal": "Tridge/market overviews note Qatari demand 'surged due to culinary and medicinal applications.'"
+        },
+        {
+          "country": "Kuwait",
+          "fit": "moderate",
+          "why_import": "~$5.85M of saffron imports (2023), sourced significantly from Iran; strong bilateral trade ties keep supply steady. Retail runs KD 380-480/kg.",
+          "iran_angle": "Direct short Gulf lane and an established Iranian supply relationship — Persian saffron is the market default. Payment clears through Gulf exchange houses, keeping it sanctions-navigable.",
+          "demand_signal": "Market reporting: 'Kuwait's strong trade ties with Iran ensure a steady supply of saffron.'"
+        },
+        {
+          "country": "Hong Kong",
+          "fit": "moderate",
+          "why_import": "Freeport re-export gateway into mainland China's 95t market; took ~15 tonnes of Iranian saffron, used specifically to circumvent Iran-China direct-trade restrictions.",
+          "iran_angle": "Financial-hub settlement plus freeport customs make it a sanctions-navigable side-door into China; an established transit lane. Large Afghan-origin volumes also clear through HK to the mainland, confirming the corridor's depth.",
+          "demand_signal": "Reported ~15t Iranian intake; 635t (~$77.5M) of Afghan saffron routed through Hong Kong over six months into China."
+        },
+        {
+          "country": "Vietnam",
+          "fit": "watch",
+          "why_import": "Fast-emerging Southeast-Asian redistribution hub — most Iranian exports flow here alongside India and Malaysia; ~90% is re-exported and only ~10% used locally. Booming health/beauty/nutraceutical usage underneath.",
+          "iran_angle": "A growing direct Iran-Vietnam lane with low-friction customs; becomes a base to redistribute across ASEAN. A price-driven bulk buyer, so margins are thin but volumes scale.",
+          "demand_signal": "Vietnam ranked a top-3 'Saffron 100' importer May-2024 to Apr-2025; saffron-based skincare launches up ~25% 2020-2024."
+        },
+        {
+          "country": "Turkey",
+          "fit": "watch",
+          "why_import": "Neighbour that both consumes for cuisine and serves as a growing re-export/rebrand point; appears among the top-3 'Saffron 100' importers.",
+          "iran_angle": "Land border and established overland lane, with lira/barter settlement outside the dollar system; commonly used to repackage/rebrand Iranian saffron for onward EU and Gulf sale. Sanctions-navigable but, like Afghanistan, it captures the rebrand margin.",
+          "demand_signal": "Listed among 'Vietnam, United States, Turkey' as top-3 saffron-100 importers in 2024-25 trade data."
+        }
+      ],
+      "blocked": [
+        "United States — OFAC/CISADA prohibits direct import of Iranian-origin goods; the JCPOA foodstuffs/carpets general license was revoked in 2018. A ~$5-8M saffron appetite exists but is reachable ONLY after Afghan/UAE/Spanish re-labeling, never as declared Iranian-origin. Do not chase directly.",
+        "Canada — comprehensive SEMA sanctions with broad import prohibitions on Iranian goods; only receives Afghan-rebranded product.",
+        "United Kingdom — post-Brexit Iran sanctions plus banking blocks; the UK market is served via Afghan-origin re-exports, not direct Iranian.",
+        "Australia — autonomous Iran sanctions plus strict biosecurity and vendor-registration barriers; effectively closed to direct Iranian-origin.",
+        "Israel — trade with Iran is prohibited outright; not addressable.",
+        "Saudi Arabia — genuinely large demand (~$19M, a top-5 importer) but it sources predominantly Afghan-origin for political reasons; direct Iranian-origin is politically disadvantaged and best reached via UAE/Afghan re-export, not sold as Iranian.",
+        "EU retail markets (Germany, France) — legal for food but PDO/local-brand competition, retail vendor registration and euro-banking friction make direct Iranian-origin retail impractical; bulk flows in via Spain/Italy instead of direct."
+      ],
+      "summary": "Global saffron imports are only ~$243M/yr (2024, down ~12% over 5 yrs), and Iran supplies the bulk of it but almost entirely as unbranded bulk that intermediaries repackage. ~82% of Iran's official saffron exports land in just four countries — UAE, China, Spain, Afghanistan — all of which act as re-export/rebrand hubs rather than final consumers. For an Iran-origin export broker, real opportunity = markets where Iranian-origin can physically land AND get paid: Gulf hubs with hawala/exchange-house settlement (UAE, Qatar, Kuwait), non-dollar lanes (China via yuan/CIPS + Hong Kong side-door), neighbour land-borders (Afghanistan, Turkey), and the EU-legal bulk repackagers (Spain). Big obvious markets (US, Canada, UK, Australia, Israel) are effectively CLOSED to direct Iranian-origin and only receive it after Afghan/UAE/Spanish re-labeling — don't chase them directly. Iran's edge everywhere is price (bulk fell from $3,000/kg in 2011 to under $900 in 2023), proximity, and quality reputation of sargol/pushal; its handicap is banking friction and tariff disadvantage vs zero-tariff Afghan-origin in some markets (notably India)."
+    },
+    {
+      "product": "Pistachios (Akbari/Ahmad Aghaei/snack)",
+      "key": "pistachio",
+      "fa": "پسته",
+      "countries": [
+        {
+          "country": "China",
+          "fit": "strong",
+          "why_import": "The #1 pistachio importer on earth, ~$869M in 2024 (19% of ~$4.56B world imports; global imports rose again to ~$5.38B in 2025). Big snack + gifting market with no domestic crop, and demand is being pushed toward non-US origins as US-China tariffs make American nuts costlier.",
+          "iran_angle": "Iran is China's fastest-growing source (Iran-to-China pistachios jumped to ~$268M in 2024, roughly +$206M YoY) AND the cheapest major supplier (~$5,524/ton vs US $7,567). Payment is the unlock: Iran already settles China trade in yuan through exchange houses/shadow-banking, sidestepping dollar sanctions. Can ship direct or launder origin through Turkey/Vietnam re-export.",
+          "demand_signal": "2025 trade press explicitly framed as 'China turns to Iran' amid US-China tariff war; US pistachio flows rerouting through Vietnam for processed re-export into China."
+        },
+        {
+          "country": "United Arab Emirates",
+          "fit": "strong",
+          "why_import": "Gulf nut-distribution hub importing 150,000+ MT of nuts/yr, plus heavy domestic Ramadan/Eid consumption. Re-exports onward to India, Africa and the CIS, so it buys far more than it eats.",
+          "iran_angle": "Neighbor across the Gulf and Iran's de-facto payment/logistics workaround: dirham settlement and Dubai front companies are how much Iran trade clears. ~26% of Iran's pistachio sales already route through UAE/Turkey re-export, and processing there doesn't dent quality. It is both a customer and the bank/gateway to reach everyone else.",
+          "demand_signal": "UAE imports of Iranian pistachios surged ~229% in value / ~357% in volume (Nov 2024-Oct 2025); pre-Ramadan nut imports spike ~50%+ YoY."
+        },
+        {
+          "country": "India",
+          "fit": "strong",
+          "why_import": "Large, price-sensitive festival/gifting market (Diwali, weddings). Iran holds ~42% of India's pistachio import volume; the US holds the rest by value.",
+          "iran_angle": "Iran is the low-price origin ($5,524/ton, well under US $7,567) and grew +71.8% into India between 2023-24. Chabahar port / INSTC corridor and historical rupee-rial payment arrangements ease settlement away from the dollar. This is a natural, proximate, high-volume home for Iranian in-shell and kernels.",
+          "demand_signal": "Iran ~42% of India volume (Nov 2024-Oct 2025), but Iran's value share slipped ~4.6pts vs the US and total India imports dipped ~3.7% in 2025 - real but competitive, watch US undercut on premium grades."
+        },
+        {
+          "country": "Turkey",
+          "fit": "strong",
+          "why_import": "#4 global importer (~$342M). Domestic Antep crop can't feed the giant baklava/confectionery industry, and Turkey doubles as a processing/re-export hub - sorting, packing and re-exporting nuts from its free-trade zones to Europe and China.",
+          "iran_angle": "Land-border neighbor and Iran's #2 destination (~$130M in 2024). Baklava-grade nut prices spiked ~213% domestically, pulling Iranian supply in, and Turkey eased pistachio import rules in Sept 2025. Lira/barter settlement and FTZ routing sidestep banking; product can be re-origin-labeled 'Turkish' for onward EU/China sale.",
+          "demand_signal": "Turkey relaxed pistachio import rules Sept 2025; domestic baklava-nut prices up ~213% in a year signalling supply shortfall."
+        },
+        {
+          "country": "Russia",
+          "fit": "strong",
+          "why_import": "Top-10 global pistachio importer with established in-shell snack demand and no domestic production; Iran's single biggest EAEU market.",
+          "iran_angle": "The Iran-EAEU free-trade agreement entered force May 2025, eliminating tariffs on ~87% of goods; the INSTC / North-South corridor moves cargo via the Caspian. Both countries are sanctioned, so ruble/rial and non-SWIFT settlement rails already exist - a rare market where Iran's sanctions status is not a payment obstacle. Russia + Kazakhstan absorb most of Iran's in-shell.",
+          "demand_signal": "EAEU FTA effective May 2025; Iran-Russia total exports ~$1.12B; a 3-year EAEU-Iran trade/logistics roadmap signed Sept 2025."
+        },
+        {
+          "country": "Iraq",
+          "fit": "strong",
+          "why_import": "Neighbor with rising nut/sweets consumption where Iran is already the dominant pistachio supplier (Fandoghi/Badami kernels and in-shell for confectionery).",
+          "iran_angle": "Shared land border = cheap truck freight; dinar/rial and cash/informal settlement with almost no vendor-registration or banking friction. Iran owns this market by default - lowest-effort, highest-conversion neighbor sale, and Iraq sits among Iran's top-9 volume destinations in 2025.",
+          "demand_signal": "Listed among Iran's largest 2025 export-volume destinations; Iran cited as Iraq's leading pistachio origin."
+        },
+        {
+          "country": "Kazakhstan",
+          "fit": "moderate",
+          "why_import": "Growing CIS snack market with in-shell demand alongside Russia; no domestic crop.",
+          "iran_angle": "EAEU member, so tariff-free under the May 2025 FTA; reachable via the INSTC/Caspian corridor; absorbs Iranian in-shell together with Russia; tenge/rial and regional banking channels avoid the dollar. A tidy corridor extension of the Russia play.",
+          "demand_signal": "Iran-Kazakhstan total exports ~$278M; EAEU FTA live since May 2025; among Iran's top 2025 volume destinations."
+        },
+        {
+          "country": "Vietnam",
+          "fit": "moderate",
+          "why_import": "Exploding pistachio re-export hub: imports raw nuts (US + Iran), processes ~60%+ locally and re-exports ~70% to China (rest to Korea/Japan/Singapore/EU). Pistachio exports surged ~413% YoY.",
+          "iran_angle": "A tariff-arbitrage backdoor into China - where Iranian origin can be processed and re-shipped while US nuts face China tariffs. Iran's edge is raw-material price; today the US dominates Vietnam's inbound flow, so Iran is the minority origin, but the channel is wide open and scaling fast and needs cheap origins.",
+          "demand_signal": "Vietnam pistachio exports hit ~$140M in Jan 2026 (+413% YoY); US shipments into Vietnam up ~5x - the processing hub is scaling and hungry for low-cost raw supply."
+        },
+        {
+          "country": "Pakistan",
+          "fit": "watch",
+          "why_import": "Neighbor with festival/gifting nut demand; appears among Iran's top-9 2025 export-volume destinations.",
+          "iran_angle": "Land border, barter/informal and rupee trade with low banking friction. But Pakistan is extremely price-sensitive and much of the cross-border flow is informal/smuggled (Baluchistan), so formal contracted volumes and margins are thin - the little there is concentrates in low-grade snack pistachios moved informally, not premium Akbari.",
+          "demand_signal": "Listed among Iran's top 2025 volume destinations, but flows are largely informal cross-border rather than formal invoiced trade."
+        }
+      ],
+      "blocked": [
+        "United States - OFAC's Iranian Transactions & Sanctions Regulations ban ALL imports of Iranian-origin goods (the pre-2010 foodstuff carve-out was revoked in 2010), stacked on a 241.14% antidumping duty on Iranian in-shell pistachios in force since 1986 and reaffirmed on sunset review. Completely closed - do not chase.",
+        "European Union (Germany/Italy) - the pistachios themselves aren't sanctioned and Germany (~$76M) and Italy were genuine 2024 buyers, BUT the Sept 2025 UN/EU snapback re-froze the Central Bank of Iran and major Iranian banks, effectively blocking euro payments and correspondent banking (food transfers need special licensing above thresholds). Layer on the EU's aflatoxin monitoring that nearly banned Iranian pistachios in Nov 2024. Technically legal, practically unpayable and degrading - don't build the book here now.",
+        "United Kingdom - joined the E3 snapback (Sept 2025) reimposing Iran sanctions and re-freezing Iranian bank access; sterling payments and correspondent banking effectively closed.",
+        "Canada - the CFIA imposed a temporary ban on pistachios and pistachio products from Iran in Sept 2025 after a 100+ case Salmonella outbreak traced to Iranian kernels. Closed for the foreseeable term."
+      ],
+      "summary": "Rank the book by where Iran already wins on price, proximity, an existing lane, or a working non-dollar payment rail - not by raw market size, because the biggest markets (US, EU, UK, Canada) are exactly the ones closed to Iranian origin by sanctions/banking or fresh food-safety bans. China is the top prize: world's #1 importer, Iran's fastest-growing destination, cheapest-supplier economics, and yuan settlement that defeats dollar sanctions - reachable directly or laundered via Turkey/Vietnam re-export. UAE is both a strong buyer (Ramadan demand) and the payment/logistics gateway (dirham, Dubai front companies, 26% of Iran's sales re-export through it). India, Turkey, Russia, Iraq round out the strong tier: all combine real demand with proximity/corridor and dollar-free settlement (rupee-rial, lira/FTZ barter, the EAEU FTA + INSTC for Russia/Kazakhstan, land-border cash for Iraq). Kazakhstan and Vietnam are moderate corridor/hub plays; Pakistan is a watch because its volume is mostly informal cross-border, not invoiced trade. Honest caveats: Iran's 2025 crop was drought-hit and total exports slipped ~11% YoY, and the US is aggressively undercutting Iran on premium grades in India and via Vietnam - so compete on price, in-shell/kernel snack grades, and the markets where getting PAID is solved."
+    },
+    {
+      "product": "Natural honey + royal jelly",
+      "key": "honey-royaljelly",
+      "fa": "عسل طبیعی + ژل رویال",
+      "countries": [
+        {
+          "country": "United Arab Emirates",
+          "fit": "strong",
+          "why_import": "Second-largest GCC honey importer at ~12K tons in 2024 (market value ~$34M) and the fastest-growing Gulf consumer (+12.1% CAGR 2013-2024). Dubai is the region's re-export/blending hub: much honey landing there moves on into Saudi Arabia, Oman, Kuwait and North Africa.",
+          "iran_angle": "Shortest, fastest lane anywhere - Bandar Abbas to Dubai across the Persian Gulf is a days-not-weeks shipment. UAE is Iran's #2 overall trade partner, with dirham/dollar free-zone payment rails that are sanctions-navigable. Iran wins on price + proximity into a hub that then redistributes the product for you.",
+          "demand_signal": "GCC honey market projected to reach 36K tons / $141M by 2035; UAE flagged as the fastest-growing GCC consumer, and a large share of Dubai honey is re-exported onward."
+        },
+        {
+          "country": "Iraq",
+          "fit": "strong",
+          "why_import": "Large, price-sensitive market that under-produces honey. Iran already shipped ~$3.9M of natural honey to Iraq (2022) and Iraq is consistently a top-3 non-oil export destination for Iran.",
+          "iran_angle": "Shared land border with multiple truck crossings, established lanes, and rial/dinar settlement that sidesteps dollar banking. Low product-registration barriers and no premium-quality expectation - Iran is effectively the default supplier and competes purely on price + proximity.",
+          "demand_signal": "Iran-Iraq non-oil trade keeps expanding; southern-Iran 'golden honey' is actively marketed into the Iraqi market in 2024-2025."
+        },
+        {
+          "country": "Russia",
+          "fit": "strong",
+          "why_import": "Sizeable market projected to grow ~15% over 2024-2029. Current honey suppliers are Italy, Germany and Armenia - all Western/displaceable - so there is a clear substitution opening.",
+          "iran_angle": "The EAEU-Iran full free-trade agreement entered into force in May 2025, cutting tariffs on ~87% of goods; Iran-Russia trade jumped +35% in mid-2025. INSTC/Caspian corridor plus a ruble-rial payment channel dodges Western banking entirely. Strongest structural tailwind of any market on this list.",
+          "demand_signal": "EAEU FTA effective 15 May 2025; Iran's exports to the EAEU topped $2B (+20% YoY), $1.12B of it to Russia. Caveat: Russian honey imports actually shrank in 2024, so Iran must win share, not ride growth."
+        },
+        {
+          "country": "Qatar",
+          "fit": "strong",
+          "why_import": "GCC's #3 honey consumer (~1.6K tons, ~$6.4M in 2024). Wealthy, almost entirely import-dependent, and pays in hard currency.",
+          "iran_angle": "Since the 2017 blockade Qatar has deliberately institutionalized food sourcing through Iran; Qatar imported ~$146M from Iran in 2024, including the dairy/eggs/honey category. Direct Gulf sea and air bridges, politically friendly, and no sanctions friction on foodstuffs.",
+          "demand_signal": "Qatar's Iran food-import relationship is now permanent post-blockade; 2024 imports from Iran ~$146M with agri categories prominent."
+        },
+        {
+          "country": "Oman",
+          "fit": "moderate",
+          "why_import": "Import-dependent GCC consumer that also functions as a re-export gateway onward into the Gulf and beyond. Iran-Oman food/fruit/nut trade is expanding fast.",
+          "iran_angle": "Daily Shinas(Sohar)-Bandar Abbas cargo shuttle now runs (port throughput +94% to mid-2025) and Iran's non-oil exports to Oman rose +35% in 2024. Oman is Iran's friendliest GCC partner and a deliberately sanctions-navigable re-export hub. Honey-specific volume is still small, hence moderate.",
+          "demand_signal": "Shinas port throughput +94% (2024-25); Iran-Oman non-oil exports +35% in 2024; Iran dairy/eggs/honey to Oman ~$1.3M (2022 baseline)."
+        },
+        {
+          "country": "Malaysia",
+          "fit": "moderate",
+          "why_import": "Muslim-majority halal market repeatedly cited as the #1 destination for Iranian honey exports - so demand for Iranian origin is proven, not speculative.",
+          "iran_angle": "Iran's single largest honey buyer today: an existing lane, halal credibility, buyers who accept Iranian origin, and price competitiveness. Main friction is longer sea logistics and payment routed through intermediaries rather than direct banking.",
+          "demand_signal": "Named Iran's top honey export destination in 2024 trade reporting (ahead of Azerbaijan)."
+        },
+        {
+          "country": "Afghanistan",
+          "fit": "moderate",
+          "why_import": "Low-income but heavily Iran-dependent border market - Iran is Afghanistan's single largest source of imports, and honey/dairy is an established category.",
+          "iran_angle": "Land border, mature truck lanes, rial settlement, and near-zero registration barriers. Iran already ships a large dairy/eggs/honey category there (~$57M in 2022). Pure proximity + price play. Real risks: political instability and periodic border closures cap reliability.",
+          "demand_signal": "Iran = Afghanistan's #1 import source; Iran's exports to Afghanistan grew ~31% in early 2024."
+        },
+        {
+          "country": "Indonesia",
+          "fit": "watch",
+          "why_import": "World's ~3rd-largest royal jelly importer (~9% of global RJ imports) and a huge Muslim-majority halal honey market.",
+          "iran_angle": "Halal-aligned and accepts Iranian origin; royal jelly is high-value/low-volume, so it absorbs freight and payment-workaround costs far better than bulk honey - a better RJ target than a bulk-honey one. Caveat: Indonesian honey imports have fallen 3 years running, and China dominates RJ supply on price.",
+          "demand_signal": "US + Indonesia + South Korea together = ~74-77% of global RJ imports; global RJ import shipments roughly doubled (+100%) May 2024-Apr 2025."
+        },
+        {
+          "country": "Azerbaijan",
+          "fit": "watch",
+          "why_import": "Cited as Iran's #2 honey destination; small neighbouring market with a shared land border.",
+          "iran_angle": "Existing land lane and proven Iranian-origin flow, but Azerbaijan is itself a honey producer (domestic competition) and recurring Iran-Azerbaijan political friction caps the upside. Best treated as an opportunistic, price-driven overflow market rather than a build-out target.",
+          "demand_signal": "Listed as the #2 destination for Iranian honey in 2024 trade commentary; Azerbaijan also appears as a supplier into Russia, underlining local production."
+        },
+        {
+          "country": "South Korea",
+          "fit": "watch",
+          "why_import": "2nd-largest global royal jelly importer (~13%), and honey imports grew for a fifth straight year through 2024 (~660 tons).",
+          "iran_angle": "Genuine RJ/honey demand, but a premium buyer that prizes verified origin and traceability (Manuka, NZ, domestic) and runs entirely on Western banking - Iranian-origin faces payment friction and a reputation gap. Only realistic via a re-exporting intermediary; do not lead with a direct Iranian label here.",
+          "demand_signal": "South Korea = ~13% of global RJ imports; honey imports up 5 years running, peaking in 2024, expected to keep rising on honey-snack demand."
+        }
+      ],
+      "blocked": [
+        "United States - the world's largest honey buyer and largest royal-jelly importer (~55% of global RJ), but Iranian-origin goods are barred from US commercial import under ITSR; the JCPOA-era carpet/foodstuff import exception was revoked in 2018. Structurally closed - do not chase.",
+        "European Union (Germany, France, Netherlands, Poland, etc.) - no outright food ban, but Iranian banks are largely cut from SWIFT, honey requires EU health-certification and authorized-establishment registration, and residual sanctions make payment and vendor onboarding impractical. Germany appears in Iran's export list only as tiny diaspora/specialty volume - not a scalable channel.",
+        "United Kingdom - same SWIFT/banking and vendor-registration barriers as the EU plus autonomous UK Iran sanctions; only marginal diaspora demand slips through.",
+        "Canada - autonomous Iran sanctions and closed correspondent-banking channels leave effectively no commercial route for Iranian-origin food/honey.",
+        "Australia and New Zealand - strict biosecurity/import controls on bee products, plus sanctions and banking friction; NZ is also a rival Manuka exporter, so no reason to attempt entry.",
+        "Japan - technically permits food imports and has real royal-jelly demand, but relies on Western banking and strongly prefers verified/traceable origin; payment channels for Iranian-origin goods are the practical blocker."
+      ],
+      "summary": "Iran is the world's ~3rd-largest honey producer (~128K tons in 2024) but exports only a sliver of it (~4,600 tons / ~$5.6M), so the game is capturing more of a small, low-branded export base rather than tapping a premium channel. The real money clusters in three buckets: (1) NEIGHBOURS with land/sea borders and rial settlement - Iraq, Afghanistan, Oman - where Iran wins by default on proximity and price; (2) GCC re-export/consumption hubs - UAE (Dubai) and Qatar - fast Persian Gulf lanes, hard-currency payment, and onward redistribution; and (3) RUSSIA/EAEU, where the full free-trade agreement in force since May 2025 (tariffs cut on ~87% of goods) plus a ruble-rial banking channel is the single biggest structural tailwind. Malaysia is a proven halal-honey buyer (Iran's stated #1 destination) worth defending. Royal jelly is a different market: its top buyer, the US (~55% of world RJ imports), is closed to Iran, so RJ upside concentrates in Indonesia and South Korea - and because RJ is high-value/low-volume it tolerates freight and payment workarounds better than bulk honey, but South Korea in particular only works through a re-exporting intermediary. Win theme everywhere: price, proximity, halal credibility, and sanctions-navigable payment - NOT premium origin branding. Two honest caveats: (a) Iran periodically imposes temporary internal bans on food/agri exports to protect domestic supply, which can freeze shipments with little notice; and (b) the EU/US-facing markets below are effectively closed - don't burn effort there. Ranking is best-first by realistic, bankable opportunity."
+    },
+    {
+      "product": "Plastic parts + PE packaging",
+      "key": "plastic-pe-packing",
+      "fa": "قطعات پلاستیکی + پکینگ پلی‌اتیلن",
+      "countries": [
+        {
+          "country": "Iraq",
+          "fit": "strong",
+          "why_import": "Weak domestic plastics converting plus heavy retail/food-service and reconstruction demand make Iraq the Middle East's largest plastic-bag import market. In 2025 it absorbed 400,000+ tons of disposable containers and packaging, and plastic packaging shipments here equal ~28% of ALL Iran's plastic-packaging exports — its single biggest market for exactly this product.",
+          "iran_angle": "Iran is already the #1 plastic-bag supplier to Iraq, roughly 6x the #2 (India). Shared land border (Shalamcheh, Mehran, Bashmaq/Parviz Khan), short truck lanes, rial-dinar and informal hawala settlement, and Iraq is Iran's most sanctions-navigable partner (a primary financial conduit for Tehran). This is price + proximity + entrenched incumbency — the core market to defend and grow.",
+          "demand_signal": "2025 Iran to Iraq total trade >$9B / 25M tons, with disposable tableware, nylon and packaging containers named as top categories; Iran's plastic-bag exports to Iraq exceeded India's sixfold."
+        },
+        {
+          "country": "Afghanistan",
+          "fit": "strong",
+          "why_import": "Landlocked with almost no domestic plastics industry; imports household plasticware, packaging film, refuse sacks and bags. Iran already supplies ~25% of all Afghan imports, and plastic tableware/kitchenware/household articles are explicitly among Iran's top exports there.",
+          "iran_angle": "Iran is the nearest low-cost supplier via Islam Qala/Dogharoun and Milak crossings; border trade settles in cash rial/afghani with no Western banking touched — fully sanctions-insulated. Pure price + proximity into a captive neighbour with no credible alternative supplier at Iran's landed cost.",
+          "demand_signal": "Iran non-oil exports to Afghanistan hit $3.14B in 2024 (+83% YoY); first half of 2025 reached $1.156B (+7% YoY)."
+        },
+        {
+          "country": "Azerbaijan",
+          "fit": "strong",
+          "why_import": "Second-largest destination for Iran's plastic-packaging exports (~7.5% share). Modest local converting capacity; imports packaging film, bags and plastic articles for retail and food sectors.",
+          "iran_angle": "Direct land border at Astara plus rail on the INSTC western branch; Iran runs a ~$619M trade surplus with Baku. Proximity + an already-running lane, settlement outside USD via regional banking, and cultural/linguistic overlap that eases B2B. A documented, repeatable channel rather than a bet.",
+          "demand_signal": "Ranked Iran's #2 plastic-packaging export destination (2024-25), 7.5% of the total."
+        },
+        {
+          "country": "Pakistan",
+          "fit": "moderate",
+          "why_import": "Third-largest destination for Iran's plastic-packaging exports (~5.9% share). Border provinces (Balochistan, Sistan) depend on Iranian consumer goods; national demand is large but partly met by a domestic plastics industry, so wins come on price and border logistics rather than displacing local converters nationwide.",
+          "iran_angle": "New land corridors opened Dec 2024-Jan 2025 (Gabd-Rimdan, Kohak-Cheedgi) plus six roads linking Gwadar/Karachi/Port Qasim to Iranian crossings; barter/border-trade mechanisms sidestep banking. $10B bilateral trade target gives political tailwind. Price + proximity into the border belt, with corridor build-out expanding reach inland.",
+          "demand_signal": "April 2026 Gwadar processed 11,000 containers in a few weeks; Pakistan opened road routes to Iran during Hormuz shipping disruption."
+        },
+        {
+          "country": "Russia",
+          "fit": "moderate",
+          "why_import": "Western-brand exit after 2022 created durable import-substitution demand for packaging and plastic consumer goods in a very large market, and Iran's industrial-goods share of exports to Russia is rising.",
+          "iran_angle": "EAEU-Iran FTA in force 15 May 2025 cut average import duty to ~4.5% (from as high as ~30% on some lines) covering ~87-90% of goods; the INSTC/Caspian corridor (Bandar Anzali to Astrakhan) avoids sanctioned sea lanes; ruble-rial settlement and Mir/banking workarounds make it sanctions-navigable on both sides. Tariff-preference + corridor, not just proximity.",
+          "demand_signal": "Iran-Russia trade +35% in May-June 2025 post-FTA; Iran exports to the EAEU topped $2B (+20% YoY), of which $1.121B to Russia."
+        },
+        {
+          "country": "United Arab Emirates",
+          "fit": "moderate",
+          "why_import": "Iran's #3 non-oil export destination ($7.2B in the year to March 2025). Local demand plus the Gulf's dominant re-export hub (Jebel Ali) redistributing packaging and plasticware across MENA and Africa.",
+          "iran_angle": "Short Bandar Abbas to Sharjah/Dubai dhow and container lanes; a deep Iranian merchant diaspora in Dubai/Sharjah handles AED settlement via exchange houses. Functions mainly as a re-export doorway to buyers who won't take Iranian origin directly — but US/OFAC de-risking is tightening, so it is a conduit to structure carefully, not a clean direct end-market.",
+          "demand_signal": "Iran non-oil exports to UAE $7.2B (year to Mar-2025); adjacent Qatar trade +69% in spring 2025 signals GCC pull through the UAE hub."
+        },
+        {
+          "country": "Turkmenistan",
+          "fit": "moderate",
+          "why_import": "Small domestic plastics sector; imports packaging and plasticware. A neighbour with rapidly growing logistics ties and a transit role into the rest of Central Asia.",
+          "iran_angle": "Shared border (Sarakhs, Incheh Borun, Bajgiran) plus rail; 2025 brought shipping/logistics MoUs and a two-year cooperation roadmap. Proximity + an existing lane, and a springboard for onward Central Asian sales even though Turkmenistan itself is not in the EAEU.",
+          "demand_signal": "2025 Iran-Turkmenistan transport/logistics MoUs and roadmap; plastics baseline ~$57M (2022)."
+        },
+        {
+          "country": "Armenia",
+          "fit": "moderate",
+          "why_import": "Small market on its own but an EAEU member, giving duty-advantaged access; imports plastic packaging and builders' ware of plastics from Iran.",
+          "iran_angle": "Iran's only friendly EAEU land neighbour (Meghri/Agarak crossing); the EAEU FTA duty benefits apply and Iran runs a ~$520M surplus. Use Armenia both as an end-market and as a compliant entry/re-consolidation point into the wider EAEU (Russia, Kazakhstan).",
+          "demand_signal": "Armenia imported ~$39.6M of Iranian plastics in 2024, including builders' ware of plastics."
+        },
+        {
+          "country": "Oman",
+          "fit": "watch",
+          "why_import": "Direct demand is modest, but Oman is a fast-growing re-export hub (Sohar, Salalah, Sultan Qaboos) redistributing packaging into the wider GCC.",
+          "iran_angle": "Short sea lane from Bandar Abbas to Sohar/Sultan Qaboos; Oman is Iran's most politically comfortable Gulf partner and a discreet GCC re-export gateway to buyers (incl. Saudi) who won't take Iranian origin directly. A transhipment door more than a big end-market.",
+          "demand_signal": "Iran-Oman trade +11% in spring 2025; Oman re-exports surged +66.8% with Iran among top re-export destinations."
+        },
+        {
+          "country": "Uzbekistan",
+          "fit": "watch",
+          "why_import": "Central Asia's most populous market (~37M) with a fast-growing consumer economy and limited local plastics supply; imports packaging and plasticware.",
+          "iran_angle": "Not a direct neighbour — reached via Turkmenistan overland or the Caspian — so logistics cost is the swing factor. Regional trade roadmaps and quadrupling Central Asia volumes plus the EAEU-Iran FTA improve access; Iran can compete on landed cost against Chinese/Turkish goods for the price-sensitive segment.",
+          "demand_signal": "Iran-Central Asia trade roadmaps and deals through 2025; regional volumes rising sharply post-FTA."
+        }
+      ],
+      "blocked": [
+        "United States — total ITSR embargo on Iranian-origin goods; the single largest plastics importer (~$72B) but fully closed. Even facilitating Iranian HDPE/plastics trade is penalized (SCG Plastics $291M enforcement).",
+        "European Union — the world's largest plastic-packaging import bloc, but sanctions, banking cut-off and no importer-of-record willing to register Iranian origin. Closed for origin-labeled goods.",
+        "United Kingdom / Canada / Australia — sanctions-aligned; banking and customs block Iranian-origin plastics. Do not chase.",
+        "Saudi Arabia — despite the 2023 diplomatic thaw, SASO/local vendor registration and origin rules keep Iranian-origin consumer plastics effectively out; only reachable indirectly via UAE/Oman re-export at added risk.",
+        "Israel — absolute two-way trade prohibition.",
+        "Syria — the historic Iran supply lane collapsed after Assad's fall (Dec 2024); the new government is hostile to Tehran and pivoting to Gulf/Turkish suppliers. No longer a viable Iranian-origin market despite reconstruction demand.",
+        "India — not sanctioned but effectively hard: the rupee-payment mechanism seized up post-2019, USD banking is closed to Iran trade, and India is itself a low-cost competitor in plastic bags. Treat as difficult, not a target."
+      ],
+      "summary": "For finished PE packaging and plastic parts (HS 3923/3926) of Iranian origin, opportunity tracks adjacency and sanctions-navigable corridors, NOT raw market size — the biggest global importers (US, EU, Germany) are closed to Iran. The prize is Iran's land-neighbor ring. Iraq is the overwhelming #1: ~28% of Iran's plastic-packaging exports, the top plastic-bag supplier there (~6x India), 400k+ tons of disposable containers/packaging in 2025. Afghanistan is the next captive market (Iran = ~25% of its imports; household plasticware; cash border trade, zero banking risk). Then the documented packaging destinations Azerbaijan (7.5% share) and Pakistan (5.9% share, with new 2024-25 border corridors). The EAEU-Iran FTA (in force 15 May 2025, duties to ~4.5%) opens Russia and Armenia via the INSTC/Caspian corridor, with Iran-Russia trade already +35% mid-2025. UAE and Oman are re-export gateways (UAE is Iran's #3 non-oil market at $7.2B) — conduits into the GCC/Africa rather than clean direct end-markets, and UAE compliance is tightening. Turkmenistan and Uzbekistan are Central Asian growth watches. Honest caveats: Turkey buys mostly Iranian resin (it is itself the region's #1 finished-tableware producer, so a competitor in finished goods), India's payment channel is broken, and Syria — a former Iran stronghold — flipped hostile after Assad's fall. Sell where Iran already wins on price + proximity + an existing lane; do not spend effort on the sanction-closed Western markets."
+    },
+    {
+      "product": "Neyshabur turquoise + semi-precious stones/jewelry",
+      "key": "turquoise-gems",
+      "fa": "فیروزه نیشابور و سنگ‌های نیمه‌قیمتی",
+      "countries": [
+        {
+          "country": "United Arab Emirates",
+          "fit": "strong",
+          "why_import": "Dubai is the Middle East's #1 gems/jewelry trading and re-export hub; UAE gems & precious-metals exports hit ~$61B in 2025 and the country was the 2nd-largest ME jewelry importer (260 tons in 2024). Duty-free souks aggregate demand and redistribute into South Asia, Africa and (grey-channel) Europe. Genuine local retail demand too via a large Iranian community.",
+          "iran_angle": "Deepest, oldest Iran trade lane (dhow/bazaar links to Bandar-region and a large Iranian-Emirati diaspora). Payment works through UAE exchange houses/AED; Dubai is where Iranian-origin stone gets aggregated, graded and re-exported so origin can be neutralized into finished pieces — the single most actionable channel for a broker, and the gateway to markets that are closed direct.",
+          "demand_signal": "Middle East jewelry market reached $20.9B in 2024; UAE gems/precious-metals exports ~$61B in 2025. Post-2024 FATF grey-list exit means MORE compliance scrutiny, so route as cut/finished jewelry, not sanction-flagged rough."
+        },
+        {
+          "country": "China",
+          "fit": "strong",
+          "why_import": "Largest and fastest-growing turquoise consumer: Asia-Pacific (led by China + Tibet) is the fastest-growing turquoise-jewelry region, and China has millennia-deep cultural demand (Tibetan/Buddhist use). Top-grade untreated Persian turquoise commands $500-$2,500+/carat vs ~$8/carat mid-grade Chinese, so a genuine premium/collector segment exists above domestic Hubei supply.",
+          "iran_angle": "Iran's #1 export partner (~$4.4B exports); established rail/sea lanes (Bandar Abbas) and yuan/barter settlement channels make it the most sanctions-navigable large economy. Historic 'Persian turquoise' quality reputation is strongest in exactly the collector tier China's buyers chase.",
+          "demand_signal": "Turquoise-jewelry market ~$245M (2024) heading to ~$378M by 2031 (6.5% CAGR), with APAC the growth engine; China explicitly named a top demand driver. Caveat: cheap domestic Hubei turquoise means Iran only wins the mid/high grade, not the bulk-commodity end."
+        },
+        {
+          "country": "India",
+          "fit": "strong",
+          "why_import": "Among the world's top-3 importers of HS 7103 (rough semi-precious stones) and the global colored-stone cutting/polishing capital (Jaipur). India's tariff structure deliberately favors rough imports to feed local cutting, and there is already a documented turquoise + agate rough flow from Iran into India.",
+          "iran_angle": "Existing, named trade lane — 'Iranians export minerals such as turquoise and agate to India' (GEMKISH). Rupee-settlement mechanisms and the Chabahar port lane (India's May-2024 long-term operating deal) make payment and logistics unusually workable for an Iran-origin seller. Iran wins on proximity + rough-supply price into Jaipur's cutting machine.",
+          "demand_signal": "India was the largest importer of synthetic gemstones ($596.8M, 2024) and a top natural-stone hub; Chabahar deal signed May 2024. Note: India buys mostly ROUGH (thin margins, cut value captured locally); sell rough for volume, finished only into its domestic Shia/retail niche."
+        },
+        {
+          "country": "Iraq",
+          "fit": "strong",
+          "why_import": "Iran's #2 non-oil market — ~$11.9B of Iranian goods in 2024 (about 20% of Iran's non-oil exports). Beyond gold, there is deep genuine end-demand for turquoise (firoozeh) and agate (aqeeq) devotional rings among Iraq's Shia majority, amplified by the massive Najaf/Karbala pilgrimage retail trade (Arbaeen), which Iranian pilgrims and bazaars supply directly.",
+          "iran_angle": "Overland border trade with trivial logistics and dinar/rial (often cash/barter) settlement — no SWIFT needed. Cultural/religious product fit is near-perfect: aqeeq and firoozeh rings are a core devotional retail category, and Iran is the natural, cheapest, closest supplier.",
+          "demand_signal": "Iran-Iraq trade ~$3.8B in just the first four months of 2024 (+22% YoY), projected >$10B for FY; reconstruction + pilgrimage sustain demand. Honest note: this is a finished-ring/bazaar retail play, not a graded-stone HS-7103 statistical market."
+        },
+        {
+          "country": "Russia",
+          "fit": "moderate",
+          "why_import": "Sizeable and growing jewelry market (~$4.66B revenue in 2025, ~5.5% CAGR) and one of the largest consumers of semi-precious/synthetic stones globally. Appetite for affordable colored stones and folk/ethnic jewelry lines fits turquoise well.",
+          "iran_angle": "Most sanctions-aligned major economy — Iranian origin is a non-issue there. Over 80% of Iran-Russia trade already settles in rial/ruble via Mir-Shetab linkage (SWIFT-independent), and the INSTC / Rasht-Astara rail corridor is being fast-tracked, giving a dedicated overland lane. Iran wins on price + a payment/logistics channel almost no Western competitor can use.",
+          "demand_signal": "Iran-Russia trade grew ~35% in May-June 2025 YoY on the back of the free-trade agreement; national-currency settlement >80%. Caveat: Russia has its own gem tradition and turquoise is a niche import, so start with modest, currency-hedged volumes."
+        },
+        {
+          "country": "Turkey",
+          "fit": "moderate",
+          "why_import": "Istanbul (Grand Bazaar + Istanbul Jewelry Show) is a major regional jewelry production and tourist-retail hub; Turkey was the 3rd-largest ME jewelry importer (~218 tons, 2024). Strong tourist demand for turquoise/agate pieces and a manufacturing base that absorbs colored-stone rough.",
+          "iran_angle": "Land-border neighbor with ~$2.45B of Iranian exports and well-worn Tabriz-to-Istanbul trade routes; lira/gold-settlement and informal channels are established. Iran wins on proximity + cheap turquoise/agate rough for Istanbul workshops, plus re-export optionality into Europe.",
+          "demand_signal": "Analysts flagged the 2025 Iran conflict as opening 'new avenues for Turkish jewellery exports,' implying Turkish makers are actively sourcing/substituting — an opening for Iranian rough supply. Watch: Turkey also competes as a re-exporter and can squeeze margins."
+        },
+        {
+          "country": "Oman",
+          "fit": "watch",
+          "why_import": "Small but affluent Gulf jewelry market with tourist and expatriate demand; functions as a secondary Gulf re-export/transit point alongside the UAE.",
+          "iran_angle": "Short sea crossing from Iran's southern coast with a long history of Iranian goods transiting via Omani ports; Muscat has kept pragmatic ties with Tehran, making it a comparatively low-friction, sanctions-navigable back-door into the GCC when Dubai tightens. Iran wins on proximity + a discreet corridor rather than raw market size.",
+          "demand_signal": "Oman named among ME regional trading/refining channels (~$14.7M gold flows, 2025). Thin on its own — treat as a transshipment/diversification lane feeding Gulf demand, not a standalone market."
+        },
+        {
+          "country": "Pakistan",
+          "fit": "watch",
+          "why_import": "Neighboring market on a historic Hindu-Kush gem-trade frontier with an active bazaar trade in turquoise, aqeeq and lapis; devotional-ring demand among its large Muslim (incl. Shia) population.",
+          "iran_angle": "Long land border with heavy (much of it informal) cross-border trade — Iran-Pakistan trade ran ~$1.6B in a recent six-month span, above the Pakistan-Afghan figure. Iran wins on proximity + price and shared devotional-jewelry culture. But Pakistan is itself a gem source and a poorer, price-sensitive market, so it is more a transit/low-margin outlet than a rich buyer.",
+          "demand_signal": "Iran-Pakistan trade ~$1.626B over six months (recent), outpacing Pakistan-Afghanistan; formal barter/border-market mechanisms expanding. Honest read: demand is real but low-value and concentrated in informal bazaar channels."
+        },
+        {
+          "country": "Azerbaijan",
+          "fit": "watch",
+          "why_import": "Neighboring Shia-majority market with cultural affinity for turquoise/agate and Persian-style jewelry; growing consumer economy and cross-Caspian trade links.",
+          "iran_angle": "Direct land border and shared Shia devotional-jewelry culture (firoozeh/aqeeq rings) make product fit natural; Iran is the obvious low-cost, same-region supplier, and the stone carries a positive Persian-heritage association there. Payment via regional currencies/barter is workable.",
+          "demand_signal": "Iran is actively expanding South Caucasus/Central Asia trade and transit ties into 2024-2025. Small market and periodically frosty Baku-Tehran politics keep it a watch, not a core bet."
+        }
+      ],
+      "blocked": [
+        "United States — largest global buyer of HS 7103 (~$2.57B/yr) and North America is ~37% of the gemstone market, but Iranian-origin goods are broadly banned under the Iranian Transactions and Sanctions Regulations (31 CFR Part 560); no jewelry/gemstone carve-out. Banking and customs effectively closed. Do not chase directly.",
+        "European Union (Germany, France, Italy, etc.) — real turquoise/jewelry demand, but the Sept 29, 2025 UN snapback reimposed comprehensive EU sanctions including gold, precious metals and diamonds, plus banking/vendor-registration barriers to Iranian origin. Closed direct; only reachable, riskily, via UAE/Turkey re-export.",
+        "United Kingdom — aligned with EU/US Iran sanctions and banking restrictions; Iranian-origin luxury goods face import and payment blocks.",
+        "Canada — SEMA Iran regulations and bank de-risking make Iranian-origin imports impractical despite a sizeable Iranian diaspora.",
+        "Japan — a top-3 HS 7103 importer, but tight sanctions-compliance banking and Iranian-origin sensitivity make direct trade unviable.",
+        "Australia — autonomous Iran sanctions plus bank de-risking; not worth pursuing direct.",
+        "Saudi Arabia — the LARGEST Middle East jewelry importer (448 tons, ~37% in 2024) and tempting, but Iranian-origin goods face vendor-registration/political friction and origin scrutiny despite the 2023 detente; realistically only reachable laundered through UAE re-export, so do not target Iranian-labelled direct."
+      ],
+      "summary": "Ranked by real, closable opportunity for an Iran-origin turquoise/semi-precious broker. The best plays split into (a) genuine end-demand markets where Iran already has the lane and sanctions are navigable, and (b) re-export hubs that neutralize origin. Top tier: UAE (Dubai re-export superhub + deepest Iran lane + gateway to closed markets; ME jewelry market $20.9B in 2024, UAE gems/metals exports ~$61B in 2025), China (largest and fastest-growing turquoise consumer via Tibet/Buddhist demand, Iran's #1 export partner, yuan/barter settlement — but Iran only wins the mid/high grade above cheap Hubei stone), India (top-3 HS 7103 importer and Jaipur cutting capital that ALREADY buys Iranian turquoise+agate rough; rupee settlement + Chabahar lane — but mostly rough, thin margins), and Iraq (Iran's #2 non-oil market at ~$11.9B in 2024, overland dinar/rial settlement, near-perfect devotional fit for firoozeh/aqeeq rings amplified by Najaf/Karbala pilgrimage retail). Second tier: Russia (sanctions-aligned, >80% rial/ruble settlement, INSTC corridor, +35% trade in mid-2025 — turquoise is niche there), Turkey (Grand Bazaar/tourist retail hub, neighbor, 2025 sourcing shift toward Iranian rough). Watch: Oman (discreet Gulf transshipment back-door), Pakistan (huge but low-value informal border/bazaar flow), Azerbaijan (Shia cultural fit, small, politically bumpy). Honest core: outside China's collector tier and India's cutting demand, most volume is devotional rings (aqeeq/firoozeh) into Shia/Muslim retail and rough into cutting hubs — real but concentrated. Blocked and not worth chasing direct: the US (largest HS 7103 buyer at ~$2.57B but 31 CFR 560 bans Iranian origin), the EU (Sept 2025 snapback reimposed metals/diamonds/banking sanctions), UK, Canada, Japan, Australia, and Saudi Arabia (largest ME importer but origin/registration friction — only via UAE re-export). Payment reality throughout: avoid SWIFT; lean on AED exchange houses (UAE), rial/ruble Mir-Shetab (Russia), rupee accounts (India), and cash/barter overland (Iraq, Turkey, Pakistan). Sources include OEC, Volza/WITS HS 7103 data, IndexBox ME jewelry, Valuates/Verified Market turquoise-jewelry forecasts, JewelleryOutlook/GEMKISH, Tehran Times/Iraqi News trade figures, CEPA on Iran-Russia settlement, and OFAC/EU Consilium sanctions guidance."
+    },
+    {
+      "product": "Medicinal herbs & essential oils (Damask rose, cumin, thyme)",
+      "key": "herbs-essential-oils",
+      "fa": "گیاهان دارویی و اسانس",
+      "countries": [
+        {
+          "country": "United Arab Emirates",
+          "fit": "strong",
+          "why_import": "Both a large Gulf consumer market (halal cosmetics, food, and religious use of rose water are all growth categories under Saudi/UAE Vision-2030 halal push) AND the region's re-export superhub. UAE is already a top-3 destination for Iranian medicinal plants and a major buyer of Iranian cumin; Iran shipped ~$5.2B of non-oil goods to the UAE in just the first 8 months of 2024.",
+          "why_import_size": "$5.2B Iran non-oil in 8mo (2024); top-3 Iranian medicinal-plant destination",
+          "iran_angle": "Cross-Gulf proximity plus entrenched Jebel Ali/Dubai re-export operations that legitimize onward flow to Europe/Asia/other Gulf states. This is the single most sanctions-navigable channel for Iranian-origin goods (roughly a third of Iran's indirect trade routes through the UAE), settled outside USD banking, with a large Iranian diaspora. Iran already sells rose water/essence and cumin here.",
+          "demand_signal": "May 2024 Iran-UAE Joint Economic Committee MoU; ICCIMA proposed a joint working committee specifically to boost re-export of Iranian goods. Caveat: Iran-UAE political ties showed volatility into 2026 - keep supply flexible."
+        },
+        {
+          "country": "Iraq",
+          "fit": "strong",
+          "why_import": "Iraq is the #1 destination for Iranian agricultural and food products (~$1.4-1.7B/year) with deep cultural demand for rose water and herbs. It imported ~$7.3B of non-oil goods from Iran in just 7 months of 2024 and ranked #2 in Iran's ~$58B FY24/25 non-oil exports.",
+          "why_import_size": "$8.3B Iran non-oil to Iraq in 8mo (Mar-Nov 2024); #1 Iranian agri-food buyer",
+          "iran_angle": "Shared land border with dedicated crossings from Khuzestan/Kermanshah/Ilam gives the lowest transport cost of any market. Settlement via rial/barter sidesteps dollar banking entirely, and the trade lane is fully entrenched - Iran is the default cheap supplier. Best fit for bulk herbs and rose water aimed at food/religious use.",
+          "demand_signal": "Iran non-oil exports to Iraq $8.3B in first 8 months of Iranian year 1403; Iraq described as Iran's trade 'escape route' amid regional shipping disruption."
+        },
+        {
+          "country": "China",
+          "fit": "strong",
+          "why_import": "Listed among the top buyers of Iran's medicinal plants; the world's single largest cumin importer (bought ~$110M of cumin from India alone in 2023/24); and a major essential-oils importer (~$108M in 2024). Traditional-Chinese-medicine and flavor/fragrance industries create durable appetite for botanicals and rose essence.",
+          "why_import_size": "~$108M essential-oil imports (2024); largest global cumin importer",
+          "iran_angle": "Yuan-settled trade sidesteps USD banking, and the Iran-China economic axis is politically insulated. Iran competes on price for cumin and bulk medicinal herbs and has direct sea plus emerging rail lanes. Rose essence and thyme/cumin all have live channels here.",
+          "demand_signal": "China named among Iran's main medicinal-plant buyers in 2024/25 Iranian trade reporting; Iranian sources cite growing Chinese demand for medicinal plants."
+        },
+        {
+          "country": "India",
+          "fit": "moderate",
+          "why_import": "4th-largest global essential-oils importer (~$95M in 2024) with huge flavor/fragrance and ayurveda sectors, and already an importer of Iranian agri-goods (~$1.06B in 2024, incl. saffron and dried fruit).",
+          "why_import_size": "~$95M essential-oil imports (2024); ~$1.06B total imports from Iran (2024)",
+          "iran_angle": "A purpose-built rupee-rial payment mechanism exists for non-oil Iran trade, and the INSTC plus India-funded Chabahar port give a direct, sanctions-navigable lane. Lead with Damask rose oil/water and specialty medicinal extracts. Important caveat: India is the world's dominant cumin producer/exporter, so cumin is a weak-to-non-starter sell into India - do not lead with it.",
+          "demand_signal": "Ongoing bilateral trade-treaty talks and active rupee-rial settlement; INSTC transit-time/cost cuts of up to 40% cited."
+        },
+        {
+          "country": "Turkey",
+          "fit": "moderate",
+          "why_import": "Buys Iranian cumin to supplement its own crop and to process/re-export - Turkey took roughly 35% of Iran's cumin exports (145 shipments cited) and is itself the #3 global cumin re-exporter (to Egypt/Morocco/EU). Also imports assorted herbs.",
+          "why_import_size": "~35% of Iranian cumin exports; Turkey #3 global cumin re-exporter ($18.7M, 2024)",
+          "iran_angle": "Land-border proximity, lira/barter settlement, and an established spice trade make Iran the cheap adjacent supplier feeding Turkish processors who then re-export. Caveat: Turkey is also a rival in rose OIL (it and Bulgaria hold 80%+ of global rose-oil output), so sell Turkey raw rose material and cumin, not finished rose oil.",
+          "demand_signal": "Turkey = single largest destination for Iranian cumin exports (35% share)."
+        },
+        {
+          "country": "Germany",
+          "fit": "moderate",
+          "why_import": "One of the world's top importers of medicinal/aromatic plants (HS 1211) and essential oils; its pharma, herbal-supplement and extract industries buy Iranian saffron, thyme, savory and cumin as raw material. Historically a top-5 destination for Iranian medicinal plants and rose essence.",
+          "why_import_size": "Top-4 global MAP importer; historically top-5 Iranian medicinal-plant destination",
+          "iran_angle": "Long-standing quality reputation of Iranian botanicals inside German pharma/herbal supply chains, and food/pharma stays inside the EU humanitarian carve-out. The binding constraint is payment, not demand.",
+          "demand_signal": "CAUTION: the Sept-Oct 2025 UN snapback + EU re-sanctions froze the Central Bank of Iran and major Iranian commercial banks. Foodstuffs are carved out (with notification/licensing thresholds) but trade-finance friction and compliance cost jumped - treat as demand-real, payment-hard; route via a UAE intermediary."
+        },
+        {
+          "country": "Pakistan",
+          "fit": "moderate",
+          "why_import": "Repeatedly cited as the #1 or top-two destination for Iranian medicinal-plant exports; a large, price-sensitive market for bulk herbs and rose water with strong cultural/religious use.",
+          "why_import_size": "Ranked #1 Iranian medicinal-plant destination in 2024/25 trade sources",
+          "iran_angle": "Shared land border (Taftan/Rimdan crossings), the cheapest logistics of any market, informal/rial and barter settlement, and deep cultural overlap make Iran the natural low-cost supplier. Caveat: low unit prices and recurring border-closure/security volatility cap the value you can capture - a volume, not margin, play.",
+          "demand_signal": "Iranian trade sources list Pakistan and UAE as the first-rank destinations for medicinal plants in 2024/25."
+        },
+        {
+          "country": "Kazakhstan",
+          "fit": "watch",
+          "why_import": "Central Asia's most affluent buyer, targeting ~$3B trade turnover with Iran (mostly agricultural). Rising appetite for Iranian food and herbs delivered by rail, but essential-oil and specialty-herb volumes are still thin versus food staples.",
+          "why_import_size": "~$3B Iran-Kazakhstan turnover target; Iran agri-exports up ~35% to $7.6B in 1403",
+          "iran_angle": "Rail lane via the Sarakhs crossing/Turkmenistan (INSTC eastern branch), settled outside USD, with Iran an established regional food supplier. Concentrate the pitch on higher-value rose water and extracts, since the bulk pull is staples (dairy, dried fruit) rather than medicinal herbs.",
+          "demand_signal": "Kazakhstan-Iran $3B turnover ambition; Iranian dried fruit/dairy already stocked across Central Asian supermarkets via rail."
+        },
+        {
+          "country": "France",
+          "fit": "watch",
+          "why_import": "The world's #2 essential-oils importer (~$140M in 2024). The Grasse luxury-perfume cluster uses Damask-rose material, and France historically imports Iranian rose essence.",
+          "why_import_size": "~$140M essential-oil imports (2024); #2 global importer",
+          "iran_angle": "Iranian Fars-region rose oil is prized for its deep, honeyed, high-geraniol profile - a genuine quality-reputation play into fine fragrance. But France was one of the E3 that triggered the Sept 2025 snapback, so this is now the hardest EU banking channel (CBI/bank freezes, Iranian-cargo flight restrictions). Demand is real; realistically serve it through a Bulgaria- or UAE-based intermediary rather than direct Iranian-origin shipment.",
+          "demand_signal": "France co-triggered the Sept 2025 UN snapback - direct Iranian-origin trade finance into France is now severely constrained despite live perfumery demand."
+        }
+      ],
+      "blocked": [
+        "United States - the #1 global essential-oils importer (~$619M in 2024) but effectively CLOSED to Iranian-origin goods: the Iranian Transactions and Sanctions Regulations (IEEPA/ITSR) bar importation of Iranian-origin products, and the JCPOA-era carve-outs for Iranian foodstuffs/carpets were revoked in 2018. Do not chase.",
+        "United Kingdom - added its own sanctions after the Sept-Oct 2025 UN snapback; correspondent banking and local-vendor onboarding are shut to Iranian-origin goods despite real herbal/essential-oil demand.",
+        "Canada - strict autonomous Iran measures (SEMA) and no correspondent banking with Iran; a genuine rose-essence market on paper but unreachable for Iranian-origin imports.",
+        "Australia - appears as a top rose-essence market in Iranian export lists, but autonomous sanctions plus bank de-risking make direct Iranian-origin imports impractical.",
+        "Switzerland - a large medicinal-plant and perfumery importer, but it aligned with the 2025 EU snapback measures and enforces strict bank-compliance, so direct Iranian-origin sourcing is effectively closed (route any Swiss-bound premium via an intermediary)."
+      ],
+      "summary": "Rank the opportunity by sanctions-navigability, because for Iranian-origin goods that - not demand - is the binding constraint after the Sept-Oct 2025 UN snapback and EU/UK re-sanctions (Central Bank of Iran + major commercial banks frozen; food is carved out but with licensing/notification friction). The real money sits in the regional, non-USD lanes where Iran's price and proximity dominate: the UAE (Gulf demand + the re-export superhub, most navigable channel), Iraq (land border, Iran's #1 agri-food buyer), and China + India via yuan and rupee-rial mechanisms plus the INSTC/Chabahar corridor. Turkey and Pakistan are solid cheap-adjacent lanes (Turkey buys ~35% of Iran's cumin to re-process; Pakistan is a #1 medicinal-plant destination but a volume-not-margin play). Product nuances: lead with Damask rose water/oil and medicinal extracts into India (India is a cumin exporter itself, so cumin is dead there) and into perfumery buyers; Iranian rose is a genuine quality-reputation asset (Fars-region high-geraniol oil), but rose OIL faces Turkey+Bulgaria who hold 80%+ of world output. Premium EU/perfumery demand (Germany, France, Switzerland) is real but now payment-hard - route it through a UAE or Bulgaria intermediary rather than direct. The US, UK, Canada and Australia are effectively CLOSED to Iranian-origin goods despite large demand - skip them. One supply-side red flag to resolve BEFORE committing volume: Iran imposed a temporary ban on all food/agricultural exports in early 2026 (Strait of Hormuz/conflict), with spices and herbs still leaking out under exporter pressure - secure supply, licences and origin paperwork first. Evidence: Iran non-oil to UAE ~$5.2B/8mo and to Iraq ~$8.3B/8mo (2024); Iran agri-exports +35% to ~$7.6B in 1403; essential-oil importers 2024 US $619M, France $140M, China $108M, India $95M; Iran is the world's largest rose-water producer (~70% of world rose)."
+    },
+    {
+      "product": "Handwoven carpets & kilims",
+      "key": "carpets-kilim",
+      "fa": "فرش دستباف و گلیم",
+      "countries": [
+        {
+          "country": "Germany",
+          "fit": "strong",
+          "why_import": "test",
+          "iran_angle": "test"
+        }
+      ],
+      "blocked": [],
+      "summary": "test"
+    },
+    {
+      "product": "Mazafati dates (Bam) + date cookies + ardeh (tahini)",
+      "key": "dates-ardeh",
+      "fa": "خرمای مضافتی + کلوچه + ارده",
+      "countries": [
+        {
+          "country": "India",
+          "fit": "strong",
+          "why_import": "World's largest date importer — roughly 437k MT in 2024 rising toward 458k MT by 2028, about $267M in 2023, and still growing. Soft/wet dates come mainly from UAE, Iran and Iraq; huge Muslim + festive/Ramadan consumption plus a fast-rising health-snack (date syrup/bars) segment.",
+          "iran_angle": "Iran already holds ~10.4% of India's date market and is THE reference supplier for soft juicy dates — 'Kimia', the standard Indian retail name for the product, literally IS Mazafati/Bam dates, so brand pull is pre-built. India's 10-year Chabahar terminal deal (May 2024) + INSTC give Iran a direct sea/land lane that bypasses UAE, and long-standing rupee-rial settlement keeps payment workable under sanctions. Best overall opportunity.",
+          "demand_signal": "India named the world's biggest date importer in 2025; Iran = 10.41% of India's date imports 2024-25; India-Iran FY24-25 trade ~$1.68B with Chabahar operationalized."
+        },
+        {
+          "country": "Iraq",
+          "fit": "strong",
+          "why_import": "Iran's 2nd-largest export market overall; foodstuffs are a core category and Iran already supplies ~20% of Iraq's consumer market. Strong Ramadan date demand plus a deep halva/ardeh (tahini) sweet-tooth culture, so both the dates AND the ardeh sell.",
+          "iran_angle": "Shared land border with established truck lanes (Mehran/Shalamcheh) means no shipping and fast delivery; dinar/informal and barter payment channels route around banking sanctions entirely. Iran is already embedded in Iraqi retail, and Mazafati + date bars + ardeh all match local taste. Lowest-friction real market.",
+          "demand_signal": "Iran-Iraq trade ~$12B in the year to Mar 2025 (target $20B); Iran's non-oil exports to Iraq hit $10B in the first 10 months of 2025."
+        },
+        {
+          "country": "Russia",
+          "fit": "strong",
+          "why_import": "A top-5/6 destination for Iranian dates and a large sweets/halva-consuming market that imports most of its fruit. Both countries are Western-sanctioned, so they are politically aligned to trade with each other.",
+          "iran_angle": "The INSTC 'sanctions-proof' corridor (Caspian shipping + rail via Astrakhan) was built precisely for this flow; ruble-rial settlement and Mir-linked payment avoid Western banking. Iran competes on price against Tunisia/Egypt and benefits from Moscow actively pushing corridor volumes. Strong on both demand and payment navigability.",
+          "demand_signal": "INSTC 2024 freight 26.9M tons (+19% vs 2019), Moscow targeting 30M tons in 2025; Iran-Russia trade turnover topped $4B at end-2024."
+        },
+        {
+          "country": "United Arab Emirates",
+          "fit": "strong",
+          "why_import": "#2 destination for Iranian dates (~11% share) and the world's premier re-export hub — buys to repackage and re-ship onward to the GCC, Africa and even Western shelves under UAE origin.",
+          "iran_angle": "Short Persian Gulf hop (Bandar Abbas to Jebel Ali), thousands of Iranian trading firms already established in Dubai, and AED payment via free-zone banking that stays navigable. UAE is the main way Iranian dates legally re-origin to reach otherwise-blocked Western markets. CAVEAT: Iran-UAE ties are deteriorating into 2026 — treat as strong-but-monitor.",
+          "demand_signal": "Iran non-oil exports to UAE $7.2B in the year to Mar 2025; ~one-third of Iran's trade transits Dubai; Dubai FMCG re-export hub still growing in 2025."
+        },
+        {
+          "country": "Kazakhstan",
+          "fit": "moderate",
+          "why_import": "#5 destination for Iranian dates (~4.9% share); a Central Asian Muslim market with Ramadan demand and little domestic warm-climate fruit production of its own.",
+          "iran_angle": "Fast-improving Caspian + rail corridor — Kazakhstan-Iran rail freight jumped +69% in 2025 and bilateral trade +26.4% to $430M with a $3B roadmap. Iran is the natural cheap date supplier for landlocked Central Asia, and tenge/barter neighbor-corridor payments work around banking.",
+          "demand_signal": "Kazakhstan-Iran trade +26.4% to $430.2M in 2025; North-South corridor cargo +12% to 3.5M tons; 40 China-Iran cargo trains dispatched by end-2025 vs 7 in the prior seven years."
+        },
+        {
+          "country": "Pakistan",
+          "fit": "moderate",
+          "why_import": "#3 destination for Iranian dates (~7-11% share); enormous Ramadan consumption, a large population, and a shared Baloch date culture across the border.",
+          "iran_angle": "Direct land border (Taftan/Rimdan) with heavy informal cross-border trade; Iran is the nearest cheap soft-date source. CAVEAT: Iran-Pakistan banking is broken — alternative payment adds 3-5% and creates FX/pricing friction; volume is real but margins are squeezed. Barter mechanisms are being built to fix this.",
+          "demand_signal": "Global date sales spike +300% during Ramadan with Pakistan a top buyer; 2025 trade reporting flags banking restrictions adding 3-5% to Iran-Pakistan date deals."
+        },
+        {
+          "country": "Georgia",
+          "fit": "moderate",
+          "why_import": "Small domestic market but strategically wide open, and a re-export/transit node into the Caucasus, Black Sea and beyond. Iran already supplies ~85% of Georgia's dates.",
+          "iran_angle": "This is go4it's live buyer lane already. Georgia is deliberately sanctions-navigable — thousands of Iranian firms are registered there, company setup is trivial, and USD/GEL banking still processes Iranian-origin goods. Low barrier to entry and a springboard for onward shipments; the ardeh/tahini add-on rides the same trucks.",
+          "demand_signal": "Iran = 85% of Georgia's date supply; Georgia's imports from Iran ~$230M (Jan-Nov 2025); thousands of Iranian companies operating in Georgia flagged in 2025 sanctions-evasion reporting."
+        },
+        {
+          "country": "Turkey",
+          "fit": "moderate",
+          "why_import": "#4 destination for Iranian dates (~6.8% share) and a major halva/tahini and confectionery producer that imports raw dates and sesame inputs, then re-exports finished sweets to the EU and Gulf.",
+          "iran_angle": "Land border with established truck lanes (Bazargan/Gurbulak) and lira/barter trade; Iran feeds Turkey's processing industry cheaply. CAVEAT: Turkey is itself a leading tahini/halva exporter, so on finished ardeh you compete with locals — the real opening is Mazafati + raw/semi-processed inputs, not finished ardeh.",
+          "demand_signal": "Turkey among Iran's top-4 date buyers in 2024; Turkey-Iran trade sizeable ($3.2B+ Turkey to Iran in 2024) with an active food lane."
+        },
+        {
+          "country": "Afghanistan",
+          "fit": "watch",
+          "why_import": "Neighbor with steady basic-food demand; Iran is Afghanistan's single most important trade partner (~$3B/yr), and 2025 Pakistan-border closures pushed even more Afghan trade onto Iranian routes.",
+          "iran_angle": "Pure land lane via Dogharoun (handles ~60% of Iran's exports to Afghanistan) — cheap trucking, afghani/barter payment. CAVEAT: low-value, highly price-sensitive market with weak banking, and Afghanistan grows its own dried fruit — a thin-margin volume play only, not a premium Mazafati market.",
+          "demand_signal": "Iran non-oil exports to Afghanistan $1.156B in H1 2025 (+7% YoY); >$3B/yr through the Dogharoun crossing; Afghan trade actively rerouted through Iran in 2025."
+        }
+      ],
+      "blocked": [
+        "United States — the tempting one: #1 tahini importer in the world and a huge date-bar/energy-snack market. Food/agriculture from Iran is technically the TSRA exception, BUT dollar-clearing banks, importer reluctance, FDA/importer registration and the general embargo make it effectively closed to a small Iranian-origin exporter. Do not chase.",
+        "European Union — Sept 2025 UN snapback triggered EU reimposition: the Central Bank of Iran and major Iranian banks are re-frozen and fund transfers to/from Iranian financial institutions are banned (de-minimis only ~EUR 10k). Food can in theory be licensed, but the payment channel is dead. Reach EU shelves only via UAE/Turkey re-origin, not directly.",
+        "United Kingdom — joined the 2025 snapback with parallel sanctions and the same banking wall against Iranian financial institutions; no workable direct payment lane.",
+        "Canada — broad, long-standing Iran sanctions plus importer/vendor-registration barriers; not navigable for Iranian-origin food.",
+        "Saudi Arabia — even after the 2023 detente there's no normal trade lane for Iranian-origin food, Iranian goods struggle to get local vendor registration, and Saudi is itself a top date producer/exporter (direct competitor). Not worth pursuing.",
+        "Israel — zero trade with Iran (hostile state); complete non-starter, listed only to be explicit."
+      ],
+      "summary": "Iran is the world's #1 date exporter (~332k MT, ~$213M in 2024, +25% YoY) and Mazafati/Bam is its signature soft date (~180k MT, ~20% of date exports). The real money is NOT in the big Western date-bar/tahini markets (US is the #1 tahini importer, EU/US love date snacks) because Iranian origin is effectively banking-blocked there. The winnable opportunity clusters in three bands: (1) Big Muslim-population importers where Iran already has share and a lane — India (biggest date importer on earth, \"Kimia\" IS Mazafati) and Iraq (neighbor, ~20% of consumer market, halva/ardeh culture); (2) sanctions-aligned/corridor markets — Russia (INSTC, ruble) and Kazakhstan (Caspian/rail boom); (3) proximity + re-export hubs — UAE (Jebel Ali repack-and-reship), Georgia (go4it's live lane, 85% of its dates already Iranian), Pakistan (Ramadan, but broken banking), plus watch-list Turkey and Afghanistan. Rank drivers: existing Iranian share + an established corridor + a payment channel that survives sanctions. Ardeh/tahini demand is real but concentrates in Iraq/Levant/GCC (halva) and as processing input to Turkey — the Western tahini boom is mostly closed to Iran. Ship Mazafati + date bars as the volume drivers; treat ardeh as an add-on into Iraq/GCC/Georgia."
+    },
+    {
+      "product": "Export tiles & ceramics + sanitary ware",
+      "key": "tiles-sanitaryware",
+      "fa": "کاشی و سرامیک و چینی بهداشتی",
+      "countries": [
+        {
+          "country": "Iraq",
+          "fit": "strong",
+          "why_import": "Largest single market for Iranian tile/ceramic and sanitary ware by far. Post-war reconstruction + urbanization drive huge demand for cheap building materials; Iran's ceramic exports to Iraq were ~US$240M in 2022 and Iraq now takes an estimated 70-73% of ALL Iranian tile/ceramic exports. Iran also holds ~11% of Iraq's plastic sanitary-ware imports.",
+          "iran_angle": "Proximity + land route (trucks via Mehran/Basra/Shalamcheh) crush freight cost; Persian tile aesthetics are culturally aligned; deep existing trade lane and dinar/informal settlement channels already handle billions in Iranian non-oil goods, so payment and sanctions friction is effectively solved. This is the anchor account.",
+          "demand_signal": "2025 reconstruction/urban projects still lifting building-material demand; IndexBox and Iranian trade press flag Iraq as the dominant, still-growing buyer for both tile and toilet articles."
+        },
+        {
+          "country": "Afghanistan",
+          "fit": "strong",
+          "why_import": "Iran is the single largest exporter of goods to Afghanistan; building materials (cement, TILES, ceramics, steel) are among Iran's main exports. Iran's non-oil exports to Afghanistan hit ~US$1.07B in just H1 of 2024, +28% by weight YoY. Reconstruction + almost no domestic tile/sanitary production means near-total import reliance.",
+          "iran_angle": "Shared land border (Islam Qala/Dogharoun) = cheapest possible truck freight for a heavy, low-value-per-kg product; Iran already dominates the supply base. 2025 Taliban-Pakistan border shutdowns pushed Afghan importers to lean even harder on the Iran corridor. Payment is informal/hawala/barter, which sidesteps banking sanctions entirely.",
+          "demand_signal": "Afghan-Pakistan trade contracted sharply and was periodically halted in 2025, redirecting construction-material sourcing toward Iran and Central Asia."
+        },
+        {
+          "country": "Russia",
+          "fit": "strong",
+          "why_import": "Large construction sector, sanctioned off Western/EU tile supply, and actively substituting toward friendly suppliers. Iranian tile/porcelain-slab exports to Russia hit a new peak in 2025; ceramics are now a named key line in Iran's export basket to Russia; bilateral trade rose ~11% in H1 2025.",
+          "iran_angle": "Sanctions-navigable by design: both countries are sanctioned, so trade runs on rial-ruble / non-SWIFT channels and joint banking mechanisms rather than dollar clearing. The INSTC corridor (Caspian shipping now, Rasht-Astara rail due ~mid-2026) is being purpose-built to move exactly this kind of bulk cargo. Iran wins on price + a Western-vendor vacuum in the Russian market.",
+          "demand_signal": "Multiple 2025 Iranian trade sources report record tile/slab shipments to Russia and framing ceramics as a corridor-priority export."
+        },
+        {
+          "country": "Azerbaijan",
+          "fit": "strong",
+          "why_import": "Growing residential/commercial construction with limited domestic tile capacity; imports Iranian tiles specifically for affordability + acceptable quality. Grouped with Turkey/Georgia/Armenia among Iran's largest tile destinations (that cluster is cited at ~74% of Iran's tile export value).",
+          "iran_angle": "Direct land border (Astara/Bilesuvar) = low freight; established cross-border trade and cultural/linguistic ties; no Western-style sanctions barrier on receiving Iranian-origin goods. Reliable neighbor account with room to grow.",
+          "demand_signal": "2025 Iranian tile-market analyses list Azerbaijan among the steady top-tier neighbor buyers driven by construction demand."
+        },
+        {
+          "country": "Turkmenistan",
+          "fit": "moderate",
+          "why_import": "State-driven construction/urban build-out (Ashgabat and new-city projects) with little domestic ceramic industry; recurring buyer of Iranian tiles for infrastructure and housing.",
+          "iran_angle": "Shared border and rail: Iran and Turkmenistan agreed in 2025 to build two new rail lines at the Sarakhs crossing specifically to ease freight congestion and boost rail trade. Proximity + rail = strong logistics edge. UAE also re-exports ~US$1B/yr into Turkmenistan, so an Iran-direct lane undercuts that on cost.",
+          "demand_signal": "2025 Iran-Turkmenistan Sarakhs rail expansion agreement signals rising freight volumes on this corridor."
+        },
+        {
+          "country": "Uzbekistan",
+          "fit": "moderate",
+          "why_import": "Fast-growing economy and construction boom; Iran's non-oil exports to Uzbekistan jumped +59.2% in value to US$353M and +80% in volume (Mar-Oct 2025). Building materials ride that surge.",
+          "iran_angle": "Rising, sanctions-tolerant lane via Turkmenistan/Central Asia; Iranian price competitiveness. HONEST CAVEAT: Uzbekistan is itself one of the region's larger tile producers, so the ceiling is capped and the real opening is in premium/porcelain and sanitary ware rather than commodity floor tile.",
+          "demand_signal": "Trend.az/Iran customs: +59% value, +80% volume growth in Iran-Uzbekistan non-oil trade for 7M2025 — one of the steepest regional growth rates."
+        },
+        {
+          "country": "Georgia",
+          "fit": "moderate",
+          "why_import": "Steady residential and hospitality construction demand; consistently listed in the Turkey/Georgia/Armenia cluster that absorbs the bulk of Iran's tile export value; buys Iranian tile for durable, low-cost residential projects.",
+          "iran_angle": "No sanctions barrier to Iranian-origin goods; open, trade-friendly regime and a re-export/transit gateway toward the Black Sea and beyond. Reachable by land via Armenia/Azerbaijan. Good diversification and a potential onward-transit node.",
+          "demand_signal": "2025 analyses note Georgia's demand for Iranian tiles growing steadily, weighted to residential."
+        },
+        {
+          "country": "Pakistan",
+          "fit": "watch",
+          "why_import": "Large population and construction demand, and Iranian construction materials (tiles, cement, iron) already flow across the border. But Pakistan has its own protected tile industry and leans anti-import, so formal demand for foreign tile is thin.",
+          "iran_angle": "The real, resilient opportunity is the Balochistan/Sistan land-border barter trade (Taftan/Gabd), which runs largely outside formal banking and 'flourishes against the odds.' Iran wins purely on border-adjacent price. Treat as an informal border play, not a national-distribution market; formal banking + local protectionism cap anything bigger.",
+          "demand_signal": "Iran-Pakistan border trade in construction materials continued through 2024-2025 despite friction; growth is concentrated at the frontier, not in formal ports."
+        },
+        {
+          "country": "United Arab Emirates",
+          "fit": "moderate",
+          "why_import": "Not primarily an end-consumer of Iranian tile, but the region's dominant transshipment/blending/re-export hub — Iran sent ~US$7.2B of non-oil goods to the UAE in FY2024/25, much of it re-exported onward (incl. ~US$1B/yr of UAE goods into Turkmenistan alone).",
+          "iran_angle": "Value is as a GATEWAY, not a destination: Dubai/Sharjah traders re-flag and re-invoice Iranian-origin goods to reach GCC/Africa/South Asia buyers who won't import directly from Iran. Short Persian Gulf shipping hop, mature Iranian merchant network. CAVEAT: UAE enforces product registration and periodically tightens on Iranian re-exports, so margins/route depend on the re-export partner, not on selling 'Iranian origin' openly.",
+          "demand_signal": "2025 Tehran Times/TV BRICS: Iran-UAE non-oil trade at multi-billion run-rate with the UAE explicitly functioning as re-export intermediary."
+        }
+      ],
+      "blocked": [
+        "United States — Comprehensive OFAC embargo (31 CFR Part 560): U.S. persons are barred from purchasing, transporting, financing or brokering ANY Iranian-origin goods, with construction-sector materials specifically named. Zero legal path; do not chase.",
+        "European Union — Even where tiles aren't item-specifically sanctioned, SWIFT/banking cutoff, secondary-sanctions risk on EU importers, and powerful domestic producers (Italy, Spain, Portugal, Poland — plus an active anti-dumping regime against other origins) mean no EU distributor will register or clear Iranian-origin ceramic. Effectively closed.",
+        "United Kingdom — Aligned with EU/US sanctions and banking restrictions on Iranian-origin trade; same practical closure as the EU.",
+        "Canada — Broad Iran sanctions and banking prohibitions make Iranian-origin building materials non-importable.",
+        "Saudi Arabia — Despite the 2023 diplomatic thaw, still effectively closed: SASO/SABER vendor-registration and conformity barriers, banking friction, and Saudi Arabia's own status as a top-3 regional tile producer block Iranian-origin building materials from the formal channel. Any entry would have to route via UAE re-export, not direct.",
+        "India — Not sanctions-blocked but pointless to pursue: India is the world's #2 tile EXPORTER (a direct competitor, not a buyer) and Iran-India banking (post-rupee-account wind-down) is friction-heavy. No real import demand for Iranian tile."
+      ],
+      "summary": "Iran-origin tiles/ceramics + sanitary ware sell where three things line up: real construction demand, a land or Caspian corridor that makes heavy low-value cargo economic, and a payment/sanctions path that avoids dollar clearing. That points overwhelmingly at neighbors and fellow-sanctioned states, not open Western markets. TIER 1 (anchor the book here): Iraq — the dominant market at ~70-73% of all Iranian tile/ceramic exports (~$240M+/yr), reconstruction-driven, land-routed, payment already solved; Afghanistan — Iran is its #1 supplier of building materials, near-total import reliance, cheapest possible truck freight, informal payment, and 2025 Pakistan-border shutdowns funneling more demand to the Iran lane; Russia — record 2025 tile/slab shipments into a Western-vendor vacuum, built on the INSTC corridor and rial-ruble settlement, the biggest upside story. TIER 2 (solid neighbor/corridor accounts): Azerbaijan and Turkmenistan (bordering, rail-connected, price-led), Uzbekistan (fastest-growing lane, +59% value in 2025, but caps out on commodity tile because it produces its own — push porcelain/sanitary ware), and Georgia (steady residential demand + onward-transit gateway, no sanctions barrier). TIER 3 / structural: Pakistan is a frontier-barter play only (formal market is protectionist), and the UAE matters as a re-export GATEWAY to reach buyers who won't touch Iranian origin directly — not as an end market. AVOID: the US, EU, UK, Canada are legally/financially closed to Iranian-origin goods; Saudi Arabia is practically closed via SASO registration + domestic production despite the political thaw; India is a competitor-exporter, not a buyer. Net: win on price + proximity + sanctions-navigable settlement in the neighborhood; don't burn effort on the big Western markets."
+    }
+  ],
+  "total_country_recs": 94
+}
