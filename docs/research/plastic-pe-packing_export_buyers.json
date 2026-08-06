@@ -1,9 +1,9 @@
 {
   "source": "verified-hunt-2025+",
-  "total": 7,
-  "with_phone": 2,
-  "with_email": 2,
-  "with_website": 1,
+  "total": 62,
+  "with_phone": 15,
+  "with_email": 10,
+  "with_website": 49,
   "buyers": [
     {
       "company": "Welsh Government (WGCD) — on behalf of the Welsh Public Sector",
@@ -153,6 +153,1278 @@
       "wants": "2-year framework for polythene waste & refuse sacks and bags (CPV 19640000); est 25,000,000 NOK excl VAT.",
       "posted": "2025",
       "source_url": "https://ted.europa.eu/en/notice/428524-2025/pdfs",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Al-Khafaji for Plastic Trade (الخفاجي لتجارة البلاستك)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad (Shorja market)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "plastic-company-plastic.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Plastic materials / plastic bags for wholesale resale s"
+      ],
+      "wants": "Plastic materials / plastic bags for wholesale resale stock",
+      "posted": "2026-06-22",
+      "source_url": "https://importer.tradekey.com/iraq/-plastic-company-plastic.htm",
+      "role": "Wholesale plastics trader / buyer",
+      "linkedin": "https://www.facebook.com/Alkafageeshop/",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Altugrah Trading Company Ltd.",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad (Alrasheed Street)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "packaging-films.htm",
+      "match_score": 82,
+      "verdict": "plausible",
+      "tier": "active",
+      "buys": [
+        "Plastic packaging materials. CAVEAT: independently veri"
+      ],
+      "wants": "Plastic packaging materials. CAVEAT: independently verified that this firm's core business since 1987 is hand tools / power/safety wear / welding machines / construction machinery, so its seriousness as a recurring PE-packaging buyer is uncertain",
+      "posted": "2026-07-08",
+      "source_url": "https://importer.tradekey.com/iraq/packaging-films.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "QuickPack",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Erbil (serves all Iraq)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "https://www.quickpackiraq.com/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Erbil-based supply-chain distributor of disposable plas"
+      ],
+      "business": "Erbil-based supply-chain distributor of disposable plastic food packaging (boxes, spoons, pans, films). Explicitly sources finished products from suppliers and distributes nationwide (verified via quickpackiraq.com) — an importer/distributor, not a manufacturer.",
+      "why_fit": "Business model is literally 'source finished plastic packaging from suppliers, distribute across Iraq' — the ideal reseller channel for Iran-sourced PE packaging. Erbil base with reach to Baghdad/Basra. Food-service focus (not yet confirmed importing PE carry bags/films specifically), hence 4 not 5.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Cozmo Supermarket Iraq",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "cozmo.jo",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Real Baghdad supermarket/retail chain (food, bakery, da"
+      ],
+      "business": "Real Baghdad supermarket/retail chain (food, bakery, dairy, frozen, household); part of THE Group (Jordan). RocketReach lists ~$31M revenue.",
+      "why_fit": "High-volume end-user of plastic carrier bags, produce bags, food-packaging film and refuse sacks. Identified Purchasing function. End-user (not reseller) and staff/revenue figures vary across sources; purchasing contact unverified.",
+      "linkedin": "https://www.linkedin.com/company/cozmo-iq",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Baghdad Soft Drinks Co. (PepsiCo bottler)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "https://en.wikipedia.org/wiki/Baghdad_Soft_Drinks_Co",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Largest beverage bottler in Iraq (Pepsi, 7Up, Mirinda; "
+      ],
+      "business": "Largest beverage bottler in Iraq (Pepsi, 7Up, Mirinda; also water/juice), ISX-listed.",
+      "why_fit": "Major recurring industrial user of PE shrink film (bottle multipacks) and pallet stretch film in high volumes. Downside: large listed corporate with entrenched procurement — hard to break in as a new Iran-sourced supplier.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Toolmart (HG products distributor, Iraq)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Iraq (nationwide network)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "https://toolmart.me/en/collections/hg",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Bulk/wholesale distributor of cleaning & household line"
+      ],
+      "business": "Bulk/wholesale distributor of cleaning & household lines (HG brand) to retailers, cleaning companies and distributors across Iraq.",
+      "why_fit": "Established B2B distribution network that could carry imported refuse sacks / trash bags. But its actual line is cleaning chemicals/household, so PE-packaging fit is speculative — lowered from 3.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Almarabh Trading Company Co. Ltd.",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Iraq (nationwide; HQ Baghdad/Erbil)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "https://almarabh.com/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "General-trade FMCG importer/distributor (personal care,"
+      ],
+      "business": "General-trade FMCG importer/distributor (personal care, food & beverage, confectionery, cosmetics) with nationwide coverage (Erbil, Sulaymaniyah, Basra, Baghdad, Najaf). Est. 2018.",
+      "why_fit": "Proven multi-category importer with a built-out Iraq distribution footprint; plausible buyer of retail plastic packaging, but packaging is not a current line.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "TerraPack",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Erbil",
+      "dest_iso": "IQ",
+      "phones": [
+        "+964 750 871 8888"
+      ],
+      "email": "info@terrapack.net",
+      "website": "https://terrapack.net/en/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Verified Erbil (Iraqi Kurdistan) packaging company sinc"
+      ],
+      "business": "Verified Erbil (Iraqi Kurdistan) packaging company since 2015, 25,000 m2 factory — but a MANUFACTURER of corrugated/carton boxes, not PE film/bags.",
+      "why_fit": "Iraq-based packaging player with logistics and a customer base, but core material is carton and it makes its own goods, so as a finished-PE buyer the fit is weak.",
+      "linkedin": "https://www.linkedin.com/company/terrapack",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Four Aces General Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Umm Ramool / Al Rashidiya)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971-4-2515979"
+      ],
+      "email": "",
+      "website": "stretch-film.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Stretch film (already stocks/trades stretch film, polyt"
+      ],
+      "wants": "Stretch film (already stocks/trades stretch film, polythene sheets, packing paper, air bubble)",
+      "posted": "2026-06-28",
+      "source_url": "https://importer.tradekey.com/uae/stretch-film.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Direct Shipping Services (L.L.C.)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Jebel Ali Free Zone South)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971-4-8173000"
+      ],
+      "email": "info@ds.ae",
+      "website": "stretch-film.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Stretch film, 500mm width, 20-23 micron (cargo packing "
+      ],
+      "wants": "Stretch film, 500mm width, 20-23 micron (cargo packing consumable, monthly)",
+      "posted": "2026-04-14",
+      "source_url": "https://importer.tradekey.com/uae/stretch-film.htm",
+      "role": "",
+      "linkedin": "https://www.linkedin.com/company/directshippingdxb",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "BAB AL RIZQ FOODSTUFF TRADING LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Deira / Port Saeed)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971-4-2387185"
+      ],
+      "email": "",
+      "website": "garbage-bag.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Recurring (weekly) disposables: garbage bags, stretch f"
+      ],
+      "wants": "Recurring (weekly) disposables: garbage bags, stretch film, aluminum containers, paper cups, aluminum foil",
+      "posted": "2026-07-06 (repeat 2026-06-21)",
+      "source_url": "https://importer.tradekey.com/uae/garbage-bag.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Najm Suhail General Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Ajman (Ajman Industrial 1); also Deira-Al Murar office",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "stretch-film.htm",
+      "match_score": 82,
+      "verdict": "plausible",
+      "tier": "active",
+      "buys": [
+        "Ox-liner / mailing masking film (PE-film adjacent)"
+      ],
+      "wants": "Ox-liner / mailing masking film (PE-film adjacent)",
+      "posted": "2026-07-13",
+      "source_url": "https://importer.tradekey.com/uae/stretch-film.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Daitona General Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Hor Al Anz East; branch Mussafah, Abu Dhabi)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971-4-2977972"
+      ],
+      "email": "",
+      "website": "https://daitona.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Established 1990; leading UAE distributor of cleaning m"
+      ],
+      "business": "Established 1990; leading UAE distributor of cleaning machines, janitorial supplies, hygiene systems and waste consumables (trash bags, bin liners, trash cans, waste bins); 5 warehouses, ISO 9001, sells to hotels/hospitals/FM/retail/industrial",
+      "why_fit": "Pure distributor (not a manufacturer) that already stocks and resells trash bags/bin liners in bulk to FM and retail - a natural importer of competitively-priced PE refuse sacks",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Saanzpack (Saanz International Disposable Trading LLC)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Ajman (Rashidiya-2; warehouse Al Jurf Industrial-1)",
+      "dest_iso": "AE",
+      "phones": [
+        "06-5379984"
+      ],
+      "email": "info@saanzpack.com",
+      "website": "https://saanzpack.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Disposables & food-packaging distributor (est. 2021) su"
+      ],
+      "business": "Disposables & food-packaging distributor (est. 2021) supplying garbage bags, cling film, aluminium containers, foam/paper products, cutlery to HORECA and retail across UAE",
+      "why_fit": "Model is literally 'International Disposable Trading' - an importing distributor that already lists garbage bags and cling film in its own catalogue; strong candidate to source finished PE packaging",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Ultracare LLC (MyUltraCare)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Dubai Investment Park 1)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 4 885 4300"
+      ],
+      "email": "info@myultracare.com",
+      "website": "https://myultracare.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Hygiene/disposables supplier (est. 2001); manufactures "
+      ],
+      "business": "Hygiene/disposables supplier (est. 2001); manufactures tissue but buys-in and distributes biodegradable garbage bags, hand-grade stretch film, aluminium containers, PPE and catering disposables to schools/catering/hospitals/hotels nationwide",
+      "why_fit": "Distributes exactly garbage bags + stretch film (plastic lines are bought-in, so a logical import buyer); caveat - markets bags as 'biodegradable', so a generic conventional-PE offer may be a partial fit",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Triveni Packaging Trading Co LLC (TREVIPAK)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Dubai Investment Park 1)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 4 262 6111"
+      ],
+      "email": "",
+      "website": "https://trivenipackaging.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Packaging materials + machinery trader (est. 1993) sell"
+      ],
+      "business": "Packaging materials + machinery trader (est. 1993) selling hand/machine stretch film, POF/shrink film, PP/PET strapping and packaging machinery across the Middle East under its own TREVIPAK brand",
+      "why_fit": "Established packaging house that moves stretch/PE film in volume and brands it (TREVIPAK), so it sources film - plausible bulk importer, though it may already hold distribution deals with existing manufacturers (verify)",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "My Office Supply",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 52 576 4810"
+      ],
+      "email": "info@myofficesupply.ae",
+      "website": "https://myofficesupply.ae",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Office + cleaning/janitorial consumables supplier (est."
+      ],
+      "business": "Office + cleaning/janitorial consumables supplier (est. 2010) - trash bags, cleaning chemicals, restroom supplies, janitorial machinery; a trusted supplier to FM and housekeeping companies",
+      "why_fit": "Right sector (FM/housekeeping consumables incl. trash bags/liners); positioned as a distributor buying-in to resell to FM contractors",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Imdaad LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://www.imdaad.ae",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Large integrated facilities-management and waste-manage"
+      ],
+      "business": "Large integrated facilities-management and waste-management group (est. 2007) operating across UAE, incl. environmental/solid-waste services",
+      "why_fit": "Very large volume consumer of bin liners/refuse sacks, but an END-USER that procures via tender and approved local suppliers - not a direct importer of this product, so a hard, slow direct sell",
+      "linkedin": "https://www.linkedin.com/company/imdaad",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Farnek Services LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://www.farnek.com",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Major UAE facilities-management company (aviation, bank"
+      ],
+      "business": "Major UAE facilities-management company (aviation, banking, government, hospitality) with large soft-FM/cleaning operations",
+      "why_fit": "Large end-user of bin liners/garbage bags across many sites; right sector but, like other big FM groups, buys via procurement/approved suppliers rather than direct import - aspirational lead",
+      "linkedin": "https://www.linkedin.com/company/farnek-services-llc",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "X5 Group (PAO \"Korporativny Tsentr IKS 5\" / X5 Retail Group — Pyaterochka, Perekrestok, Chizhik)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 495 532-85-19"
+      ],
+      "email": "",
+      "website": "x5.ru",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Garbage/refuse sacks under private label (СТМ) — 12 SKU"
+      ],
+      "wants": "Garbage/refuse sacks under private label (СТМ) — 12 SKU, HS 3923/3926, polyethylene. Commercial tender No. 4354250 \"Закупка мусорных мешков под СТМ\". VERIFIED on B2B-Center as a real X5 (PAO Korporativny Tsentr IKS 5) buy-side procurement.",
+      "posted": "2026-03-02 (deadline 2026-03-06 — this specific tender is now CLOSED)",
+      "source_url": "https://www.b2b-center.ru/app/market-next/zakupka-musornykh-meshkov-pod-stm/tender-4354250/",
+      "role": "X5 private-label / non-food sourcing team (name not disclosed publicly)",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "AO Agrokholding \"STEP\" (АО Агрохолдинг «СТЕПЬ») — procuring via ООО ТД «Инвестпром-ОПТ»",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Novocherkassk / Rostov Oblast (group HQ Moscow)",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 (863) 309-07-10"
+      ],
+      "email": "",
+      "website": "www.ahstep.ru",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Packaging film for finished product: manual & machine s"
+      ],
+      "wants": "Packaging film for finished product: manual & machine stretch film, PND/BOPP/heat-shrink film, and film for cereal/grain (фасовка круп) packing. VERIFIED live open RFP No. 24174 \"Поставка пленки для фасовки круп\" for TD Investprom-OPT, deadline 2026-07-30, plus recurring stretch/shrink film RFPs.",
+      "posted": "2026 (recurring open RFPs on own portal; procedure 24174 deadline 2026-07-30)",
+      "source_url": "https://www.ahstep.ru/tender",
+      "role": "Zakupki / procurement, TD Investprom-OPT (packaging category)",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "AO \"Sibagro\" (АО СИБАГРО) — agro-industrial holding",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Tomsk / Tomsk Oblast",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "sibagro.ru",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Polyethylene film (пленка полиэтиленовая) for PF \"Tomsk"
+      ],
+      "wants": "Polyethylene film (пленка полиэтиленовая) for PF \"Tomskaya\" division. VERIFIED via real B2B-Center tender No. 4146265 (awarded at 175,000 RUB). NOTE: the find's original details (500 micron / 3m / ~220,000 RUB / 2026-08 from a RosTender aggregator) could NOT be matched; substituted the concrete 2025 B2B-Center tender by the same buyer.",
+      "posted": "2025-08-22 (deadline 2025-08-26; archived/awarded 2025-09-09 — closed)",
+      "source_url": "https://www.b2b-center.ru/market/plenka-polietilenovaia-dlia-nuzhd-pf-tomskaia-ao-sibagro/tender-4146265/",
+      "role": "Procurement dept, PF Tomskaya / Sibagro (not named in listing)",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Komus (Комус)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow (nationwide)",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://www.komus.ru",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Russia's largest B2B distributor of office, household, "
+      ],
+      "business": "Russia's largest B2B distributor of office, household, cleaning and packaging supplies; extensive garbage-bag and packaging-film catalog sold wholesale.",
+      "why_fit": "Massive buy-side reseller stocking refuse sacks and PE film in volume; sources domestically and imports, a natural channel. Minor caveat: runs some own packaging production (Komus-Upakovka), so partially competes.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Metro Cash & Carry Russia (ООО «МЕТРО Кэш энд Керри»)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://www.metro-cc.ru",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Wholesale cash & carry chain serving HoReCa and reselle"
+      ],
+      "business": "Wholesale cash & carry chain serving HoReCa and resellers; large private-label (Aro, Rioba) household/cleaning range including bin liners and film.",
+      "why_fit": "Wholesaler and established private-label importer of refuse sacks and PE packaging at scale — one of the strongest retail channels for foreign-origin private label.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Magnit / AO \"Tander\" (АО Тандер)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Krasnodar",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://zakupki.magnit.ru",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Russia's #2 grocery retailer with private-label househo"
+      ],
+      "business": "Russia's #2 grocery retailer with private-label household goods incl. garbage bags; runs a public procurement portal.",
+      "why_fit": "High-volume end-user of private-label refuse sacks; commercial portal (zakupki.magnit.ru) accepts foreign origin. Caveat: retailers usually contract domestic converters for private label, so certification/logistics hurdle.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Lenta (ООО «Лента»)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "St. Petersburg",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://lenta.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Major hypermarket/supermarket chain with private-label "
+      ],
+      "business": "Major hypermarket/supermarket chain with private-label household/cleaning lines (365 Дней) incl. garbage bags and packaging.",
+      "why_fit": "Large grocery buyer of private-label refuse sacks/film via supplier portal; plausible importer of low-cost PE private label, though mostly sources domestically.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "GK \"Samson\" / Samson-opt (ГК «Самсон»)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow / Voronezh (nationwide)",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://www.samsonopt.ru",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Large federal B2B distributor of office and household g"
+      ],
+      "business": "Large federal B2B distributor of office and household goods; official Vileda Professional distributor; carries bin liners and packaging.",
+      "why_fit": "Buy-side wholesaler/distributor (not a manufacturer) reselling refuse sacks and packaging film nationwide — a realistic import/distribution partner.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Dimmax (ДИММАКС)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "http://www.dimmax.su",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Wholesale supplier of household chemistry/goods (since "
+      ],
+      "business": "Wholesale supplier of household chemistry/goods (since 2005, ~11,000 SKUs); resells Avikomp garbage bags and packaging with delivery across Russia.",
+      "why_fit": "Buy-side wholesaler reselling finished PE refuse sacks (currently domestic Avikomp) — a plausible smaller import/distribution channel. Modest volume.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Merida (MeridaShop / meridashop.ru)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow (branches nationwide)",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://meridashop.ru",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Distributor of professional cleaning/hygiene consumable"
+      ],
+      "business": "Distributor of professional cleaning/hygiene consumables incl. bin liners and refuse sacks; part of the international Merida network.",
+      "why_fit": "Buy-side distributor of liners to cleaning/HoReCa, right category and reachable — but Merida sells its OWN-brand garbage bags, so foreign PE bags would compete with their own line. Smaller volume, weaker fit.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "UNICEF Afghanistan Country Office",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kabul (nationwide delivery)",
+      "dest_iso": "AF",
+      "phones": [
+        "+93 730727319"
+      ],
+      "email": "afghanistanetendering@unicef.org",
+      "website": "www.ungm.org",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "EPI / Healthcare Waste Management 'local items' incl. t"
+      ],
+      "wants": "EPI / Healthcare Waste Management 'local items' incl. trash bags and waste containers/rigid liners (UNSPSC 47121701 & 47121702), plus PPE. Ref: LITB-2025-9201041. Open to Local/Afghanistan Suppliers Only. Trash bags/liners are finished poly goods, so an Iran source must route via a locally-registered Afghan converter/partner (finished poly-bag imports are banned under HS 3923.21).",
+      "posted": "2025-11-06 (closed 2025-11-20)",
+      "source_url": "https://www.ungm.org/Public/Notice/283757",
+      "role": "UNICEF Afghanistan e-tendering focal point (contact channel verified on the UNGM notice; personal name not independently confirmed)",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "DACAAR (Danish Committee for Aid to Afghan Refugees)",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Faryab & Jawzjan (procurement HQ Kabul)",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "dacaar.org",
+      "match_score": 82,
+      "verdict": "plausible",
+      "tier": "active",
+      "buys": [
+        "Supply of Plastic Sheet for greenhouses (PE greenhouse "
+      ],
+      "wants": "Supply of Plastic Sheet for greenhouses (PE greenhouse film) under the DACAAR NORAD-funded program. Raw greenhouse film is an allowed import (only finished poly bags are banned), so this is in-scope for a PE-film exporter.",
+      "posted": "2026-07-10 (RFQ; likely now closed)",
+      "source_url": "https://dacaar.org/procurements",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Baheer Group (Baheer Printing & Packaging Co. Ltd)",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kabul",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "https://baheergroup.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Verified: Afghanistan's leading printing/packaging & pa"
+      ],
+      "business": "Verified: Afghanistan's leading printing/packaging & paper group since 1997 (AISA-registered); corrugated + flexible packaging for food, beverage, agriculture, medicine; claims ~95% of national corrugation demand.",
+      "why_fit": "Flexible-packaging CONVERTER whose core raw input is PE/laminate film rollstock (not finished retail bags, so outside the import ban). Largest, most established and most reachable buyer of this exact input category.",
+      "linkedin": "https://www.linkedin.com/company/baheergroup",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Alokozay Beverages Company Ltd (ABCo)",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kabul (Pul-e-Charkhi Industrial Park)",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "https://www.alokozay.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Verified: flagship Afghan bottling/FMCG arm of Alokozay"
+      ],
+      "business": "Verified: flagship Afghan bottling/FMCG arm of Alokozay Group; cola, energy drinks, iced tea, juices, bottled water. PepsiCo signed Alokozay as its exclusive bottling partner for Afghanistan (confirmed).",
+      "why_fit": "Very large, well-funded end-user of PE shrink/stretch film and multipack wrap on high-volume bottling lines; reachable via corporate HQ.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Omaid Bahar Fruits Processing Ltd",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kabul (Pul-e-Charkhi, Jalalabad Road)",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "https://omaidbahar.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Verified: Afghanistan's first/only fruit-juice-concentr"
+      ],
+      "business": "Verified: Afghanistan's first/only fruit-juice-concentrate factory with an on-site packaging facility; juices, CSD, energy drinks, dairy; packs concentrate in 250kg aseptic bags.",
+      "why_fit": "Major food/beverage end-user needing PE shrink film, flexible pouches and aseptic bags; clear buy-side, reachable via website. On-site packaging integration slightly tempers external demand.",
+      "linkedin": "https://www.linkedin.com/company/omaid-bahar-fruit-processing-ltd",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Tawheed Usmani Production Co Ltd",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kabul (Pul-e-Charkhi) + Herat 5th district",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Verified: food-packaging manufacturer since 2009; makes"
+      ],
+      "business": "Verified: food-packaging manufacturer since 2009; makes PS lunch boxes, plastic/paper cups, oven-ready plates.",
+      "why_fit": "Domestic packaging converter that buys plastic raw input (PS/PP sheet & resin, some film). Real plastics buyer, but product mix is thermoformed rigid ware rather than PE film, so only a partial fit.",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Afghanistan Beverage Industries Ltd (ABI - Cristal water)",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kabul",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Verified: leading Kabul manufacturer of Cristal mineral"
+      ],
+      "business": "Verified: leading Kabul manufacturer of Cristal mineral water and carbonated soft drinks (historically held a Pepsi franchise). NOTE: original find wrongly merged ABI with Pamir Cola - they are two separate companies; corrected here.",
+      "why_fit": "Beverage end-user needing PE shrink film and multipack packaging for bottling/water lines.",
+      "linkedin": "https://www.linkedin.com/company/afghanistan-beverage-industries-limited",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Pamir Cola Group of Companies",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Herat (Herat Industrial Town)",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "https://pamircola-co.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Verified: beverage/snack group est. 2004; natural juice"
+      ],
+      "business": "Verified: beverage/snack group est. 2004; natural juices, dairy, and snacks (puffs, popcorn, snack rings). Split out from the ABI conflation in the original find.",
+      "why_fit": "Beverage + snack producer = user of PE shrink film AND flexible BOPP/laminate snack film; Herat location is well-placed for Iran/Islam Qala-corridor sourcing.",
+      "linkedin": "https://www.linkedin.com/company/pamir-cola-group-of-companies",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "TAK International Food Company (TAK Dry Fruit)",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Mazar-e-Sharif (corrected; find said Kabul/Herat)",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "https://tak-foods.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Verified: AISA-registered (2014) dried-fruit, nuts and "
+      ],
+      "business": "Verified: AISA-registered (2014) dried-fruit, nuts and saffron processor-exporter; factory in Mazar-e-Sharif with in-house cleaning/sorting/packing.",
+      "why_fit": "Agri-exporter that consumes PE/laminate vacuum pouches and flexible film for export packing; a genuine flexible-film buy-side use-case.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Sadaf Aria Food Company",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Herat",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "https://sadafaria.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Verified: snack/bakery manufacturer since 2009; biscuit"
+      ],
+      "business": "Verified: snack/bakery manufacturer since 2009; biscuits, cakes, popcorn, puff snacks; 8 brands, 34 branches, ~300 employees.",
+      "why_fit": "Snack manufacturing is a heavy consumer of flexible BOPP/laminate/PE packaging film; Herat location sits on the Iran/Islam Qala trade corridor. Upgraded from the find's 2 after confirming it is a real, sizeable snack producer.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Kabul Municipality (Sanitation / Solid-Waste Management Directorate)",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kabul",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "https://km.gov.af",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Municipal solid-waste collection and city sanitation."
+      ],
+      "business": "Municipal solid-waste collection and city sanitation.",
+      "why_fit": "Institutional end-user of refuse sacks / heavy-duty garbage bags. BUT these are finished poly bags whose import is banned (HS 3923.21), so it must procure domestically-made bags - a weak fit for an Iran finished-bag exporter. Downgraded from 3.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Ayaz Co",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Karachi",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "plastic-film.htm",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Packaging film (plastic/PE packaging film) - general im"
+      ],
+      "wants": "Packaging film (plastic/PE packaging film) - general import inquiry, spec/qty not stated in listing",
+      "posted": "2025-08-14",
+      "source_url": "https://importer.tradekey.com/pakistan/plastic-film.htm",
+      "role": "Not disclosed on listing",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Mustafa Trade Links",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Karachi",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "plastic-film.htm",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Packaging film (plastic/PE packaging film) - import inq"
+      ],
+      "wants": "Packaging film (plastic/PE packaging film) - import inquiry",
+      "posted": "2025-10-22",
+      "source_url": "https://importer.tradekey.com/pakistan/plastic-film.htm",
+      "role": "Not disclosed",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "HR Packages Industry",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Pakistan (city not stated)",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "packaging-film-importer.html",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Packaging film - import inquiry"
+      ],
+      "wants": "Packaging film - import inquiry",
+      "posted": "2025-10-20",
+      "source_url": "https://importer.tradekey.com/packaging-film-importer.html",
+      "role": "Not disclosed",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Subhaan Multi Company",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Pakistan (city not stated)",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "packaging-film-importer.html",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Packaging film - import inquiry"
+      ],
+      "wants": "Packaging film - import inquiry",
+      "posted": "2025-10-28",
+      "source_url": "https://importer.tradekey.com/packaging-film-importer.html",
+      "role": "Not disclosed",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Rehman Enterprises",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Pakistan (city not stated)",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "packaging-film-importer.html",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "PET film for packaging, lamination and printing (trial "
+      ],
+      "wants": "PET film for packaging, lamination and printing (trial quantity offered)",
+      "posted": "2026-07-08",
+      "source_url": "https://importer.tradekey.com/packaging-film-importer.html",
+      "role": "Not disclosed",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Green Earth",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Pakistan (city not stated)",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "plastic-film.htm",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Metallized polyester / PET packaging film"
+      ],
+      "wants": "Metallized polyester / PET packaging film",
+      "posted": "2026-06-29",
+      "source_url": "https://importer.tradekey.com/pakistan/plastic-film.htm",
+      "role": "Not disclosed",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Anonymous Pakistan buyer (TradeWheel buy request)",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Pakistan",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "www.tradewheel.com",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "PE (polyethylene) packaging film, 200 micron thickness "
+      ],
+      "wants": "PE (polyethylene) packaging film, 200 micron thickness x 1.5 m width, for packaging",
+      "posted": "2025-01-20",
+      "source_url": "https://www.tradewheel.com/buyers/pe-film/",
+      "role": "Not disclosed",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Fine Universal Enterprises",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Karachi",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Paper Market importer/distributor/indentor of PVC sheet"
+      ],
+      "business": "Paper Market importer/distributor/indentor of PVC sheets, BOPP film, EVA emulsion, polyester film and packaging materials",
+      "why_fit": "Already imports and distributes packaging film incl. BOPP/PVC/polyester into Pakistan; classic Karachi Paper Market indentor who resells imported film/bags to converters and printers - a natural channel for Iran-sourced PE packaging film/bags",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Flexible Packaging (flexiblepackaging.pk)",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Karachi",
+      "dest_iso": "PK",
+      "phones": [
+        "+92 346 708 8930"
+      ],
+      "email": "sales@flexiblepackaging.pk",
+      "website": "https://flexiblepackaging.pk",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Self-described leading importer and stockist of packagi"
+      ],
+      "business": "Self-described leading importer and stockist of packaging (stand-up pouches, films, bags) supplying food/dry-goods packers",
+      "why_fit": "Explicitly an IMPORTER + STOCKIST of packaging, reachable with published phone/email; buys packaging film/pouches/bags in bulk to stock and resell - direct fit for imported PE film/bags",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Masat Enterprises",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Lahore",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "support@masatenterprises.com",
+      "website": "https://masatenterprises.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Distributor/e-commerce seller of food-disposable and pa"
+      ],
+      "business": "Distributor/e-commerce seller of food-disposable and packaging materials: PVC cling film rolls, aluminium foil, thermal rolls, disposable cups/containers",
+      "why_fit": "Buys and distributes cling/PVC/PE film and disposables in volume; reachable with named CEO and web store - plausible buyer of imported PE cling/packaging film",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Zis Enterprises",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Karachi",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Trading company specializing in plastic shopping bags p"
+      ],
+      "business": "Trading company specializing in plastic shopping bags plus household/kitchen items",
+      "why_fit": "Trades/distributes plastic shopping bags - would source finished PE/poly shopping bags; right sector and buy-side, though smaller trader",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Nazmiah Plastics",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Karachi",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Distributor/reseller of plastic packaging products (\"We"
+      ],
+      "business": "Distributor/reseller of plastic packaging products (\"We sell plastic packaging products\")",
+      "why_fit": "Distributor of finished plastic packaging; plausible reseller of imported PE bags/film, right sector",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Nord Pack",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Peshawar",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Converter and marketer of co-extruded BOPP, pearlized a"
+      ],
+      "business": "Converter and marketer of co-extruded BOPP, pearlized and metallized films",
+      "why_fit": "As a converter it BUYS plain base film (BOPP/PET/PE) as input to laminate/print; a converter is a genuine buy-side consumer of imported film rolls",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Al-Rehmat Traders",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Faisalabad",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Trader actively sourcing recycled BOPP granules and fil"
+      ],
+      "business": "Trader actively sourcing recycled BOPP granules and film scrap",
+      "why_fit": "Documented active buyer of BOPP film scrap/granules; buy-side and reachable, but demand is for recycle-grade raw material - tangential to finished PE packaging",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Packages Convertors (Pvt) Ltd",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Lahore",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "https://packagesconvertors.com.pk",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Large flexible-packaging converter (printing/lamination"
+      ],
+      "business": "Large flexible-packaging converter (printing/lamination for FMCG)",
+      "why_fit": "Major end-user/converter that consumes large volumes of BOPP/PET/PE base film; genuine buy-side but predominantly sources domestically (IPAK/Tri-Pack), so import fit is opportunistic",
+      "linkedin": "",
       "needs_enrichment": false,
       "bulk_likely": false
     }

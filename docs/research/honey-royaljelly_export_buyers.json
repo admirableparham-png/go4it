@@ -1,9 +1,9 @@
 {
   "source": "verified-hunt-2025+",
-  "total": 7,
-  "with_phone": 1,
-  "with_email": 0,
-  "with_website": 3,
+  "total": 41,
+  "with_phone": 17,
+  "with_email": 11,
+  "with_website": 36,
   "buyers": [
     {
       "company": "Ikram Ullah Niazi",
@@ -151,6 +151,800 @@
       "wants": "Fresh royal jelly, ~1,000 kg/month, 100% purity (buyer states Vietnam as preferred origin)",
       "posted": "2025 (inferred from listing expiry 2026-05-23)",
       "source_url": "https://www.exporthub.com/importers/royal-jelly/",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Almanara Alkhadraa (Albahadly Trading Company)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad",
+      "dest_iso": "IQ",
+      "phones": [
+        "+964 7713333563"
+      ],
+      "email": "info@almanarafood.com",
+      "website": "https://almanarafood.com/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Established 1990 (originally AlBahadly Trading Co.); na"
+      ],
+      "business": "Established 1990 (originally AlBahadly Trading Co.); national food importer/distributor supplying Iraqi retail with canned foods, honey, jams, olives, olive oil and cheese; runs the online store almanarafood.com.",
+      "why_fit": "VERIFIED real, active Baghdad food importer: Volza logs 39 import shipments from suppliers in Pakistan/India/Turkey, and the site carries a live 'Natural Honey' product category plus a branded honey SKU (American Gourmet Natural Honey). A proven buy-side honey importer that could realistically source bulk natural honey from Iran. Publicly reachable by phone and email. Royal jelly not stocked.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Marine Life",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Iraq",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "https://www.go4worldbusiness.com/member/view/4271795/marine-life.html",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Iraqi importer/trader with a live go4WorldBusiness buye"
+      ],
+      "business": "Iraqi importer/trader with a live go4WorldBusiness buyer profile (member ID 4271795) stating it buys honey and pineapple.",
+      "why_fit": "VERIFIED live buy-side profile: Iraq-based, contact 'Karrar' (junior buyer), explicitly buys honey; member since Sep 2024 and profile last updated Oct 2025, so genuinely active in 2025. Small/junior buyer, hence a mid rating rather than higher.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Fresh Food Company",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Sulaymaniyah",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "https://freshfood-iq.com/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Kurdistan-based importer/distributor of premium importe"
+      ],
+      "business": "Kurdistan-based importer/distributor of premium imported foods and fresh produce, supplying grocery stores, restaurants and distributors across Erbil, Sulaymaniyah and Duhok.",
+      "why_fit": "VERIFIED real imported-food distributor with retail reach across the Kurdistan Region. Right sector, but NO honey line is confirmed on its site, so honey demand is speculative. Kept as a sector-fit prospect only, not a proven honey buyer.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Peachtree Foods MENA",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "UAE (MENA regional office)",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "honey.html",
+      "match_score": 82,
+      "verdict": "plausible",
+      "tier": "active",
+      "buys": [
+        "Honey — registered honey-buyer member; the group distri"
+      ],
+      "wants": "Honey — registered honey-buyer member; the group distributes premium honey (e.g. the Ashwood's brand) into hospitality/foodservice, so it sources honey to trade",
+      "posted": "2025-06-02",
+      "source_url": "https://www.go4worldbusiness.com/buyers/united%20arab%20emirates/honey.html",
+      "role": "",
+      "linkedin": "https://ae.linkedin.com/company/peachtree-foods-mena",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "VVRL General Trading Co. LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Deira, Dubai",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 55 108 2465"
+      ],
+      "email": "",
+      "website": "https://www.volza.com/company-profile/vvrl-general-trading-co-llc-106372334/",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "General/foodstuff trading; the single largest natural-h"
+      ],
+      "business": "General/foodstuff trading; the single largest natural-honey importer in the UAE by shipment share",
+      "why_fit": "Independently confirmed on Volza AND Trademo: ~19% of UAE natural-honey imports, 34 shipments, already sourcing bulk honey from India/Indonesia/Pakistan — a proven high-volume bulk-honey buyer squarely in Iran's price band. Office 304, Hor Al Anz Building, Deira.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Emirpro Foodstuff Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://www.trademo.com/companies/emirpro-foodstuff-trading-llc/44419186",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Foodstuff importer/distributor; verified UAE honey impo"
+      ],
+      "business": "Foodstuff importer/distributor; verified UAE honey importer",
+      "why_fit": "Confirmed on Trademo + TradeAtlas: ~33-39 honey shipments (to mid-2025) sourced from Russia/Kazakhstan. Honey is confirmed but not its primary line (trade records show it mainly imports sunflower), so fit is real but secondary; could add Iran-origin supply.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Kohli Foodstuff Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://www.trademo.com/companies/kohli-foodstuff-trading-limited-liability-company/40684741",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Foodstuff importer/distributor; significant UAE honey i"
+      ],
+      "business": "Foodstuff importer/distributor; significant UAE honey importer",
+      "why_fit": "Confirmed on Volza: ~17% of UAE honey imports (39 shipments; 27 natural-honey) — a demonstrated recurring bulk-honey buyer. Downgraded from 5 because no public contact channel exists in the open web (Trademo profile only).",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Royal Jelly UAE",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 50 787 8639"
+      ],
+      "email": "royaljelly@royaljelly.ae",
+      "website": "https://royaljelly.ae/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Dedicated importer/distributor of premium royal jelly ("
+      ],
+      "business": "Dedicated importer/distributor of premium royal jelly (plus Camelthorn/Power honey) in the UAE",
+      "why_fit": "Site confirmed: imports and distributes the exact Tier-2 product (royal jelly) and is directly reachable. Currently positions on premium European-origin royal jelly, so an Iran-origin switch is possible but not guaranteed.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Honey World (Minar Enterprises)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Sharjah",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 55 667 6645"
+      ],
+      "email": "contact@honeyworld.ae",
+      "website": "https://honeyworld.ae/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Online/wholesale retailer-importer of natural honey and"
+      ],
+      "business": "Online/wholesale retailer-importer of natural honey and royal jelly across the UAE",
+      "why_fit": "Site confirmed: imports raw/natural honey (India/Yemen/New Zealand) AND stocks royal jelly — matches both product lines and is directly reachable.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Thahab Honey",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 58 905 6899"
+      ],
+      "email": "info@thahab.ae",
+      "website": "https://www.thahab.ae/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Emirati honey brand that imports bulk raw honey and pac"
+      ],
+      "business": "Emirati honey brand that imports bulk raw honey and packs/distributes in the UAE",
+      "why_fit": "Site confirmed: sources bulk raw honey abroad (currently Russia) and packs it locally — a buy-side packer that is a natural fit to add Iran-origin bulk honey; directly reachable.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Oman Honey Trading",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Sharjah, UAE",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://omanhoneytrading.com/wholesale/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "UAE-based wholesale honey distributor (est. 2002, Al Ma"
+      ],
+      "business": "UAE-based wholesale honey distributor (est. 2002, Al Madam, Sharjah) supplying retailers/brands/manufacturers",
+      "why_fit": "Site confirmed: positions as a leading UAE wholesale honey distributor (Sidr/Samar/raw) and also sells royal jelly/bee pollen — a buy-side wholesaler sourcing bulk honey to resell, both product lines. Name says 'Oman' but it is UAE-based.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Al Malaky Royal",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://www.almalaky.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Large UAE wholesale honey brand/packer; sources raw hon"
+      ],
+      "business": "Large UAE wholesale honey brand/packer; sources raw honey worldwide and also sells fresh royal jelly & bee pollen",
+      "why_fit": "Site confirmed: sources raw honey to pack/wholesale and carries royal jelly — a bulk buyer for both lines. Rated 3 (not higher) because it runs its own strongly-branded Emirati Sidr line/manufacturing, so it is partly a competitor-style packer.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Truebell Marketing & Trading",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 4 870 8300"
+      ],
+      "email": "",
+      "website": "https://www.truebell.org/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Major UAE food & beverage importer/wholesaler/distribut"
+      ],
+      "business": "Major UAE food & beverage importer/wholesaler/distributor to retail and foodservice across the GCC",
+      "why_fit": "Large-scale grocery importer that carries honey lines and places container-scale foodstuff orders. Rated 3 because honey is a minor fraction of a vast catalogue, not a focus.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Royal Brands Food and Beverages Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "UAE",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://royalbrandsuae.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Importer/distributor of premium F&B brands in the UAE"
+      ],
+      "business": "Importer/distributor of premium F&B brands in the UAE",
+      "why_fit": "Established F&B importer whose channel fits natural-honey / royal-jelly SKUs; plausible bulk or private-label buyer, but no honey-specific import evidence found — kept as a sector-fit prospect.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Aura Foodstuff Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://aurafoodstuff.com/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Dubai foodstuff importer/exporter/distributor"
+      ],
+      "business": "Dubai foodstuff importer/exporter/distributor",
+      "why_fit": "Right sector and channel to add bulk honey and reachable via own site, but no honey-specific signal in trade data — a speculative sector-fit prospect.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "ООО «ВИННИ ПУХ» (owner/buyer Zaripov Irek Nailevich)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Kazan, Tatarstan",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 966 250 7989"
+      ],
+      "email": "79662507989@yandex.ru",
+      "website": "medkupluprodam.ru",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Bulk sunflower honey (\"куплю мёд подсолнуха\"), 170 ₽/kg"
+      ],
+      "wants": "Bulk sunflower honey (\"куплю мёд подсолнуха\"), 170 ₽/kg, warehouse pickup in Kazan, immediate payment (\"деньги, тара - сразу\") + container exchange",
+      "posted": "2026-08-05",
+      "source_url": "https://medkupluprodam.ru/obyavlenie.php?n=386262",
+      "role": "Zaripov Irek Nailevich — owner/purchaser, ООО ВИННИ ПУХ",
+      "linkedin": "not found (Russian honey traders are not on LinkedIn)",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "ООО «Сота» (owner Minyushkin Ruslan Alekseevich)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Serdobsk, Penza Oblast",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 951 298 4848"
+      ],
+      "email": "ooosota90@mail.ru",
+      "website": "medkupluprodam.ru",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Buys honey on ongoing basis, any container from 1 kg: l"
+      ],
+      "wants": "Buys honey on ongoing basis, any container from 1 kg: linden, sunflower, wildflower AND non-standard/substandard (НЕКОНДИЦИЯ) honey; immediate payment; self-pickup across Russia",
+      "posted": "2026-08-06",
+      "source_url": "https://medkupluprodam.ru/obyavlenie.php?n=386333",
+      "role": "Minyushkin Ruslan Alekseevich — owner, ООО Сота (processor/buyer)",
+      "linkedin": "not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Maksim Mishin (trades as \"Siberian Natural Products\" / medanna.ru)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Barnaul / Kalmanka village, Altai Krai",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 960 951 4774"
+      ],
+      "email": "info@medanna.ru",
+      "website": "medkupluprodam.ru",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Wildflower & buckwheat honey, 180 ₽/kg (−20 ₽ without M"
+      ],
+      "wants": "Wildflower & buckwheat honey, 180 ₽/kg (−20 ₽ without Merkury docs), clean returnable containers, 60-day contract payment, delivery to Kalmanka address",
+      "posted": "2026-08-06",
+      "source_url": "https://medkupluprodam.ru/obyavlenie.php?n=386315",
+      "role": "Maksim Mishin — buyer (verified identity is the person + medanna.ru; English brand name unverified)",
+      "linkedin": "not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Anonymous wholesale honey buyer, St. Petersburg (agroru listing, buyer name gated)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Saint Petersburg",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "agroru.com",
+      "match_score": 82,
+      "verdict": "plausible",
+      "tier": "active",
+      "buys": [
+        "Bulk honey from 5,000 tons — flower, acacia, wildflower"
+      ],
+      "wants": "Bulk honey from 5,000 tons — flower, acacia, wildflower (разнотравье), buckwheat; no stated origin restriction",
+      "posted": "2026-06-23",
+      "source_url": "https://agroru.com/spros/med-12855.htm",
+      "role": "Not disclosed publicly (buyer 'Tatyana' per original find; name hidden on source)",
+      "linkedin": "not found",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Anonymous wholesale honey buyer, Kursk Oblast (agroru listing, buyer name gated)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Kursk Oblast",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "agroru.com",
+      "match_score": 82,
+      "verdict": "plausible",
+      "tier": "active",
+      "buys": [
+        "Sunflower, wildflower and buckwheat honey, 50 tons per "
+      ],
+      "wants": "Sunflower, wildflower and buckwheat honey, 50 tons per month, ongoing; non-cash payment with contracts, self-pickup",
+      "posted": "2026-04-08",
+      "source_url": "https://agroru.com/spros/podsolnechnyj-raznotrave-grechishnyj-98444.htm",
+      "role": "Not disclosed publicly (buyer 'Nikita' per original find; name hidden on source)",
+      "linkedin": "not found",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Anonymous wholesale honey buyer, Sergiyev Posad (agroru listing, buyer name gated)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Sergiyev Posad, Moscow Oblast",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "agroru.com",
+      "match_score": 82,
+      "verdict": "plausible",
+      "tier": "active",
+      "buys": [
+        "Wildflower (разнотравье) and sunflower honey, 10 tons ("
+      ],
+      "wants": "Wildflower (разнотравье) and sunflower honey, 10 tons (опт)",
+      "posted": "2026-04-24",
+      "source_url": "https://agroru.com/spros/med-49535.htm",
+      "role": "Not disclosed publicly (buyer 'Sergey' per original find; name hidden on source)",
+      "linkedin": "not found",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Мусихин. Мир мёда (ООО)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Orenburg",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 800 555 33 56"
+      ],
+      "email": "info@mirmeda.ru",
+      "website": "https://mirmeda.ru (suppliers page https://mirmeda.ru/partners/suppliers/)",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Producer/packer/wholesaler of 30+ honey varieties plus "
+      ],
+      "business": "Producer/packer/wholesaler of 30+ honey varieties plus propolis, pollen, wax; founded 2000; VERIFIED (2GIS + productcenter) to source raw honey from Bashkiria, Adygea, Altai, Krasnodar, Orenburg, Belgorod AND Kyrgyzstan (Киргизия); has an active 'Поставщикам' supplier-intake page (mirmeda.ru/partners/suppliers/)",
+      "why_fit": "One of the few Russian buyers with confirmed foreign/CIS honey sourcing (Kyrgyzstan) plus a live supplier-intake channel that buys bulk honey 'на реализацию' — a realistic, reachable channel for Iranian honey. Not a 5 because there is no evidence they already import the Iranian product specifically.",
+      "linkedin": "not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "ООО «КМК» — Краснополянская Медовая Компания",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Sochi (Krasnaya Polyana); warehouses in Moscow & St. Petersburg",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://kmk-honey.ru",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Wholesale honey/bee-product trader & packer; VERIFIED t"
+      ],
+      "business": "Wholesale honey/bee-product trader & packer; VERIFIED to sell royal jelly (маточное молочко), source multi-region incl. Kyrgyz mountain honey (Горный Киргизский, 395 ₽/kg), and offer private-label (СТМ) repacking from 50 ₽/kg",
+      "why_fit": "Already trades CIS-imported honey AND stocks royal jelly — fits BOTH product lines. Trader mindset + private-label repacking makes it a plausible buyer of Iranian honey and royal jelly. Not a 5 (no evidence of importing the specific Iranian product yet).",
+      "linkedin": "not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "ООО «Медовый Дом»",
+      "categories": [
+        "Russia"
+      ],
+      "city": "St. Petersburg HQ; production in Moyka, Batetsky district, Novgorod Oblast",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 812 677 18 85"
+      ],
+      "email": "uskov@medovdom.ru",
+      "website": "https://www.medovdom.ru",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Major packaged-honey producer (since 1998); VERIFIED wh"
+      ],
+      "business": "Major packaged-honey producer (since 1998); VERIFIED wholesale-purchase desk ('производит оптовые закупки цветочного и монофлорного меда'), buys directly from beekeepers nationwide (Far East, Bashkiria, Altai, Crimea), does control testing, supplies retail chains",
+      "why_fit": "Large bulk-honey PROCUREMENT operation with a reachable purchasing contact — could take imported honey for blends/private label. Caveat: sources domestically today, so Iranian honey needs a clear price/quality edge; no import track record found.",
+      "linkedin": "not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "ЮПК — ООО «Южная пищевая компания»",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Volgograd",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 499 112 43 52"
+      ],
+      "email": "support@sfcom.ru",
+      "website": "https://sfcom.ru",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Honey producer/supplier/EXPORTER (header: 'производител"
+      ],
+      "business": "Honey producer/supplier/EXPORTER (header: 'производитель, поставщик и экспортёр мёда оптом по России'), private-label for retail; VERIFIED dedicated 'Приём мёда' raw-honey intake desk that purchases honey and bee products",
+      "why_fit": "Active raw-honey buyer that ALSO exports — could source Iranian bulk honey for packing/re-export. Explicit intake desk + reachable purchasing contacts. Domestic sourcing today, no confirmed imports.",
+      "linkedin": "not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "«Мёд России» (medrossii.ru)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 800 333 05 02"
+      ],
+      "email": "",
+      "website": "https://medrossii.ru",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Wholesale honey trader since 1995 ('оптовый интернет-ма"
+      ],
+      "business": "Wholesale honey trader since 1995 ('оптовый интернет-магазин меда'); VERIFIED buys from beekeeper-suppliers ('скупка у пчеловодов-заготовителей'), 15 kg MOQ, AND carries a royal-jelly (маточное молочко) wholesale line",
+      "why_fit": "Genuine buy-side reseller that restocks honey and stocks royal jelly wholesale — could source either line from an importer. Domestic-supply oriented, mid-size; no import evidence.",
+      "linkedin": "not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "АВРОРА (Aurora) — royal-jelly / bee-product brand",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow (nationwide distribution)",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://aur-ora.com/catalog/vse_produkty/691/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "VERIFIED (search) to market lyophilized royal jelly (ма"
+      ],
+      "business": "VERIFIED (search) to market lyophilized royal jelly (маточное молочко, 5 g) and 'detox/recovery programs' as FINISHED consumer products, sold retail/wholesale via website + Telegram; wellness/network-marketing style brand",
+      "why_fit": "Royal-jelly sector-adjacent but they resell a finished packaged product, not bulk raw material — no evidence of a bulk raw-jelly sourcing/import channel. Low probability as a buyer of bulk Iranian royal jelly. Downgraded from 3.",
+      "linkedin": "not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "ООО «Алтайская компания «Медовый край»»",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Barnaul, Altai Krai",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://medkray.ru",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "One of the largest Altai-honey producers/packers in the"
+      ],
+      "business": "One of the largest Altai-honey producers/packers in the Siberian Federal District (founded 2008); VERIFIED site emphasizes OWN apiaries ('собственные пасеки') and own production/processing; no external bulk-buy channel advertised",
+      "why_fit": "Right sector and high volume, but positioned as a domestic Altai PRODUCER using its own apiaries — no visible raw-honey intake or import channel, so low probability of buying imported Iranian honey. Downgraded from 3.",
+      "linkedin": "not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Тенториум (Tentorium) — First Beekeeping Company",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Perm",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://tentorium.ru",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Major apitherapy / dietary-supplement (БАД) producer us"
+      ],
+      "business": "Major apitherapy / dietary-supplement (БАД) producer using honey, royal jelly, propolis as raw materials (TENTORIUM RULAND factory); 75+ years, nationwide distribution",
+      "why_fit": "Large end-user of royal jelly/honey as raw material, but historically sources heavily from its own apiaries/beekeeping company — low probability of buying imported Iranian raw material. Tangential-to-plausible.",
+      "linkedin": "not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Weyar Afghan Trading Company",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kabul",
+      "dest_iso": "AF",
+      "phones": [
+        "+93 20 221 2040"
+      ],
+      "email": "",
+      "website": "https://bestfoodimporters.com/company/weyar-afghan-trading-company/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Kabul-based importer, distributor and agent/broker of c"
+      ],
+      "business": "Kabul-based importer, distributor and agent/broker of confectionery & snacks, juice/soft drinks & water, organic & health food, spices/herbs/seasonings, and tea & coffee (Dist.10, Shahr-e-Naw).",
+      "why_fit": "Verified real Kabul food importer/distributor/broker whose product book explicitly includes an 'Organic & Health Food' line - the natural category where bulk honey and royal jelly fit. Real address and landline. Honey itself not confirmed in the category list, and the standalone .org site did not resolve, so this is a plausible sector-fit channel rather than a proven honey buyer.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Afghan Spinneys Company (Afghan Spinneys Supermarket)",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kabul",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Kabul supermarket chain (founded 2002, ~51-200 employee"
+      ],
+      "business": "Kabul supermarket chain (founded 2002, ~51-200 employees) selling imported international foods alongside local produce; multiple Kabul branches incl. Wazir Akbar Khan.",
+      "why_fit": "Verified real Kabul retail chain that stocks packaged/imported honey as a natural shelf item; a large end-buyer that sources through importers/distributors rather than importing bulk directly, so it is one step removed for a bulk honey/royal jelly exporter. Reachable via LinkedIn and B2B supplier profiles.",
+      "linkedin": "https://www.linkedin.com/company/spinneysafghanistan",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Wakman Group (Import Division)",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kabul",
+      "dest_iso": "AF",
+      "phones": [
+        "+93 20 276 89568"
+      ],
+      "email": "info@wakmangroup.com",
+      "website": "https://wakmangroup.com/import/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Food raw-materials / FMCG importer with offices in Kabu"
+      ],
+      "business": "Food raw-materials / FMCG importer with offices in Kabul (Kabul City Center, Shahr-e-Naw, Dist.10) and Liverpool, UK; official distributor for global ingredient brands (IFF, Aditya Birla, BASF, Dow, Louis Dreyfus) serving Afghan manufacturers, bakeries, beverage companies and wholesalers.",
+      "why_fit": "Verified active, formally-registered Afghan food-ingredient import channel with global sourcing and documentation capability - the kind of importer that could add natural honey/sweeteners to its book. Core line today is industrial sweeteners and raw materials rather than natural honey, so fit is moderate.",
+      "linkedin": "https://www.linkedin.com/company/wakman-group-of-companies",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Alokozay Group of Companies (Afghanistan operations)",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kabul",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "https://www.alokozay.com/en/about-us",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Large multinational FMCG group (Dubai HQ) with a Kabul "
+      ],
+      "business": "Large multinational FMCG group (Dubai HQ) with a Kabul cola/beverage bottling plant and extensive Afghan distribution network; group range spans tea/coffee, beverages, oils, and 'Dry Fruits & Honey'.",
+      "why_fit": "Verified major FMCG distributor with honey already in its group range, giving it the channel to move honey. But Alokozay largely sells its own-brand honey and manufactures in-house, and its Afghan operation centers on beverage bottling, so it is more likely to self-source than to buy imported bulk Iranian honey - low buy-side certainty.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Finest Supermarkets (Finest Group)",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kabul",
+      "dest_iso": "AF",
+      "phones": [
+        "+93 78 220 0503"
+      ],
+      "email": "",
+      "website": "http://www.finestgroup.com.af/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Kabul imported-groceries retail chain operating since 2"
+      ],
+      "business": "Kabul imported-groceries retail chain operating since 2006 (Finest Group), branches incl. Street 15, Wazir Akbar Khan; stocks foods from around the world alongside local goods.",
+      "why_fit": "Verified real, established Kabul retail chain of imported groceries; a large end-user that stocks honey and buys through importers/distributors, so it is a step removed from bulk sourcing. Now confirmed with a real website and landline, so contact footprint is better than first assumed.",
+      "linkedin": "",
       "needs_enrichment": false,
       "bulk_likely": false
     }

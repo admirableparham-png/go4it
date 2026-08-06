@@ -1,9 +1,9 @@
 {
   "source": "verified-hunt-2025+",
-  "total": 4,
-  "with_phone": 2,
-  "with_email": 1,
-  "with_website": 1,
+  "total": 76,
+  "with_phone": 28,
+  "with_email": 16,
+  "with_website": 71,
   "buyers": [
     {
       "company": "Jktrade0 (Korean pistachio buyer)",
@@ -91,6 +91,1676 @@
       "posted": "Mar 20, 2025",
       "source_url": "https://importer.tradekey.com/iran-pistachio-importer.html",
       "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Weaam Salah",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Iraq (city not stated)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "i-am-looking-for-nuts-chocolate-3761515.html",
+      "match_score": 82,
+      "verdict": "plausible",
+      "tier": "active",
+      "buys": [
+        "\"Nuts chocolate\" (chocolate-coated nuts / confectionery"
+      ],
+      "wants": "\"Nuts chocolate\" (chocolate-coated nuts / confectionery) — NOT pistachio-specific; individual buyer, weak product fit",
+      "posted": "2026-07-27",
+      "source_url": "https://importer.tradekey.com/buyoffer/I-Am-Looking-For-Nuts-Chocolate-3761515.html",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "AL-Fairoz Al-Thahabi General Trading Ltd. Co.",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad",
+      "dest_iso": "IQ",
+      "phones": [
+        "+964 773 095 7222"
+      ],
+      "email": "info@fairozthahabi.com",
+      "website": "https://fairozthahabi.com/",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "General trading company importing nuts and dried fruits"
+      ],
+      "business": "General trading company importing nuts and dried fruits; catalogue explicitly lists pistachios (long and round), hazelnuts, figs, raisins, dates; runs its own customs clearance and LCL/FCL import logistics.",
+      "why_fit": "Verified to already import pistachios as a listed product and operates its own import/customs — a prime, directly reachable buyer for Iran-sourced in-shell/kernel pistachios.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Aljumayz Company",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Erbil",
+      "dest_iso": "IQ",
+      "phones": [
+        "+964 770 024 5421"
+      ],
+      "email": "info@aljumayz.com.iq",
+      "website": "https://aljumayz.com.iq/",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Wholesale nuts and seeds importer/distributor (since 19"
+      ],
+      "business": "Wholesale nuts and seeds importer/distributor (since 1980); its own site states it imports pistachios, cashews, almonds, walnuts and seeds from China, Turkey and UAE and distributes to roasteries, wholesalers, supermarkets and food manufacturers across Iraq.",
+      "why_fit": "Confirmed active pistachio importer at wholesale scale; currently sources from Turkey/China/UAE, so a competitive Iranian offer is a clear switch/pitch opportunity.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Sardaran Company",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Sulaymaniyah",
+      "dest_iso": "IQ",
+      "phones": [
+        "+964 770 147 6465"
+      ],
+      "email": "sardarancompany@gmail.com",
+      "website": "https://www.sardarancompany.com/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Wholesaler/distributor of premium nuts and dry fruits ("
+      ],
+      "business": "Wholesaler/distributor of premium nuts and dry fruits (pistachios, almonds, cashews, walnuts, hazelnuts, seeds, saffron), 30+ years in the trade, serving Iraqi retail and roasters.",
+      "why_fit": "Sells pistachios wholesale, so it buys them in bulk; multiple direct phone lines and email make it easy to pitch. Not confirmed as a direct importer, so slightly below the top tier.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Dolphin Sea Company for General Trading",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Sulaymaniyah",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "https://www.dolphinsea.co/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Large FMCG importer/distributor (nuts and dried fruit p"
+      ],
+      "business": "Large FMCG importer/distributor (nuts and dried fruit plus a broad grocery range) with own cold warehouses and a national truck fleet; founded 2004; director Dara Ali Hussein; brands Dolphin Sea, Dolphin, Deary.",
+      "why_fit": "Multi-category food importer carrying nuts/dried fruit with nationwide distribution — strong potential volume buyer. NB: the TradeKey buy lead (513586) attributed to them could NOT be verified (buyer gated, old/low lead ID with a rotating date), so treat as a prospect, not an active lead.",
+      "linkedin": "https://www.linkedin.com/company/dolphin-sea-trading-co",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Ali Baba Nuts (Ali Baba for Nuts)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad (Jadriya)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "https://alibaba.com.iq/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Iraqi nut roasting and packaging brand established 1975"
+      ],
+      "business": "Iraqi nut roasting and packaging brand established 1975; produces and packs roasted & salted pistachios and other nuts; distributed nationally including airport retail.",
+      "why_fit": "As a roaster/packer it continuously consumes bulk raw pistachios; long-established, well-known consumer brand, reachable via site/social.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Royal Nuts (Al-Makassarat Al-Malakiya)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad (Al-Jamila industrial zone)",
+      "dest_iso": "IQ",
+      "phones": [
+        "+964 790 132 8912"
+      ],
+      "email": "",
+      "website": "https://www.royalnuts1.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Nut roaster/producer and raw-nut wholesaler in Baghdad'"
+      ],
+      "business": "Nut roaster/producer and raw-nut wholesaler in Baghdad's Jamila industrial zone; Gulfood exhibitor 2021-2025; distributes packed nuts via its own fleet.",
+      "why_fit": "Processor that buys raw nuts including pistachio to roast/pack for the local market; a genuine bulk buyer, more substantial than a small packer.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Abu Afif Sweets",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad (Karrada)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "https://abuafif.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Prestigious Iraqi confectioner since 1974 specialising "
+      ],
+      "business": "Prestigious Iraqi confectioner since 1974 specialising in baklava, bourma and pistachio-based Arabic sweets and chocolate; branches in Baghdad, Erbil and Sulaymaniyah plus a Lebanon (ISO 22000) production facility.",
+      "why_fit": "Heavy pistachio end-user for confectionery (kernels for fillings/toppings); large recurring volumes, but the Lebanon production facility may split sourcing away from Iraqi import.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Charazati Sherko (Sherko Nuts)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Erbil",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "www.facebook.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Erbil nuts retailer with its own factory and multiple b"
+      ],
+      "business": "Erbil nuts retailer with its own factory and multiple branches (including Baghdad/Mansour); stocks pistachios, almonds, walnuts, cashews, hazelnuts and dried fruit; markets itself as one of Iraq's largest nut producers.",
+      "why_fit": "Retailer/producer that stocks and packs pistachios and buys wholesale; larger than a single shop given its factory and multi-branch footprint.",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "FARD Foodstuff Industry LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Al Ras, Deira / DIP2)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 4 235 4543"
+      ],
+      "email": "",
+      "website": "pistachio.htm",
+      "match_score": 82,
+      "verdict": "confirmed — re-verified two dated 2026 buy-leads on source; independently a real UAE pistachio PROCESSOR (est. 2018, first GCC pistachio/walnut shelling plant) that must buy raw. Strongest lead here.",
+      "tier": "active",
+      "buys": [
+        "Bulk raw in-shell pistachios & kernels (monthly); also "
+      ],
+      "wants": "Bulk raw in-shell pistachios & kernels (monthly); also a roasted-pistachio lead. Operates the GCC's first specialized pistachio & walnut shelling facility, so structurally buys raw to shell/process",
+      "posted": "2026-07-18 (also roasted-pistachio lead 2026-06-29)",
+      "source_url": "https://importer.tradekey.com/uae/pistachio.htm",
+      "role": "Founder-owned (Asadi family, Iranian-founded, UAE-registered); specific title unconfirmed",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Millennial Star Food Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Al Qusais Industrial Area 2)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 4 330 2269"
+      ],
+      "email": "info@msfoodtrade.com",
+      "website": "pistachio.htm",
+      "match_score": 82,
+      "verdict": "confirmed — re-verified dated 2026 buy-lead on source; real UAE entity incorporated 21 Apr 2025 (co. #880955). Broad foodstuff importer (oil/rice/pulses/nuts); verified contact.",
+      "tier": "active",
+      "buys": [
+        "Bulk dry nuts (almonds, cashews, pistachios, walnuts) d"
+      ],
+      "wants": "Bulk dry nuts (almonds, cashews, pistachios, walnuts) delivered at Jebel Ali Port",
+      "posted": "2026-07-03",
+      "source_url": "https://importer.tradekey.com/uae/pistachio.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Balini General Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Business Bay)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 50 164 9685"
+      ],
+      "email": "docs@balinitrading.asia",
+      "website": "pistachio.htm",
+      "match_score": 82,
+      "verdict": "confirmed date+buy-side on source, but LOW strategic fit: a metals/agri/textile multi-commodity trader, not a food specialist — pistachio interest is opportunistic.",
+      "tier": "active",
+      "buys": [
+        "Pistachio (posted as an agri-commodity buy-lead)"
+      ],
+      "wants": "Pistachio (posted as an agri-commodity buy-lead)",
+      "posted": "2026-07-10",
+      "source_url": "https://importer.tradekey.com/uae/pistachio.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Dornika (Green Star Foodstuff Trading LLC)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Al Ras, Deira)",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "pistachio.htm",
+      "match_score": 82,
+      "verdict": "plausible — buy-lead is on source (2026) and entity is real (UAE-registered nut brand, est. 2025), BUT Dornika is itself an Iranian-affiliated pistachio brand/distributor that likely sources direct from Iran; ambiguous whether it is a genuine external buyer or a seller/competitor. Verify ownership.",
+      "tier": "active",
+      "buys": [
+        "Pistachios, dates, raisins"
+      ],
+      "wants": "Pistachios, dates, raisins",
+      "posted": "2026-06-19",
+      "source_url": "https://importer.tradekey.com/uae/pistachio.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Hoor Natural Reward Foodstuff Trading FZE",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Ajman (Ajman Free Zone) — NOT Dubai [corrected]",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "pistachio.htm",
+      "match_score": 82,
+      "verdict": "plausible — real UAE entity (est. 2022) genuinely listed as a monthly pistachio buyer, but location is Ajman (find said Dubai), the 2026-04-19 date was not re-confirmed on source, and there are negative business-practice/scam reviews. Do due diligence before engaging.",
+      "tier": "active",
+      "buys": [
+        "Pistachios, monthly requirement; broad importer (55-60 "
+      ],
+      "wants": "Pistachios, monthly requirement; broad importer (55-60 FCL/month)",
+      "posted": "2026-04-19 (date not re-confirmed on source)",
+      "source_url": "https://importer.tradekey.com/uae/pistachio.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Source International FZC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Oud Metha / Dubai Silicon Oasis)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 50 664 3592"
+      ],
+      "email": "info@sourceinternational.ae",
+      "website": "https://sourceinternational.ae",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Food distributor/importer that imports and roasts raw p"
+      ],
+      "business": "Food distributor/importer that imports and roasts raw pistachios, then distributes across the GCC",
+      "why_fit": "Verified: explicitly imports RAW pistachios from Iran's Kerman province (plus California & Greece), roasts and packs in 25kg/500kg bulk. A direct, on-the-nose buy-side match for Iranian in-shell/kernels — the only clear existing Iranian-pistachio importer in this set.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Bayara (Savola Foods, ex-Global/Golden Fruits Intl)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Dubai Investment Park 2) & Sharjah plant",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://bayara.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Regional market-leading nuts, dried fruits, dates & spi"
+      ],
+      "business": "Regional market-leading nuts, dried fruits, dates & spices packer-distributor (est. 1992); now Savola-owned ($260M, 2024)",
+      "why_fit": "Largest UAE nuts/dried-fruit packer; imports pistachios in high volume for retail & foodservice. Downgraded 5->4: as a large corporate it likely sources California/compliance-safe origins and buys direct at scale, so Iranian-origin fit is uncertain and incumbents are hard to displace.",
+      "linkedin": "https://www.linkedin.com/company/bayara",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Al Jameel International (Jameel Intl Foodstuff Trading LLC)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Deira, Al Ras)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 4 261 7224"
+      ],
+      "email": "",
+      "website": "https://www.gulfood.com/exhibitors/al-jameel-international",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Large pistachio & walnut processor; AI-integrated line,"
+      ],
+      "business": "Large pistachio & walnut processor; AI-integrated line, ~45M lb/yr pistachio capacity",
+      "why_fit": "Verified massive UAE-based processor/end-user that must buy raw in-shell pistachios at scale. Kept at 4 (not 5): at this scale it almost certainly sources direct and may avoid Iranian origin for its own brand — real fit but hard to win.",
+      "linkedin": "https://www.linkedin.com/company/al-jameel-international",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Apex Star Trading",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://apexstartrading.com/product/pistachios/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Wholesale supplier/distributor of pistachios and dry fr"
+      ],
+      "business": "Wholesale supplier/distributor of pistachios and dry fruits (~30 yrs)",
+      "why_fit": "Verified: already deals in Iranian pistachio varieties (whole, salted, kernel, slivered) alongside Californian — imports Iranian product to distribute/re-export. Strong product fit, but it is itself a wholesaler that may source direct or act as a reseller.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Asia & Africa General Trading FZE L.L.C",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Al Ras, Deira)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 50 553 1913"
+      ],
+      "email": "sales@agro-factory.com",
+      "website": "https://www.agro-factory.com/wholesale-dry-fruits-nuts-supplier-dubai-uae/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Wholesale agro-food & dry-fruits/nuts supplier (est. 20"
+      ],
+      "business": "Wholesale agro-food & dry-fruits/nuts supplier (est. 2005) serving UAE and Africa",
+      "why_fit": "Verified real importer/re-exporter stocking pistachios among almonds/cashews/raisins for retailers, hotels & food-service. Sector fit solid; specific Iran-origin sourcing not fully confirmed in verification.",
+      "linkedin": "https://www.linkedin.com/company/asia-africa-general-trading-llc/",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Al Nama Herbals General Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (132 Al Ras, Deira)",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://alnamaherbals.com/dried-fruit-importers-in-dubai/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Importer/exporter/re-exporter of herbs, spices, dried f"
+      ],
+      "business": "Importer/exporter/re-exporter of herbs, spices, dried fruits & nuts (since 1994)",
+      "why_fit": "Verified long-established Deira importer that explicitly lists pistachio kernel among its multi-origin dried-fruit/nut range. Genuine buy-and-re-export fit, though its core is herbs/spices so pistachio volume may be modest.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Food Specialities Limited (FSL)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "UAE (Dubai)",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://foodspecialities.com/agro-dairy-commodities/nuts-dried-fruits/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Wholesale dried fruits & nuts commodity supplier to pac"
+      ],
+      "business": "Wholesale dried fruits & nuts commodity supplier to packers, roasters and traders across ME & Africa (3 decades)",
+      "why_fit": "Verified real B2B nut/dried-fruit trader that supplies pistachios multi-origin to roasters/packers, so it buys bulk. Rated 3: itself a large trader that sources direct and could be a competitor as much as a customer.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Al Adel Foodstuff Trading Co. L.L.C",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Al Ras, Deira)",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://aladelfood.com/blog/wholesale-nuts-supplier-dubai",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Long-standing wholesale/retail distributor of nuts, dry"
+      ],
+      "business": "Long-standing wholesale/retail distributor of nuts, dry fruits, pulses, spices & coffee to restaurants, supermarkets & hotels",
+      "why_fit": "Verified real Deira nuts/dry-fruits wholesaler; pistachio is a core line so a plausible bulk buyer for the UAE market. Sourcing origin not stated.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Patel Trading Co LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://pateltradingcollc.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Wholesale dry fruits & nuts supplier, bulk"
+      ],
+      "business": "Wholesale dry fruits & nuts supplier, bulk",
+      "why_fit": "Real Dubai dry-fruit/nut wholesaler (appears organically as a bulk supplier); right sector so would buy pistachios. Sourcing origin and Iranian-fit not stated — generic.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Truebell Marketing & Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Sharjah",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://www.truebell.org/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Major GCC branded-food/beverage importer, wholesaler & "
+      ],
+      "business": "Major GCC branded-food/beverage importer, wholesaler & distributor for retail, foodservice & duty-free (since 1982/84)",
+      "why_fit": "Verified large, reputable food importer, BUT no evidence it deals in bulk raw pistachios — its model is branded packaged food/beverage for retail & hospitality, not commodity nut sourcing. Downgraded 3->2: weak product fit.",
+      "linkedin": "https://www.linkedin.com/company/truebell-marketing-and-trading-llc",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Pistachio-paste producer (RFQ by 'Мухтар / Mukhtar')",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Makhachkala, Republic of Dagestan",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "agroru.com",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Raw pistachio KERNEL (ядро), industrial standard (expli"
+      ],
+      "wants": "Raw pistachio KERNEL (ядро), industrial standard (explicitly not premium), for pistachio-paste production supplying cafes/restaurants. Test batch 20-50 kg, then 100+ kg/month long-term. Requests CIF price to Makhachkala, quality passport, test protocols, compliance declaration. Iranian kernel is a direct fit.",
+      "posted": "2026-04-07",
+      "source_url": "https://agroru.com/spros/fistashki-i-izjum-48245.htm",
+      "role": "Mukhtar — buyer/owner of the paste-production business; surname/company not disclosed on the post (real listing verified, but named entity is first-name only).",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Wholesale buyer (RFQ by 'Дмитрий / Dmitry')",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Sarapul, Udmurt Republic",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "agroru.com",
+      "match_score": 82,
+      "verdict": "plausible",
+      "tier": "active",
+      "buys": [
+        "Roasted-salted pistachios (фисташка жарено-соленая), wh"
+      ],
+      "wants": "Roasted-salted pistachios (фисташка жарено-соленая), wholesale; quantity/caliber not stated. Roasted-salted Iranian in-shell is the standard fit. NOTE: listing is ~18 months old (Feb 2025) and thin on detail — likely stale as an active lead.",
+      "posted": "2025-02-11",
+      "source_url": "https://agroru.com/spros/fistashka-zhareno-solenaya-93128.htm",
+      "role": "Dmitry — buyer; full name/company/title not disclosed on the post.",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "ООО \"Вкусный Орех\" (Vkusny Orekh)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 916 306-91-87"
+      ],
+      "email": "vkusnii.orekh@mail.ru",
+      "website": "https://vkusniorekh.ru/",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Wholesale importer/distributor of dried fruits and pist"
+      ],
+      "business": "Wholesale importer/distributor of dried fruits and pistachios direct from Iran, operating since 2009.",
+      "why_fit": "Site (verified) self-describes as a leading direct importer of Iranian pistachios and lists 6 Iranian varieties by name: Fandoghi, Kaleguchi, Ahmad-Agaei, Akbari, Badami, Kernel — exactly this product. Note: an established direct importer may already have its own Iran channels (part-competitor), but by the rubric this is the clearest 'already imports this exact product'.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "ООО \"МАСТЕРФУД\" (Masterfood / NaturFoods; brands Botanica, SNACK&GO, Gloriss)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 495 669-67-97"
+      ],
+      "email": "st@naturfoods.ru",
+      "website": "https://masterfood.ru/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Founded 1995; imports nut/dried-fruit raw material from"
+      ],
+      "business": "Founded 1995; imports nut/dried-fruit raw material from 25 countries INCLUDING Iran (also Turkey, USA, Chile, Argentina, China). NaturFoods is among Russia's largest nut/dried-fruit suppliers; 700+ SKUs. Sells B2B to confectionery, packers, retail chains.",
+      "why_fit": "Confirmed large Iran-sourcing importer with a B2B channel; pistachios are a core category. Downgraded from 5 to 4 because Iranian-pistachio-specific sourcing (vs US pistachios) is not confirmed — they source from 25 countries.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "ООО \"ТК Мэджик Фуд\" (Magic Food)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Saint Petersburg",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 911 189-43-05"
+      ],
+      "email": "",
+      "website": "http://tk-medzhik-fud.spb24.net/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Real registered SPb company (INN 7814649453), 20+ years"
+      ],
+      "business": "Real registered SPb company (INN 7814649453), 20+ years; own import, warehouse and nut packing; snacks, nuts (dried/roasted/smoked), dried fruits, marmalade. Director Aleksandr N. Kuzavov.",
+      "why_fit": "Upgraded from 3 to 4: confirmed to run its OWN IMPORT and to sell Iranian Fandoghi roasted-salted pistachios (grade 28/30) — this exact product, Iranian origin. NW-Russia import gateway. Reachable.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Мануфактура \"Ингерман\" (Ingerman)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow / Dolgoprudny",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 495 369-43-09"
+      ],
+      "email": "order@ingershop.ru",
+      "website": "https://ingershop.ru/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Wholesale supplier of food ingredients — nuts, dried fr"
+      ],
+      "business": "Wholesale supplier of food ingredients — nuts, dried fruits, cocoa, seeds, pastes; supplies HoReCa, confectioners and PP/ZOZH producers. Moscow HQ, warehouses in Dolgoprudny and St Petersburg.",
+      "why_fit": "Confirmed dedicated Iranian-pistachio category (ingershop.ru/category/orekhi/fistashka/iran/) — actively markets Iranian pistachios wholesale and buys nut raw material regularly. Reachable.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "ООО \"Семушка\" (Semushka)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 495 159-55-91"
+      ],
+      "email": "",
+      "website": "https://opt.semushka.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Nut & snack producer/packer since 2002; own warehouse a"
+      ],
+      "business": "Nut & snack producer/packer since 2002; own warehouse and QC. Full pistachio range: natural dried, roasted-salted, kernels, blanched, chopped (25 kg bulk packs).",
+      "why_fit": "Real end-user/packager that needs bulk raw pistachios as feedstock. Downgraded from 4 to 3: its roasted-salted pistachios are sourced from Armenia, and Iranian origin is not confirmed — so demand for Iranian specifically is unproven.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "ООО \"Фрутомания\" (Frutomania)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 495 215-05-99"
+      ],
+      "email": "frutoman@mail.ru",
+      "website": "https://frutomania.ru/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Wholesale/small-wholesale distributor of fruit, veg, dr"
+      ],
+      "business": "Wholesale/small-wholesale distributor of fruit, veg, dried fruit and nuts from a Moscow warehouse since 2005; contract-only B2B, min order 5,000-15,000 RUB.",
+      "why_fit": "Real reachable wholesale nut distributor. Downgraded from 4 to 3: site lists pistachios only as a generic category — the claimed 'Royal pistachios (Iran)' Iranian-origin SKU was not confirmed on the live site.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Foods-Opt (интернет-магазин оптовой торговли)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 916 720-44-44"
+      ],
+      "email": "",
+      "website": "https://foods-opt.ru/catalog/orekhi/fistashki",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Online wholesale nut/dried-fruit shop, 25+ years; sells"
+      ],
+      "business": "Online wholesale nut/dried-fruit shop, 25+ years; sells roasted-salted natural Iranian pistachios 'highest grade' with delivery across Russia (wholesale from ~840-950 RUB/kg).",
+      "why_fit": "Confirmed reseller of Iranian roasted-salted pistachios today, so it buys them in bulk — right product/origin but small reseller scale. Reachable by phone/form.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Cecilia — Ningbo bulk pistachio-kernel importer (company not disclosed on listing)",
+      "categories": [
+        "China"
+      ],
+      "city": "Ningbo, Zhejiang",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "pistachio.html",
+      "match_score": 82,
+      "verdict": "plausible",
+      "tier": "active",
+      "buys": [
+        "1 x 20ft container (~20 t) shelled pistachio KERNELS to"
+      ],
+      "wants": "1 x 20ft container (~20 t) shelled pistachio KERNELS to Ningbo Port, LC terms. Listing specifies USA origin, so fit for Iranian kernels is indirect (pitch on price). Real, platform-verified, container-scale active RFQ.",
+      "posted": "2026-07-29",
+      "source_url": "https://www.go4worldbusiness.com/buyers/china/pistachio.html",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Jineng Holdings — Lu'an Xinjiang Coal Chemical (Group) Co. (晋能控股集团潞安新疆煤化工集团有限公司)",
+      "categories": [
+        "China"
+      ],
+      "city": "Xinjiang",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "www.qianlima.com",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "开心果 散称 20 公斤 (bulk pistachios, 20 kg) — employee-welfar"
+      ],
+      "wants": "开心果 散称 20 公斤 (bulk pistachios, 20 kg) — employee-welfare/canteen procurement (via Xilai Shun hotel-restaurant). Re-verified on source, but negligible import relevance at this quantity.",
+      "posted": "2026-07-10",
+      "source_url": "https://www.qianlima.com/gjxx/169578_24_4",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Shanghai University of Engineering Science (上海工程技术大学)",
+      "categories": [
+        "China"
+      ],
+      "city": "Shanghai",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "www.qianlima.com",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "百草味开心果 (Baicaomi brand) 100g packs, ~1.5 kg total — can"
+      ],
+      "wants": "百草味开心果 (Baicaomi brand) 100g packs, ~1.5 kg total — canteen/welfare buy of a DOMESTIC finished retail brand. Re-verified on source, but no import relevance.",
+      "posted": "2026-05-27",
+      "source_url": "https://www.qianlima.com/gjxx/169578_24_4",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Three Squirrels Inc. (三只松鼠股份有限公司)",
+      "categories": [
+        "China"
+      ],
+      "city": "Wuhu, Anhui",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.3songshu.com",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Top online nut-snack brand (300783.SZ); sells high-volu"
+      ],
+      "business": "Top online nut-snack brand (300783.SZ); sells high-volume single-nut SKUs including a pistachio line",
+      "why_fit": "Confirmed pistachio importer: sources nuts from 18+ countries and buys pistachios from the US via origin-direct procurement with Wonderful (world's #1 pistachio farm). Self-controls sourcing, so could add/switch to Iranian origin. Clearest already-importing-pistachio target.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Qiaqia Food Co., Ltd (洽洽食品股份有限公司) — Qiaqia / ChaCha",
+      "categories": [
+        "China"
+      ],
+      "city": "Hefei, Anhui",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.qiaqiafood.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "China's largest listed roasted-seeds & nuts company (00"
+      ],
+      "business": "China's largest listed roasted-seeds & nuts company (002557.SZ); 小黄袋每日坚果 daily-nut packs contain pistachio",
+      "why_fit": "Confirmed (Mar-2025 public statement) imports part of its nut raw materials from the US and is exposed to US tariffs; runs a direct-procurement model. Tariff-hedging motive makes Iranian-origin pistachio attractive. Pistachio-specific import not explicitly confirmed, hence 4 not 5.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Qingdao Wolong Food Co., Ltd (青岛沃隆食品股份有限公司) — brand Wolong 沃隆",
+      "categories": [
+        "China"
+      ],
+      "city": "Qingdao, Shandong",
+      "dest_iso": "CN",
+      "phones": [
+        "+86 532 6885 0236"
+      ],
+      "email": "sc@wolons.com",
+      "website": "https://www.wolons.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Pioneer of China's daily-nuts (每日坚果) packs; owned Qingd"
+      ],
+      "business": "Pioneer of China's daily-nuts (每日坚果) packs; owned Qingdao factories; global origin-direct raw-material procurement",
+      "why_fit": "Real high-volume nut brand with worldwide direct raw-material sourcing. Downgraded from 5: pistachio-specific use is NOT confirmed (its standard daily-nut mix is almond/cashew/walnut/hazelnut/cranberry/blueberry). Plausible but unverified pistachio buyer; the sc@wolons.com contact is unverified.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Bestore Co., Ltd (良品铺子股份有限公司)",
+      "categories": [
+        "China"
+      ],
+      "city": "Wuhan, Hubei",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.liangpin.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Top-3 Chinese snack brand (603719.SH); omnichannel; pis"
+      ],
+      "business": "Top-3 Chinese snack brand (603719.SH); omnichannel; pistachio within nut assortments",
+      "why_fit": "Large snack brand that sells pistachio SKUs, but procurement is largely OEM/outsourced; not confirmed as a direct raw-pistachio importer.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Be & Cheery / Baicaomi (杭州郝姆斯食品有限公司 — brand 百草味)",
+      "categories": [
+        "China"
+      ],
+      "city": "Hangzhou, Zhejiang",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.baicaowei.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Top-3 Chinese snack brand; multiple pistachio SKUs acro"
+      ],
+      "business": "Top-3 Chinese snack brand; multiple pistachio SKUs across e-commerce (百草味开心果)",
+      "why_fit": "Confirmed seller of pistachio SKUs (also seen as the product a Shanghai university procured). Large end-user, but brand is largely OEM-sourced; direct raw-material import not confirmed.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Suzhou Yongguan Food (苏州永冠食品)",
+      "categories": [
+        "China"
+      ],
+      "city": "Suzhou, Jiangsu",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "https://importer.ec21.com/Pistachio_Nuts--015013.html",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Suzhou food importer/trader; posted a request specifica"
+      ],
+      "business": "Suzhou food importer/trader; posted a request specifically for pistachio from Iran",
+      "why_fit": "The ONLY lead with an explicit IRAN + pistachio exact match. But the EC21 buy-listing could not be independently verified and appears stale / small-trader. Exact-fit IF real — verify before prioritizing.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Shandong Hana Biotechnology Co., Ltd",
+      "categories": [
+        "China"
+      ],
+      "city": "Rizhao, Shandong",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.go4worldbusiness.com/buyers/china/pistachio.html",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Rizhao-based trading/biotech company listing pistachio "
+      ],
+      "business": "Rizhao-based trading/biotech company listing pistachio buying interest",
+      "why_fit": "Confirmed go4worldbusiness buyer-interest profile (Rizhao, dated 2023). Expressed interest only, no active RFQ; coastal import location near Qingdao/Rizhao ports. Thin signal.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Wuhan Dongtianheng Trade Co. (武汉东天恒贸易)",
+      "categories": [
+        "China"
+      ],
+      "city": "Wuhan, Hubei",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.go4worldbusiness.com/buyers/china/pistachio.html",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Wuhan trading company listing 'pistachio nuts' as a buy"
+      ],
+      "business": "Wuhan trading company listing 'pistachio nuts' as a buying interest",
+      "why_fit": "Confirmed go4worldbusiness buyer-interest profile, but dated 2019 (old/stale). Generic trading-company interest, no recent activity.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Wuhan Loulan Miyu Ecological Fruit Industry (武汉楼兰蜜语生态果业有限公司 — brand 楼兰蜜语)",
+      "categories": [
+        "China"
+      ],
+      "city": "Wuhan, Hubei",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.loulanmiyu.com",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Xinjiang-specialty nuts & dried-fruit brand (under Dang"
+      ],
+      "business": "Xinjiang-specialty nuts & dried-fruit brand (under Dangdai Group); dates, nuts, dried fruit, snacks",
+      "why_fit": "Real nuts/dried-fruit distributor with retail/e-commerce reach, but core range is Xinjiang-domestic produce (dates/walnuts); pistachio not core and import not their model. Adjacent channel only.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Xi'an Meinong Network Technology (陕西美农网络科技有限公司 — brand 西域美农)",
+      "categories": [
+        "China"
+      ],
+      "city": "Xi'an, Shaanxi",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.xiyumeinong.com",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Nuts & dried-fruit e-commerce brand (dates, walnuts, ra"
+      ],
+      "business": "Nuts & dried-fruit e-commerce brand (dates, walnuts, raisins, nut snacks)",
+      "why_fit": "Nut/dried-fruit distributor with online reach, but core range is Xinjiang produce and pistachio is not core; import not their model. Adjacent channel only.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Guangzhou Jiangnan Market import-wholesalers (e.g. 丈合水果批发 / 广州广信鲜果贸易部)",
+      "categories": [
+        "China"
+      ],
+      "city": "Guangzhou, Guangdong",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Import fruit + nut + snack wholesalers inside Guangzhou"
+      ],
+      "business": "Import fruit + nut + snack wholesalers inside Guangzhou Jiangnan (江南) wholesale market — South China's largest imported-produce hub",
+      "why_fit": "Real Iranian-pistachio landing/distribution channel (Bandar Abbas -> Guangzhou/Shenzhen), but these are generic fruit-led wholesale stalls, not a single named import buyer. Channel intelligence, not a lead.",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Prakash Dange",
+      "categories": [
+        "India"
+      ],
+      "city": "Satara, Maharashtra",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "pistachio.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Pistachio Nut - 50 metric tons (marked urgent)"
+      ],
+      "wants": "Pistachio Nut - 50 metric tons (marked urgent)",
+      "posted": "2026-07-04",
+      "source_url": "https://www.exportersindia.com/buyers/pistachio.htm",
+      "role": "Not disclosed (buyer name only)",
+      "linkedin": "Not found",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Mudabbir Raza",
+      "categories": [
+        "India"
+      ],
+      "city": "Jaunpur, Uttar Pradesh",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "pistachio.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Salted Pistachios - 200 kg"
+      ],
+      "wants": "Salted Pistachios - 200 kg",
+      "posted": "2026-07-02",
+      "source_url": "https://www.exportersindia.com/buyers/pistachio.htm",
+      "role": "Not disclosed",
+      "linkedin": "Not found",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Ramprasad / RAMPRASAD MS",
+      "categories": [
+        "India"
+      ],
+      "city": "Bengaluru, Karnataka",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "pistachio.htm",
+      "match_score": 82,
+      "verdict": "plausible",
+      "tier": "active",
+      "buys": [
+        "Pistachio Nuts - paired 2,000 kg + 1,000 kg listings fr"
+      ],
+      "wants": "Pistachio Nuts - paired 2,000 kg + 1,000 kg listings from same contact",
+      "posted": "2026-07-08",
+      "source_url": "https://www.exportersindia.com/buyers/pistachio.htm",
+      "role": "Not disclosed",
+      "linkedin": "Not found",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "VKC Nuts Pvt. Ltd. (brand: Nutraj)",
+      "categories": [
+        "India"
+      ],
+      "city": "Noida, Uttar Pradesh",
+      "dest_iso": "IN",
+      "phones": [
+        "+91-9971095414"
+      ],
+      "email": "customercare@nutraj.com",
+      "website": "https://www.nutraj.com",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "One of India's largest nuts & dried-fruit processors/im"
+      ],
+      "business": "One of India's largest nuts & dried-fruit processors/importers/wholesalers (since 1926); imports, shells, processes and brands nuts for retail + industrial supply. ~$20.6M revenue, ~281 employees.",
+      "why_fit": "VERIFIED: sells 'Nutraj Iranian Pistachio Inshell Roasted & Salted' as a named retail SKU (confirmed on nutraj.com and 1mg) - clearly imports THIS exact product at container scale, repeat. Real importer/processor, reachable at senior level.",
+      "linkedin": "Gunjan Jain (MD & CEO): https://in.linkedin.com/in/gunjan-jain-8406a2183",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Karan Overseas Corporation",
+      "categories": [
+        "India"
+      ],
+      "city": "Navi Mumbai, Maharashtra (APMC Market, Vashi)",
+      "dest_iso": "IN",
+      "phones": [
+        "022-27665042"
+      ],
+      "email": "",
+      "website": "Not found (profiled on Justdial / ImportGenius / TheCompanyCheck)",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Dry-fruit importer/wholesaler, proprietorship since 199"
+      ],
+      "business": "Dry-fruit importer/wholesaler, proprietorship since 1990; classified as a Pistachio Nut / Mixed Nut retailer; Medium enterprise FY2024-25.",
+      "why_fit": "VERIFIED real proprietorship (est. 1990, Navi Mumbai APMC/Vashi - India's main Iranian-pistachio landing hub) with documented import shipments from an Iran-based supplier (R S T Goods Trading LLC) and a pistachio-retailer classification. Clear bulk pistachio importer; the specific 'Iranian pistachio' line and the '#1 by Volza' ranking are inferred/unconfirmed, hence 4 not 5.",
+      "linkedin": "Not found for the Navi Mumbai proprietorship",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Shivaa Nuts Private Limited (brand: ST Gold)",
+      "categories": [
+        "India"
+      ],
+      "city": "New Delhi (Khari Baoli)",
+      "dest_iso": "IN",
+      "phones": [
+        "+91 7942550867"
+      ],
+      "email": "",
+      "website": "https://www.shivanuts.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Importer & wholesaler of major pistachio and almond var"
+      ],
+      "business": "Importer & wholesaler of major pistachio and almond varieties since 1991; pioneer in processing/packaging pistachio kernels for the Indian dessert trade under 'ST Gold'.",
+      "why_fit": "VERIFIED importer/wholesaler since 1991, Khari Baoli, with bulk pistachio as core business (ST Gold). Note the ST Gold SKUs seen are American and Herati (Afghan) origin, not Iranian - so origin-fit for an Iran offer is not confirmed; strong pistachio buyer but origin-flexible.",
+      "linkedin": "Not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Chau Foods",
+      "categories": [
+        "India"
+      ],
+      "city": "Delhi NCR (Rohini / Chandni Chowk / Khari Baoli)",
+      "dest_iso": "IN",
+      "phones": [
+        "+91 95990 21447"
+      ],
+      "email": "bulk-orders@chaufoods.com",
+      "website": "https://www.chaufoods.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "FSSAI-certified dry-fruits wholesaler / bulk B2B suppli"
+      ],
+      "business": "FSSAI-certified dry-fruits wholesaler / bulk B2B supplier to mithai shops, bakeries, restaurants and gift brands across Delhi NCR and pan-India.",
+      "why_fit": "VERIFIED: explicitly sources Iranian (and American) pistachios directly and resells in bulk (FSSAI 13321008000704, live pista-rate page, MOQ 5 kg, repeat B2B clients) - a genuine reseller of exactly this product/origin.",
+      "linkedin": "Not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "NFP Sampoorna Foods Ltd (Sampoorna Nuts)",
+      "categories": [
+        "India"
+      ],
+      "city": "New Delhi (Khari Baoli) + Behror, Rajasthan (processing)",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.sampoornanuts.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Dry-fruit procurement/import/processing/distribution co"
+      ],
+      "business": "Dry-fruit procurement/import/processing/distribution company (SME-IPO 2026); Khari Baoli retail outlet + Behror processing unit; supplies retail, hotels, bakeries, sweet shops.",
+      "why_fit": "VERIFIED real, sizable processor that does sell pistachios, but it sources direct from Africa/SE Asia/India and its core nuts are cashew/almond/walnut/makhana - no evidence of Iranian pistachio import, so a plausible sector-fit buyer, not a confirmed buyer of this exact product.",
+      "linkedin": "Not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Zest Intertrade LLP",
+      "categories": [
+        "India"
+      ],
+      "city": "Navi Mumbai, Maharashtra",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "Not found (profiled on IndiaMART / ImportGenius)",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Import/trading LLP (registered 2015), primarily spices/"
+      ],
+      "business": "Import/trading LLP (registered 2015), primarily spices/herbs/pulses; Navi Mumbai APMC.",
+      "why_fit": "VERIFIED real LLP with a documented import record receiving shipments from Persian Pistachios Co. (Iran) per ImportGenius - an actual buy-side match on the exact product/origin. But pistachio is not its core (spice-focused), so likely occasional; public contact thin.",
+      "linkedin": "Not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Shree Radhe International",
+      "categories": [
+        "India"
+      ],
+      "city": "Mumbai, Maharashtra (Malad West)",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.indiamart.com/shree-radhe-international/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Importer/trader named across multiple listings (also an"
+      ],
+      "business": "Importer/trader named across multiple listings (also an Anjar, Gujarat spices exporter); shipment profile of the Malad entity shows edible oil, cosmetics, chilli powder.",
+      "why_fit": "DOWNGRADED: the 'top-3 pistachio importer / ~226 shipments' claim could NOT be substantiated - the identifiable Malad Mumbai entity's shipment profile shows unrelated goods, and 'Shree Radhe International' is a name shared by a spices exporter and others. Real India entity in the right city, but pistachio-import fit is unverified / possibly a data conflation.",
+      "linkedin": "Not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Muhammadi Store",
+      "categories": [
+        "India"
+      ],
+      "city": "Mumbai, Maharashtra",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "Not confirmed",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Long-established (est. 1956) Mumbai dry-fruit importer/"
+      ],
+      "business": "Long-established (est. 1956) Mumbai dry-fruit importer/retailer-wholesaler.",
+      "why_fit": "DOWNGRADED: appears only as a trade-directory mention as a long-standing Mumbai dry-fruit importer; no verifiable contact and no confirmed pistachio-import signal in search. Right city/sector, but effectively unverified.",
+      "linkedin": "Not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Vantara Agro Commodities",
+      "categories": [
+        "India"
+      ],
+      "city": "India",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://vantaraagro.com/pistachio",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Bulk & wholesale supplier of dry fruits, spices and pul"
+      ],
+      "business": "Bulk & wholesale supplier of dry fruits, spices and pulses with a dedicated pistachio product line (roasted/salted/plain, in-shell + kernel).",
+      "why_fit": "DOWNGRADED: real wholesale site with a dedicated pistachio page, but it reads as a generic reseller catalog with no evidence of import activity, origin, or scale - plausible small bulk buyer, weak signal.",
+      "linkedin": "Not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Raw Herbs India Private Limited",
+      "categories": [
+        "India"
+      ],
+      "city": "New Delhi (Khari Baoli)",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.rawherbsindia.com",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Trader/wholesaler-distributor of raw herbs, seeds and s"
+      ],
+      "business": "Trader/wholesaler-distributor of raw herbs, seeds and some dry-fruit lines in Khari Baoli (incorporated 2017).",
+      "why_fit": "Real Khari Baoli trader with named, reachable directors (Rishabh & Aakanksha Jain), but the core catalogue is raw herbs/seeds - pistachio fit is tangential; could carry it, but no pistachio or import signal found.",
+      "linkedin": "Not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Adıyaman L Tipi Kapalı ve Açık Ceza İnfaz Kurumu İşyurdu Müdürlüğü (prison workhouse / state institution)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Adıyaman",
+      "dest_iso": "TR",
+      "phones": [
+        "+90 416 202 7802"
+      ],
+      "email": "",
+      "website": "www.isikgazetesi.com",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "7,000 kg Kavrulmuş Kabuklu Antep Fıstığı (roasted IN-SH"
+      ],
+      "wants": "7,000 kg Kavrulmuş Kabuklu Antep Fıstığı (roasted IN-SHELL pistachio), part of a 5-item nut tender (also walnut kernel, raisins, raw almond). Open tender under Public Procurement Law 4734.",
+      "posted": "2025 — tender date 14 Nov 2025; İKN 2025/1731902",
+      "source_url": "https://www.isikgazetesi.com/haber/26580835/5-kalem-kuruyemis-satin-alinacaktir",
+      "role": "Prison İşyurdu procurement office (no named individual disclosed in the notice)",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Ankara Halk Ekmek ve Un Fabrikası A.Ş. (Ankara Metropolitan Municipality bakery company)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Ankara",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "ankarahalkekmek.com.tr",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Antep Fıstığı İçi (pistachio KERNELS) as part of '4 Kıs"
+      ],
+      "wants": "Antep Fıstığı İçi (pistachio KERNELS) as part of '4 Kısım Kuruyemiş Grubu Alımı' (4-lot nut group purchase), İKN 2025/1032195; delivery within 60 calendar days. Recurring buyer (also ran a pistachio-kernel tender in 2023, İKN 2023/1025735).",
+      "posted": "2025 — tender listed 16 Jul 2025 (delivery window Aug 2025)",
+      "source_url": "https://ankarahalkekmek.com.tr/2025/07/16/4-kisim-kuruyemis-grubu-alimi/",
+      "role": "Satınalma (procurement) office; no named individual disclosed",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "BAKTAD — Baklava ve Tatlı Üreticileri Derneği (Baklava & Dessert Producers Association; represents Gaziantep baklava/confectionery makers who buy pistachio)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Gaziantep",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "www.aa.com",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Shelled & unshelled (baklavalık iç) pistachio import — "
+      ],
+      "wants": "Shelled & unshelled (baklavalık iç) pistachio import — the association publicly CALLED FOR pistachio imports to be opened/liberalized after in-shell kernel prices rose ~213% YoY to ~2,350 TL/kg; welcomed the Sept 2025 permit for US/Iran/Syria origin (Iran quoted ~$17.50/kg vs ~$60 domestic).",
+      "posted": "September 2025",
+      "source_url": "https://www.aa.com.tr/tr/ekonomi/baklava-ureticilerinden-antep-fistigina-gecici-ithalat-izni-verilmesine-iliskin-aciklama/3691316",
+      "role": "Mehmet Yıldırım — President (Başkan), BAKTAD",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Şölen Çikolata Gıda San. ve Tic. A.Ş.",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Gaziantep (Başpınar OSB, Şehitkamil)",
+      "dest_iso": "TR",
+      "phones": [
+        "+90 216 651 09 88"
+      ],
+      "email": "info@solen.com.tr",
+      "website": "https://www.solen.com.tr",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Large industrial confectionery/chocolate maker (Milango"
+      ],
+      "business": "Large industrial confectionery/chocolate maker (Milango, Ozmo, Biscolata, Luppo, Nutymax); ~900 t/day capacity, exports to 120+ countries. Uses Antep pistachio as an ingredient (e.g., pistachio-cream Milango).",
+      "why_fit": "High-volume industrial END-USER of pistachio as raw material, based in Gaziantep, would benefit directly from cheaper Iran-origin pistachio during the 2025 price spike. Reachable with a named purchasing contact.",
+      "linkedin": "https://tr.linkedin.com/company/solen",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "İmam Çağdaş (İmam Çağdaş 1887)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Gaziantep",
+      "dest_iso": "TR",
+      "phones": [
+        "+90 342 220 4545"
+      ],
+      "email": "",
+      "website": "https://www.imamcagdas.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Historic (est. 1887) baklava and kebab house / baklava "
+      ],
+      "business": "Historic (est. 1887) baklava and kebab house / baklava producer; ships baklava nationally and abroad. Consumes large volumes of pistachio kernel for fıstıklı baklava.",
+      "why_fit": "Iconic Gaziantep baklava end-user; pistachio is its core raw material and its cost pain in 2025 is exactly what Iranian supply addresses. Buy-side (transforms pistachio into baklava).",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Koçak Baklava",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Gaziantep (Şehitkamil)",
+      "dest_iso": "TR",
+      "phones": [
+        "444 27 55"
+      ],
+      "email": "",
+      "website": "https://www.kocakbaklava.com.tr",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Baklava manufacturer (est. 1993, brothers Coşkun & İbra"
+      ],
+      "business": "Baklava manufacturer (est. 1993, brothers Coşkun & İbrahim Koçak); ISO 9001/22000 & Halal certified; domestic branches + international online sales. Heavy pistachio-kernel user.",
+      "why_fit": "Established baklava end-user with quality certifications and export volume, so it buys pistachio in bulk and is sensitive to the 2025 domestic price surge. Buy-side.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Yaşar Dondurma ve Gıda Maddeleri A.Ş. (MADO)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Kahramanmaraş",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://mado.com.tr",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Turkey's biggest Maraş ice-cream brand (~6,000 t/yr) pl"
+      ],
+      "business": "Turkey's biggest Maraş ice-cream brand (~6,000 t/yr) plus fıstık ezmesi (pistachio paste) and pistachio ice cream; large domestic + international footprint.",
+      "why_fit": "Major industrial END-USER of pistachio kernel (ice cream + pistachio paste). Reliable large-volume buyer that transforms pistachio, not a pistachio reseller.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Kervancıoğlu Dondurma / Gıda",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Kahramanmaraş",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "http://kervanciogludondurma.com.tr",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Maraş ice cream, su böreği, baklava and fıstık ezmesi ("
+      ],
+      "business": "Maraş ice cream, su böreği, baklava and fıstık ezmesi (pistachio paste) producer with roots to the 1960s; exports its products.",
+      "why_fit": "Buys pistachio KERNELS as raw material for pistachio paste and ice cream. Clear buy-side end-user open to cost-competitive imported pistachio.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Tadım Gıda (Tadım)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "İstanbul",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.tadim.com.tr",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Turkey's leading packaged-nut/snack brand (est. 1971); "
+      ],
+      "business": "Turkey's leading packaged-nut/snack brand (est. 1971); packages & sells Antep pistachio and mixed nuts; exports to 25+ countries. Runs a large raw-material procurement network.",
+      "why_fit": "Buys raw pistachio in volume for packing; strong sourcing/procurement function and national scale. Would consider Iranian supply on price/quality. (Partly resells pistachio as snack, hence not top-rated.)",
+      "linkedin": "https://www.linkedin.com/company/tadim",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Peyman Kuruyemiş A.Ş.",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Eskişehir",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.peyman.com.tr",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Major packaged nuts/dried-fruit producer (Bahçeden, Nut"
+      ],
+      "business": "Major packaged nuts/dried-fruit producer (Bahçeden, Nutzz brands), owned by İş Holding group; processes and packs pistachio among many nuts.",
+      "why_fit": "National-scale raw-nut buyer/processor with formal procurement; plausible importer of Iranian pistachio for packing when domestic is scarce/expensive. (Also resells pistachio as snack.)",
+      "linkedin": "https://www.linkedin.com/company/peyman",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Güllüoğlu (Gaziantep Güllüoğlu / Karaköy Güllüoğlu)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Gaziantep / İstanbul",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.gulluoglu.biz",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "One of Turkey's most famous baklava producers with larg"
+      ],
+      "business": "One of Turkey's most famous baklava producers with large-scale production and retail; pistachio is the primary raw material.",
+      "why_fit": "Flagship baklava end-user consuming very large pistachio volumes; directly exposed to 2025 domestic price surge that import supply relieves. Buy-side.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Neo Exim Gıda Ticaret Ltd. Şti.",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "İstanbul",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Import/export trading house in agricultural commodities"
+      ],
+      "business": "Import/export trading house in agricultural commodities, food ingredients, pulses and nuts (kuruyemiş).",
+      "why_fit": "Diversified IMPORTER/trader (not a pistachio exporter) — the type of intermediary that would actually place an Iran-origin pistachio import order and distribute it to Turkish end-users. Reachable via B2B directories (Kompass).",
+      "linkedin": "",
+      "needs_enrichment": true,
       "bulk_likely": false
     }
   ]

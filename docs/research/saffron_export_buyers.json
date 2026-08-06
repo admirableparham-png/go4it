@@ -1,9 +1,9 @@
 {
   "source": "verified-hunt-2025+",
-  "total": 3,
-  "with_phone": 0,
-  "with_email": 0,
-  "with_website": 0,
+  "total": 40,
+  "with_phone": 8,
+  "with_email": 4,
+  "with_website": 33,
   "buyers": [
     {
       "company": "EspaceAgro buyer, listing ref 699801 (France, spice-sourcing business project; advertiser identity behind free login)",
@@ -66,6 +66,856 @@
       "posted": "2026-05-07",
       "source_url": "https://www.espaceagro.com/epices-aromates/bsafran-b_i715651.html",
       "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Fizaka General Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Al Garhoud)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 4 2569282"
+      ],
+      "email": "sales@fizakauae.com",
+      "website": "saffron.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Sargol saffron (bulk); HORECA foodstuff supplier postin"
+      ],
+      "wants": "Sargol saffron (bulk); HORECA foodstuff supplier posting a saffron sourcing request",
+      "posted": "2026-07-09",
+      "source_url": "https://importer.tradekey.com/uae/saffron.htm",
+      "role": "Sales/procurement desk (no individual name published)",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Pureharvest Global Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "saffron.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Saffron - Super Negin quality; recurring (monthly) buye"
+      ],
+      "wants": "Saffron - Super Negin quality; recurring (monthly) buyer",
+      "posted": "2026-07-19",
+      "source_url": "https://importer.tradekey.com/uae/saffron.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Super Spice Foodstuff Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "UAE (likely Dubai)",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "saffron.htm",
+      "match_score": 82,
+      "verdict": "plausible",
+      "tier": "active",
+      "buys": [
+        "Saffron, 'good quality'; recurring (monthly) buyer - tw"
+      ],
+      "wants": "Saffron, 'good quality'; recurring (monthly) buyer - two July 2026 posts (Jul 22 & 23)",
+      "posted": "2026-07-23",
+      "source_url": "https://importer.tradekey.com/uae/saffron.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Vahid & Ehsan Foodstuff Trading LLC (V&E Foodstuff)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Al Ras, Deira)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 50 570 6334"
+      ],
+      "email": "",
+      "website": "https://vefood.ae",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Importer/wholesaler of Iranian foodstuffs - Hashemi ric"
+      ],
+      "business": "Importer/wholesaler of Iranian foodstuffs - Hashemi rice, Super Negin saffron, tomato paste, frozen fries - to UAE retail and wholesale",
+      "why_fit": "Confirmed already imports THIS exact product: Iranian Super Negin saffron, sold wholesale in Dubai (vefood.ae/saffron). Small, reachable Iran-focused trading house = ideal direct buyer for Iran-sourced saffron.",
+      "linkedin": "https://ae.linkedin.com/company/vahid-ehsan-foodstuff-trading-llc",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Qaenat Foodstuff Trading Company",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Al Mamzar)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 4 2699885"
+      ],
+      "email": "",
+      "website": "https://qaenat.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Importer/distributor/wholesaler/retailer of premium saf"
+      ],
+      "business": "Importer/distributor/wholesaler/retailer of premium saffron, honey, nuts, dry fruits (reg #806626); Dubai Municipality approved",
+      "why_fit": "Confirmed saffron importer - brings in Super Negin/Royal Luxury/Spanish saffron under its own brand, sourcing directly from Iran & Afghanistan farmers. Clear demand, but self-sufficient direct sourcing makes it partly a competitor channel.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Jaleel Distribution LLC (Jaleel Holdings)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://www.jaleeluae.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "One of the UAE's largest FMCG import & distribution gro"
+      ],
+      "business": "One of the UAE's largest FMCG import & distribution groups, moving food/grocery incl. spices and saffron to retail chains and HORECA nationwide",
+      "why_fit": "Volza-verified #1 saffron importer in the UAE (~124 shipments/yr, ~26% of national saffron imports). Proven bulk demand - highest-value target - but a giant generic distributor with entrenched supplier contracts, hard to convert.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Source International FZCO",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (DAFZA)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 50 664 3592"
+      ],
+      "email": "info@sourceinternational.ae",
+      "website": "https://sourceinternational.ae",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Bulk food & spices distributor supplying HORECA, retail"
+      ],
+      "business": "Bulk food & spices distributor supplying HORECA, retail chains and food manufacturers across the GCC; explicitly markets a saffron line",
+      "why_fit": "Positions itself as a 'premier saffron supplier UAE' and distributes specialty saffron into hospitality/retail at scale - needs a reliable bulk supply line. Strong fit for a container-level Iranian saffron supplier.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Lulu Group International (Lulu Hypermarket)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Abu Dhabi",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://www.luluhypermarket.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Largest retail hypermarket chain in the Gulf; imports, "
+      ],
+      "business": "Largest retail hypermarket chain in the Gulf; imports, private-labels and shelves spices including saffron across its UAE stores",
+      "why_fit": "Volza-verified #2 UAE saffron importer (~95 shipments, ~20% share). Continuous large-scale demand, but centralized procurement with locked-in private-label suppliers makes it aspirational rather than reachable.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Al Tuffah Vegetable & Fruits",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Fresh produce and grocery importer/distributor supplyin"
+      ],
+      "business": "Fresh produce and grocery importer/distributor supplying the UAE market",
+      "why_fit": "Volza-verified #3 UAE saffron importer (~53 shipments, ~11% share) - proven saffron import activity. Downgraded because core business is produce and no direct contact/website surfaced.",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Al Nama Herbals General Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Al Ras, Deira)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 50 462 0396"
+      ],
+      "email": "info@alnamaherbals.com",
+      "website": "https://alnamaherbals.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Wholesale trader/importer of spices, botanical herbs, d"
+      ],
+      "business": "Wholesale trader/importer of spices, botanical herbs, dried fruits, gums and resins since 1994; stocks and supplies saffron",
+      "why_fit": "Confirmed Deira spice wholesaler that carries saffron in its range (alnamaherbals.com/product/saffron) and imports across origins. Plausible bulk buyer, but also re-exports saffron, so partly a competitor channel.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Meridian PF General Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 4 5644106"
+      ],
+      "email": "",
+      "website": "https://meridianpf.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Foodstuff importer/distributor/supplier - rice, oils, d"
+      ],
+      "business": "Foodstuff importer/distributor/supplier - rice, oils, dairy, frozen, spices, beverages",
+      "why_fit": "Confirmed real Dubai foodstuff importer that lists saffron among its premium spice offerings. Plausible bulk channel, though saffron-specific import volume is unconfirmed.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "MSALZ International LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai / Sharjah",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://www.msalz.com",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Wholesale spice & food-ingredient importer supplying fo"
+      ],
+      "business": "Wholesale spice & food-ingredient importer supplying food manufacturers and gourmet suppliers; bulk + private label",
+      "why_fit": "Genuine spice/ingredient importer whose category covers saffron as a food-industry input. Right sector, but saffron-specific activity is unconfirmed (product focus skews to salts and dried spices).",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Saffron King Business Company (Afghanistan sales branch)",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Herat & Kabul, Afghanistan",
+      "dest_iso": "AF",
+      "phones": [
+        "+31 613 963 190"
+      ],
+      "email": "info@SaffronKiing.com",
+      "website": "https://saffronkiing.com (also saffronking.nl)",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Bulk saffron wholesale/export house headquartered in Ro"
+      ],
+      "business": "Bulk saffron wholesale/export house headquartered in Rotterdam with branches in Herat, Kabul, Tehran and elsewhere; sells and exports saffron sourced from Iran, Afghanistan, Morocco and Spain (supply capacity ~8 tons/yr). VERIFIED as a real, reachable entity across saffronkiing.com, saffronking.nl, Facebook (Rotterdam) and go4worldbusiness.com.",
+      "why_fit": "Genuinely handles and re-exports Iranian bulk saffron (the exact product), and is contactable. STRICT downgrade: it is primarily a large SELLER/exporter, not a buyer, and it 'collaborates with saffron farmers in Iran' via its own Tehran/Birjand/Khorasan offices - i.e. it already sources direct from Iran, so a broker adds value only on price/volume, not access. Reads more as a competitor than a customer; keep only as a long-shot price play.",
+      "linkedin": "None found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Herat Saffron Ltd",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Herat, Afghanistan",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "Not confirmed",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Herat-based saffron exporter. Confirmed as a genuine, d"
+      ],
+      "business": "Herat-based saffron exporter. Confirmed as a genuine, distinct entity via Volza customs-data profile (id 80517385): ~49 export shipments, primary products listed as 'Iranian-saffron' and 'saffron-thread', shipping mainly to India and Indonesia.",
+      "why_fit": "Strongest exact-product buy signal in this set: third-party customs data documents it actually sourcing and re-shipping Iranian-origin saffron through Herat, which is precisely go4it's supply. STRICT caveats holding the rating down: no verified email/phone/website (Volza profile only, and Volza is paywalled), shipment dates not confirmed as 2025+, and Afghan import of Iranian saffron is officially illegal so named Herat firms publicly deny it - reachability and above-board willingness are both unproven.",
+      "linkedin": "None found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Xinjiang Jinlingyucheng Co., Ltd",
+      "categories": [
+        "China"
+      ],
+      "city": "Xinjiang",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "saffron.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Iranian saffron, bulk; annual / recurring (buy-lead tit"
+      ],
+      "wants": "Iranian saffron, bulk; annual / recurring (buy-lead titled 'Iranian saffron')",
+      "posted": "2026-07-22 (TradeKey buy-lead, re-verified on source page)",
+      "source_url": "https://importer.tradekey.com/china/saffron.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Anguo Guangming Medicinal Co., Ltd",
+      "categories": [
+        "China"
+      ],
+      "city": "Anguo (Baoding), Hebei",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "saffron.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Saffron (西红花), recurring - listing marked 'daily' buyin"
+      ],
+      "wants": "Saffron (西红花), recurring - listing marked 'daily' buying frequency",
+      "posted": "2026-05-03 (TradeKey buy-lead, re-verified on source page)",
+      "source_url": "https://importer.tradekey.com/china/saffron.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Bozhou Jinrentang Biotechnology Co., Ltd (亳州锦仁堂生物科技有限公司)",
+      "categories": [
+        "China"
+      ],
+      "city": "Bozhou, Anhui",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "TCM/health biotech trader operating in the Bozhou herb "
+      ],
+      "business": "TCM/health biotech trader operating in the Bozhou herb exchange hub; listed as repackaging/distributing saffron",
+      "why_fit": "Listed as a Bozhou herb-hub trader said to import and repackage Iranian saffron - but a targeted Chinese-language search could not independently confirm the Iranian-import claim. Bozhou is China's largest TCM herb distribution centre, so a plausible bulk saffron buyer; reachable via 1688 storefronts. Rating cut from 5 to 3 because the 'already imports this exact product' basis is unverified.",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Bozhou Zanzan Biotechnology Co., Ltd (亳州市赞赞生物科技有限公司)",
+      "categories": [
+        "China"
+      ],
+      "city": "Bozhou, Anhui",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Bozhou herb-hub trader marketed around saffron wholesal"
+      ],
+      "business": "Bozhou herb-hub trader marketed around saffron wholesale, OEM/custom packaging and distribution",
+      "why_fit": "Marketed as a Bozhou trader in imported Iranian saffron (bulk + OEM packaging) per B2B listings, but the Iranian-origin sourcing could not be independently verified. Still a plausible Bozhou herb-hub buyer of bulk saffron. Rating cut from 5 to 3 - unconfirmed import claim, no 5 without proof it already imports this exact product.",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Yinchuan Qilixiang Trading Co., Ltd (银川杞里香商贸有限公司, brand 杞里香/QiLiXiang)",
+      "categories": [
+        "China"
+      ],
+      "city": "Yinchuan, Ningxia",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "https://m.suning.com/brand/19L0-500953-0.html",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Digital wellness / goji-berry e-commerce brand (Tmall/J"
+      ],
+      "business": "Digital wellness / goji-berry e-commerce brand (Tmall/JD/Suning flagships) that also retails Iranian saffron (藏红花)",
+      "why_fit": "Real, named consumer wellness brand that retails Iranian-origin saffron under its own label, so it must source saffron for repackaging - a plausible smaller-volume buyer reachable through its flagship stores. Rating trimmed from 4 to 3: it is a retail repackager, not a confirmed bulk importer.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Beijing Tongrentang Co., Ltd (北京同仁堂)",
+      "categories": [
+        "China"
+      ],
+      "city": "Beijing",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.tongrentang.com",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Leading TCM pharmaceutical manufacturer and national ph"
+      ],
+      "business": "Leading TCM pharmaceutical manufacturer and national pharmacy chain; formulates and sells 西红花 (saffron) medicinal products",
+      "why_fit": "Genuine large end-user of medicinal-grade saffron (西红花 is in the Chinese Pharmacopoeia) and a real, easily identified corporate. But it sources through licensed medicinal-import channels and is unlikely to buy direct from a small Iranian exporter, so conversion is low. Right sector, low practical fit - rating 2.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Bozhou Bencao Yutang Health Industry Development Co., Ltd (亳州本草御堂健康产业发展有限公司)",
+      "categories": [
+        "China"
+      ],
+      "city": "Bozhou, Anhui",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Bozhou health-food / TCM distributor that stocks and di"
+      ],
+      "business": "Bozhou health-food / TCM distributor that stocks and distributes saffron products",
+      "why_fit": "Health-product distributor in China's largest herb-distribution city that carries saffron - a plausible bulk buyer, reachable via Bozhou B2B storefronts. But there is no direct evidence of Iranian-origin sourcing or volume, so rating 2.",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Anguo Ronghua Bencao TCM Materials Co., Ltd (安国市荣华本草中药材有限公司)",
+      "categories": [
+        "China"
+      ],
+      "city": "Anguo (Baoding), Hebei",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "https://baike.baidu.com/item/安国市荣华本草中药材有限公司/20794265",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "TCM decoction-pieces producer (established 2008) operat"
+      ],
+      "business": "TCM decoction-pieces producer (established 2008) operating in the Anguo medicinal-materials market",
+      "why_fit": "A verifiable (Baidu Baike listed, est. 2008) processor/wholesaler in Anguo, the 'northern medicine capital', where saffron (西红花) is a traded material it could source. Sector and location fit, but no direct evidence it buys saffron specifically - rating 2.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Mir Sidra Kesar",
+      "categories": [
+        "India"
+      ],
+      "city": "Panchkula, Haryana",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "saffron.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Iranian Saffron - 100 Kilogram (bulk)"
+      ],
+      "wants": "Iranian Saffron - 100 Kilogram (bulk)",
+      "posted": "2026-06-27",
+      "source_url": "https://www.exportersindia.com/buyers/saffron.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Saurav Patnaik",
+      "categories": [
+        "India"
+      ],
+      "city": "Gurugram, Haryana",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "www.tradeindia.com",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Iranian Saffron (qty unspecified)"
+      ],
+      "wants": "Iranian Saffron (qty unspecified)",
+      "posted": "2026-07-07",
+      "source_url": "https://www.tradeindia.com/TradeLeads/buy/Food-Beverage/Saffrons/",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "MOHD NISAR",
+      "categories": [
+        "India"
+      ],
+      "city": "Hyderabad, Telangana",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "saffron.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Iranian Saffron - 1 kg (marked Urgent)"
+      ],
+      "wants": "Iranian Saffron - 1 kg (marked Urgent)",
+      "posted": "2026-06-30",
+      "source_url": "https://www.exportersindia.com/buyers/saffron.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Tarunkumar",
+      "categories": [
+        "India"
+      ],
+      "city": "Bengaluru, Karnataka",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "saffron.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Natural Saffron - 25,000 gram / 25 kg (marked Urgent)"
+      ],
+      "wants": "Natural Saffron - 25,000 gram / 25 kg (marked Urgent)",
+      "posted": "2026-07-02",
+      "source_url": "https://www.exportersindia.com/buyers/saffron.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Chandu",
+      "categories": [
+        "India"
+      ],
+      "city": "Hyderabad, Telangana",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "saffron.htm",
+      "match_score": 82,
+      "verdict": "plausible",
+      "tier": "active",
+      "buys": [
+        "Saffron - 10 kg"
+      ],
+      "wants": "Saffron - 10 kg",
+      "posted": "2026-06-15",
+      "source_url": "https://www.exportersindia.com/buyers/saffron.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "USMS Saffron Co. Inc. (Baby / Baby Saffron)",
+      "categories": [
+        "India"
+      ],
+      "city": "Khari Baoli, Old Delhi",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://babysaffron.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "India's largest branded saffron packer/wholesaler (Baby"
+      ],
+      "business": "India's largest branded saffron packer/wholesaler (Baby brand, family business since 1840). Imports bulk saffron and repacks for national retail. Verified real; Avneesh Chhabra confirmed as Director with active LinkedIn.",
+      "why_fit": "Proven large-volume bulk-saffron importer feeding a national packing operation, with a named senior LinkedIn-reachable decision-maker. Not rated 5 because Iran-origin sourcing (vs Kashmiri/Spanish) was not independently confirmed in verification.",
+      "linkedin": "https://www.linkedin.com/in/avneeshchhabra/",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Mahak International",
+      "categories": [
+        "India"
+      ],
+      "city": "Katra Ishwar Bhawan, Khari Baoli, New Delhi",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.indiamart.com/mahakinternational/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Verified: wholesale trader/importer/distributor est. 19"
+      ],
+      "business": "Verified: wholesale trader/importer/distributor est. 1990 in Khari Baoli (India's main spice bazaar), Mehak brand. IndiaMART profile lists 7 Iranian Saffron SKUs plus Pushali & Kashmiri; self-lists as Importer. MD Mr. Anand Bhatia.",
+      "why_fit": "Core business is explicitly Iranian saffron wholesale/distribution = a direct, ongoing buyer of Sargol/Pushal/Negin. Held at 4 because direct-import vs domestic-wholesale purchasing could not be hard-confirmed.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Chapanerkar Saffron Impex Pvt Ltd (MYRA Saffron)",
+      "categories": [
+        "India"
+      ],
+      "city": "Shrirampur, Ahmednagar, Maharashtra",
+      "dest_iso": "IN",
+      "phones": [
+        "07971891388"
+      ],
+      "email": "",
+      "website": "https://www.getdistributors.com/distributors/chapanerkar-saffron-impex-pvt-ltd-89327/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Verified Pvt Ltd supplying Negin, Sargol and Pushal Ira"
+      ],
+      "business": "Verified Pvt Ltd supplying Negin, Sargol and Pushal Iranian saffron under the MYRA brand, running a pan-India saffron distributorship network (actively recruiting dealers).",
+      "why_fit": "Dedicated Iranian-saffron company handling our exact three grades; a growing distributor network implies steady bulk supply need. Held at 4 as direct-import status is unconfirmed.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Sidhankar Enterprises LLP",
+      "categories": [
+        "India"
+      ],
+      "city": "Dwarka, New Delhi",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.tradeindia.com/sidhankar-enterprises-llp-38733420/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Verified LLP (ROC Delhi), Dwarka; revenue Rs 10-50 Cr F"
+      ],
+      "business": "Verified LLP (ROC Delhi), Dwarka; revenue Rs 10-50 Cr FY2025; deals in saffron, honey and hing. Has real import/shipment records (eximpedia / ImportGenius); Volza flags it among top India buyers of Iran-origin saffron.",
+      "why_fit": "One of the better-evidenced actual importers here (shipment data exists) and a proven saffron buyer, though its listed saffron line is small retail packs.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Kesariya Traders",
+      "categories": [
+        "India"
+      ],
+      "city": "Jamnagar, Gujarat",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.indiamart.com/kesariyatraders/iranian-saffron.html",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Verified sole-proprietor trader (est. 2017) listing Ira"
+      ],
+      "business": "Verified sole-proprietor trader (est. 2017) listing Iranian Saffron in Sargol, Negin and Pushal grades under the KESARIYA brand (plus groundnut & cashew).",
+      "why_fit": "Openly trades all three Iranian grades in Gujarat (no local saffron = must source in), so a genuine Iranian-saffron buyer, but a small sole-prop that likely buys from domestic importers rather than importing directly.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Synthite Industries Pvt. Ltd.",
+      "categories": [
+        "India"
+      ],
+      "city": "Ernakulam / Kochi, Kerala",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://synthite.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Verified: world's largest spice-oleoresin/extract & ess"
+      ],
+      "business": "Verified: world's largest spice-oleoresin/extract & essential-oil maker (est. 1972, Kochi, 90+ countries), with food-colour and health-ingredient lines.",
+      "why_fit": "Large industrial food-ingredient buyer where saffron (colour/health) plausibly fits, but the Volza '~50% of India's Iran-origin saffron imports' claim could not be verified and is doubtful for an oleoresin-focused firm (thread saffron is not a typical extract feedstock).",
+      "linkedin": "https://www.linkedin.com/company/synthite",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Fitto Indiya Inc",
+      "categories": [
+        "India"
+      ],
+      "city": "Borivali West, Mumbai",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.fittoindiya.com/saffron.html",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Verified proprietorship trader/wholesaler; own site lis"
+      ],
+      "business": "Verified proprietorship trader/wholesaler; own site lists Iranian Saffron (Pushali / pure Iranian) and Kashmiri Mogra saffron alongside cereal/millet flakes. States it procures from established manufacturers.",
+      "why_fit": "Genuinely lists Iranian saffron as a traded line in Mumbai (a key import gateway) = plausible regional distributor buyer, but small and a reseller that procures rather than imports directly.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Taj Agro International (Taj Pharma Group)",
+      "categories": [
+        "India"
+      ],
+      "city": "Mumbai, Maharashtra",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.tajagro.com",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Verified FMCG food & agro company (est. 1995), Mumbai; "
+      ],
+      "business": "Verified FMCG food & agro company (est. 1995), Mumbai; catalogues saffron among many spice/agro lines and exports spices/rice/saffron to the Middle East.",
+      "why_fit": "Right sector and scale, but it is a very broad catalogue vendor that supplies/exports saffron rather than a confirmed bulk Iranian-saffron buyer; Iran-origin sourcing not confirmed.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Vahdam India (Vahdam Teas Pvt. Ltd.)",
+      "categories": [
+        "India"
+      ],
+      "city": "New Delhi (facility in Noida, UP)",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.vahdam.com",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Verified fast-growing, well-funded D2C tea/spice/superf"
+      ],
+      "business": "Verified fast-growing, well-funded D2C tea/spice/superfood-wellness brand (est. 2015), reachable via public founder Bala Sarda.",
+      "why_fit": "Real and reachable, but primarily a tea/spice brand; a saffron SKU and the claimed single Iran-origin saffron import shipment could not be confirmed, so product-fit is marginal.",
+      "linkedin": "https://www.linkedin.com/in/bala-sarda/",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Velladhurai Sri Vedha Enterprises",
+      "categories": [
+        "India"
+      ],
+      "city": "Tamil Nadu",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.volza.com/p/saffron/import/import-in-india/coo-iran/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Appears in Volza import data as an importer of Iran-ori"
+      ],
+      "business": "Appears in Volza import data as an importer of Iran-origin saffron into India, but with essentially a single shipment; no website or reachable contact surfaced in verification.",
+      "why_fit": "Named in import data as a direct buyer of Iranian saffron (genuine signal), but the footprint is tiny (one shipment) with no reachable channel, so low-priority.",
+      "linkedin": "",
+      "needs_enrichment": false,
       "bulk_likely": false
     }
   ]

@@ -1,9 +1,9 @@
 {
   "source": "verified-hunt-2025+",
-  "total": 6,
-  "with_phone": 3,
-  "with_email": 2,
-  "with_website": 5,
+  "total": 50,
+  "with_phone": 16,
+  "with_email": 11,
+  "with_website": 44,
   "buyers": [
     {
       "company": "NHS Blood and Transplant (NHSBT)",
@@ -134,6 +134,1004 @@
       "wants": "Copper sulphate bundled with chlorine gas, alum and bleaching powder — supply/delivery to head water works for water-supply maintenance, FY 2025-26.",
       "posted": "2025-05-16 (FY 2025-26 tender)",
       "source_url": "https://www.tender247.com/tender-details/88195809?searchtext=chlorine+gas",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "DMA Group (DanMix / DanBlock)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Erbil",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "info@dmavet.com",
+      "website": "https://www.dmavet.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Diversified Iraqi veterinary & agricultural group (sinc"
+      ],
+      "business": "Diversified Iraqi veterinary & agricultural group (since 1984): feed mill, in-country premix manufacturing (DanMix), livestock mineral salt-block manufacturing (DanBlock), hatchery, poultry/aqua farms, veterinary pharma. 500+ products across Iraq.",
+      "why_fit": "Strongest buyer-side fit found. VERIFIED: manufactures premixes (DanMix) and mineral salt blocks (DanBlock) domestically and is backwards-integrated into raw materials — so feed-grade copper sulphate is a genuine raw trace-mineral input, not a finished product they resell. UTRIX feed-input partnership confirmed Jan 2025 (active 2025 scaling of imported inputs). No direct evidence they specifically import copper sulphate, so not a 5.",
+      "linkedin": "https://www.linkedin.com/company/dma-group-iq",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "ARK Company",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Erbil (Mosul Road, near Alwa Market)",
+      "dest_iso": "IQ",
+      "phones": [
+        "+964 770 446 3508"
+      ],
+      "email": "info@ark.krd",
+      "website": "https://ark.krd",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Iraqi/Kurdistan fertilizer importer-distributor to farm"
+      ],
+      "business": "Iraqi/Kurdistan fertilizer importer-distributor to farmers and businesses. Sources internationally (Turkey, Russia, Jordan, Egypt, Saudi, Iraq) and resells in bulk.",
+      "why_fit": "Real, reachable agrochemical importer-distributor in the right broad channel. LOWERED from 4: their published catalog is macronutrient-only (DAP, NPK 15-15-15, N.P 20-20, urea, single super phosphate) — NO copper sulphate, copper fungicide, Bordeaux, or micronutrient products are listed. Copper sulphate would be catalog-adjacent but there is no evidence they currently handle it, so the fit is plausible, not demonstrated.",
+      "linkedin": "https://www.linkedin.com/company/arkcompani",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "VetCity",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Erbil (HQ 60 Meter Road, Kuran) + Sulaymaniyah, Kirkuk, Baghdad",
+      "dest_iso": "IQ",
+      "phones": [
+        "+964 750 818 2011"
+      ],
+      "email": "drahmadsusaey@gmail.com",
+      "website": "https://www.vetcityiq.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Iraqi veterinary importer/distributor of veterinary med"
+      ],
+      "business": "Iraqi veterinary importer/distributor of veterinary medicines, feed supplements, vaccines and animal-healthcare products from international manufacturers; multi-branch national reach.",
+      "why_fit": "Real, verified multi-branch vet importer in the right channel; copper sulphate is a standard poultry/livestock trace-mineral additive. Caveat: their imports are largely finished/formulated supplements and pharma, so raw copper-sulphate purchasing is possible but not the core of what they buy. Named contact makes it reachable.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Ghadir Babil",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Babil",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "https://ghadirbabil.com/en/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Iraqi compound-feed manufacturer since 2004 (animal fee"
+      ],
+      "business": "Iraqi compound-feed manufacturer since 2004 (animal feed + agricultural products), producing to EU-standard programs.",
+      "why_fit": "Real domestic feed manufacturer. As a self-formulating feed producer it plausibly buys raw trace minerals including copper sulphate to fortify feed — a more genuine raw-input buyer than the finished-product distributors. Caveat: many mills buy ready-made premixes rather than raw salts, so demand is plausible, not confirmed.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Dar Al-Hasaani Company",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Iraq",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "https://dar-alhassani.com.iq/en/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Iraqi distributor / exclusive agent for poultry & lives"
+      ],
+      "business": "Iraqi distributor / exclusive agent for poultry & livestock inputs; exclusive agent for Al-Jawi Fit premix & feed additives and Dr. Ekel German antitoxin.",
+      "why_fit": "Real, verified feed-additive/premix agent in the right sector. LOWERED from 3: their role is distributing FINISHED, formulated premixes and additives (as an agent), not procuring raw copper sulphate — so it is a weak buy-side fit for THIS specific raw product. No published contact found.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Rawaat Al Arz General Trading Co.",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad (imports via Umm Qasr port)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "https://en.52wmb.com/buyer/201530546",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "General trading / water-treatment-chemicals importer. T"
+      ],
+      "business": "General trading / water-treatment-chemicals importer. Trade data (updated to July 2025) shows ~6 international trades importing water-treatment chemicals (oxygen scavenger CIA-5001, polyacrylamide) from Chemitex, India.",
+      "why_fit": "Real, confirmed active 2025 chemical importer via Umm Qasr. LOWERED from 3: copper sulphate is NOT in its confirmed shipment list (it imports oxygen scavenger + polyacrylamide), and the assumption that a water-treatment importer also stocks copper sulphate as an algaecide is speculative. Trade-data profile only — no direct email/phone published.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "LOB Water (Land of Baghdad Water Purification Techniques)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "https://lobwater.com/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Long-established (40+ yrs) Iraqi water-purification com"
+      ],
+      "business": "Long-established (40+ yrs) Iraqi water-purification company: design, manufacture, supply and after-sales of RO / ultrafiltration / EDI water-treatment plants for industrial, municipal, pharma and agricultural clients.",
+      "why_fit": "Real, verified Baghdad water-treatment integrator. Weak/tangential fit: their scope is RO and membrane/equipment systems, which do not use copper sulphate; copper sulphate (reservoir/pond algaecide) is only adjacent to their business, so any demand is incidental at best.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Chemway Chemicals",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 54 994 9585"
+      ],
+      "email": "sales@chemwaychemicals.com",
+      "website": "chemwaychemicals.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Industrial-chemical trading/distribution company (est. "
+      ],
+      "business": "Industrial-chemical trading/distribution company (est. 2018), Nawras Tower, Al Nahda, Dubai. Runs a dedicated Copper Sulphate Pentahydrate 98%+ product line (agri/industrial/water-treatment grades) and repackages imported material.",
+      "why_fit": "Verified: maintains a dedicated copper-sulphate product page and moves the exact product in bulk across the UAE, so a realistic re-source target for cheaper Iran-origin feedstock. Caveat: also markets itself as supplier/exporter, so partly reseller/competitor rather than a pure end-buyer.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Al Taher Chemicals Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Ajman",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "altaherchemicals.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "ISO 9001/45001-certified electroplating, metal-finishin"
+      ],
+      "business": "ISO 9001/45001-certified electroplating, metal-finishing, oilfield and industrial-chemical trading house in Ajman (est. 2007; part of the 125-yr Abdul Husain Ghulam Husain group). Trades non-ferrous metal salts (copper, zinc, tin, lead) for the plating trade.",
+      "why_fit": "Strong sector fit: a pure trading house serving the electroplating/metal-finishing trade (a top CuSO4 end-use) that imports metal salts to resell. Downgraded from 4 - search confirmed copper/metal-salt lines but did not confirm the specific copper-sulphate SKU claimed.",
+      "linkedin": "linkedin.com/company/al-taher-chemicals",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "DUBI CHEM (Dubichem Chemicals International)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "dubichem@gmail.com",
+      "website": "dubichem.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Dubai/Sharjah chemical house (group since 1995) with re"
+      ],
+      "business": "Dubai/Sharjah chemical house (group since 1995) with ready stock across Sharjah, Dubai, Fujairah, Abu Dhabi. Offers copper sulphate in agriculture, electroplating, feed and industrial grades (98% min).",
+      "why_fit": "Verified: dedicated copper-sulphate pages in all end-use grades, repackages imported material and holds multi-emirate stock - a plausible re-source target. Caveat: explicitly brands as supplier/manufacturer/exporter, so partly a competing supplier rather than a pure buyer.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "RX (RX Marine / RXChemicals / RX-Sol group)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "rxchemicals.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Import-export marine & industrial chemical supplier wit"
+      ],
+      "business": "Import-export marine & industrial chemical supplier with Dubai/Sharjah stock (India-headquartered RX-Sol group). Carries Cupric Sulphate Pentahydrate and Bordeaux Mixture with ready UAE stock.",
+      "why_fit": "Verified: stocks copper sulphate and the CuSO4-based Bordeaux fungicide with UAE ready stock, so a natural re-source target. Caveat: this is a large manufacturer/exporter group, i.e. more of a competing supplier than an end-buyer.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Metachem Chemical Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Ajman",
+      "dest_iso": "AE",
+      "phones": [
+        "06-7482750"
+      ],
+      "email": "",
+      "website": "metachemgulf.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Electroplating & metal-finishing chemical trading house"
+      ],
+      "business": "Electroplating & metal-finishing chemical trading house (est. 1995), New Industrial Area, Ajman, serving Northern Emirates, Dubai, Abu Dhabi and GCC/Africa; sole UAE dealer for Grauer & Weil (India). Stocks metal salts, anodes, plating chemicals.",
+      "why_fit": "Serves the electroplating sector (a major CuSO4 electrolyte/plating-bath end-use) and imports metal salts to resell - a plausible bulk purchaser. Exact CuSO4 SKU not confirmed, hence mid rating.",
+      "linkedin": "linkedin.com/company/metachem-chemical-trading-l-l-c-",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Al Nahda International Chemicals Co LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 4 883 1314"
+      ],
+      "email": "admin@alnahdainternational.com",
+      "website": "alnahdafz.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Est. 1978/79; the biggest stockist of inorganic chemica"
+      ],
+      "business": "Est. 1978/79; the biggest stockist of inorganic chemicals in the UAE. 69,000 sqm storage plus a bulk terminal in Jebel Ali Free Zone; distributor for Tata, Dow, Shell, Sasol.",
+      "why_fit": "Large-scale inorganic-chemical importer/distributor with terminal, storage and buying power for container/bulk copper sulphate - high-volume buyer profile. Caveat: public focus is solvents/organics and major-brand distribution; the specific CuSO4 SKU is not confirmed.",
+      "linkedin": "linkedin.com/company/al-nahda-international-chemicals",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "ADFERT (Abu Dhabi Fertilizer Industries WLL)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Abu Dhabi",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "adfert.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Est. 1995, Mussafah, Abu Dhabi; SQM Middle East regiona"
+      ],
+      "business": "Est. 1995, Mussafah, Abu Dhabi; SQM Middle East regional HQ. Manufactures granular/water-soluble/foliar NPKs, micronutrients and specialty plant nutrition (~96,000 MT/yr capacity).",
+      "why_fit": "Genuine buy-side end-user: a fertilizer manufacturer whose micronutrient blends use copper sulphate as a raw material/copper source. Real recurring consumer, though CuSO4 is a minor input relative to its NPK volumes.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "National Feed and Flour Production & Marketing Co LLC (NFFPM)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Abu Dhabi",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "nffpm.ae",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Est. 2001, Abu Dhabi; one of the largest UAE feed produ"
+      ],
+      "business": "Est. 2001, Abu Dhabi; one of the largest UAE feed producers - two fully automated mills (ruminant plant in Mussafah ~250k MT/yr; poultry plant in JAFZA ~350k MT/yr). ISO/HACCP certified.",
+      "why_fit": "Genuine buy-side end-user: feed-grade copper sulphate is a standard trace-mineral micronutrient in cattle/poultry premixes, and a mill of this scale is a recurring buyer of feed-grade CuSO4 or premix inputs. Often bought as premix, so mid rating.",
+      "linkedin": "linkedin.com/company/national-feed-and-flour-production-and-marketing-company-llc",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Al Khowahir Chemicals",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Sharjah",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "alkhowahirchemicals.com",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Sharjah chemical supplier/trader (40+ yrs; warehouses S"
+      ],
+      "business": "Sharjah chemical supplier/trader (40+ yrs; warehouses Sajaa Industrial Area + Dubai Industrial City) serving water-treatment, swimming-pool, paint, fiberglass, food-grade and oilfield industries; exports across GCC/Africa.",
+      "why_fit": "Water-treatment/pool line where copper sulphate is a standard algaecide, and a trading house that imports to resell. Downgraded: search shows a broad paint/fiberglass/oilfield focus and did not confirm any CuSO4 line, so fit is speculative.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Trice Chemicals",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Sharjah",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "tricechemicals.com",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Swimming-pool and water-treatment chemical supplier/tra"
+      ],
+      "business": "Swimming-pool and water-treatment chemical supplier/trader, Industrial Area 18, Sharjah (also Dubai/Abu Dhabi); delivers across UAE/GCC/Africa/Europe.",
+      "why_fit": "Pool/water-treatment segment can use copper sulphate as an algaecide, and it imports to resell to pool/facility operators. Downgraded: product range shown is chlorine-based disinfectants/algae removers; CuSO4 not confirmed.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Green Water Treatment Solutions (GREENWTS)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Abu Dhabi",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "greenwts.com",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "ISO 9001/14001-certified water-treatment company (Abu D"
+      ],
+      "business": "ISO 9001/14001-certified water-treatment company (Abu Dhabi) with GCC-wide distribution - RO/ion-exchange, boiler, cooling and wastewater treatment chemicals.",
+      "why_fit": "GCC-wide water-treatment distributor implies meaningful buying volume. Downgraded: its stated focus is industrial boiler/cooling/RO/wastewater chemistry, where copper sulphate (a pool/reservoir algaecide) is a poor fit and unconfirmed.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Agro National Chemical Fertilizer Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "agronational.ae",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Dubai-based B2B fertilizer trade aggregator/intermediar"
+      ],
+      "business": "Dubai-based B2B fertilizer trade aggregator/intermediary (Ontario Tower, Business Bay); supplies DAP, Urea, Rock Phosphate and bulk fertilizers to MENA/Africa/South Asia.",
+      "why_fit": "UAE agri-input trader that imports to resell. Downgraded: it is a bulk commodity-fertilizer intermediary (DAP/urea/rock phosphate), not a micronutrient/agrochemical house, so copper sulphate is only a speculative range addition.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Emirates Feed Factory LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Abu Dhabi",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Abu Dhabi animal-feed manufacturer (since ~1995) supply"
+      ],
+      "business": "Abu Dhabi animal-feed manufacturer (since ~1995) supplying large-scale integrated farms in the UAE.",
+      "why_fit": "Feed mill that formulates mineral premixes where feed-grade copper sulphate is a routine trace-mineral input - right sector, plausible ingredient buyer. Downgraded: SKU unconfirmed and there is name ambiguity with the separate Emirates Flour & Animal Feed Factory (Mina Zayed).",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Fish Farm LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Largest UAE marine-finfish aquaculture operator (inc. 2"
+      ],
+      "business": "Largest UAE marine-finfish aquaculture operator (inc. 2013): coastal hatchery in Umm Al Quwain, indoor RAS salmon growout in Jebel Ali FZ, and sea cages near Dibba (Fujairah). ~3,000 MT/yr, ~6M fingerlings.",
+      "why_fit": "Aquaculture end-user of scale; copper sulphate is a hatchery/pond parasite-and-algae control agent. Downgraded to weak fit: this is a marine + closed RAS operation where copper is largely toxic/avoided, so the CuSO4 use case barely applies.",
+      "linkedin": "linkedin.com/company/fish-farm-llc",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Sayed Ahmad Khoshkyar Agricultural Ltd (سيداحمد خوشکیار زراعتي لمیتیډ)",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kandahar",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "https://www.facebook.com/Khoshkyargroup/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Largest agricultural-input importer/distributor in Afgh"
+      ],
+      "business": "Largest agricultural-input importer/distributor in Afghanistan; 151 import shipments covering insecticides, fungicides, herbicides, growth regulators and sprayer parts (suppliers mainly China & India). Address: Dist #4, Barwoo Darwza, Khoshkyar Business Market, Kandahar. Active FB + WhatsApp presence.",
+      "why_fit": "Verified: Volza fungicide-buyers data shows Khoshkyar at ~36% of Afghanistan's total fungicide imports (5 fungicide shipments Jun-2024 to May-2025), the top ranked buyer. Copper-based fungicides are core inputs for southern grape/pomegranate/orchard growers, making this the single most likely bulk buyer. Not a 5 because no evidence of copper-SULPHATE specifically (their listed lines are growth-regulator/fumigant, broad fungicide category).",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Mohammed Shafiq Azimi Ltd",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Mazar-e-Sharif (Balkh)",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "https://www.volza.com/company-profile/mohammed-shafiq-azimi-ltd-64095957/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Agrochemical importer; imports recorded under HSN 3808 "
+      ],
+      "business": "Agrochemical importer; imports recorded under HSN 3808 (fungicides) — 27 shipments from Indian suppliers Modern Insecticides Ltd and Shri Ram Agro Chemicals Pvt Ltd. Address: 3rd Corner of Mandawi, Mazar-e-Sharif. Also appears as a top insecticide-pesticide importer by shipment count.",
+      "why_fit": "Verified as a genuine fungicide (HSN 3808) importer serving the northern grape/melon/wheat belt where copper fungicides are used against mildew. Right sector, fixed address, meaningful volume. Not a 5 because the specific copper-sulphate SKU is unconfirmed and could be any 3808 fungicide.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Esmatullah Qurishi Ltd",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Afghanistan (city not confirmed)",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "https://www.volza.com/p/fungicide-for-agriculture/buyers/buyers-in-afghanistan/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Agricultural fungicide importer listed in Volza's Afgha"
+      ],
+      "business": "Agricultural fungicide importer listed in Volza's Afghanistan fungicide-buyers directory.",
+      "why_fit": "Verified: appears in Volza fungicide-buyers-in-Afghanistan as the #2 buyer at ~14% share (2 shipments Jun-2024 to May-2025), so it is a confirmed fungicide importer in the right sector. Held at 3 (not higher) because volume is tiny, no city is confirmed, and no reachable contact could be found; no evidence of copper sulphate specifically.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Hashmat Qadri Trade Company Ltd",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kunduz",
+      "dest_iso": "AF",
+      "phones": [
+        "100054242331636"
+      ],
+      "email": "",
+      "website": "https://www.facebook.com/100054242331636/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Afghan company distributing agrochemicals AND veterinar"
+      ],
+      "business": "Afghan company distributing agrochemicals AND veterinary medicine across north/north-west Afghanistan; ~11% of national insecticide imports (8 shipments), imports from India/China. Confirmed via Facebook post self-describing as an Afghan agrochemical + veterinary distributor.",
+      "why_fit": "Real, reachable Afghan distributor with a dual agri + veterinary channel (copper sulphate is used in both Bordeaux fungicide and livestock footbath/trace-mineral). Downgraded 4->3 on strict review: its confirmed imports are INSECTICIDES (not fungicides), so copper-sulphate fit is category-adjacent speculation rather than a demonstrated fungicide line; volume modest.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Swat Agro Chemicals Afghanistan",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kabul",
+      "dest_iso": "AF",
+      "phones": [
+        "+92 300 6401625"
+      ],
+      "email": "mkhuram4444@gmail.com",
+      "website": "https://www.swatagro.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Kabul branch of Swat Agro Chemicals (a Pakistan-HQ form"
+      ],
+      "business": "Kabul branch of Swat Agro Chemicals (a Pakistan-HQ formulator/distributor, est. 1996, Peshawar). The Afghanistan branch (own Facebook page, Kabul) imports/distributes pesticides, fungicides and micronutrients; ~7% (1 shipment) of Afghanistan fungicide imports per Volza. Markets 'Cobox' copper oxychloride fungicide.",
+      "why_fit": "Copper-line adjacency is genuine (already sells a copper-oxychloride fungicide). Downgraded 4->3 on strict review: it is a Pakistan-owned formulator that sources its own copper fungicide from Germany (Spiess Urania) rather than an independent Afghan importer buying raw copper sulphate; only 1 confirmed AF fungicide shipment. Kept (not dropped) because a real Kabul branch exists and appears in AF import data.",
+      "linkedin": "https://pk.linkedin.com/company/swat-agro-chemicals",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Mohsin Hamdard Co Ltd",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Afghanistan (city not confirmed)",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "https://www.volza.com/company-profile/mohsin-hamdard-co-ltd-65464529/import/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Pesticide/insecticide importer; Volza records 10 shipme"
+      ],
+      "business": "Pesticide/insecticide importer; Volza records 10 shipments from 1 supplier, ~17% of Afghanistan's insecticide-pesticide imports (ranked #2 in that category).",
+      "why_fit": "Confirmed real importer with meaningful category share, but downgraded 3->2 on strict review: its confirmed imports are INSECTICIDES/pesticides, not fungicides — copper sulphate is a fungicide/other, so the fit is pure category-overlap speculation. No confirmed city, no reachable contact, no copper-product evidence.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Humayun Chemicals",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Lahore",
+      "dest_iso": "PK",
+      "phones": [
+        "042-7663033"
+      ],
+      "email": "",
+      "website": "https://humayunchemicals.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Industrial-chemicals importer & distributor (500+ produ"
+      ],
+      "business": "Industrial-chemicals importer & distributor (500+ products, 65+ yrs); customs/trade data shows ~1,484 import shipments from 382 suppliers (mainly China/Taiwan)",
+      "why_fit": "Verified real bulk chemical importer that lists Copper Sulphate in its range - exactly the buy-side reseller profile for Iran-origin material. Note: broad importer; could NOT confirm copper sulphate is among what they actually import in volume",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Ahmed Chemical Co.",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Karachi (Jodia Bazar)",
+      "dest_iso": "PK",
+      "phones": [
+        "+92 21 32424383-5"
+      ],
+      "email": "zubair@ahmadchm.com",
+      "website": "http://ahmadchm.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Importer/distributor of 200+ industrial chemicals since"
+      ],
+      "business": "Importer/distributor of 200+ industrial chemicals since 1956; imports from Europe/Asia/Middle East (partners incl. BASF, Solvay, SABIC); serves electroplating, textile, tanneries, food, pharma",
+      "why_fit": "Verified importer (not manufacturer) serving the three biggest copper-sulphate-consuming sectors in Pakistan (electroplating, textile, tanning); named reachable contact. Strong buy-side fit",
+      "linkedin": "https://pk.linkedin.com/company/ahmedchemicalco",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Sufat Chemicals",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Karachi",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "https://sufatchemicals.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Electroplating-chemicals trader/distributor (20+ yrs) s"
+      ],
+      "business": "Electroplating-chemicals trader/distributor (20+ yrs) supplying chromic acid, nickel sulphate/chloride, boric acid, metal salts & plating equipment nationwide",
+      "why_fit": "Copper sulphate is a core electroplating-bath chemical and this is a nationwide plating-chemicals distributor. Downgraded because their published catalog lists nickel/chromium/tin/zinc salts but does NOT explicitly show copper sulphate; fit is inferred, not confirmed",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Kissan Ghar",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Pakistan (agri e-commerce, Punjab-focused)",
+      "dest_iso": "PK",
+      "phones": [
+        "+92 309 9878757"
+      ],
+      "email": "",
+      "website": "https://www.kissanghar.pk",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Agri e-commerce distributor selling clearly-labelled IM"
+      ],
+      "business": "Agri e-commerce distributor selling clearly-labelled IMPORTED copper sulphate pentahydrate (Neela Thotha) in 1kg & 25kg packs, bulk on WhatsApp request",
+      "why_fit": "Genuinely markets 'Imported' copper sulphate pentahydrate and buys bulk to resell to farmers - a real buy-side distributor of this exact product, but at agri-retail scale and likely sourcing via local importers rather than importing containers directly",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Pakistan Chemical",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Karachi",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "https://www.pakistanchemical.com/product/copper-sulphate-copperiisulfate/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Chemical supplier offering 99% food/feed-grade copper s"
+      ],
+      "business": "Chemical supplier offering 99% food/feed-grade copper sulphate pentahydrate (CAS 7758-99-8)",
+      "why_fit": "Deals in the exact product, but verification suggests this is SUPPLY-side (already sells it, possibly repacks or manufactures) rather than a clear buyer; treat as a competitor/possible bulk-buyer only if confirmed to import & repack. Ambiguous",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Swat Agro Chemicals",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Mingora, Swat (KPK)",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Agrochemical marketer of Cobox copper oxychloride 50% W"
+      ],
+      "business": "Agrochemical marketer of Cobox copper oxychloride 50% WP (product actually manufactured by Spiess Urania, Germany, and only distributed locally)",
+      "why_fit": "Copper-fungicide brand, but the copper product is copper OXYCHLORIDE imported as finished German material - not copper sulphate and not formulated in-house. Link to copper sulphate is speculative. Downgraded",
+      "linkedin": "https://pk.linkedin.com/company/swat-agro-chemicals",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Tara Group of Pakistan",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Lahore",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Agrochemical formulator; markets Coopix (copper oxychlo"
+      ],
+      "business": "Agrochemical formulator; markets Coopix (copper oxychloride 50% WP) and other fungicides/pesticides",
+      "why_fit": "Formulates a copper-based fungicide, so plausibly buys copper raw materials - but the product is copper OXYCHLORIDE, not copper sulphate (oxychloride is typically not made from sulphate). Speculative fit; no copper-sulphate purchasing evidence found",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Evyol Group (Combagro / Ag Pharma)",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Lahore",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "https://www.evyolgroup.com",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Large agrochemical group (est. 2004; 5 companies incl. "
+      ],
+      "business": "Large agrochemical group (est. 2004; 5 companies incl. Kanzo Ag, AgPharma, Combagro); markets Thiolux copper oxychloride 50% WP + broad crop-protection portfolio",
+      "why_fit": "Credible, well-organized national agrochem group with a copper-fungicide line - but again the copper product is oxychloride, not sulphate, so copper-sulphate demand is speculative. Kept for company credibility/distribution reach, rated low on exact-product fit",
+      "linkedin": "https://pk.linkedin.com/company/evyolgroup",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "J K Enterprises",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Karachi",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "http://jkenterprises.com.pk",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Laboratory & scientific chemical supplier stocking copp"
+      ],
+      "business": "Laboratory & scientific chemical supplier stocking copper(II) sulfate pentahydrate (crystalline, blue) and lab reagents",
+      "why_fit": "Imports/distributes lab-grade chemicals including the exact product, so genuinely buy-side - but volumes are lab/reagent scale, not industrial. Low commercial upside",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Sarim & Co.",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Bahawalpur",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Agrochemical/pesticide manufacturer & technical-product"
+      ],
+      "business": "Agrochemical/pesticide manufacturer & technical-products company (est. 2018)",
+      "why_fit": "Generic pesticide/technical-products manufacturer; no copper product (sulphate or otherwise) found in verification. Retained only as a weak sector-adjacent lead - purely speculative",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Farzam Group",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Turkey (city not stated)",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "www.tradewheel.com",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Copper sulphate pentahydrate; stated requirement 1,000 "
+      ],
+      "wants": "Copper sulphate pentahydrate; stated requirement 1,000 tons, annual purchase volume 4,000 tons",
+      "posted": "2025-12-30",
+      "source_url": "https://www.tradewheel.com/buyers/copper-sulphate/",
+      "role": "Not found",
+      "linkedin": "Not found",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Saglik Bilimleri Universitesi - Gulhane Saglik Bilimleri Fakultesi (Beslenme ve Diyetetik Bolumu)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Ankara",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "gsbf.sbu.edu",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Bakir (II) Sulfat Pentahidrat listed among 193 laborato"
+      ],
+      "wants": "Bakir (II) Sulfat Pentahidrat listed among 193 laboratory chemicals/consumables for 2025-2026 guz donemi lab uygulamalari; laboratory (gram/bottle) quantity, not bulk",
+      "posted": "2025-11 (birim fiyat teklif deadline 12.11.2025)",
+      "source_url": "https://gsbf.sbu.edu.tr/uploads/ffab63a7-7faa-4f63-e333-3a0814ca89af/gsbf_beslenme_bolumu_2025_2026_yili_guz_donemi_laboratuvar_uygulamalari_malzeme_alim_si_2_1.pdf",
+      "role": "Not found (faculty satin alma birimi)",
+      "linkedin": "Not applicable",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Isik Kimya (Isik Kimya Sanayi ve Ticaret)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Istanbul (Anatolian side, 0216)",
+      "dest_iso": "TR",
+      "phones": [
+        "+90 216 321 10 10"
+      ],
+      "email": "",
+      "website": "https://www.isikkimya.com.tr/tr/isik-kimya-urundetay/85/bakir-sulfat",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Chemical importer and distributor ('Kimyevi Madde Ithal"
+      ],
+      "business": "Chemical importer and distributor ('Kimyevi Madde Ithalati / Solvent Distributorlugu'); supplies industrial chemicals in bags, IBC and tanker quantities",
+      "why_fit": "Self-describes as an importer/distributor (not a producer) and already lists copper sulphate on its catalog - pentahydrate, monohydrate and gioztasi, CAS 7758-99-8. An importer already carrying this exact product is the most natural buy-side target for a competitively priced Iranian supply.",
+      "linkedin": "Not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Hektas Ticaret T.A.S.",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Gebze / Kocaeli",
+      "dest_iso": "TR",
+      "phones": [
+        "0262 751 14 12"
+      ],
+      "email": "info@hektas.com.tr",
+      "website": "https://hektas.com.tr/adreslerimiz",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Turkey's leading crop-protection (agrochemical) manufac"
+      ],
+      "business": "Turkey's leading crop-protection (agrochemical) manufacturer; produces copper fungicides 'Hektas Bordo 20 WP' and 'Hektas Bordo Flowable' (Bordeaux mixture)",
+      "why_fit": "Bordeaux mixture = copper (II) sulphate + slaked lime, so Hektas is a large-volume industrial CONSUMER of copper sulphate as raw material for its bordo products. A publicly listed, reachable end-user that buys copper sulphate in bulk (may currently source domestically - price is the lever).",
+      "linkedin": "https://www.linkedin.com/company/hektas",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Agrodal Tarim Kimya Ithalat Ihracat San. Tic. Ltd. Sti.",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Elbistan / Kahramanmaras",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.agrodaltarim.com.tr/index.php?route=information/contact",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Agricultural-chemicals importer/wholesaler (pesticides,"
+      ],
+      "business": "Agricultural-chemicals importer/wholesaler (pesticides, fungicides, fertilizers, seeds); explicitly 'Ithalat Ihracat' (import-export)",
+      "why_fit": "Agri-input importer/distributor that already carries goztasi (copper sulphate, incl. 20 kg / bulk packs). An import-oriented agri-chemical trader is a plausible buyer of Iranian copper sulphate for its fungicide/bordo line.",
+      "linkedin": "Not found (Instagram/Facebook @agrodaltarim)",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Brenntag Turkiye (Brenntag Kimya)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Istanbul",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.brenntag.com/tr-tr/urunler/bakir-sulfat.html",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Local arm of the world's largest chemical distributor; "
+      ],
+      "business": "Local arm of the world's largest chemical distributor; full-line industrial & specialty chemical distribution",
+      "why_fit": "Openly lists/distributes copper sulphate (CAS 7758-98-7) in Turkiye across grades. A major distributor that resells copper sulphate and can absorb bulk volumes; would consider a competitive alternative source. Established supply chains make it price-driven rather than a guaranteed switch.",
+      "linkedin": "https://www.linkedin.com/company/brenntag",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Konya Buyuksehir Belediyesi - Park ve Bahceler Dairesi Baskanligi",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Konya",
+      "dest_iso": "TR",
+      "phones": [
+        "444 55 42"
+      ],
+      "email": "",
+      "website": "https://www.konya.bel.tr/birim/park-ve-bahceler-dairesi-baskanligi",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Metropolitan municipality parks & gardens department; m"
+      ],
+      "business": "Metropolitan municipality parks & gardens department; maintains ponds/pools and green areas",
+      "why_fit": "Recurring institutional END-USER: runs an annual open tender for granular chlorine + copper (II) sulphate pentahydrate (~7 tons/yr copper sulphate) for algae control / pool treatment (confirmed IKN 2022/242884, 14.04.2022; recurs yearly). CAVEAT: procured via EKAP as 'yerli istekli' (domestic-bidder-only) tenders, so an Iranian exporter can only supply INDIRECTLY through the Turkish company that wins the tender - hence the low rating.",
+      "linkedin": "Not applicable (public body)",
       "needs_enrichment": false,
       "bulk_likely": false
     }

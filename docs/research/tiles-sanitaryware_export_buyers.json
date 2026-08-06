@@ -1,9 +1,9 @@
 {
   "source": "verified-hunt-2025+",
-  "total": 6,
-  "with_phone": 0,
-  "with_email": 1,
-  "with_website": 3,
+  "total": 57,
+  "with_phone": 19,
+  "with_email": 12,
+  "with_website": 53,
   "buyers": [
     {
       "company": "Housing Authority of the City of Los Angeles (HACLA)",
@@ -128,6 +128,1198 @@
       "wants": "Supply and delivery of floor tiles at Tshiulungoma Stores (municipal tender ref N24/2025-2026)",
       "posted": "FY 2025/2026 (ref N24/2025-2026)",
       "source_url": "https://www.tenders-sa.org/sa-tenders/tender/n24-2025-2026-supply-and-delivery-of-floor-tiles-at-tshiulungoma-stores-cmpr2fqse0e53kncw3hmazjoe",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "sana company",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Erbil (Arbil)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "ceramics-tiles.htm",
+      "match_score": 82,
+      "verdict": "confirmed — re-verified live on the TradeKey Iraq page: date (Jun 21 2026), Erbil location, and buy-side wording ('Buy chinan tiles') all match. Buyer identity is an anonymous platform handle, so treat as first-contact only.",
+      "tier": "active",
+      "buys": [
+        "Chinese ceramic tiles (buy offer) — explicitly wants ch"
+      ],
+      "wants": "Chinese ceramic tiles (buy offer) — explicitly wants cheap imported tile, so Iran-priced tile is a direct substitute",
+      "posted": "2026-06-21",
+      "source_url": "https://importer.tradekey.com/iraq/ceramics-tiles.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Alisalam",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Iraq (unspecified)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "ceramics-tiles.htm",
+      "match_score": 82,
+      "verdict": "confirmed — re-verified live on the TradeKey Iraq page: date (Jul 14 2026), Iraq location, concrete spec ('Buy 20x60 cm WALL TILES OFFER'). Anonymous handle; unverified identity.",
+      "tier": "active",
+      "buys": [
+        "Wall tiles, 20x60 cm (buy request)"
+      ],
+      "wants": "Wall tiles, 20x60 cm (buy request)",
+      "posted": "2026-07-14",
+      "source_url": "https://importer.tradekey.com/iraq/ceramics-tiles.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Ballacompany",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Iraq (unspecified)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "ceramics-tiles.htm",
+      "match_score": 82,
+      "verdict": "confirmed — re-verified live on the TradeKey Iraq page: date (Jul 04 2026), Iraq, buy-side ('Buy About porcelain floors tiles', HS 6907 match). Anonymous handle; unverified identity.",
+      "tier": "active",
+      "buys": [
+        "Porcelain floor tiles (buy request)"
+      ],
+      "wants": "Porcelain floor tiles (buy request)",
+      "posted": "2026-07-04",
+      "source_url": "https://importer.tradekey.com/iraq/ceramics-tiles.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Alpasha",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Iraq (unspecified)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "ceramics-tiles.htm",
+      "match_score": 82,
+      "verdict": "confirmed — re-verified live on the TradeKey Iraq page: date (Jul 02 2026), Iraq, buy-side, states quarterly recurring demand. Attractive if real, but identity is an unverified handle and request mixes tiles + doors.",
+      "tier": "active",
+      "buys": [
+        "Ceramic tiles and doors (buying frequency: quarterly)"
+      ],
+      "wants": "Ceramic tiles and doors (buying frequency: quarterly)",
+      "posted": "2026-07-02",
+      "source_url": "https://importer.tradekey.com/iraq/ceramics-tiles.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "omran mosa",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Iraq (unspecified)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "ceramics-tiles.htm",
+      "match_score": 82,
+      "verdict": "plausible — posting re-verified on the TradeKey Iraq page (date Jul 26 2026, Iraq, 'Required Ceramics Tiles'), but it is the thinnest/most generic of the set with an unverified personal-name handle and high spam risk.",
+      "tier": "active",
+      "buys": [
+        "Ceramic tiles (buy request)"
+      ],
+      "wants": "Ceramic tiles (buy request)",
+      "posted": "2026-07-26",
+      "source_url": "https://importer.tradekey.com/iraq/ceramics-tiles.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Ashtti Ceramics (Ashtti General Trading Co. Ltd)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad (Al-Mansour, 14 Ramadan St) + Basra branch",
+      "dest_iso": "IQ",
+      "phones": [
+        "07732020270"
+      ],
+      "email": "info@ashtti.com",
+      "website": "https://ashtti.com/",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Multi-brand importer/distributor of ceramic & porcelain"
+      ],
+      "business": "Multi-brand importer/distributor of ceramic & porcelain tiles AND sanitary ware; carries international brands (Duravit, Grohe, Mainzu, idevit, STN, Prissmacer, Vitacer, Eco Ceramic, Venezia). ~$7.7M revenue (RocketReach).",
+      "why_fit": "Confirmed importer of exactly this category (tiles + sanitaryware) with an active Baghdad+Basra operation; already stocks Spanish/Turkish/German lines, so an Iran-sourced value tier is a natural addition. Fully reachable (phone, email, LinkedIn).",
+      "linkedin": "https://www.linkedin.com/company/ashtti-ceramics/",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Infinity Ceramic",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Karbala (HQ, Al Hoor Road) + Najaf + Babylon",
+      "dest_iso": "IQ",
+      "phones": [
+        "+964-7717359296"
+      ],
+      "email": "info@infinity-ceramic.com",
+      "website": "https://infinity-ceramic.com/",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Large ceramic & porcelain tile plus sanitary-ware distr"
+      ],
+      "business": "Large ceramic & porcelain tile plus sanitary-ware distributor/retailer (wash basins, WCs, faucets, cabinets); imports from international agencies; supplies major projects incl. Karbala International Airport.",
+      "why_fit": "Verified as one of the largest ceramics+sanitaryware importers in Iraq, buying this exact category at volume for the central/south market — prime candidate for an Iran-sourced supply line given proximity and price.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Palazzo Company (Palazzo Iraq)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Mosul + Erbil showrooms",
+      "dest_iso": "IQ",
+      "phones": [
+        "+964-750-8223311"
+      ],
+      "email": "algailani@palazzoiraq.com",
+      "website": "https://palazzoiraq.com/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Importer/distributor (est. 2017) of porcelain, ceramics"
+      ],
+      "business": "Importer/distributor (est. 2017) of porcelain, ceramics, sanitary ware and wallpaper; imports from India (Asia Pacific), Italy and Turkey.",
+      "why_fit": "Confirmed importer of porcelain + ceramics + sanitaryware internationally; north-Iraq footprint near Iran land routes makes an Iranian supply line logistically attractive. Reachable via WhatsApp/email. Held at 4 (mid-size, two showrooms).",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Al-Taiboon (Altaibon Group)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad (2 showrooms, 3 warehouses)",
+      "dest_iso": "IQ",
+      "phones": [
+        "+964-7707760303"
+      ],
+      "email": "info@altaibon.com",
+      "website": "https://www.altaibon.com/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Importer/distributor of sanitary ware (founded 1990); d"
+      ],
+      "business": "Importer/distributor of sanitary ware (founded 1990); distributes 10+ international/European brands to 60+ agents nationwide.",
+      "why_fit": "Confirmed large-scale sanitaryware importer with national distribution — clear buy-side match on the sanitaryware side; skews to premium European brands, so Iranian product fits a value line rather than their core.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "BuildTech Sanitary Ware & Decor",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Erbil (HQ) + Duhok, Sulaymaniyah, Mosul branches",
+      "dest_iso": "IQ",
+      "phones": [
+        "00964-7501136936"
+      ],
+      "email": "",
+      "website": "https://buildtech-iraq.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Sanitary ware and bathroom decor/furniture importer-ret"
+      ],
+      "business": "Sanitary ware and bathroom decor/furniture importer-retailer (founded 2011); authorized Grohe agent, supplies multiple international construction brands across northern Iraq.",
+      "why_fit": "Confirmed active sanitaryware importer with real multi-branch northern footprint; premium/branded positioning means Iranian budget product is a partial (value-tier) fit. Easily reachable.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Merza Company (Al-Marza)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad + Najaf",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "https://apps.apple.com/us/app/merza-company/id1561502188",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Importer of sanitary materials: PP-R pipe systems, mixe"
+      ],
+      "business": "Importer of sanitary materials: PP-R pipe systems, mixers, water pumps/heaters, ceramic sinks and bathroom accessories; exclusive Iraq agent for numerous international brands.",
+      "why_fit": "Confirmed importer of ceramic sinks and sanitary/bathroom fittings (overlaps our sanitaryware side), but is plumbing/fittings-weighted rather than tile-focused, so a partial fit.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "SPARK Co. Ltd for General Trading",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Erbil (Shorsh St, VitrA showroom building)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "https://spark-iraq.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "General trading company (est. 2005) recorded in customs"
+      ],
+      "business": "General trading company (est. 2005) recorded in customs/trade-flow data (Volza: 21 shipments; D&B profile) as an active sanitary-ware importer; operates a VitrA sanitaryware showroom in Erbil.",
+      "why_fit": "Import activity confirmed via customs records and a branded VitrA showroom — active sanitaryware buy-side is verified. Downgraded because it skews to premium Turkish (VitrA) branded product, a partial fit for Iranian value goods.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Zahrat Almosul (Zahra Almosul) General Trading Ltd",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Mosul (52 Nineveh St, Sector 220)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "https://www.go4worldbusiness.com/buyers/iraq/ceramic-tile.html",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "General trading importer seeking suppliers of ceramic t"
+      ],
+      "business": "General trading importer seeking suppliers of ceramic tile, marble and granite (also construction machinery/auto-farm equipment).",
+      "why_fit": "Explicit buy-side interest in ceramic tile from a Mosul importer near Iran supply routes, but the listing is a generalist, older go4WorldBusiness supplier-search entry with no confirmed active tile import operation. Downgraded to 2.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Glotra Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [
+        "+971-4-4521888"
+      ],
+      "email": "",
+      "website": "porcelain-tiles.htm",
+      "match_score": 82,
+      "verdict": "confirmed — TradeKey page shows 'Glotra Trading LLC, Jun 12 2026, Looking for Porcelain (container qty)'; entity independently verified as a Business Bay building-materials trader (ATN, HiDubai), phone matches directory",
+      "tier": "active",
+      "buys": [
+        "Porcelain tiles, container quantity"
+      ],
+      "wants": "Porcelain tiles, container quantity",
+      "posted": "2026-06-12",
+      "source_url": "https://importer.tradekey.com/uae/porcelain-tiles.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "VVG General Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 4 2567973"
+      ],
+      "email": "",
+      "website": "porcelain-tiles.htm",
+      "match_score": 82,
+      "verdict": "confirmed — TradeKey page shows 'VVG LLC, Apr 03 2026, Required Porcelain Tiles, monthly'; entity independently verified as a Deira building-materials supplier (yellowpages.ae, busydubai), phone/PO Box match",
+      "tier": "active",
+      "buys": [
+        "Porcelain tiles from quality suppliers (monthly / recur"
+      ],
+      "wants": "Porcelain tiles from quality suppliers (monthly / recurring requirement)",
+      "posted": "2026-04-03",
+      "source_url": "https://importer.tradekey.com/uae/porcelain-tiles.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Royal Star General Trading Co (LLC)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "porcelain-tiles.htm",
+      "match_score": 82,
+      "verdict": "confirmed — TradeKey page shows 'Royal Star General Trading Co LLC, Jul 21 2026, Looking for Porcelain Tiles'; entity independently verified (sell147, dcciinfo) as a Dubai trader already dealing tiles + sanitaryware + Grohe fittings — strong product fit",
+      "tier": "active",
+      "buys": [
+        "Porcelain tiles (already trades tiles, sanitaryware, Gr"
+      ],
+      "wants": "Porcelain tiles (already trades tiles, sanitaryware, Grohe fittings, bathroom accessories)",
+      "posted": "2026-07-21",
+      "source_url": "https://importer.tradekey.com/uae/porcelain-tiles.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "ARD AL RAKHAA General Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [
+        "+971-4-2243806"
+      ],
+      "email": "",
+      "website": "sanitary-ware.htm",
+      "match_score": 82,
+      "verdict": "confirmed — TradeKey page shows 'ARD AL RAKHAA GENERAL TRADING LLC, Apr 23 2026, Enquiry for Sanitary wares, Bathroom & Kitchen fittings'; entity independently verified as a Deira/Al Rigga distributor-wholesaler (HiDubai, ATN, Facebook)",
+      "tier": "active",
+      "buys": [
+        "Sanitary wares, bathroom & kitchen fittings and accesso"
+      ],
+      "wants": "Sanitary wares, bathroom & kitchen fittings and accessories",
+      "posted": "2026-04-23",
+      "source_url": "https://importer.tradekey.com/uae/sanitary-ware.htm",
+      "role": "",
+      "linkedin": "https://www.facebook.com/ArdAlrkakhaaGTllc/",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Grankraft Construction LLC (Grankraft Industries / formerly Dubai Metal Industries)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "ceramic-tile.htm",
+      "match_score": 82,
+      "verdict": "plausible — TradeKey page confirms 'Grankraft Construction LLC, Jun 22 2026, I want company to supply Ceramic tiles' and the entity is a real Dubai architectural/metalworks/fit-out firm (D&B, own site, address+LinkedIn match); but tiles are peripheral to a facade/metalworks business and the named procurement contact could not be verified",
+      "tier": "active",
+      "buys": [
+        "Ceramic tiles supply (for bespoke architectural / fit-o"
+      ],
+      "wants": "Ceramic tiles supply (for bespoke architectural / fit-out project works)",
+      "posted": "2026-06-22",
+      "source_url": "https://importer.tradekey.com/uae/ceramic-tile.htm",
+      "role": "Aron Tom Alex — Procurement Engineer (NOT independently verified)",
+      "linkedin": "https://www.linkedin.com/company/dubai-metal-industries-l.l.c.",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Graniti Building Materials LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [
+        "+971-4-3411677"
+      ],
+      "email": "info@granitiuae.com",
+      "website": "https://www.granitiuae.com/",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Importer/distributor and showroom retailer of sanitary "
+      ],
+      "business": "Importer/distributor and showroom retailer of sanitary ware, porcelain and ceramic tiles; main showroom on Sheikh Zayed Rd plus Deira branch, sources from multiple origins",
+      "why_fit": "Explicitly a 'leading Sanitary Ware and Tiles supplier in Dubai' that imports and resells exactly this product category; direct email + WhatsApp make it immediately reachable for an Iran-sourced offer",
+      "linkedin": "https://ae.linkedin.com/company/graniti-building-materials",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Mohd Al Qama Building Materials Trading LLC (Al Qama Ceramics)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 4 2543507"
+      ],
+      "email": "",
+      "website": "https://www.alqamaceramics.com/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Multi-branch building-materials supplier (8+ Dubai bran"
+      ],
+      "business": "Multi-branch building-materials supplier (8+ Dubai branches + warehouse, 20,000+ SKUs); authorized dealer for RAK Ceramics, KLUDI RAK, Jaquar, Bagnodesign; tiles, sanitaryware, plumbing",
+      "why_fit": "Established volume distributor of tiles + sanitaryware already sourcing international brands; an Iran-origin porcelain/sanitaryware line slots into existing purchasing, though core supply is tied to authorized brands",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Bin Dasmal Ceramics (Bin Dasmal Group)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai / Al Ain",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://www.bindasmalgroup.com/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Tile and sanitaryware distributor across Dubai and Al A"
+      ],
+      "business": "Tile and sanitaryware distributor across Dubai and Al Ain; GVT floor tiles, ceramic wall tiles, outdoor tiles from multiple origins; retail + trade/project accounts; d3 showroom",
+      "why_fit": "Explicitly sources tiles 'from multiple origins' and runs developer project accounts — a natural buyer of competitively priced Iran-sourced porcelain/ceramic",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Meraki Ceramics",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Sharjah",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 6 510 0968"
+      ],
+      "email": "",
+      "website": "https://tiles.ae/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Tiles and sanitaryware purveyor for project + retail; p"
+      ],
+      "business": "Tiles and sanitaryware purveyor for project + retail; porcelain, wall, wood-effect tiles sourced from Europe and Asia; showroom in Sharjah Building Materials Complex / Industrial Area 4",
+      "why_fit": "Product range is precisely ceramic/porcelain tiles + sanitaryware, all imported for resale; explicitly multi-origin sourcing so an Iran line is a direct fit; reachable by phone/website",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Emirates Tiles and Sanitaryware",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Deira)",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Deira trader importing Indian and Turkish vitrified til"
+      ],
+      "business": "Deira trader importing Indian and Turkish vitrified tiles plus ceramic wall tiles and sanitaryware",
+      "why_fit": "Already imports foreign-origin vitrified/ceramic tiles + sanitaryware for the UAE market; Iran origin is a direct alternative supply line — clear import fit, though no website weakens reachability",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Mayyas Interio Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai / Sharjah",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://mayyas.ae/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Supplier since 2001 of porcelain, ceramic and mosaic ti"
+      ],
+      "business": "Supplier since 2001 of porcelain, ceramic and mosaic tiles, slabs, sanitary ware and finishing products; DH Square, Al Quoz Industrial Area 1, plus Sharjah",
+      "why_fit": "Long-established tile/slab importer-distributor whose catalogue is exactly porcelain/ceramic + sanitaryware; serves contractors/designers, open to new supply origins",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "MAAT — Memon Abdul Aziz Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://maat.ae/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Sanitary ware and electrical supplier/distributor since"
+      ],
+      "business": "Sanitary ware and electrical supplier/distributor since 1987; Al Sabkha Rd, Deira; 100+ staff, wholesale across UAE/ME/Africa",
+      "why_fit": "Long-established dedicated sanitaryware distributor buying for resale; direct fit for Iran-sourced sanitary ware (basins, WCs, fittings), though half the business is electrical",
+      "linkedin": "https://www.linkedin.com/company/memon-abdul-aziz-trading-co.-l.l.c",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Naja Sanitary Ware Trading Co LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Sharjah",
+      "dest_iso": "AE",
+      "phones": [
+        "06-5732337"
+      ],
+      "email": "",
+      "website": "https://www.naja.ae/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Dedicated sanitaryware + plumbing wholesaler/retailer s"
+      ],
+      "business": "Dedicated sanitaryware + plumbing wholesaler/retailer since 1986; 4 outlets (Al Ghuwair + Industrial Area 3) plus warehouse in Industrial Area 10",
+      "why_fit": "Specialist sanitaryware wholesaler with warehousing, close to the Iran trade lanes; a focused buy-side reseller likely to source competitively priced sanitary ware",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Danube Home (Danube Group)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://www.danubehome.com/ae/en/c/tiles-and-bricks",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Large home-improvement retailer/importer with stores ac"
+      ],
+      "business": "Large home-improvement retailer/importer with stores across UAE; sells ceramic/porcelain tiles, bricks and sanitaryware; nationwide delivery",
+      "why_fit": "High-volume importer-retailer of tiles + bathroom products; plausible bulk buyer, but large centralized procurement with own-brand lines makes it harder to penetrate for a new broker",
+      "linkedin": "https://www.linkedin.com/company/danube-group",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Al Maha Building Materials",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "http://www.mahabldg.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Supplier of premium tiles and sanitary ware plus genera"
+      ],
+      "business": "Supplier of premium tiles and sanitary ware plus general building materials since 2009",
+      "why_fit": "Sells both tiles and sanitaryware to the UAE trade; a reseller that could add an Iran-origin line, but a smaller/less-specialized profile",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Royal Allied Trading",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "sales@royalallied.ae",
+      "website": "https://royalallied.ae/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Sanitary ware, bathroom fittings and plumbing-material "
+      ],
+      "business": "Sanitary ware, bathroom fittings and plumbing-material supplier in Dubai; 20+ brand partnerships",
+      "why_fit": "Dedicated sanitaryware/bathroom-fittings reseller sourcing product for the UAE market — fit for Iran-sourced sanitary ware; brand-partner model dilutes likelihood somewhat",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "MA General Trading",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Abu Dhabi",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://matrading.ae/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Abu Dhabi wholesaler/distributor with 30,000+ SKUs acro"
+      ],
+      "business": "Abu Dhabi wholesaler/distributor with 30,000+ SKUs across many consumer categories; distributes sanitary ware brands (Valadares, Pentagono) among general goods",
+      "why_fit": "Imports/distributes some sanitary ware brands in Abu Dhabi, but sanitaryware is one small line in a broad consumer-goods portfolio — weaker sector focus",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Samolet Group (ГК Самолет / Самолет Девелопмент)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "partner.samolet.ru",
+      "match_score": 82,
+      "verdict": "plausible",
+      "tier": "active",
+      "buys": [
+        "Keramogranit / porcelain stoneware for large residentia"
+      ],
+      "wants": "Keramogranit / porcelain stoneware for large residential fit-out, finish standard 'Комфорт 5.0'; recurring high volume. NOTE: the cited TradeKey RFQ (700k units/yr, 30x30/60x60/120x60, PEI 3-5, R9-R11, T/T) has a MASKED buyer - 'Samolet' is inferred, not shown on the listing.",
+      "posted": "TradeKey RFQ dated 10 Jul 2026; independently, Samolet's own keramogranit supplier prequalification ('Комфорт 5.0') had sample collection due ~14 May 2026",
+      "source_url": "https://partner.samolet.ru/ (Samolet supplier tenders, S.Tender) - masked/inferred TradeKey lead: https://importer.tradekey.com/buyoffer/Ceramic-Tile-3549209.html",
+      "role": "Procurement / снабжение - consolidated finishing-materials (keramogranit) supplier prequalification; no named individual public",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Mironicheva (buyer surname; company undisclosed - finder's label 'Центр сантехники / Centr santehniki' is NOT shown on the listing)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Russia (city not disclosed)",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "want-to-purchase-ceramic-tile-3289621.html",
+      "match_score": 82,
+      "verdict": "plausible",
+      "tier": "active",
+      "buys": [
+        "Ceramic tile (finished floor/wall tile); quantity not s"
+      ],
+      "wants": "Ceramic tile (finished floor/wall tile); quantity not stated",
+      "posted": "03 Jul 2026 (recent 7-digit TradeKey ID 3289621 - consistent with a genuine 2026 post)",
+      "source_url": "https://importer.tradekey.com/buyoffer/Want-To-Purchase-Ceramic-Tile-3289621.html",
+      "role": "Buyer (title not shown); named entity is only a surname",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "ГАУЗ РКПБ им. акад. В.М. Бехтерева - Zelenodolsk PND branch (Bekhterev Republican Psychiatric Hospital)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Zelenodolsk, Tatarstan",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "rostender.info",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Supply of ceramic tile ('плитка керамическая в 2026 г.'"
+      ],
+      "wants": "Supply of ceramic tile ('плитка керамическая в 2026 г.'); ~42,000 RUB (~$420) - tiny single lot. CAVEAT: 44-FZ tender needs a Russian supplier / import-of-record + certification; not directly sellable by an Iran exporter (local partner only).",
+      "posted": "Published 06 Aug 2026; bids accepted until 17 Aug 2026 (verified ACTIVE)",
+      "source_url": "https://rostender.info/region/tatarstan-respublika/zelenodolsk/94179134-tender-postavka-plitka-keramicheskaya-v-2026-g-dlya-nujd-zelenodolskogo-pnd-filiala-gauz-rkpb-im-akad-vm-behtereva",
+      "role": "State budget institution - contract service (44-FZ)",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "State capital-construction customer, Bashkortostan (keramogranit tender, object 'д.33', Ufa)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Ufa, Bashkortostan",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "rostender.info",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Supply of keramogranit for interior finishing; ~2,160,8"
+      ],
+      "wants": "Supply of keramogranit for interior finishing; ~2,160,800 RUB (~$21.6k). CAVEAT: 44-FZ tender = domestic-supplier / import-of-record rules; accessible only via a Russian intermediary. Bid window essentially expired.",
+      "posted": "Published 05 Aug 2026; bids CLOSE 07 Aug 2026 09:00 MSK (verified - window basically over)",
+      "source_url": "https://rostender.info/region/bashkortostan-respublika/94170643-tender-postavka-keramogranitnoj-plitki-dlya-vnutrennej-otdelki-d-33-g-ufa",
+      "role": "State capital-construction procurement (44-FZ)",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "A-Ceramica (А-Керамика)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow (MKAD 51 km) + 13 own showrooms & 52 partner showrooms across Russia",
+      "dest_iso": "RU",
+      "phones": [
+        "8-800-775-26-72"
+      ],
+      "email": "info@a-ceramica.ru",
+      "website": "https://a-ceramica.ru/strana/iran/",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Wholesale importer of ceramic tile & porcelain"
+      ],
+      "business": "Wholesale importer of ceramic tile & porcelain",
+      "why_fit": "CONFIRMED direct importer that explicitly imports tile from Iran (alongside Spain/Italy/India), with its own showroom network - a running Iran-import channel that needs ongoing Iranian supply. Best-fit target for an Iran tile broker.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "RusPlitka (РусПлитка)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 495 229-44-20"
+      ],
+      "email": "info@rusplitka.ru",
+      "website": "https://www.rusplitka.ru/catalog/keramogranit/land-iran/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Tile & porcelain retailer/wholesaler since 2003 (showro"
+      ],
+      "business": "Tile & porcelain retailer/wholesaler since 2003 (showroom, cutting, 3D design, sampling)",
+      "why_fit": "Verified large standing Iranian assortment (Eurotile Ceramica, Goldis, Sina Tile, Pardis, Persepolis, Novin Ceram, Fakhar). Clearly committed to Iranian tile, but operates as a reseller/distributor (direct import unconfirmed) - 4 not 5.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Plitka from Iran (Плитка из Ирана)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow / Moscow Oblast (ships Russia-wide)",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://plitkafromiran.ru/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Specialist seller of Iranian ceramic tile & porcelain ("
+      ],
+      "business": "Specialist seller of Iranian ceramic tile & porcelain (wholesale + retail)",
+      "why_fit": "Whole business is Iranian tile (verified live site: 'Премиальная иранская плитка и керамогранит', wholesale+retail of Iranian collections). Direct-import status and scale not confirmed, so 4.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Plitka Vsem (Плитка Всем)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow (Novomoskovsky AO, 41 km MKAD)",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 495 727-38-51"
+      ],
+      "email": "",
+      "website": "https://plitka-vsem.ru/catalog/plitka_keramogranit/strana_iran/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Tile store + ~200 m2 warehouse, ~15 years in market"
+      ],
+      "business": "Tile store + ~200 m2 warehouse, ~15 years in market",
+      "why_fit": "Verified Iranian assortment (Eurotile, Fakhar, Hafez, ITC, MG Ceramic, Sina Tile, Novin Ceram, Goldis) - established Iranian-tile reseller, but a small retailer sourcing domestically. 3.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "keramogranit.ru",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://www.keramogranit.ru/catalog/keramogranit/iranskaya-plitka/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Online tile/porcelain store with a dedicated Iranian ca"
+      ],
+      "business": "Online tile/porcelain store with a dedicated Iranian catalogue",
+      "why_fit": "Runs a standing priced 'Иранская плитка / керамогранит' catalogue - an active reseller of Iranian tile, but reseller not importer. 3.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Plitka-SDVK.ru",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://plitka-sdvk.ru/Iranskaya_plitka/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Large online tile retailer (part of SDVK sanitaryware/t"
+      ],
+      "business": "Large online tile retailer (part of SDVK sanitaryware/tile group)",
+      "why_fit": "Maintains an Iranian-tile section (incl. Sina Tile); big multi-brand retailer already carrying Iranian product but sources domestically - reseller, 3.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "PlitkaOpt (ПлиткаОпт.ру)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Elektrougli, Moscow Oblast",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 499 455-17-32"
+      ],
+      "email": "info@plitkaopt.ru",
+      "website": "https://plitkaopt.ru/catalog/keramogranit/iran/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Wholesale tile/porcelain supplier with dealer cabinet ("
+      ],
+      "business": "Wholesale tile/porcelain supplier with dealer cabinet ('Кабинет дилера')",
+      "why_fit": "Wholesale/dealer model leaves room to add Iranian lines, BUT verification shows only ONE Iranian brand (TacKeram, a single item) currently listed - thin Iranian presence, downgraded from 4 to 3.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "MOSPLITKA-OPT (МОСПЛИТКА-ОПТ)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Podolsk, Moscow region",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 495 104-70-80"
+      ],
+      "email": "opt@mosplitka.ru",
+      "website": "https://opt.mosplitka.ru/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Wholesale distributor of ceramic tile & porcelain, ~25 "
+      ],
+      "business": "Wholesale distributor of ceramic tile & porcelain, ~25 years in market",
+      "why_fit": "Right sector and scale, but NO Iranian sourcing evidence - a cold prospect to pitch, not a proven Iran buyer. 2.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Grescom (Греском)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://grescom.ru/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Wholesale & retail porcelain/ceramic tile, Russia-wide "
+      ],
+      "business": "Wholesale & retail porcelain/ceramic tile, Russia-wide delivery",
+      "why_fit": "Correct product and buyer type, but no Iranian tie confirmed and only lightly verified - cold sector-fit prospect. 2.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "CeramMax (ЦерамМакс)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://cerammax.ru/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Wholesale/retail porcelain (keramogranit) supplier"
+      ],
+      "business": "Wholesale/retail porcelain (keramogranit) supplier",
+      "why_fit": "Real site, correct product category, but no Iranian brands confirmed - cold sector-fit prospect. 2.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Ural-K (Урал-К)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Yekaterinburg (serves Chelyabinsk, Perm, Tyumen, Ufa)",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://supl.biz/en/keramicheskaya-plitka-kafel-supplierscategory9445/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Regional wholesale of ceramic tile & porcelain since 20"
+      ],
+      "business": "Regional wholesale of ceramic tile & porcelain since 2005",
+      "why_fit": "Useful non-Moscow regional channel and right sector, but only sourced from a supl.biz aggregator page (no confirmed company site/direct contact captured) and no Iranian tie - weakest of the set. 2.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "albirooni (Al-Biruni) — buyer identity gated on TradeKey, unverified",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kabul; delivery to Hairatan / Kunduz (northern Afghanistan)",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "hand-washes-and-wc-2064043.html",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Bathroom hand-wash basins + WC (sanitary ware) AND cera"
+      ],
+      "wants": "Bathroom hand-wash basins + WC (sanitary ware) AND ceramic tiles — 1 x 20ft container, monthly repeat, 15-day shipping",
+      "posted": "2026-07-04",
+      "source_url": "https://importer.tradekey.com/buyoffer/Hand-Washes-And-Wc-2064043.html",
+      "role": "Not disclosed on listing",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Global Log & Tra co (Global Logistics & Trading Co.) — buyer identity gated, unverified",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kabul",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "buy-spanish-ceramic-836180.html",
+      "match_score": 82,
+      "verdict": "plausible",
+      "tier": "active",
+      "buys": [
+        "Ceramic tiles — 'Spanish Ceramic and Tiles, please advi"
+      ],
+      "wants": "Ceramic tiles — 'Spanish Ceramic and Tiles, please advise best prices for all sizes'",
+      "posted": "2026-07-07",
+      "source_url": "https://importer.tradekey.com/buyoffer/Buy-Spanish-Ceramic-836180.html",
+      "role": "Not disclosed on listing",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Ahmadi Tile & Ceramic Shop (فروشگاه کاشی و سرامیک احمدی)",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kabul",
+      "dest_iso": "AF",
+      "phones": [
+        "0744274801"
+      ],
+      "email": "",
+      "website": "https://www.kabuleman.com/دسته‌بندی‌ها.html?view=companies&companyId=2355",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Kabul retail/wholesale showroom of ceramic & porcelain "
+      ],
+      "business": "Kabul retail/wholesale showroom of ceramic & porcelain tiles plus bathroom/sanitary fixtures; established ~1393/2014",
+      "why_fit": "Sells exactly this category (tiles + sanitary ware) and is a downstream buyer of imported wholesale stock. Named owner + direct phone make it a clean warm target. Not confirmed to import directly (may source via local importers), so not a 5.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Faiz Fayez Ltd",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kandahar (Sarafi Market, Chowk Madad)",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "https://www.globalsuppliersonline.com/supplier/Faiz-Fayez-Ltd?id=593260",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Kandahar import/export trading firm; directory listing "
+      ],
+      "business": "Kandahar import/export trading firm; directory listing includes sanitary ware / bathroom fittings alongside marble blocks, gemstones, coal, vegetables",
+      "why_fit": "Explicitly lists sanitary ware among traded goods and operates an import/export channel. Real named entity (Sales Manager Nasir Ahmad), but sanitary ware is one of many categories and only platform-inquiry contact is public; directory entry is thin/possibly dated.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "UZAF Trading Company",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kabul (Kam Tower, Shahr-e-Naw, Haji Yaqoob Square)",
+      "dest_iso": "AF",
+      "phones": [
+        "+93 71 134 0040"
+      ],
+      "email": "info@uzaf.af",
+      "website": "https://uzaf.af",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Kabul importer (part of KAM Group, est. 2020), ISO 9001"
+      ],
+      "business": "Kabul importer (part of KAM Group, est. 2020), ISO 9001:2015; imports iron rods, steel, tin, cement, heavy machinery from Uzbekistan",
+      "why_fit": "Verified, well-established Afghan construction-materials importer with active cross-border channel and full public contact. But it carries NO tiles/sanitaryware today — channel-expansion prospect only, not a current buyer of this product.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Mid Asia Group",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kabul",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "https://importer.tradekey.com/afghanistan/construction-material.htm",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Kabul importer with active TradeKey buy-leads across co"
+      ],
+      "business": "Kabul importer with active TradeKey buy-leads across construction materials (May 2026), tools, clothes, fuel, vehicles — diversified, not tile-specific",
+      "why_fit": "Real named Kabul importer active in 2026 across building-materials categories, so a plausible tile/sanitaryware buyer, but tiles/sanitaryware are not explicitly listed and contact is gated on TradeKey.",
+      "linkedin": "",
       "needs_enrichment": false,
       "bulk_likely": false
     }

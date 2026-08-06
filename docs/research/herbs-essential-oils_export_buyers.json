@@ -1,9 +1,9 @@
 {
   "source": "verified-hunt-2025+",
-  "total": 8,
-  "with_phone": 1,
-  "with_email": 0,
-  "with_website": 0,
+  "total": 85,
+  "with_phone": 21,
+  "with_email": 9,
+  "with_website": 72,
   "buyers": [
     {
       "company": "Universal Foodstuff Trading LLC",
@@ -173,6 +173,1802 @@
       "posted": "2025-10-11",
       "source_url": "https://freshdi.com/request/Seeds-anise-badian-fennel-cumin-etc--o6C4oZ",
       "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Al-Mustafa (go4World buyer member)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Iraq (city not specified)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "spices.html",
+      "match_score": 82,
+      "verdict": "plausible",
+      "tier": "active",
+      "buys": [
+        "Organic sumac (spice/medicinal herb within HS 1211 herb"
+      ],
+      "wants": "Organic sumac (spice/medicinal herb within HS 1211 herbal scope)",
+      "posted": "Nov-07-25 (date claimed on the go4World listing; could not be independently re-rendered — go4World is bot-blocked to fetch)",
+      "source_url": "https://www.go4worldbusiness.com/buyers/iraq/spices.html",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "معمل العماد لإنتاج زيوت الأعشاب (Emad / Al-Emad Herbal Oils Factory)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Mosul",
+      "dest_iso": "IQ",
+      "phones": [
+        "07714070130"
+      ],
+      "email": "emad_mosel@yahoo.com",
+      "website": "https://www.instagram.com/emad.factory/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Manufacturer of herbal/plant oils and medicinal-herb pr"
+      ],
+      "business": "Manufacturer of herbal/plant oils and medicinal-herb products (oils, creams, shampoos, dried herbs, capsules). Confirmed active — Instagram @emad.factory and a Facebook page with 50k+ followers.",
+      "why_fit": "Genuine end-user squarely in the category: a producer of herbal/essential oils that consumes medicinal herbs and plant oils as raw input. Directly reachable. Not a proven importer (may source domestically), so not a 5.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "ALLIBA Company for General Trading Ltd.",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "https://www.volza.com/company-profile/alliba-company-iraq-75538851/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Major Baghdad food/spice importer. Volza: ~198 shipment"
+      ],
+      "business": "Major Baghdad food/spice importer. Volza: ~198 shipments; ~53% of Iraq's spice imports Jun-2024→May-2025; imports HS 0910 (spices incl. thyme/saffron/turmeric), 0710, 1905 — mainly from Turkey.",
+      "why_fit": "Proven, currently-active buy-side spice importer; HS 0910 overlaps the herb/spice part of the line (thyme, saffron). Broad Turkey-sourced food importer rather than a pure herbs/essential-oils buyer, and reachable only via trade-data directories.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "SANA AL-ALAM Company for General Trading",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Iraq",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "https://www.volza.com/p/spices-or-stuff/buyers/buyers-in-iraq/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Active spice/curcumin importer. Volza: ~23% of Iraq spi"
+      ],
+      "business": "Active spice/curcumin importer. Volza: ~23% of Iraq spice imports and ~22% of curcumin imports (~7 shipments); ~97% of Iraq's curcumin imports in a recent Jun-2024→May-2025 window.",
+      "why_fit": "Proven active importer of curcumin/turmeric — a medicinal spice squarely in the category — plus general spices. Strong buy-side signal; downside is contact is via trade-data/freshdi profile rather than a direct line.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "عطارة بغداد (Attar Baghdad)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad (Al-Karkh, Souq Al-Fayha Al-Sha'abi)",
+      "dest_iso": "IQ",
+      "phones": [
+        "07712304158"
+      ],
+      "email": "",
+      "website": "https://www.tikane10.com/2024/02/herbal-stores-in-iraq.html",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Attar herbal wholesaler-retailer: natural herbs, organi"
+      ],
+      "business": "Attar herbal wholesaler-retailer: natural herbs, organic products, oils, spices, medicinal plants.",
+      "why_fit": "Right product mix (herbs, oils, spices, medicinal plants) and directly reachable by phone. A downstream retail/wholesale channel, not a proven importer, so a mid rating rather than high.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "محلات شكر العطار (Shukur Al-Attar Stores)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Erbil (Souq Al-Nakhwa)",
+      "dest_iso": "IQ",
+      "phones": [
+        "+9647501666444"
+      ],
+      "email": "",
+      "website": "https://www.tikane10.com/2024/02/herbal-stores-in-iraq.html",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Well-known Erbil attar wholesaler: spices, herbs, natur"
+      ],
+      "business": "Well-known Erbil attar wholesaler: spices, herbs, natural oils, honey products, herbal blends.",
+      "why_fit": "Established Kurdistan-region herbal/spice/oil wholesaler covering the category; good northern-Iraq entry point, reachable by phone. Retail/wholesale channel rather than a confirmed importer.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "عطاريات الولاء (Al-Walaa Attariyat)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad (Karrada Dakhil, near Abdul Majid Hospital)",
+      "dest_iso": "IQ",
+      "phones": [
+        "+9647802698292"
+      ],
+      "email": "",
+      "website": "https://www.tikane10.com/2024/02/herbal-stores-in-iraq.html",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Attar herbal store: natural preparations, spices, oils,"
+      ],
+      "business": "Attar herbal store: natural preparations, spices, oils, medicinal herbs, skin-care products.",
+      "why_fit": "Correct sector and product mix, reachable by phone. Small downstream herbal shop channel.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Royal Smells (شركة الروائح الملكية)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Basra (Al-Ashar)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "https://www.royalsmells.com/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Confirmed real Basra company, but registered as electro"
+      ],
+      "business": "Confirmed real Basra company, but registered as electronics/perfumes/general trading: sells smart fragrance-diffuser devices, perfumes and fragrance/aroma oils to the Iraqi market.",
+      "why_fit": "Adjacent, not core: its 'oils' are fragrance/aroma oils for diffusers (likely synthetic fragrance), not natural essential/medicinal oils, and it centers on diffuser hardware. Weak buyer fit for Iranian natural essential oils.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Al-Iraqiya for Dietary Supplements & Medical Materials (الشركة العراقية للمكملات الغذائية والمواد الطبية)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad (Al-Mansour, 14 Ramadan St.)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "https://www.findhealthclinics.com/IQ/Baghdad/316068195200177/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Established importer/distributor of dietary supplements"
+      ],
+      "business": "Established importer/distributor of dietary supplements and medical materials to Iraqi pharmacies/warehouses; currently sources from US/UK/Italy/Switzerland/Germany.",
+      "why_fit": "Real established health-products importer with distribution reach, but wrong product/region focus (Western vitamins, supplements, medical devices — not raw Iranian herbs or essential oils). Weak fit.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "FIZAKA General Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Al Garhoud)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 4 256 9282"
+      ],
+      "email": "sales@fizakauae.com",
+      "website": "cumin-seed.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Cumin seed"
+      ],
+      "wants": "Cumin seed",
+      "posted": "2026-05-16",
+      "source_url": "https://importer.tradekey.com/uae/cumin-seed.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Shorooq Al Deira Foodstuff Trading L.L.C.",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Deira)",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "cumin-seed.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Cumin seeds (monthly)"
+      ],
+      "wants": "Cumin seeds (monthly)",
+      "posted": "2026-06-13",
+      "source_url": "https://importer.tradekey.com/uae/cumin-seed.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Smart Experts General Trading L.L.C",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "cumin-seed.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Cumin seeds"
+      ],
+      "wants": "Cumin seeds",
+      "posted": "2026-04-11",
+      "source_url": "https://importer.tradekey.com/uae/cumin-seed.htm",
+      "role": "",
+      "linkedin": "https://www.linkedin.com/company/smart-experts-general-trading-l.l.c-",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Delta Wings General Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Al Qusais 2 / Deira)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971-4-2344346"
+      ],
+      "email": "",
+      "website": "cumin-seeds.html",
+      "match_score": 82,
+      "verdict": "plausible",
+      "tier": "active",
+      "buys": [
+        "Cumin seeds (monthly)"
+      ],
+      "wants": "Cumin seeds (monthly)",
+      "posted": "2025-12-21",
+      "source_url": "https://www.go4worldbusiness.com/buyers/united-arab-emirates/cumin-seeds.html",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Gypsy Rose Holistic",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "essential-oil.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Organic essential oils (repeat orders)"
+      ],
+      "wants": "Organic essential oils (repeat orders)",
+      "posted": "2026-07-17 (also Jul 11 2026)",
+      "source_url": "https://importer.tradekey.com/uae/essential-oil.htm",
+      "role": "Natalie Rose (Founder)",
+      "linkedin": "https://www.linkedin.com/company/gypsy-rose-holistic",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Narges Organics",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Abu Dhabi",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "essential-oil.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Essential oils"
+      ],
+      "wants": "Essential oils",
+      "posted": "2026-04-28",
+      "source_url": "https://importer.tradekey.com/uae/essential-oil.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Perfect Herbals & Oils",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Sharjah",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "essential-oil.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Essential oil"
+      ],
+      "wants": "Essential oil",
+      "posted": "2026-04-27",
+      "source_url": "https://importer.tradekey.com/uae/essential-oil.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Al Nama Herbals General Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Al Ras, Deira)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 50 462 0396"
+      ],
+      "email": "",
+      "website": "https://alnamaherbals.com",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Importer/wholesaler since 1994 of raw medicinal herbs, "
+      ],
+      "business": "Importer/wholesaler since 1994 of raw medicinal herbs, spices, seeds, dried fruits, gums & resins from many origins",
+      "why_fit": "VERIFIED already imports from Iran: sells 'Irani Fenugreek Seeds' and Iran-origin Asafoetida (Hing), plus thyme, ajwain, caraway, licorice, sesame, etc. Exactly go4it's product line AND origin — a natural repeat buyer of Iranian medicinal herbs. Reachable direct.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Vahid & Ehsan Foodstuff Trading LLC (V&E Foodstuff)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Al Ras, Deira)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 4 834 1643"
+      ],
+      "email": "Hello@vefood.ae",
+      "website": "https://vefood.ae",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Bulk food-commodity importer/wholesaler; dedicated bulk"
+      ],
+      "business": "Bulk food-commodity importer/wholesaler; dedicated bulk rose-water line plus Iran Hashemi rice, saffron, tomato paste",
+      "why_fit": "VERIFIED already imports/wholesales bulk rose water (dedicated /rose-water product line) AND carries Iranian goods (Hashemi rice, saffron) with a Farsi sales line — clear existing Iran/Persian supply ties. Prime, reachable Damask rose-water buyer.",
+      "linkedin": "https://www.linkedin.com/company/vahid-ehsan-foodstuff-trading-llc",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Msalz (Msalz International LLC)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Sharjah (Industrial Area)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 56 246 1633"
+      ],
+      "email": "info@msalz.com",
+      "website": "https://www.msalz.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Importer/supplier of dried herbs, roots, flowers, whole"
+      ],
+      "business": "Importer/supplier of dried herbs, roots, flowers, whole/ground spices, seeds and botanical extracts to UAE food manufacturers; halal + lab-testing + private label",
+      "why_fit": "VERIFIED professional B2B importer of dried herbs and spices (cumin/thyme-type ingredients) with import-compliance capability — able to buy Iranian herbs/spices at volume. Clearly buy-side and reachable. No evidence of current Iranian sourcing, so a 4 not a 5.",
+      "linkedin": "https://www.linkedin.com/company/msalz",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Youssef Abdel Aziz Thyme & Natural Herbs Co",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Al Satwa)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 50 598 9224"
+      ],
+      "email": "",
+      "website": "https://www.d2020.net/details/983945",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Herb trader/attara selling thyme (za'atar), saffron, he"
+      ],
+      "business": "Herb trader/attara selling thyme (za'atar), saffron, herbal waters, frankincense and herbal/organic oils",
+      "why_fit": "VERIFIED real Dubai herb house (Al Satwa Rd) that operates in Farsi among its languages — consistent with Iran sourcing. Direct overlap with go4it's thyme/medicinal-herbs/oils line. ('Imported from Iran' claim itself not independently confirmed, hence 4 not 5.)",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Luqmani for Medicinal Herbs",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Naif, Deira)",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "info@luqmaniherbs.com",
+      "website": "https://luqmaniherbs.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Medicinal-herb trader/attara with an extensive range of"
+      ],
+      "business": "Medicinal-herb trader/attara with an extensive range of herbs, spices and oils, plus online ordering",
+      "why_fit": "Dedicated medicinal-herbs house in the Deira spice district that would carry Iranian dried herbs and herbal oils; established with website/e-commerce and direct email. Plausible but not verified as an active importer.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Al Sayed for Natural Herbs Trading",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Al Quoz 3)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 50 114 4853"
+      ],
+      "email": "",
+      "website": "",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Natural herbs, essential oils, natural honey and herbal"
+      ],
+      "business": "Natural herbs, essential oils, natural honey and herbal preparations",
+      "why_fit": "Sells natural herbs AND essential oils — right sector for both go4it lines; plausible wholesale/retail buyer, reachable by phone. Not verified as an importer of Iranian product.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Masaar Al Zafaran for Herbs Trading",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Deira)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 50 715 3560"
+      ],
+      "email": "",
+      "website": "",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Herbs, spices and natural products trading"
+      ],
+      "business": "Herbs, spices and natural products trading",
+      "why_fit": "'Herbs Trading' house in Dubai's herb district; would source dried medicinal herbs and spices such as cumin/thyme. Right sector, plausible buyer, unverified import activity.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Ridhu Foodstuff Trading Co LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Foodstuff distributor/wholesaler reportedly including r"
+      ],
+      "business": "Foodstuff distributor/wholesaler reportedly including rose water",
+      "why_fit": "Rose-water line claim is unverified and no direct contact/website could be pinned down — thin, weakly-evidenced fit. Downgraded from 3 to 2.",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Health Care Herbal Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Sharjah (Industrial Area 11)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 58 609 8486"
+      ],
+      "email": "",
+      "website": "https://www.healthcaretrades.com",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Ayurvedic and herbal medicines distributor (Kottakkal r"
+      ],
+      "business": "Ayurvedic and herbal medicines distributor (Kottakkal range)",
+      "why_fit": "Herbal-medicine importer/distributor — adjacent sector but skews to Indian Ayurvedic FINISHED goods, not raw Iranian herbs. Real but off-origin, weak fit.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "BRIGHT SMART ENTERPRISE LIMITED",
+      "categories": [
+        "China"
+      ],
+      "city": "Guangzhou",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "saffron.htm",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "\"Buy 100% Pure Iranian Saffron / Pure Saffron / Natural"
+      ],
+      "wants": "\"Buy 100% Pure Iranian Saffron / Pure Saffron / Natural Saffron\" (medicinal herb, HS 0910)",
+      "posted": "2026-06-13",
+      "source_url": "https://importer.tradekey.com/china/saffron.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Xinjiang Jinlingyucheng Co., Ltd",
+      "categories": [
+        "China"
+      ],
+      "city": "Urumqi (Xinjiang)",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "saffron.htm",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Iranian saffron (annual buying cycle)"
+      ],
+      "wants": "Iranian saffron (annual buying cycle)",
+      "posted": "2026-07-22",
+      "source_url": "https://importer.tradekey.com/china/saffron.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Anguo Guangming Medicinal Co., Ltd",
+      "categories": [
+        "China"
+      ],
+      "city": "Baoding (Anguo, Hebei)",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "saffron.htm",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Saffron — daily buying frequency"
+      ],
+      "wants": "Saffron — daily buying frequency",
+      "posted": "2026-05-03",
+      "source_url": "https://importer.tradekey.com/china/saffron.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Zang Hong Hua (藏红花)",
+      "categories": [
+        "China"
+      ],
+      "city": "Beijing",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "saffron.htm",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "\"Buy Saffron from Nepal and Iran\""
+      ],
+      "wants": "\"Buy Saffron from Nepal and Iran\"",
+      "posted": "2026-06-05",
+      "source_url": "https://importer.tradekey.com/china/saffron.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "TRT Pharmaceuticals",
+      "categories": [
+        "China"
+      ],
+      "city": "Beijing",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "saffron.htm",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Areca-nut / Pericarpium arecae / Natural Borneol / Saff"
+      ],
+      "wants": "Areca-nut / Pericarpium arecae / Natural Borneol / Saffron / Frankincense materials — monthly",
+      "posted": "2026-07-18",
+      "source_url": "https://importer.tradekey.com/china/saffron.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Flowerkin Aromatic Tech Co. Ltd",
+      "categories": [
+        "China"
+      ],
+      "city": "Beijing",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "rose-water.htm",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Essential oils, cold-press vegetable oils, ROSE WATER, "
+      ],
+      "wants": "Essential oils, cold-press vegetable oils, ROSE WATER, flower water",
+      "posted": "2026-07-22",
+      "source_url": "https://importer.tradekey.com/china/rose-water.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Harbin Tinvo Import and Export Trading Co., Ltd",
+      "categories": [
+        "China"
+      ],
+      "city": "Harbin",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "rose-oil.htm",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Bulgarian rose oil (rose otto) — pitch Iranian Damask r"
+      ],
+      "wants": "Bulgarian rose oil (rose otto) — pitch Iranian Damask rose oil as alternative",
+      "posted": "2026-06-18",
+      "source_url": "https://importer.tradekey.com/china/rose-oil.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Shenzhen Senzhong Import and Export Trading Co., Ltd",
+      "categories": [
+        "China"
+      ],
+      "city": "Shenzhen",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "rose-water.htm",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Rose water — monthly"
+      ],
+      "wants": "Rose water — monthly",
+      "posted": "2026-07-24",
+      "source_url": "https://importer.tradekey.com/china/rose-water.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Yu-Dan International Trade Co., Ltd",
+      "categories": [
+        "China"
+      ],
+      "city": "Shanghai",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "rose-oil.htm",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "\"100% pure and natural essential oil, vegetable oil\" (a"
+      ],
+      "wants": "\"100% pure and natural essential oil, vegetable oil\" (also documented importer of frankincense / gum olibanum)",
+      "posted": "2026-06-29",
+      "source_url": "https://importer.tradekey.com/china/rose-oil.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Guangzhou Canna Cosmetic Co., Ltd",
+      "categories": [
+        "China"
+      ],
+      "city": "Guangzhou",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "rose-oil.htm",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Pure essential oil — semi-annual"
+      ],
+      "wants": "Pure essential oil — semi-annual",
+      "posted": "2026-07-11",
+      "source_url": "https://importer.tradekey.com/china/rose-oil.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "China Sinopharm International",
+      "categories": [
+        "China"
+      ],
+      "city": "China (Beijing HQ group)",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "frankincense.htm",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Frankincense, myrrh, opopanax essential oils and absolu"
+      ],
+      "wants": "Frankincense, myrrh, opopanax essential oils and absolutes",
+      "posted": "2026-07-05",
+      "source_url": "https://importer.tradekey.com/china/frankincense.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Kangle County Jinzhong Agricultural Product Industry Development Co., Ltd",
+      "categories": [
+        "China"
+      ],
+      "city": "Linxia (Gansu)",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "cumin-seed.htm",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Cumin seeds"
+      ],
+      "wants": "Cumin seeds",
+      "posted": "2026-07-05",
+      "source_url": "https://importer.tradekey.com/china/cumin-seed.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Nanning Innovative Pharmaceutical Technology Co., Ltd",
+      "categories": [
+        "China"
+      ],
+      "city": "Nanning",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "cumin-seed.htm",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Black cumin seed / black cumin seed oil"
+      ],
+      "wants": "Black cumin seed / black cumin seed oil",
+      "posted": "2026-06-19",
+      "source_url": "https://importer.tradekey.com/china/cumin-seed.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Yurun Food Group (China Yurun Food Group)",
+      "categories": [
+        "China"
+      ],
+      "city": "Nanjing",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "cumin-seed.htm",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Cumin seeds"
+      ],
+      "wants": "Cumin seeds",
+      "posted": "2026-06-26",
+      "source_url": "https://importer.tradekey.com/china/cumin-seed.htm",
+      "role": "",
+      "linkedin": "https://www.linkedin.com/company/china-yurun-food-group-ltd",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "East Joyever",
+      "categories": [
+        "China"
+      ],
+      "city": "Qingdao",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "cumin-seed.htm",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Cumin seeds, sesame seeds, pepper — monthly"
+      ],
+      "wants": "Cumin seeds, sesame seeds, pepper — monthly",
+      "posted": "2026-06-11",
+      "source_url": "https://importer.tradekey.com/china/cumin-seed.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Hunan Minda Herbal Medicine Co., Ltd",
+      "categories": [
+        "China"
+      ],
+      "city": "Changsha",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "herbs.htm",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Medicinal herbs (unspecified spec) — monthly"
+      ],
+      "wants": "Medicinal herbs (unspecified spec) — monthly",
+      "posted": "2026-07-03",
+      "source_url": "https://importer.tradekey.com/china/herbs.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Apple Flavor & Fragrance Group Co., Ltd (爱普香料集团 / EAPP)",
+      "categories": [
+        "China"
+      ],
+      "city": "Shanghai",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "http://www.cnaff.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "One of China's largest flavour & fragrance and food-add"
+      ],
+      "business": "One of China's largest flavour & fragrance and food-additive manufacturers; its Shanghai Apple Plant Technology unit is dedicated to natural aroma raw materials and natural food additives.",
+      "why_fit": "A flavour/fragrance compounder is a large BUY-SIDE end-user of natural essential oils and aromatic naturals (rose oil, rose absolute, aromatic herb oils) as compounding raw materials — exactly go4it's HS 3301 range.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Boton Group (波顿集团, HKEX 3318)",
+      "categories": [
+        "China"
+      ],
+      "city": "Shenzhen",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.boton.com.cn/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "HK-listed flavour & fragrance group (est. 1991); 20+ su"
+      ],
+      "business": "HK-listed flavour & fragrance group (est. 1991); 20+ subsidiaries incl. Boton (Shanghai) Biotech focused on natural plant extraction and aroma chemicals.",
+      "why_fit": "Buys natural aromatic raw materials/essential oils for fragrance and tobacco-flavour compounding; a credible bulk buyer of imported naturals such as rose oil and aromatic herb oils.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Huabao Flavours & Fragrances Co., Ltd (华宝股份, SZ 300741)",
+      "categories": [
+        "China"
+      ],
+      "city": "Shanghai",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.huabao.com.hk/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Major Chinese F&F house across food flavours, daily-use"
+      ],
+      "business": "Major Chinese F&F house across food flavours, daily-use fragrance and food ingredients for food/beverage/tobacco/daily-chemical industries.",
+      "why_fit": "Large end-user of natural essential oils and botanical extracts as raw materials; a plausible high-volume buyer of imported rose/herb essential oils.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Chongqing Transdream Technology Co., Ltd.",
+      "categories": [
+        "China"
+      ],
+      "city": "Chongqing",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "https://web.zoteq.com/product-A530.html",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Markets/distributes botanical cosmetic raw materials in"
+      ],
+      "business": "Markets/distributes botanical cosmetic raw materials incl. 'Rosa Damascena Water' (Damascus rose hydrosol) and related plant products.",
+      "why_fit": "Already lists/deals in THIS exact product (Damask rose water); a distributor that plausibly imports rose-water/rose-oil raw material rather than growing it.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Anguo Honor Herbs Co., Ltd",
+      "categories": [
+        "China"
+      ],
+      "city": "Baoding (Anguo, Hebei)",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Medicinal-herb wholesaler based in Anguo — the largest "
+      ],
+      "business": "Medicinal-herb wholesaler based in Anguo — the largest traditional-Chinese-medicine herb trading market in northern China; buys herbs on a weekly cadence.",
+      "why_fit": "Anguo traders import and redistribute medicinal herbs nationwide; a natural channel that would buy Iranian saffron, rose, cumin and other medicinal herbs in bulk.",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Zhejiang Zhongcheng Medical",
+      "categories": [
+        "China"
+      ],
+      "city": "Zhejiang",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Sources/imports botanical and medicinal materials — doc"
+      ],
+      "business": "Sources/imports botanical and medicinal materials — documented buyer of gum arabic, myrrh, frankincense and moringa powder.",
+      "why_fit": "Active importer of aromatic/medicinal botanicals from West-Asia/Africa supply belts; plausible buyer of Iranian medicinal herbs and aromatic resins/essential oils.",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Sarabjit Singh Sandhu",
+      "categories": [
+        "India"
+      ],
+      "city": "Pune, Maharashtra",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "www.tradeindia.com",
+      "match_score": 82,
+      "verdict": "confirmed — re-verified on the TradeIndia page: full name, Pune, 11 Feb 2026, essential-oils buy-side. Generic spec so Iran-fit unconfirmed; contact gated.",
+      "tier": "active",
+      "buys": [
+        "Essential oils — open spec (no oil named, quantity not "
+      ],
+      "wants": "Essential oils — open spec (no oil named, quantity not stated), immediate purchase. Verified as a live essential-oils buy-lead on TradeIndia; open enough that Iranian rose/thyme oil could fit, but no oil or import intent confirmed.",
+      "posted": "2026-02-11",
+      "source_url": "https://www.tradeindia.com/buyoffer/16566621/Essential-Oils.html",
+      "role": "Buyer / proprietor",
+      "linkedin": "not found",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Raj Kumar M G",
+      "categories": [
+        "India"
+      ],
+      "city": "Bengaluru, Karnataka",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "www.tradeindia.com",
+      "match_score": 82,
+      "verdict": "confirmed — re-verified on the TradeIndia page: full name, Bengaluru, 16 Feb 2026, essential-oils buy-side. Generic spec; verify exact oil + Iran-fit.",
+      "tier": "active",
+      "buys": [
+        "Essential oils — open spec, quantity not stated, immedi"
+      ],
+      "wants": "Essential oils — open spec, quantity not stated, immediate purchase. Verified live buy-lead; could take Iranian rose/thyme/other oils but nothing specified.",
+      "posted": "2026-02-16",
+      "source_url": "https://www.tradeindia.com/buyoffer/16566621/Essential-Oils.html",
+      "role": "Buyer",
+      "linkedin": "not found",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "EKTA (name partly redacted on listing)",
+      "categories": [
+        "India"
+      ],
+      "city": "Gurugram, Haryana",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "www.tradeindia.com",
+      "match_score": 82,
+      "verdict": "plausible — date (16 Mar 2026) and buy-side re-verified from source, but the named entity is only partially disclosed (EKTA…), so identity is not fully confirmed. Open spec.",
+      "tier": "active",
+      "buys": [
+        "Essential oils — open spec, quantity not stated, immedi"
+      ],
+      "wants": "Essential oils — open spec, quantity not stated, immediate purchase. This is the primary buy-lead on the cited TradeIndia page.",
+      "posted": "2026-03-16",
+      "source_url": "https://www.tradeindia.com/buyoffer/16566621/Essential-Oils.html",
+      "role": "Buyer / owner (identity redacted)",
+      "linkedin": "not found",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Vikas Bhatti",
+      "categories": [
+        "India"
+      ],
+      "city": "Junagadh (listing shows Junagadh, Rajasthan; Junagadh is in Gujarat)",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "essential-oils.htm",
+      "match_score": 82,
+      "verdict": "confirmed — re-verified on ExportersIndia buyer board: full name, specific product (sandalwood EO), qty 100 bottles, dated 25 Jul 2026. Genuine buy-side, but weak Iran-product fit.",
+      "tier": "active",
+      "buys": [
+        "Sandalwood essential oil, 100 bottles. Note: sandalwood"
+      ],
+      "wants": "Sandalwood essential oil, 100 bottles. Note: sandalwood is an Indian/Australian-sourced oil, NOT an Iranian product — weak fit for Iranian rose/thyme oils; kept only as evidence of active, specific EO demand.",
+      "posted": "2026-07-25",
+      "source_url": "https://www.exportersindia.com/buyers/essential-oils.htm",
+      "role": "Buyer",
+      "linkedin": "not found",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Hamdard Laboratories India",
+      "categories": [
+        "India"
+      ],
+      "city": "New Delhi (HQ Asaf Ali Road; plants Ghaziabad & Manesar)",
+      "dest_iso": "IN",
+      "phones": [
+        "+91-11-23239801"
+      ],
+      "email": "info@hamdard.in",
+      "website": "https://www.hamdard.in",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "India's largest Unani/herbal medicine & foods maker (Ro"
+      ],
+      "business": "India's largest Unani/herbal medicine & foods maker (Rooh Afza, Safi, Arq Gulab, Sharbat). Rose and kewra distillates plus dozens of Unani medicinal herbs are core raw materials.",
+      "why_fit": "Mass institutional end-user of rose water/rose distillate and Unani medicinal herbs; Iran is the premier source of Damask rose water/oil. Consumes exactly these inputs at scale.",
+      "linkedin": "https://in.linkedin.com/company/hamdard-wakf-laboratories-new-delhi",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Ultra International Ltd",
+      "categories": [
+        "India"
+      ],
+      "city": "Ghaziabad (Sahibabad Industrial Area), UP",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://ultrainternational.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Established 1987; leading Indian fragrance, flavour & e"
+      ],
+      "business": "Established 1987; leading Indian fragrance, flavour & essential-oils house (verified). Processes, imports, wholesales and trades essential oils, aroma chemicals and CO2 extracts.",
+      "why_fit": "A fragrance/flavour manufacturer that routinely buys and imports natural essential oils (incl. rose, thyme) as raw materials — a natural bulk buyer/channel for Iranian rose & thyme oils.",
+      "linkedin": "https://in.linkedin.com/company/ultraintl",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "S H Kelkar & Co Ltd (Keva)",
+      "categories": [
+        "India"
+      ],
+      "city": "Mumbai, Maharashtra (plants in Raigad)",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://keva.co.in",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "India's largest fragrance & flavour company (est. 1922)"
+      ],
+      "business": "India's largest fragrance & flavour company (est. 1922). Backward-integrated aroma-ingredients & natural-extracts division; sources rare/fine naturals globally.",
+      "why_fit": "Explicitly sources rare and fine natural ingredients worldwide and runs a natural-extracts plant — a premium buyer for Iranian Damask rose oil/absolute and other florals.",
+      "linkedin": "https://in.linkedin.com/company/keva-fragrances",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Alsultan Expert Private Limited",
+      "categories": [
+        "India"
+      ],
+      "city": "Gurgaon (Gurugram), Haryana",
+      "dest_iso": "IN",
+      "phones": [
+        "+91-8046079303"
+      ],
+      "email": "",
+      "website": "https://www.alsultanexpert.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Verified importer of Afghan dry fruits and mulethi/lico"
+      ],
+      "business": "Verified importer of Afghan dry fruits and mulethi/licorice roots (from Afghanistan, ₹150/kg, 50kg bags); founded 2019; GST 06AASCA7082M1ZZ confirmed.",
+      "why_fit": "Already imports medicinal herbs (licorice) cross-border from the Afghanistan/Iran belt into India — the exact medicinal-herbs channel; a reachable, ready-made importer/distributor. Sources from Afghanistan (not yet confirmed Iran), so short of a 5.",
+      "linkedin": "not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Oriental Aromatics Ltd (formerly Camphor & Allied Products)",
+      "categories": [
+        "India"
+      ],
+      "city": "Mumbai, Maharashtra (Fort HQ; plants Vapi & Bareilly)",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.orientalaromatics.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Listed integrated flavours, fragrances, aroma-chemicals"
+      ],
+      "business": "Listed integrated flavours, fragrances, aroma-chemicals and camphor company; manufacturer, importer and exporter of essential oils and aroma chemicals.",
+      "why_fit": "Self-described importer of essential oils/aroma chemicals as F&F raw materials — a plausible bulk buyer of Iranian rose/thyme essential oils.",
+      "linkedin": "https://in.linkedin.com/company/oriental-aromatics",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Aromaaz International Pvt Ltd",
+      "categories": [
+        "India"
+      ],
+      "city": "Ghaziabad / Noida (Sahibabad), UP",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.aromaazinternational.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Bulk essential-oils manufacturer, wholesaler and trader"
+      ],
+      "business": "Bulk essential-oils manufacturer, wholesaler and trader/importer; supplies pure & organic essential oils in bulk domestically and to 200+ countries.",
+      "why_fit": "Bulk essential-oil trading house that could source/re-distribute Iranian oils — but is primarily a seller/exporter itself, so as much a competitor as a buyer. Reachable, transacts in the exact category.",
+      "linkedin": "https://in.linkedin.com/company/aromaaz-international",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Dabur India Ltd",
+      "categories": [
+        "India"
+      ],
+      "city": "Ghaziabad / Noida (corporate), UP",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.dabur.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Leading Ayurvedic FMCG. Owns Gulabari rose-water brand "
+      ],
+      "business": "Leading Ayurvedic FMCG. Owns Gulabari rose-water brand and a broad herbal/Ayurvedic range using many medicinal herbs and floral distillates.",
+      "why_fit": "Mass consumer of rose water and medicinal herbs, but currently sources Damask roses domestically (Kannauj) — import from Iran is speculative rather than established. Right sector, large volumes, reachable.",
+      "linkedin": "https://in.linkedin.com/company/dabur",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Shree Baidyanath Ayurved Bhavan Pvt Ltd",
+      "categories": [
+        "India"
+      ],
+      "city": "Nagpur, Maharashtra (also Kolkata, Patna, Jhansi, Prayagraj)",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.baidyanath.co",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "One of India's largest Ayurvedic manufacturers (est. 19"
+      ],
+      "business": "One of India's largest Ayurvedic manufacturers (est. 1917), 700+ formulations; procures herbs, roots, seeds, gums, flowers at scale.",
+      "why_fit": "High-volume end-user of medicinal herbs/roots/flowers; plausible bulk buyer of Iranian medicinal herbs (licorice, thyme, rose), but procurement is largely domestic — import fit is inferred, not established.",
+      "linkedin": "https://in.linkedin.com/company/baidyanath",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "FRANSCENT (contact: Irfan Shaikh)",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Pakistan (city not disclosed on listing)",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "essential-oils-importer.html",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Essential oils (general fragrance/essential oils for a "
+      ],
+      "wants": "Essential oils (general fragrance/essential oils for a scent brand); no exact qty shown - buyer accepts quotations from premium members only",
+      "posted": "2025-01-09 (last updated)",
+      "source_url": "https://importer.tradekey.com/essential-oils-importer.html",
+      "role": "Irfan Shaikh (named buyer contact for FRANSCENT)",
+      "linkedin": "Not found",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "AlphaGen",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Pakistan (city not disclosed)",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "essential-oils-importer.html",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Perfume/essential oils, soy wax and wooden powder for a"
+      ],
+      "wants": "Perfume/essential oils, soy wax and wooden powder for a perfume brand; sample 10 cartons, ~1,000 cartons/yr annual purchase volume",
+      "posted": "2025-05-20 (last updated)",
+      "source_url": "https://importer.tradekey.com/essential-oils-importer.html",
+      "role": "Not named on listing",
+      "linkedin": "Not found",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Manahil",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Lahore, Punjab",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "essential-oils.html",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Essential oils (import request; exact spec/qty not publ"
+      ],
+      "wants": "Essential oils (import request; exact spec/qty not published)",
+      "posted": "2025-07-24",
+      "source_url": "https://www.go4worldbusiness.com/buyers/pakistan/essential-oils.html",
+      "role": "First name 'Manahil' only; no title/company published",
+      "linkedin": "Not found",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Hemani International (Pvt) Ltd (Hemani Group / WB by Hemani)",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Karachi",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "https://www.hemaniherbals.com",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Large manufacturer and trader of natural/herbal product"
+      ],
+      "business": "Large manufacturer and trader of natural/herbal products, attars and essential oils; 800+ products sold in 60+ countries. Also a major bulk IMPORTER of herbal/essential oils.",
+      "why_fit": "2025 Pakistan customs data (Volza, current to Nov 2025) shows Hemani International as the #1 herbal-oil importer into Pakistan (~63% of shipments) - i.e. it actively buys bulk essential/herbal oils from abroad (India/Turkey/Thailand today), a direct switch-in target for Iranian rose/essential/medicinal oils. Reachable, established. (Note: they also blend/retail oils, so approach as a bulk-raw-material buyer.)",
+      "linkedin": "https://www.linkedin.com/company/hemani-group-of-companies",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Qarshi Industries (Pvt) Ltd",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Lahore (plant: Hattar)",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "https://qarshi.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Pakistan's largest herbal pharmaceutical / natural-prod"
+      ],
+      "business": "Pakistan's largest herbal pharmaceutical / natural-products company; 300+ DRAP-approved herbal medicines and consumer products (Johar Joshanda, Jam-e-Shirin, rose products, etc.).",
+      "why_fit": "Very large end-user of medicinal herbs and essential/aromatic oils as raw materials, with a dedicated Procurement & Imports function and active import operations - a strong bulk buyer for Iranian medicinal herbs and essential oils.",
+      "linkedin": "https://pk.linkedin.com/company/qarshi-industries",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Hamdard Laboratories (Waqf) Pakistan",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Karachi (plants also in Lahore & Peshawar)",
+      "dest_iso": "PK",
+      "phones": [
+        "+92-21-6620949"
+      ],
+      "email": "",
+      "website": "https://www.hamdard.com.pk",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Leading Unani/herbal medicine manufacturer; 500+ herbal"
+      ],
+      "business": "Leading Unani/herbal medicine manufacturer; 500+ herbal preparations incl. Rooh Afza, Safi, Sharbat - large consumer of medicinal herbs and aromatic waters/oils (rose, kewra).",
+      "why_fit": "Major herbal end-user that explicitly states raw-material procurement is core; Rooh Afza and Unani lines consume rose water/aromatic distillates and medicinal herbs - a natural bulk buyer for Iran-sourced rose water/herbs.",
+      "linkedin": "https://pk.linkedin.com/company/hamdard-pakistan",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Khalid Enterprises",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Karachi (Jodia Bazar)",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "https://www.kekhalidenterprises.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "40+ year wholesale import/export house dealing in dried"
+      ],
+      "business": "40+ year wholesale import/export house dealing in dried fruits, nuts, spices and medicinal herbs, based in Jodia Bazar (Asia's largest spice market).",
+      "why_fit": "Established importer/wholesaler of spices (incl. cumin/zeera) and medicinal herbs; Jodia Bazar is the primary landing point for Iranian cumin and herbs into Pakistan - a direct trade-office buyer for the cumin/medicinal-herb side of the range.",
+      "linkedin": "Not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Ajmal Dawakhana (Ajmal Herbal)",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Lahore",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "https://www.ajmal.pk",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Unani herbal-medicine manufacturer since 1948; 100% nat"
+      ],
+      "business": "Unani herbal-medicine manufacturer since 1948; 100% natural Unani/herbal medicines and health products.",
+      "why_fit": "End-user buyer of medicinal herbs and essential oils for Unani formulations; the kind of dawakhana that sources aromatic oils and jari-booti in bulk.",
+      "linkedin": "Not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Karachi Pansar Co.",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Karachi",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "https://karachipansar.pk",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Large online + wholesale pansar (herbal) house: medicin"
+      ],
+      "business": "Large online + wholesale pansar (herbal) house: medicinal herbs, essential oils, cold-pressed oils, natural supplements.",
+      "why_fit": "Wholesaler/retailer of exactly this category (herbs + essential oils incl. rose oil); plausible stockist/importer of Iranian rose oil and medicinal herbs for the domestic pansar trade.",
+      "linkedin": "Not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Pakistan Cosmetics (pakistan-cosmetics.com)",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Pakistan (Karachi/Lahore operations)",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "https://pakistan-cosmetics.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Wholesale supplier/distributor of cosmetic raw material"
+      ],
+      "business": "Wholesale supplier/distributor of cosmetic raw materials - essential oils, carrier/natural oils, butters, fragrances, surfactants - to Pakistani manufacturers.",
+      "why_fit": "Buy-side importer/distributor that supplies bulk essential and natural oils as raw materials; would source Iranian rose/essential oils to resell into the local cosmetics/soap industry.",
+      "linkedin": "Not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Pakistan Pansar",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Karachi",
+      "dest_iso": "PK",
+      "phones": [
+        "0315-0223174"
+      ],
+      "email": "",
+      "website": "https://pakistanpansar.pk",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Online + wholesale herbal store (No.1 online pansari) s"
+      ],
+      "business": "Online + wholesale herbal store (No.1 online pansari) selling herbs, oils and natural supplements in bulk.",
+      "why_fit": "Wholesale herbal buyer offering bulk purchase; a distribution channel for imported medicinal herbs and rose/essential oils into the retail pansar network.",
+      "linkedin": "Not found",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Terka Baharat Sifali Bitkiler Ith. Ihr. San. ve Tic. Ltd. Sti.",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Mersin",
+      "dest_iso": "TR",
+      "phones": [
+        "+90 324 235 5545"
+      ],
+      "email": "info@terkabaharat.com",
+      "website": "https://www.terkabaharat.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Importer, processor and distributor of spices, medicina"
+      ],
+      "business": "Importer, processor and distributor of spices, medicinal herbs and oilseeds; located in the MERTOC wholesale food market ~1 km from Mersin Port; serves 1,100+ clients across all 81 provinces; ISO 9001/22000 certified with in-house lab (pesticide/ochratoxin analyses).",
+      "why_fit": "Core business is IMPORTING medicinal herbs and spices (cumin/kimyon explicitly among their products) for nationwide distribution. Panjiva lists them with a buyer/import report. Iran is a natural low-cost origin for cumin and medicinal herbs; clearly a buy-side importer, reachable with direct contact.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Arifoglu Baharat ve Gida Sanayi Ltd. Sti.",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Istanbul (Avcilar) / Gaziantep",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.arifoglu.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Major Turkish spice and herbal-products house (since 19"
+      ],
+      "business": "Major Turkish spice and herbal-products house (since 1944, Egyptian/Spice Bazaar origin). Buys, sells, imports and exports spices, dried herbs, herbal oils and herbal waters; produces its own rose water (gul suyu) and essential/herbal oils. Production in Istanbul-Avcilar and Gaziantep-Nurdagi; Spice Bazaar branch in Fatih.",
+      "why_fit": "Explicitly states it imports 'world spices from abroad' and manufactures rose water and herbal oils, meaning it buys raw botanicals and essential-oil/hydrosol inputs at volume. A plausible bulk buyer of Iranian cumin, medicinal herbs and rose material. Large, named, reachable.",
+      "linkedin": "https://tr.linkedin.com/company/arifoglu",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Sam Market (Sammarket)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Ankara (Cankaya/Kavaklidere)",
+      "dest_iso": "TR",
+      "phones": [
+        "0553 105 1360"
+      ],
+      "email": "info@sammarket.com.tr",
+      "website": "https://www.sammarket.com.tr",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Turkey-based importer/e-commerce distributor specializi"
+      ],
+      "business": "Turkey-based importer/e-commerce distributor specializing in IRANIAN market products delivered nationwide: spices, dried herbs, rice/legumes, canned goods, tea, sweets, etc.",
+      "why_fit": "Already sources and distributes Iranian-origin goods including dried herbs and spices, so the supply lane (Iran -> Turkey) and product category already match. Directly reachable. Lower depth on bulk essential oils / rose oil (mix is retail Iranian groceries), otherwise an ideal origin fit.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Birlik Baharat San. Tic. Ltd. Sti.",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Izmir (Konak)",
+      "dest_iso": "TR",
+      "phones": [
+        "+90 232 457 1291"
+      ],
+      "email": "info@birlikbaharat.com.tr",
+      "website": "https://birlikbaharat.com.tr",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Food importer/exporter since 1992 (Izmir); two division"
+      ],
+      "business": "Food importer/exporter since 1992 (Izmir); two divisions - green-coffee imports and spices. Spice range includes cumin, anise, bay leaf, poppy seed, thyme and marjoram; 5,500 m2 facility in Kemalpasa.",
+      "why_fit": "Established importer already running international food-import operations and handling cumin/thyme, so adding Iranian-origin cumin or medicinal herbs is within their existing procurement pattern. Named and reachable. Weighted a bit toward coffee and toward exporting Turkish spices, hence not a 5.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Lokman Efendi (VHP Bitkisel Urunler)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Turkiye (multi-branch)",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.lokmanefendi.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Large wholesale supplier/distributor of spices, herbal "
+      ],
+      "business": "Large wholesale supplier/distributor of spices, herbal products, herbal teas, natural foods, nuts and dried fruits; ~9 branches + 12 franchises across Anatolia; supplies markets, herbalist shops, chain stores, e-commerce and corporate buyers.",
+      "why_fit": "High-volume wholesale distributor of exactly this category (spices + medicinal/herbal products), so it buys in bulk and would consider a competitive Iranian-origin supply of herbs/cumin. Right sector, reachable, but not a confirmed direct importer of this exact SKU from Iran.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Mecitefendi Bitkisel Gida Urunleri",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Izmir",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.mecitefendi.tr",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Izmir manufacturer (since early 1990s) of herbal oils a"
+      ],
+      "business": "Izmir manufacturer (since early 1990s) of herbal oils and herbal waters/hydrosols (incl. rose water and essential oils) and ~400 plant-based cosmetic products; ~1,500 sales points in Turkey and abroad.",
+      "why_fit": "As a producer of essential oils and hydrosols it must buy raw botanicals and, at times, bulk essential oils / rose material as inputs - a plausible buyer of Iranian medicinal herbs and rose feedstock. Note it is also a producer/seller of finished goods, so its raw-import appetite is partial.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Eyup Sabri Tuncer",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Ankara",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.eyupsabrituncer.com.tr",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Historic Turkish cologne and personal-care manufacturer"
+      ],
+      "business": "Historic Turkish cologne and personal-care manufacturer (since 1923); large-volume buyer of essential oils/essences and floral waters (rose, lemon, etc.) for colognes and rose-water products.",
+      "why_fit": "Significant industrial buyer of essential oils and essences. Tangential for this pitch because it sources rose from Isparta domestically, but it does buy essential oils generally and could take exotic/oud/medicinal essential oils Turkey doesn't produce.",
+      "linkedin": "",
+      "needs_enrichment": false,
       "bulk_likely": false
     }
   ]

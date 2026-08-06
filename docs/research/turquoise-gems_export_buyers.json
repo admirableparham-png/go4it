@@ -1,9 +1,9 @@
 {
   "source": "verified-hunt-2025+",
-  "total": 3,
-  "with_phone": 0,
-  "with_email": 0,
-  "with_website": 1,
+  "total": 67,
+  "with_phone": 27,
+  "with_email": 12,
+  "with_website": 64,
   "buyers": [
     {
       "company": "East Coast Carry",
@@ -66,6 +66,1476 @@
       "posted": "Mar 28, 2025 (companion post Mar 22; detail page shows a Jul 13, 2026 bump)",
       "source_url": "https://importer.tradekey.com/buyoffer/Need-Feroza-3695597.html",
       "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Ali Consultancy Co",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Erbil (Arbil)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "stone.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Gemstones / precious stones (broad; turquoise/semi-prec"
+      ],
+      "wants": "Gemstones / precious stones (broad; turquoise/semi-precious fall within range but are NOT explicitly named). No qty stated.",
+      "posted": "Re-verified live on TradeKey Iraq stone page: 'Gemstones' 21 Jul 2026; 'Precious Stones' (monthly frequency) 05 Jul 2026",
+      "source_url": "https://importer.tradekey.com/iraq/stone.htm",
+      "role": "Not disclosed (company is the named Erbil buyer / sourcing office)",
+      "linkedin": "Not found",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Pooria LLC",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Iraq (city not specified on listing)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "stone.htm",
+      "match_score": 82,
+      "verdict": "plausible",
+      "tier": "active",
+      "buys": [
+        "All kinds of semi and precious stones, cut and rough (d"
+      ],
+      "wants": "All kinds of semi and precious stones, cut and rough (directly on-spec for turquoise/semi-precious)",
+      "posted": "Re-verified live on TradeKey Iraq stone page: 13 Jun 2026",
+      "source_url": "https://importer.tradekey.com/iraq/stone.htm",
+      "role": "Not disclosed",
+      "linkedin": "Not found",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "مركز بغداد للأحجار الكريمة (Baghdad Stones Center)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad",
+      "dest_iso": "IQ",
+      "phones": [
+        "+964 770 254 5848"
+      ],
+      "email": "",
+      "website": "center-baghdad.co",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Retail/wholesale gemstone & jewelry center; merchandise"
+      ],
+      "business": "Retail/wholesale gemstone & jewelry center; merchandises agate, Dur Najafi/Husseini, and named Iranian turquoise varieties (e.g. 'Abbas Abad'), with delivery across Iraq. Large active Facebook + YouTube presence (verified real).",
+      "why_fit": "Sells exactly go4it's product (Iranian-origin turquoise) at wholesale/retail and must restock loose stone continuously; publicly reachable. Rated 4 not 5 because it clearly SELLS the product but direct-import (vs buying from a Baghdad wholesaler) is unconfirmed.",
+      "linkedin": "Facebook: facebook.com/baghdad.stones ; YouTube: 'مركز بغداد للأحجار الكريمة'",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "مركز الأحجار الكريمة (Gemstone Center, @gemstone7777)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad (Al-Mansour, 14 Ramadan St, Apple Commercial Complex)",
+      "dest_iso": "IQ",
+      "phones": [
+        "07821210606"
+      ],
+      "email": "",
+      "website": "instagram.com/gemstone7777",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Large gemstone & silver-jewelry retailer/wholesaler (~8"
+      ],
+      "business": "Large gemstone & silver-jewelry retailer/wholesaler (~85k IG followers, verified active); sells turquoise (feroza), agate and semi-precious stones with delivery Iraq-wide and abroad.",
+      "why_fit": "High-volume gemstone specialist that sources loose turquoise/semi-precious and sets rings; multiple direct contact channels. Rated 4 not 5 — clearly sells feroza/turquoise but direct-import status unconfirmed (likely part-domestic sourcing).",
+      "linkedin": "X/Twitter: @center_gemstone ; Facebook: facebook.com/AlahjarAlkarima",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Ali Al-Muhammadawi (gemstone dealer)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad (Al-Husseiniya, Wokfa market)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "15-year gemstone trader (profiled by 964media) in rare "
+      ],
+      "business": "15-year gemstone trader (profiled by 964media) in rare stones: Yemeni agate, Suleimani, Colombian emerald, and turquoise 'extracted from the mountains of Nishapur, Iran'.",
+      "why_fit": "Explicitly sells Neyshabur (Persian) turquoise — the exact product — so a clear ongoing buyer. Rated 4 (not higher) because he is a small single-stall dealer with no published phone; reach via the Wokfa market in person or possibly his Instagram.",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "مجوهرات المصطفى (Al-Mustafa Jewellery, @al_mystafa_18)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Najaf (Najaf al-Ashraf)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "instagram.com/al_mystafa_18",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Silver-jewellery & gemstone-ring workshop/retailer in N"
+      ],
+      "business": "Silver-jewellery & gemstone-ring workshop/retailer in Najaf's pilgrim market (verified IG active), making/selling feroza (turquoise), Dur Najafi and aqeeq rings.",
+      "why_fit": "Najaf ring shops set loose turquoise into silver 'Najafi' mounts for the pilgrim trade — steady end-user buyer of loose Persian turquoise; IG-reachable. Small workshop scale, hence 3.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "مجوهرات ومصوغات سيد مصطفى آل كاظم الكربلائي",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Karbala (Jumhuriya St, Al-Kawthar Complex)",
+      "dest_iso": "IQ",
+      "phones": [
+        "07833007002"
+      ],
+      "email": "",
+      "website": "facebook.com/100064881121713 (سيد مصطفى آل كاظم الكربلائي)",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Gold, silver and gemstone jeweller serving Karbala's pi"
+      ],
+      "business": "Gold, silver and gemstone jeweller serving Karbala's pilgrim market (~123k IG followers, verified active); deals in precious/semi-precious stones and rings.",
+      "why_fit": "Right sector and religious-tourism location where turquoise/aqeeq rings sell heavily; needs loose-stone supply and is directly reachable by WhatsApp. Rated 3 — general gemstone dealer, turquoise-specific demand not explicitly confirmed.",
+      "linkedin": "Instagram: @mustafa_al_karbalaiy_4gold",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "H&Y Jewellery",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Erbil (Empire World Diamond Towers & Boulevard Gulan St)",
+      "dest_iso": "IQ",
+      "phones": [
+        "+9647501000322"
+      ],
+      "email": "",
+      "website": "hy.jewelry",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Upscale fine-jewellery & luxury-watch retailer (verifie"
+      ],
+      "business": "Upscale fine-jewellery & luxury-watch retailer (verified: hy.jewelry); certifies stones via GRS/SSEF/Gübelin, focus on diamonds and Rolex/AP/Patek watches.",
+      "why_fit": "Established Kurdistan jeweller that could carry premium certified stones, but its market is diamonds/high-value colored stones and luxury watches — turquoise fit is tangential. Rated 2.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Raza Gems LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Gold & Diamond Park)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 58 585 8602"
+      ],
+      "email": "info@razagems.com",
+      "website": "https://razagems.com",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Loose-gemstone wholesaler/retailer (est. ~2005); 10,000"
+      ],
+      "business": "Loose-gemstone wholesaler/retailer (est. ~2005); 10,000+ loose stones, custom jewellery, worldwide shipping",
+      "why_fit": "Verified: sells Iranian Nishapuri Feroza (natural turquoise) with a dedicated turquoise collection and blog content on sourcing Persian turquoise from Iran (100% natural, untreated, priced per carat). Clearly already sources this exact Iran-origin product and restocks loose turquoise inventory. Directly reachable. Prime go4it target.",
+      "linkedin": "https://www.facebook.com/razagemsllc/",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "N Gopaldaas Jewellers (Amina Jewellers LLC)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Karama)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 4 379 7950"
+      ],
+      "email": "info@ngopaldaas.com",
+      "website": "https://ngopaldaas.com",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Established jeweller since 1929; loose certified gemsto"
+      ],
+      "business": "Established jeweller since 1929; loose certified gemstones + astrological/navaratna jewellery, retail and sourcing",
+      "why_fit": "Verified: dedicated Persian & Iranian Turquoise (Feroza) product category, certified/untreated, in-store at 7 Kuwait St, Karama. Long-standing, reachable buyer that clearly already imports the exact Iran-origin product to stock.",
+      "linkedin": "https://www.facebook.com/ngopaldaas/",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "House of Gems & Jewellery Trading",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Meena Bazaar, Bur Dubai)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 55 955 0704"
+      ],
+      "email": "Info@houseofgemsuae.com",
+      "website": "https://houseofgemsuae.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Gemstone retailer/wholesaler (20+ yrs) in Al Souq Al Ka"
+      ],
+      "business": "Gemstone retailer/wholesaler (20+ yrs) in Al Souq Al Kabeer; certified stones, dedicated wholesale/bulk page, custom jewellery",
+      "why_fit": "Verified: specialises in certified Feroza (Turquoise) and markets wholesale/bulk gemstone supply. A buy-side wholesaler that needs turquoise inventory; reachable by phone/WhatsApp. Not explicitly Iranian-origin, so one notch below the turquoise specialists.",
+      "linkedin": "https://www.hidubai.com/businesses/house-of-gems-jewellery-trading-shopping-jewellery-precious-stones-meena-bazar-al-souq-al-kabeer-dubai",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Multi Gems & Jewellery (Multi Gems Store)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Gold & Diamond Park)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 55 150 7603"
+      ],
+      "email": "",
+      "website": "https://multi-gems.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Wholesale/retail of certified natural precious and semi"
+      ],
+      "business": "Wholesale/retail of certified natural precious and semi-precious gemstones + fine jewellery",
+      "why_fit": "Verified: explicitly lists IGI/GTL-certified Feroza (Turquoise) among its range; wholesale-and-retail model implies recurring inventory sourcing of turquoise/semi-precious stones. Turquoise is one line among many rather than a specialty.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Natural Gemstones FZCO",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Gold & Diamond Park, wholesale area)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 4 321 9422"
+      ],
+      "email": "info@naturalgemstones.net",
+      "website": "https://shop.naturalgemstones.net",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Wholesale supplier of coloured/semi-precious stones (fo"
+      ],
+      "business": "Wholesale supplier of coloured/semi-precious stones (founded 2014 by Adriana Howie); large loose-stone inventory",
+      "why_fit": "Verified: broad semi-precious stone wholesaler in the G&D Park wholesale zone (sapphires, spinels, garnets, tourmalines, zircons, mixed semi-precious lots). Right sector and buy-side for semi-precious gems, but turquoise/Feroza not explicitly confirmed in its range.",
+      "linkedin": "https://www.facebook.com/naturalgemstonesfzco/",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Fine Gems FZCO (FineGemsDubai)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Gold & Diamond Park)",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://finegemsdubai.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Family gemstone business (est. 1978/1987, part of Fancy"
+      ],
+      "business": "Family gemstone business (est. 1978/1987, part of Fancy Jewelry LLC); loose natural gemstones, diamonds, 18K jewellery",
+      "why_fit": "Verified: established loose-natural-gemstone dealer in the Gold & Diamond Park cluster. Right sector and buy-side; publishes turquoise/Feroza educational content, but a current turquoise inventory line was not explicitly confirmed.",
+      "linkedin": "https://www.facebook.com/finegemsfzco/",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Royal Gemstone Trading FZCO",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (DMCC, Jewellery & Gemplex 3)",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "office@royalgemstonetrading.com",
+      "website": "https://royalgemstonetrading.com",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "DMCC-registered gemstone trading company (Reg. DMCC2019"
+      ],
+      "business": "DMCC-registered gemstone trading company (Reg. DMCC201903, Licence DMCC-969095), Unit BA2456",
+      "why_fit": "Verified real DMCC free-zone gemstone trader serving UAE/Germany/Europe, but its stated supply lines are Thailand/Brazil/Sri Lanka (no turquoise/Iran signal) and its website is currently 'Coming Soon', so active-trading status and turquoise fit are unconfirmed. Reachable via office email. Note: NOT confirmed to be the same entity as the anonymous 'Royal Gems' TradeKey buy lead.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "RusGems (ООО «Квадрант»)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 (495) 545-76-18"
+      ],
+      "email": "",
+      "website": "rusgems-shop.ru",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Gem-cutting production company; wholesale + retail of c"
+      ],
+      "business": "Gem-cutting production company; wholesale + retail of cut and rough precious & semi-precious stones (200+ types), including natural unprocessed Iranian turquoise; runs its own cutting workshop in Moscow.",
+      "why_fit": "VERIFIED: site actively lists natural unprocessed Iranian (Nishapur) turquoise AND runs a 'raw-material selection request' (подбор сырья) page plus its own rough-to-cut workshop, so it demonstrably buys rough gem material. A prime, ready buyer for an Iran turquoise exporter. ООО Квадрант, Москва, Духовской пер., 17.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Gabilo (Alexey Gabilo)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "shop.gabilo.com",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Gemologist-led jewelry brand with an online store and c"
+      ],
+      "business": "Gemologist-led jewelry brand with an online store and central-Moscow showroom, selling certified natural Iranian Nishapur turquoise (rough and cut) plus colored-stone jewelry.",
+      "why_fit": "VERIFIED: dedicated Iranian-turquoise catalog with X-ray/gemological (GemExim, MGU) reports; gemologist owner hand-selects rough Iranian Nishapur turquoise — a direct, high-intent importer of this exact product.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "GemsSPB",
+      "categories": [
+        "Russia"
+      ],
+      "city": "St. Petersburg",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "gemsspb.ru",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Wholesale/retail of natural semi-precious stones, expli"
+      ],
+      "business": "Wholesale/retail of natural semi-precious stones, explicitly including Iranian turquoise cabochons (Russian-cut from Iranian deposits), in St. Petersburg and online.",
+      "why_fit": "VERIFIED: catalog carries Iranian turquoise cabochons described as Russian-cut from Iranian deposits, implying it sources Iranian rough. Strong turquoise channel; dropped from 5 to 4 because direct-import (vs domestic middleman) is not explicitly stated.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Редкие камни (Redkie Kamni)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "redkiekamni.ru",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Precious & semi-precious stones from around the world i"
+      ],
+      "business": "Precious & semi-precious stones from around the world incl. turquoise; own stone-processing facility and warehouse in Moscow; offers rough blocks/blanks for cutters.",
+      "why_fit": "VERIFIED: own processing + warehouse in Moscow, sells natural unprocessed turquoise (currently Armenian) and rough blanks — a genuine rough-gem buyer/cutter and a realistic import channel, though no Iran-specific signal yet.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Компания «Формика» (Formica)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 (495) 120-90-78"
+      ],
+      "email": "info@formicagem.ru",
+      "website": "formicagem.ru",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "One of Russia's largest suppliers of natural precious, "
+      ],
+      "business": "One of Russia's largest suppliers of natural precious, semi-precious and synthetic jewelry inserts (3,000+ types incl. turquoise), supplying regional dealers and jewelry manufacturers.",
+      "why_fit": "VERIFIED: large Moscow wholesale distributor of jewelry inserts including turquoise; a scaled channel that could take Iranian turquoise cabochons, though it distributes cut inserts rather than buying rough.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Торговый дом «Грани» (Grani)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Kostroma / Moscow (per Uvelir.INFO directory)",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 (920) 386-31-41"
+      ],
+      "email": "",
+      "website": "uvelir.info",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "10+ years supplier of stones to Russia's jewelry market"
+      ],
+      "business": "10+ years supplier of stones to Russia's jewelry market; 3,000+ semi-precious and artificial stones including turquoise, pearls, coral and opal.",
+      "why_fit": "VERIFIED on uvelir.info registry: established wholesale/retail supplier of natural & synthetic inserts incl. turquoise. Plausible reseller channel but a generic distributor with no Iran-specific demand signal.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Аврос (Avros)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Kostroma / Moscow (ул. Северной Правды, 49)",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "awros.ru",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Production and sale of jewelry inserts (2,000+ types) f"
+      ],
+      "business": "Production and sale of jewelry inserts (2,000+ types) from natural and synthetic stones; own cutting production, warehouses in Kostroma and Moscow.",
+      "why_fit": "VERIFIED: has its own cutting production (собственное ограночное производство), so it buys rough gem material — a plausible turquoise-cabochon buyer. Note: shares its Kostroma address (ул. Северной Правды, 49) with Indian Gems.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "ИНДИАН ДЖЕМС, ООО (Indian Gems)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Kostroma",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "indgems.ru",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Production, supply and wholesale of precious, semi-prec"
+      ],
+      "business": "Production, supply and wholesale of precious, semi-precious, synthetic and reconstructed jewelry inserts (incl. turquoise and coral) from a Kostroma warehouse.",
+      "why_fit": "VERIFIED on uvelir.info/expojeweller: wholesale insert supplier carrying turquoise, in Russia's jewelry-manufacturing hub — plausible turquoise buyer. Co-located with Avros at ул. Северной Правды, 49, Kostroma.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "BirjuzaOpt (БирюзаОпт)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Ufa",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "optlist.ru/company/birjuzaopt-2",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Ufa-based manufacturer of jewelry/bracelets from natura"
+      ],
+      "business": "Ufa-based manufacturer of jewelry/bracelets from natural stones (agate, obsidian, coral, aquamarine, etc.).",
+      "why_fit": "VERIFIED (optlist.ru): real Ufa natural-stone jewelry producer. Despite the 'Turquoise Wholesale' name its actual line spans many stones, so turquoise is one input among many — plausible but not turquoise-dedicated.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Камневеды (Kamnevedy)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Russia (online; delivery across RF/CIS)",
+      "dest_iso": "RU",
+      "phones": [
+        "8 (800) 775-45-19"
+      ],
+      "email": "",
+      "website": "kamnevedy.ru",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Online store of 100% natural stones; multiple turquoise"
+      ],
+      "business": "Online store of 100% natural stones; multiple turquoise SKUs; wholesale and phone orders with delivery across Russia and CIS.",
+      "why_fit": "VERIFIED: continually restocks natural turquoise, but sells mostly finished beads/jewelry/souvenirs rather than buying rough — a plausible retail-side channel rather than a rough importer.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Радуга Самоцветов (Raduga Samotsvetov)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Russia (online; Moscow hub)",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "samotsvet.ru",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Wholesale supplier (since 2005) of natural-stone jewelr"
+      ],
+      "business": "Wholesale supplier (since 2005) of natural-stone jewelry, tumbles, unprocessed stones and minerals; 10,000+ SKUs; min wholesale order 25,000 rub.",
+      "why_fit": "VERIFIED: genuine volume wholesaler of natural stones and unprocessed material with nationwide/CIS reach — a plausible turquoise/semi-precious buyer, though generic (no Iran-specific signal).",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Минерал Маркет (Mineral Market)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Russia (online)",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "mineralmarket.ru",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Online store of natural and semi-precious stones includ"
+      ],
+      "business": "Online store of natural and semi-precious stones including natural turquoise; wholesale and retail, delivery across Russia and worldwide.",
+      "why_fit": "VERIFIED: carries natural turquoise and restocks it; a plausible import/reseller channel, though predominantly retail-oriented.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Камни мира (Kamni Mira)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Krasnodar",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "камнимира.рф",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Wholesale natural stones (gemologist-verified) with a p"
+      ],
+      "business": "Wholesale natural stones (gemologist-verified) with a physical store in Krasnodar; small-wholesale min order ~3,000 rub.; trains jewelry masters.",
+      "why_fit": "VERIFIED: real Krasnodar-based wholesale natural-stone supplier with gemologist verification serving jewelry makers — a plausible turquoise/semi-precious buyer.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Sima-land (Сима-ленд)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Yekaterinburg",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "sima-land.ru",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "One of Russia's largest general wholesalers; catalog li"
+      ],
+      "business": "One of Russia's largest general wholesalers; catalog lists 'Iranian turquoise' (иранская бирюза) galtovka beads among natural-stone goods.",
+      "why_fit": "VERIFIED listing of 'Иранская бирюза' beads, but these are low-cost finished galtovka bead strands (likely China-sourced), not rough Iranian imports — a weak fit as a direct buyer of an Iranian rough exporter. Dropped 3 to 2.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Московский ювелирный завод (MIUZ Diamonds)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow",
+      "dest_iso": "RU",
+      "phones": [
+        "8-800-100-19-20"
+      ],
+      "email": "",
+      "website": "miuz.ru",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Major 90-year Russian jewelry manufacturer/retailer (15"
+      ],
+      "business": "Major 90-year Russian jewelry manufacturer/retailer (15,000+ models); produces some natural-turquoise-set jewelry lines.",
+      "why_fit": "VERIFIED: does set natural turquoise, but is diamond/gold-dominated and would source cut cabochons through established distributors rather than import rough from a new exporter. Dropped 3 to 2.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "GemOtvet",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Rostov-on-Don",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "uvelir.info",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Wholesale of lab-grown gems (diamond/sapphire/ruby/alex"
+      ],
+      "business": "Wholesale of lab-grown gems (diamond/sapphire/ruby/alexandrite/emerald), moissanite, pearl, plus semi-precious and ornamental stones.",
+      "why_fit": "VERIFIED (uvelir.info PRO-partner, Rostov-on-Don) real gem wholesaler, but catalog skews to lab-grown/moissanite; turquoise not confirmed in range — weakest sector fit. Dropped 3 to 2.",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Shenzhen Hongxingyuan Jewelry Co., Ltd. (深圳鸿兴源珠宝)",
+      "categories": [
+        "China"
+      ],
+      "city": "Shenzhen (Pinghu, Longgang), Guangdong",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.made-in-china.com/showroom/198510221625 ; https://shenzhenhx.goldsupplier.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Verified Shenzhen gemstone manufacturer/wholesaler whos"
+      ],
+      "business": "Verified Shenzhen gemstone manufacturer/wholesaler whose core product is turquoise (Chinese/Damele turquoise cabochons, free-shape stones) plus other semi-precious stones and silver jewelry.",
+      "why_fit": "Most turquoise-specific fit of the set and a genuine consumer of rough turquoise as production input, so a plausible buy-side outlet. But verification shows the visible catalog is DOMESTIC Chinese turquoise; the finds' claim that it 'purchases rough gemstones from all over the world' could not be confirmed, and it is not confirmed to import Persian/Iranian rough. Rating lowered 4→3.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "ZH Gems — Shenzhen Hong Zheng Technology Ltd. (深圳市宏正科技)",
+      "categories": [
+        "China"
+      ],
+      "city": "Shenzhen (Longgang), Guangdong",
+      "dest_iso": "CN",
+      "phones": [
+        "+86 137-5111-4848"
+      ],
+      "email": "info@TurquoiseChina.com",
+      "website": "https://www.turquoisechina.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Verified 15+ yr turquoise specialist: sells raw/rough t"
+      ],
+      "business": "Verified 15+ yr turquoise specialist: sells raw/rough turquoise material and bulk turquoise beads/jewelry wholesale; own cutting factory; GIA-tested stock.",
+      "why_fit": "Wholesales turquoise rough/raw material at volume and is directly reachable, so a plausible importer of high-grade Persian rough to upgrade inventory. Caveat surfaced in verification: the company advertises its OWN turquoise mine, which reduces its need to import rough. Held at 3.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "China Arts & Crafts Shenzhen Co., Ltd.",
+      "categories": [
+        "China"
+      ],
+      "city": "Shenzhen (Futian), Guangdong",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "https://cacscl.goldsupplier.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Verified manufacturer/wholesaler/exporter of semi-preci"
+      ],
+      "business": "Verified manufacturer/wholesaler/exporter of semi-precious stones incl. natural and stabilized turquoise and coral, in rough, beads and carvings; own factory (200+ workers).",
+      "why_fit": "Explicitly works with turquoise rough across grades/origins and consumes loose semi-precious material as input, so a realistic channel for imported rough turquoise/semi-precious. Real sector fit; not confirmed to import from Iran. Held at 3.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Beach Gem & Jewelry Co., Ltd.",
+      "categories": [
+        "China"
+      ],
+      "city": "Guangzhou, Guangdong",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "https://beachgem.en.made-in-china.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Verified est. 1989 Guangzhou trader/manufacturer of sem"
+      ],
+      "business": "Verified est. 1989 Guangzhou trader/manufacturer of semi-precious and synthetic gemstones, loose stones and semi-precious beads plus silver jewelry (HK sister entity 'Beach Gem & Jewelry (HK) Co., Ltd.' also exists).",
+      "why_fit": "Long-standing trader that genuinely sources/buys loose semi-precious stone (the most clearly buy-side profile here). Caveat: verified catalog skews to quartz/beryl/garnet/tourmaline colored stones and synthetics; turquoise is not prominent, so turquoise-specific demand is weak. Held at 3.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Shenzhen Guangyuan Jewelry Co., Ltd. (深圳广缘珠宝)",
+      "categories": [
+        "China"
+      ],
+      "city": "Shenzhen (Longgang), Guangdong",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "",
+      "website": "https://vcgemsfty1.en.made-in-china.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Verified 15+ yr wholesaler/exporter of semi-precious st"
+      ],
+      "business": "Verified 15+ yr wholesaler/exporter of semi-precious stone, gemstone, turquoise, glass and shell items with in-house lapidary (~100 hand-cutters, ~50 cutting machines).",
+      "why_fit": "In-house cutting operation means it buys rough material to cut, a genuine buy-side signal, and it lists turquoise + semi-precious in its range. Product mix also includes glass/shell; not confirmed to import from Iran. Held at 3.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "SGJ Gems (Super Natural Gemstone Jewelry Co., Ltd.)",
+      "categories": [
+        "China"
+      ],
+      "city": "Guangzhou (Panyu), Guangdong",
+      "dest_iso": "CN",
+      "phones": [],
+      "email": "info@sgjgems.com",
+      "website": "https://sgjgems.com/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Verified Guangzhou semi-precious stone jewelry manufact"
+      ],
+      "business": "Verified Guangzhou semi-precious stone jewelry manufacturer + lapidary cutting service; jewelry factory in Panyu (Guangzhou), gemstone cutting factory in Huizhou.",
+      "why_fit": "Runs a lapidary cutting service, so it buys semi-precious rough as input, a real end-user buy-side profile. Broad product mix and no turquoise emphasis make turquoise-specific demand uncertain. Held at 2.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Anonymous buyer (contact gated on ExportersIndia)",
+      "categories": [
+        "India"
+      ],
+      "city": "Alappuzha, Kerala",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "gem-stones.htm",
+      "match_score": 82,
+      "verdict": "confirmed - re-verified live on the ExportersIndia source: genuine BUY-side RFQ, India (Kerala), explicitly Iranian turquoise, dated ~July 2026. Only weakness is an anonymous/gated buyer, which caps confidence at medium. This is the single most on-target active demand signal in the set.",
+      "tier": "active",
+      "buys": [
+        "Natural Irani (Iranian) Turquoise Gemstone, 10 Carat"
+      ],
+      "wants": "Natural Irani (Iranian) Turquoise Gemstone, 10 Carat",
+      "posted": "c. early July 2026 (source lists 'one month ago'; page accessed 2026-08-06)",
+      "source_url": "https://www.exportersindia.com/buyers/gem-stones.htm",
+      "role": "Not disclosed on public listing",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Sanjeev Kumar",
+      "categories": [
+        "India"
+      ],
+      "city": "Moradabad, Uttar Pradesh",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "gem-stones.htm",
+      "match_score": 82,
+      "verdict": "confirmed - re-verified live on the ExportersIndia source: genuine semi-precious BUY-side RFQ, India (UP), dated ~July 2026. But it is generic (NOT turquoise- or Iran-specific), so fit to the exact Iranian-turquoise product is unconfirmed.",
+      "tier": "active",
+      "buys": [
+        "Semi Precious Gemstone, 500 pcs (listing marked 'urgent"
+      ],
+      "wants": "Semi Precious Gemstone, 500 pcs (listing marked 'urgent')",
+      "posted": "c. early July 2026 (source lists 'one month ago'; page accessed 2026-08-06)",
+      "source_url": "https://www.exportersindia.com/buyers/gem-stones.htm",
+      "role": "Personal name; no company/title disclosed. Moradabad is a metalware/handicraft-jewellery hub, so semi-precious stones plausibly for inlay/jewellery.",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "GemPundit (Fortuna Retail Pvt. Ltd.)",
+      "categories": [
+        "India"
+      ],
+      "city": "Gurgaon, Haryana (offices also Delhi & Jaipur)",
+      "dest_iso": "IN",
+      "phones": [
+        "+91-11-40844599"
+      ],
+      "email": "gpundit@gempundit.com",
+      "website": "https://www.gempundit.com/gemstones/turquoise/origin/iran",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Large online + retail certified-gemstone house; runs a "
+      ],
+      "business": "Large online + retail certified-gemstone house; runs a dedicated 'turquoise / origin: Iran' catalog category with many AGR/ITLGJ-certified Iran-origin SKUs.",
+      "why_fit": "Merchandises certified Iranian-origin turquoise at scale, so it must source Iranian material on a recurring basis. Best-funded, most reachable, dominant commercial target for an Iran-turquoise export broker.",
+      "linkedin": "https://in.linkedin.com/company/gempundit",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Firoz Gems",
+      "categories": [
+        "India"
+      ],
+      "city": "Jaipur, Rajasthan",
+      "dest_iso": "IN",
+      "phones": [
+        "+91-80460-40816"
+      ],
+      "email": "",
+      "website": "https://www.indiamart.com/firoz-gems-jaipur/",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Proprietor firm (est. 2016), Mr. Mohammad Firoz; manufa"
+      ],
+      "business": "Proprietor firm (est. 2016), Mr. Mohammad Firoz; manufacturer of gemstone beads and Iranian turquoise - cuts/processes turquoise into beads and cabochons.",
+      "why_fit": "Manufactures beads/cabochons FROM Iranian turquoise, so it consumes Iranian rough/blocks as raw-material input - the purest raw-turquoise buyer profile in the set, not merely a reseller.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Shubh Gems",
+      "categories": [
+        "India"
+      ],
+      "city": "New Delhi (Lajpat Nagar II)",
+      "dest_iso": "IN",
+      "phones": [
+        "+91-8010-555-111"
+      ],
+      "email": "",
+      "website": "https://www.shubhgems.com/irani-firoza",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Established astrological-gemstone retailer/wholesaler; "
+      ],
+      "business": "Established astrological-gemstone retailer/wholesaler; its site states it sources turquoise from certified dealers in Iran, Arizona and Tibet, with Nishapuri (Iran) as headline.",
+      "why_fit": "Publicly positions Nishapuri/Iranian turquoise as its flagship and claims sourcing from Iranian dealers - a clear, reachable importer/reseller of exactly this product. Rated 4 (not 5) because the Iran-sourcing line is marketing copy, not verified direct import.",
+      "linkedin": "https://in.linkedin.com/company/shubh-gems",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Nazar Gems",
+      "categories": [
+        "India"
+      ],
+      "city": "Jaipur, Rajasthan (Chandpole Bazar)",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.indiamart.com/nazar-gems/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Exporter/importer/manufacturer/trader of precious & sem"
+      ],
+      "business": "Exporter/importer/manufacturer/trader of precious & semi-precious stones since 2001; explicitly lists turquoise and self-describes as an importer.",
+      "why_fit": "Self-described importer of semi-precious stones including turquoise, with an established Jaipur wholesale channel that can move Iranian rough/cut turquoise into the domestic and export cutting trade.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Brahma Gems (Aarush Gems Pvt. Ltd.)",
+      "categories": [
+        "India"
+      ],
+      "city": "New Delhi (Defence Colony / Lajpat Nagar II; est. 2011)",
+      "dest_iso": "IN",
+      "phones": [
+        "+91-8744010101"
+      ],
+      "email": "",
+      "website": "https://brahmagems.com/irani-firoza.html",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Certified natural-gemstone retailer/wholesaler; sells I"
+      ],
+      "business": "Certified natural-gemstone retailer/wholesaler; sells IGI/IIGJ-certified Irani Firoza (Iranian turquoise) across multiple Delhi showrooms.",
+      "why_fit": "Pvt Ltd with multiple showrooms that must import/stock certified Iranian turquoise to sell it; reachable, mid-volume, named founders.",
+      "linkedin": "https://in.linkedin.com/company/brahma-gems",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "MyRatna (Mewar Gem Art)",
+      "categories": [
+        "India"
+      ],
+      "city": "Udaipur, Rajasthan (Nada Khada)",
+      "dest_iso": "IN",
+      "phones": [
+        "+91-91250-34444"
+      ],
+      "email": "info@myratna.com",
+      "website": "https://myratna.com/gemstone/turquoise",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Established precious/semi-precious loose-gemstone and j"
+      ],
+      "business": "Established precious/semi-precious loose-gemstone and jewellery retailer/wholesaler; catalogs original Irani turquoise/firoza. (Company registered ~2005; family claims longer lineage.)",
+      "why_fit": "Stocks Iranian turquoise as a catalogued gemstone; buying capacity plus a named, reachable executive make it a solid mid-volume target.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Faiz Jaipur Gems",
+      "categories": [
+        "India"
+      ],
+      "city": "Jaipur, Rajasthan",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.indiamart.com/faiz-jaipur-gems/turquoise-stone.html",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Manufacturer/trader of gemstones; markets Natural Irani"
+      ],
+      "business": "Manufacturer/trader of gemstones; markets Natural Irani Firoza Turquoise (turquoise stone product line).",
+      "why_fit": "Manufactures/trades Iranian firoza, so it consumes Iranian rough/cut turquoise as input - a rough/cut-turquoise buyer inside the Jaipur cutting hub.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "PMKK Gems / Rashi Ratan Jaipur",
+      "categories": [
+        "India"
+      ],
+      "city": "Jaipur, Rajasthan (Johari Bazar; est. 1970)",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://rashiratanjaipur.net/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Certified natural-gemstone dealer/wholesaler; large liv"
+      ],
+      "business": "Certified natural-gemstone dealer/wholesaler; large live catalog of Natural Irani Firoza / Irani Turquoise SKUs with lab certificates, plus a dedicated wholesale arm.",
+      "why_fit": "Long-standing certified dealer with many Irani-firoza SKUs and explicit wholesale capacity - indicates bulk sourcing of Iranian turquoise.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "World Gems Jewelry",
+      "categories": [
+        "India"
+      ],
+      "city": "Jaipur, Rajasthan",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.indiamart.com/worldgemsjewelry/our-products.html",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "IndiaMART trader / wholesaler / distributor of loose ge"
+      ],
+      "business": "IndiaMART trader / wholesaler / distributor of loose gemstones; product line includes Natural Irani Turquoise (Firoza).",
+      "why_fit": "Lists Iranian turquoise as a distributed product, so it sources it wholesale - a plausible recurring reseller, but small and scale/import channel unverified.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Vaibhav Jewellers (Jaipur gem wholesaler)",
+      "categories": [
+        "India"
+      ],
+      "city": "Jaipur, Rajasthan",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.indiamart.com/proddetail/natural-irani-firoza-persian-turquoise-gemstone-from-vaibhav-jewellers-2850811558491.html",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "25+ yr wholesale/retail gems & jewellery house; lists N"
+      ],
+      "business": "25+ yr wholesale/retail gems & jewellery house; lists Natural Irani Firoza / Persian Turquoise (10-50 ct lots) for jewellery making.",
+      "why_fit": "Sells Iranian/Persian turquoise wholesale for jewellery manufacturing, implying ongoing sourcing - but reachable only via IndiaMART store and small-lot scale.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Aakib Gems",
+      "categories": [
+        "India"
+      ],
+      "city": "Jaipur, Rajasthan (Tripolia Bazar)",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.aakibgems.com/turquoise.html",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Trader/retailer of natural loose gemstones; catalogs Na"
+      ],
+      "business": "Trader/retailer of natural loose gemstones; catalogs Natural Irani Turquoise (firoza) cabochons graded by carat.",
+      "why_fit": "Regularly lists Iranian turquoise cabochon inventory, so it sources Iranian firoza; small-to-mid Jaipur buyer, easy to reach directly via own site.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Akrati Jewels Inc.",
+      "categories": [
+        "India"
+      ],
+      "city": "Jaipur, Rajasthan (est. 1999)",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.akratijewelsinc.com/gemstones/turquoise-stone-jewelry",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Wholesale 925 sterling-silver gemstone jewellery manufa"
+      ],
+      "business": "Wholesale 925 sterling-silver gemstone jewellery manufacturer/exporter (US/UK markets); makes turquoise-set pendants/rings at scale.",
+      "why_fit": "End-user that consumes cut turquoise cabochons as raw material for silver jewellery - a recurring buyer of finished/cut turquoise, though origin is flexible (Iranian, Arizona or stabilized), not necessarily Iranian.",
+      "linkedin": "https://in.linkedin.com/company/akrati-jewels-inc",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Cambay Gemstone Exports",
+      "categories": [
+        "India"
+      ],
+      "city": "Khambhat (Cambay), Anand, Gujarat (est. 2019)",
+      "dest_iso": "IN",
+      "phones": [
+        "+91-79493-69690"
+      ],
+      "email": "",
+      "website": "https://www.cambaygemstoneexports.com/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Trader/wholesaler/distributor of agate & semi-precious "
+      ],
+      "business": "Trader/wholesaler/distributor of agate & semi-precious tumbled stones, bracelets, healing products; lists 'gemstone turquoise' among many lines.",
+      "why_fit": "Khambhat semi-precious hub player, but core focus is agate and healing/tumbled crystals; its 'turquoise' is likely dyed howlite/stabilized for the crystal trade rather than Iranian firoza - weak fit for this exact product.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Otantik Taş",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Turkey (online; likely Istanbul)",
+      "dest_iso": "TR",
+      "phones": [
+        "+90 544 341 5549"
+      ],
+      "email": "",
+      "website": "https://www.otantiktas.com",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Online natural-stone & gemstone-jewelry retailer/wholes"
+      ],
+      "business": "Online natural-stone & gemstone-jewelry retailer/wholesaler",
+      "why_fit": "Product pages explicitly sell 'İran Nişabur Firuze Taşı' (Iranian Neyshabur turquoise) graded A+++, so it already sources/imports exactly this product; warns buyers against dyed/compressed fakes, implying genuine Iranian rough supply. Reachable by phone/WhatsApp.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Teonora",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Istanbul",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://teonora.com",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Natural-stone jewelry maker/retailer (lithotherapy focu"
+      ],
+      "business": "Natural-stone jewelry maker/retailer (lithotherapy focus), wholesale + retail",
+      "why_fit": "Sells 'İran Turkuaz (Firuze)' faceted 8mm bracelets and states it offers Iranian turquoise at wholesale and retail — already buying/importing Iranian turquoise; a direct sourcing target.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Dünya Doğal Taş (Bijuteri Hediyelik Eşya San. Tic. Ltd. Şti.)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Istanbul (Eminönü/Tahtakale) + Izmir (Kemeraltı)",
+      "dest_iso": "TR",
+      "phones": [
+        "+90 212 513 03 00"
+      ],
+      "email": "",
+      "website": "https://www.dunyadogaltas.com.tr",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Major natural-stone / bijouterie / silver importer-expo"
+      ],
+      "business": "Major natural-stone / bijouterie / silver importer-exporter & wholesaler, thousands of SKUs incl. turquoise bracelets",
+      "why_fit": "Established import/export wholesaler in Turkey's main natural-stone hub (Tahtakale) with turquoise already in its range and formal import operations — an ideal bulk buyer for Neyshabur turquoise.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Robine Stone Doğal Taş",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Istanbul (Eminönü Tahtakale)",
+      "dest_iso": "TR",
+      "phones": [
+        "0533 319 89 36"
+      ],
+      "email": "info@robinstone.com.tr",
+      "website": "https://www.robinstone.com.tr",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Self-described 'one of Turkey's largest jewelry importe"
+      ],
+      "business": "Self-described 'one of Turkey's largest jewelry importers' — direct importer/wholesaler of natural-stone jewelry & raw stones",
+      "why_fit": "Positions itself as a direct importer/wholesaler of natural stones at scale in the Eminönü bazaar hub; strong distribution channel for turquoise and reachable with a business email.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Hasyılmaz Doğal Taş",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Turkey (marketplace seller)",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.trendyol.com/hasyilmaz",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Natural-stone seller trading on Trendyol & Hepsiburada"
+      ],
+      "business": "Natural-stone seller trading on Trendyol & Hepsiburada",
+      "why_fit": "Actively lists 'Doğal İran Nişabur Firuze (Turkuaz)' stones sold by carat (e.g. 17.4ct, 27.6ct, 51.1ct) — already sourcing Iranian Neyshabur turquoise; reachable through its marketplace storefronts, though no direct B2B line was found.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Sedef Doğal Taş",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Turkey (likely Istanbul)",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.sedefdogaltas.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "'Turkey's most dynamic natural stone & bijouterie store"
+      ],
+      "business": "'Turkey's most dynamic natural stone & bijouterie store' — wholesale + retail",
+      "why_fit": "Sells turkuaz including raw/tumbled (ham/tamburlanmış) firuze at wholesale and invites bulk buyers to contact directly; right sector, reachable, plausible volume buyer.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Eminönü Boncuk (Doğaltaş Boncuk Mağazası)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Istanbul (Pendik)",
+      "dest_iso": "TR",
+      "phones": [
+        "+90 532 212 88 70"
+      ],
+      "email": "eminonuboncuk@gmail.com",
+      "website": "https://www.eminonuboncuk.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Wholesale natural stones, beads & jewelry materials; im"
+      ],
+      "business": "Wholesale natural stones, beads & jewelry materials; imports from China, Brazil, Uruguay, Russia + domestic",
+      "why_fit": "Already an active importer/wholesaler of natural stones (incl. turquoise strands and tumbled firuze) with established import operations, so adding an Iranian-turquoise line is a natural fit; fully reachable.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "İmran Doğal Taş",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Istanbul (Eminönü Tahtakale, Şark Han)",
+      "dest_iso": "TR",
+      "phones": [
+        "0532 629 12 27"
+      ],
+      "email": "",
+      "website": "https://www.imrandogaltas.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "~20-yr wholesale importer of semi-precious stones & nat"
+      ],
+      "business": "~20-yr wholesale importer of semi-precious stones & natural-stone jewelry (dizi/kütle/ham taş)",
+      "why_fit": "Long-established wholesale importer of semi-precious stones in the main bazaar hub; right sector and reachable, though turquoise is not explicitly listed in visible catalog.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Haşimi Doğaltaş",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Istanbul (Kapalıçarşı / Grand Bazaar)",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.hasimidogaltas.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Certified natural-stone & gold/silver jewelry house, wh"
+      ],
+      "business": "Certified natural-stone & gold/silver jewelry house, wholesale + retail worldwide",
+      "why_fit": "Grand Bazaar gemstone dealer emphasizing certified/original natural stones and global wholesale shipping; a plausible buyer of certified Neyshabur turquoise for the jewelry trade.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "No10 Doğal Taş",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Turkey (online)",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://no10dogaltas.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Online natural-stone retailer/wholesaler"
+      ],
+      "business": "Online natural-stone retailer/wholesaler",
+      "why_fit": "Sells 'Nişabur Firuzesi 8mm' turquoise bracelets — already stocks Neyshabur turquoise, so a demonstrated buyer of this exact product, though at smaller scale.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Vidinli",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Turkey",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "europages.com.tr",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Importer, supplier & wholesaler of all precious & semi-"
+      ],
+      "business": "Importer, supplier & wholesaler of all precious & semi-precious stones (Europages listing)",
+      "why_fit": "Explicitly describes itself as an importer/wholesaler of precious & semi-precious stones — a direct buy-side target for turquoise — but only a Europages directory listing was found, so contact detail is limited.",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "İşbilir Doğal Taş ve Takı Tasarım (Işbilir AVM)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Bursa",
+      "dest_iso": "TR",
+      "phones": [
+        "+90 505 281 87 20"
+      ],
+      "email": "",
+      "website": "https://www.isbiliravm.com",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Natural-stone jewelry retailer/wholesaler"
+      ],
+      "business": "Natural-stone jewelry retailer/wholesaler",
+      "why_fit": "Sells turquoise (firuze) jewelry but emphasizes colored/compressed (sıkma/renklendirilmiş) turquoise and domestic origin, so appetite for genuine Iranian rough is weaker; still a reachable sector player.",
+      "linkedin": "",
+      "needs_enrichment": false,
       "bulk_likely": false
     }
   ]

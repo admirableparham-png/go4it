@@ -1,9 +1,9 @@
 {
   "source": "verified-hunt-2025+",
-  "total": 7,
-  "with_phone": 1,
-  "with_email": 1,
-  "with_website": 1,
+  "total": 56,
+  "with_phone": 19,
+  "with_email": 18,
+  "with_website": 47,
   "buyers": [
     {
       "company": "National Fertilizers Limited (NFL) — Govt of India undertaking",
@@ -152,6 +152,1126 @@
       "posted": "~2026-07 (shown 'One month ago')",
       "source_url": "https://www.exportersindia.com/buyers/zinc-sulphate.htm",
       "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Agrimatco Iraq (Agrimatco S.A.L.)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Erbil / Baghdad (nationwide)",
+      "dest_iso": "IQ",
+      "phones": [
+        "+964 772 266 0989"
+      ],
+      "email": "agrimatco.kurdistan@agrimatco-me.com",
+      "website": "https://www.agrimatco-iraq.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Iraq's oldest/largest agricultural-inputs distributor ("
+      ],
+      "business": "Iraq's oldest/largest agricultural-inputs distributor (est. 1953, Erbil/Baghdad): seeds, basic + specialty/micronutrient fertilizers, agrochemicals, irrigation. Ranked #1 fertilizer importer in Iraq (~30% of national fertilizer imports, active Jun2024-May2025 per Volza customs data).",
+      "why_fit": "Verified real, nationwide distributor of specialty/micronutrient fertilizers (parent group's fertilizer unit carries Yara micronutrient-bearing lines); zinc sulphate is a standard micronutrient line for this business. Largest and most reachable agri-input importer in the country. On-page ZnSO4 stock not confirmed, hence 4 not 5.",
+      "linkedin": "https://www.linkedin.com/company/agrimatco-iraq",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "DMA Group (DanMix / Dan Block)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Erbil (HQ); Baghdad, Duhok, South Iraq",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "https://www.dmavet.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Veterinary & agricultural group (est. 1984, Erbil): Dan"
+      ],
+      "business": "Veterinary & agricultural group (est. 1984, Erbil): DanMix feed-premix manufacturing, Dan Block mineral salt-block manufacturing for livestock, and distribution of vet/agri products across Iraq.",
+      "why_fit": "Confirmed feed-premix and mineral salt-block MANUFACTURER (dmavet.com) - feed-grade zinc sulphate is a core raw material for premixes/mineral blocks, making them a direct industrial end-user/buyer. Established, multi-city sales force with named managers.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Farm Agro",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Sulaymaniyah / Kalar (serves Erbil, Duhok)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "https://farm-agro.co",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Fertilizer distributor serving Kurdistan-Iraq farmers ("
+      ],
+      "business": "Fertilizer distributor serving Kurdistan-Iraq farmers (Sulaymaniyah, Kalar, Erbil, Duhok): NPK plus micronutrient blends sourced from raw materials (distributor, not manufacturer).",
+      "why_fit": "Site explicitly markets micronutrient fertilizers to correct zinc/iron/magnesium deficiencies in Kurdish soils - strongest on-page zinc signal in the list and a direct end-use for ZnSO4. As a blender/distributor it must source the raw micronutrient.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "ARK Company",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Erbil (Mosul Road, near Alwa Market)",
+      "dest_iso": "IQ",
+      "phones": [
+        "+964 770 446 3508"
+      ],
+      "email": "info@ark.krd",
+      "website": "https://ark.krd",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Chemical supplier and fertilizer trader in Erbil: urea,"
+      ],
+      "business": "Chemical supplier and fertilizer trader in Erbil: urea, DAP, compound/mixed fertilizers, potassium products, specialty/water-soluble formulations.",
+      "why_fit": "Confirmed Erbil chemical + fertilizer importer/distributor with a specialty-formulation range; zinc sulphate is a plausible add-on but no explicit micronutrient/zinc line found on-page. Direct phone and email published.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Sdiq Bilal Khidhir Company",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Iraq",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Verified bulk fertilizer importer into Iraq - ~23% of n"
+      ],
+      "business": "Verified bulk fertilizer importer into Iraq - ~23% of national fertilizer imports, top-3 active importer Jun2024-May2025 per Volza customs data.",
+      "why_fit": "Genuinely active 2024-2025 importer, but customs records show BULK MACRO fertilizer (DAP 18-46 from Turkey), not micronutrients; no zinc/micronutrient line and no public contact found, so fit for ZnSO4 specifically is weak. Downgraded from 3.",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Adnan Ramathan Kanabi Company",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Iraq",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Verified Iraqi fertilizer importer (Volza company profi"
+      ],
+      "business": "Verified Iraqi fertilizer importer (Volza company profile; ~17% of national fertilizer imports, active Jun2024-May2025).",
+      "why_fit": "Confirmed active importer, but Volza shows HSN 3105/3101 (compound/nitrogenous macro fertilizer from Turkey) - no micronutrient or ZnSO4 evidence and no public contact. Downgraded from 3.",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Al-Hazim Group",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Duhok",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "info@alhazimgroup.com",
+      "website": "http://www.alhazimgroup.com",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Diversified Iraqi group (Duhok): oil, frozen foods, fru"
+      ],
+      "business": "Diversified Iraqi group (Duhok): oil, frozen foods, fruits, sulfur, beverages, plus agricultural-services & chemical-trading divisions (subsidiaries incl. Fadi, Melad, Hazim, Anwar Al-Azal).",
+      "why_fit": "Confirmed real Duhok conglomerate with an ag-services & chemical-trading arm that could import chemicals; zinc sulphate is only speculative and a minor unit of a broad group.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Mellat Holding (Agricultural division)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Erbil / Kurdistan",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "https://mellatholding.com",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Kurdistan holding group (est. ~20yrs, Erbil; branches B"
+      ],
+      "business": "Kurdistan holding group (est. ~20yrs, Erbil; branches Baghdad/Basra; 14 companies). Agricultural arm imports fertilizers, insecticides, tractors and farm inputs.",
+      "why_fit": "Confirmed real agricultural-input importer, but the fertilizer range is broad/macro and micronutrient/ZnSO4 use is not confirmed on-page.",
+      "linkedin": "https://www.linkedin.com/company/mellat-group",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Blue Deebaj FZCO",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (JAFZA South, Jebel Ali)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 4 234 0481"
+      ],
+      "email": "sales@bluedeebajfzco.com",
+      "website": "bluedeebajfzco.com",
+      "match_score": 82,
+      "verdict": "plausible - real, active UAE fertilizer/chemicals trader corroborated across multiple customs aggregators (Volza, Tendata, ImportGenius, Panjiva, Eximpedia) and the single best sector fit; the ZnSO4 23%/12-shipment figure was echoed in secondary search. Caveats: it is ALSO a fertilizer producer/exporter (mixed buy/sell side), and 'Dec 2025' is a data-refresh date, not a verified shipment date, so not fully confirmed.",
+      "tier": "active",
+      "buys": [
+        "Feed/agri-grade zinc sulphate. Appears in UAE zinc-sulp"
+      ],
+      "wants": "Feed/agri-grade zinc sulphate. Appears in UAE zinc-sulphate customs data as ~23% of imports / 12 shipments (Volza). Fertilizer blender/trader that imports raw micronutrients AND produces NPK / SSP / SOP / MgSO4 (Jebel Ali, Malaysia, India), so it both imports feedstock and manufactures/exports finished fertilizer. Exact spec/qty not public.",
+      "posted": "Customs-data currency 'as of Dec 2025' (Volza refresh date, NOT a verified shipment date)",
+      "source_url": "https://www.volza.com/p/zinc-sulphate/buyers/buyers-in-united-arab-emirates/",
+      "role": "'Soni' (soni@bluedeebaj.ae) - likely sales/purchasing contact; no named procurement head confirmed",
+      "linkedin": "https://www.linkedin.com/company/blue-deebaj-fzco",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Coral Laboratories & Chemicals Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Warehouse S10, Al Qusais Industrial Area 3)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 4 273 3907"
+      ],
+      "email": "corallab@eim.ae",
+      "website": "eim.ae",
+      "match_score": 82,
+      "verdict": "plausible - real UAE chemicals/reagent trader with a named, reachable contact; ZnSO4 import is business-consistent but unverifiable beyond paywalled customs data, fit is reagent/technical grade (not feed/agri), and there is no confirmed 2025 shipment date.",
+      "tier": "active",
+      "buys": [
+        "Reagent/technical-grade zinc sulphate. Lab-reagent + wa"
+      ],
+      "wants": "Reagent/technical-grade zinc sulphate. Lab-reagent + water-treatment chemicals distributor (HACH / OHAUS / SRL agent, ISO 9001). Listed on Volza as ~19% of UAE ZnSO4 imports / 10 shipments. Importing ZnSO4 is consistent with its reagent/water-treatment lines, but the import could not be independently corroborated beyond the paywalled Volza page.",
+      "posted": "Customs-data currency 'as of Dec 2025' (Volza refresh date, NOT a verified shipment date)",
+      "source_url": "https://www.volza.com/p/zinc-sulphate/buyers/buyers-in-united-arab-emirates/",
+      "role": "Naved Sayed - Technical Manager",
+      "linkedin": "https://ae.linkedin.com/in/naved-sayed",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Agro National Chemical & Fertilizer Trading Co. LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Business Bay, Ontario Tower)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 50 726 4928"
+      ],
+      "email": "info@agronational.ae",
+      "website": "https://agronational.ae/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "UAE-registered chemical fertilizer trading company (~15"
+      ],
+      "business": "UAE-registered chemical fertilizer trading company (~15 yrs); imports & distributes DAP/Urea/MOP/SOP/NPK plus specialty micronutrients across the Middle East, Africa, and South Asia. Operates an NDA intermediary/trader model.",
+      "why_fit": "Explicitly lists 'Zinc Sulphate, Boron, Specialty Micronutrients' in its product range and is a buy-side importer/distributor of exactly feed/agri-grade micronutrients - sector-perfect and reachable. Not a 5 because it is a trader (also re-sells/exports) and no customs record of an actual ZnSO4 import was found.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Chemway Chemicals",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (office) + Sharjah (Al Sajja Industrial Area)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 54 994 9584"
+      ],
+      "email": "sales@chemwaychemicals.com",
+      "website": "https://chemwaychemicals.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Supplier/distributor of fertilizer chemicals and micron"
+      ],
+      "business": "Supplier/distributor of fertilizer chemicals and micronutrients (metal sulphates) for agriculture and animal-feed; has a dedicated zinc-sulphate product line and an ISO facility in India.",
+      "why_fit": "Deals in exactly this product with both agri and animal-feed micronutrient divisions, so plausibly imports raw/agri-grade ZnSO4 to distribute. Rated mid because it positions itself as a manufacturer AND supplier of ZnSO4 - largely sell-side, so more competitor/reseller than a net buyer.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Emirates Feed Factory LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Abu Dhabi",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "atninfo.com",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Compound animal-feed manufacturer since 1995 (poultry/c"
+      ],
+      "business": "Compound animal-feed manufacturer since 1995 (poultry/cattle/livestock feed) serving Al Ain dairy and poultry farms.",
+      "why_fit": "Genuine end-user of trace-mineral inputs and zinc sulphate is a standard feed micronutrient, so a plausible buyer - but no confirmed direct ZnSO4 purchase found, and feed makers typically source zinc via ready-made premixes rather than raw ZnSO4. Sector fit only.",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Al Dahra Holding LLC (animal feed / Al Tannaf division)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Abu Dhabi",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://www.aldahra.com/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Major UAE agribusiness (est. 1995); animal-feed divisio"
+      ],
+      "business": "Major UAE agribusiness (est. 1995); animal-feed division (Al Tannaf, ~2M MT/yr) producing Wafi compound feed pellets alongside a large forage/field-crop operation.",
+      "why_fit": "Scale end-user of compound feed and trace minerals, so a plausible bulk consumer of zinc sources - but its footprint is mainly forage/roughage + compound pellets, trace-mineral sourcing is likely via premix blenders, and no direct raw-ZnSO4 buying was evidenced. Weak/indirect sector fit only.",
+      "linkedin": "https://www.linkedin.com/company/al-dahra-agriculture",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Undisclosed commercial buyer (RFQ on Bidzaar, aggregated on Kontur.Zakupki)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Perm (Пермь)",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "zakupki.kontur.ru",
+      "match_score": 82,
+      "verdict": "plausible",
+      "tier": "active",
+      "buys": [
+        "Цинк сернокислый / Сульфат цинка 7-водный (ZnSO4·7H2O, "
+      ],
+      "wants": "Цинк сернокислый / Сульфат цинка 7-водный (ZnSO4·7H2O, heptahydrate), GOST 4174-77 — 2 tons; est. budget 300,000–540,000 RUB",
+      "posted": "2026-02-25",
+      "source_url": "https://zakupki.kontur.ru/IS57710120",
+      "role": "Not disclosed in public listing",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "ГК «Мегамикс» / Megamix Group (OOO Megamix)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Volgograd (HQ premix plant); 2nd premix plant in Lipetsk region; feed mills in Moscow & Chuvashia",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 (8442) 97-97-97"
+      ],
+      "email": "info@megamix.ru",
+      "website": "https://www.megamix.ru",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Russia's largest producer of premixes and BVMK (protein"
+      ],
+      "business": "Russia's largest producer of premixes and BVMK (protein-vitamin-mineral concentrates) for farm animals & poultry; two premix plants (Volgograd + Lipetsk region) totalling ~180,000 t/yr, plus feed mills in Moscow & Chuvashia; founded 2009 (Volgograd plant, built with BASF/Ottevanger).",
+      "why_fit": "Confirmed real, substantial premix producer with a dedicated zinc micro-element line — premix output at this scale consumes large tonnage of zinc salts (sulphate monohydrate / oxide). National end-user with central procurement, exactly go4it's target sector. Not confirmed to import from abroad, hence 4 not 5.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "OOO «Коудайс МКорма» / Koudijs MKorma",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow HQ (пос. Сосенское, д. Летово); premix & prestarter plants in Lakinsk, Vladimir region",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 (495) 645-21-59"
+      ],
+      "email": "info@kmkorma.ru",
+      "website": "https://www.kmkorma.ru",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Russian-Dutch (De Heus) venture, ranked #1 in Russia fo"
+      ],
+      "business": "Russian-Dutch (De Heus) venture, ranked #1 in Russia for premix & prestarter production; premix plant 120,000 t/yr + prestarter plant 60,000 t/yr in Lakinsk (Vladimir region); also supplies vitamins, amino acids, enzymes, feed additives.",
+      "why_fit": "Confirmed #1 Russian premix maker; premix/prestarter manufacturing at 120k t/yr requires zinc sulphate/oxide as a trace-mineral input. Large, established end-user with a dedicated purchasing office — prime target for feed-grade ZnSO4. Import status unconfirmed.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "AO «Витасоль» / Vitasol",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Borovsk (п. Институт), Kaluga region",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 (48438) 2-94-00"
+      ],
+      "email": "",
+      "website": "https://www.vitasol.ru",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Major developer/producer of premixes and vitamin-minera"
+      ],
+      "business": "Major developer/producer of premixes and vitamin-mineral mixes for cattle, pigs, poultry (premixes 0.1–5%, mineral mixes 0.04–0.5%); Borovsk, Kaluga region; INN 4003009224.",
+      "why_fit": "Confirmed real registered entity and established premix/VMS producer; mineral premix blending uses zinc sulphate as a standard micro-element carrier. Mid-large end-user with in-house recipe formulation, directly reachable. Right sector, plausible recurring buyer; import unconfirmed.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "OOO «Мустанг Технологии Кормления» / Mustang Feeding Technologies",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Stupino, Moscow region (premix & concentrate plant «Мустанг Ступино»); milk-replacer plant in Gagarin, Smolensk region",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://mustangtk.ru",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Leading Russian producer of feeds & feed additives; «Му"
+      ],
+      "business": "Leading Russian producer of feeds & feed additives; «Мустанг Ступино» plant (opened 2019, ~1.7bn RUB) with premix line 40,000 t/yr and concentrate line 120,000 t/yr; milk-replacer plant in Gagarin, Smolensk region; own lab centre opened 2026.",
+      "why_fit": "Confirmed large domestic premix/concentrate maker; 40k t/yr premix output implies steady demand for zinc micro-element salts (ZnSO4·H2O / ZnO). Centralized sourcing, plausible buyer of imported feed-grade zinc sulphate. Import unconfirmed.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "OOO «Торговая Промышленная Компания» (TPK / tpcompany.ru)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow (warehouses: Moscow, St. Petersburg, Ufa, Novomoskovsk)",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 (495) 241-18-87"
+      ],
+      "email": "sale@tpcompany.ru",
+      "website": "https://tpcompany.ru/catalog/neorganika/sulfat-tsinka/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Wholesaler/distributor of industrial & inorganic chemic"
+      ],
+      "business": "Wholesaler/distributor of industrial & inorganic chemicals; stocks 'Сульфат цинка моногидрат' (in stock), sold wholesale from warehouses in Moscow, St. Petersburg, Ufa, Novomoskovsk (Tula).",
+      "why_fit": "VERIFIED it lists and stocks the exact product (сульфат цинка моногидрат, 'в наличии') and sells wholesale — a buy-side reseller directly reachable by email. Downgraded 5→4 because the product page frames it for agricultural/fertilizer use (feed-grade NOT confirmed) and its supply origin (import vs domestic) is unconfirmed.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "OOO «Ноябрь»",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Delivers Russia-wide (listed via agroserver.ru / evht.ru)",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://evht.ru/price-list/zinkoviy_kuporos_monohydrate.html",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Distributor supplying feed-grade zinc sulphate monohydr"
+      ],
+      "business": "Distributor supplying feed-grade zinc sulphate monohydrate (ZnSO4·H2O, 35% Zn), stated origin China, from ~150 RUB/kg with Russia-wide delivery (listed via agroserver.ru / evht.ru).",
+      "why_fit": "VERIFIED it imports & resells the exact Iran-competitive product (Chinese feed-grade ZnSO4·H2O 35%) — the strongest import-substitution target in this list. Rated 4 (not 5) only because the entity is a thin marketplace-listing reseller with no substantiated corporate footprint or direct phone captured.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "OAO «Буйский химический завод» (BHZ / Buysky Chemical Plant)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Buy (Буй), Kostroma region",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://bhz.ru",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Producer of water-soluble mineral & micro-element ferti"
+      ],
+      "business": "Producer of water-soluble mineral & micro-element fertilizers, incl. a full micro-element chelate range (Zn, Cu, Mn, Fe, etc.; Aquamix / Khelatem lines); 252 product types.",
+      "why_fit": "Downgraded 3→2. Verification shows BHZ's own catalog SELLS zinc sulphate heptahydrate (bhz.ru/.../tsink-sernokislyy-7-vodnyy) plus zinc chelates — i.e. it is a domestic producer/reseller of the exact product, a near-competitor rather than a buyer. Weak buy-side fit.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "AO «Щёлково Агрохим» / Shchelkovo Agrokhim (brand Betaren)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Shchelkovo, Moscow region",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://betaren.ru",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Large agrochemical producer (190+ products); makes zinc"
+      ],
+      "business": "Large agrochemical producer (190+ products); makes zinc micro-fertilizers — Ultramag Super Zinc-700 (suspension) and Ultramag Chelate Zn-15.",
+      "why_fit": "Downgraded 3→2. Confirmed producer of zinc micro-fertilizers, implying purchase of zinc raw material — but its products are chelate/suspension formulations typically built on zinc oxide / chelate precursors (partly domestic), so a buy-side need for ZnSO4 specifically is plausible-but-unconfirmed. Does not resell ZnSO4 itself, so retained (unlike a pure competitor).",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Mashriqi-Wal Feed Mill",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Jalalabad",
+      "dest_iso": "AF",
+      "phones": [
+        "+93 799 16 7000"
+      ],
+      "email": "info@mashriqiwalfeed.com",
+      "website": "https://www.mashriqiwalfeedmill.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Modern animal/poultry feed manufacturer, 4th Floor Tora"
+      ],
+      "business": "Modern animal/poultry feed manufacturer, 4th Floor Torabaz Khan Market, Jalalabad; states customer coverage across 34 cities.",
+      "why_fit": "VERIFIED as a genuine, currently-active feed maker and importer: trade data shows it as the leading soya-meal importer into Afghanistan (57 shipments, Jun 2024-May 2025). A compound-feed formulator at this scale routinely uses trace minerals including feed-grade zinc sulphate. Best lead here: real, active 2025 import behaviour AND direct published contacts. Caveat: no evidence it buys ZnSO4 specifically (imports are soya meal), and it may prefer finished premix.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Afghan Meyar Feed Production and Poultry",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kabul",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "https://www.dnb.com/business-directory/company-profiles.afghan_meyar_feed_production_and_poultry.d10576782ecfccbc3565ade91b1750aa.html",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Poultry/animal feed producer and poultry farm, Street 1"
+      ],
+      "business": "Poultry/animal feed producer and poultry farm, Street 11, District 7, Gulbagh, Kabul.",
+      "why_fit": "VERIFIED documented importer: ~73 shipments of animal feed / vitamin-mineral premix (HSN 2308/2304/2309) via suppliers incl. Iffco Pakistan and Zagro Singapore. CORRECTION to the original find: origins are Pakistan/China/Singapore, NOT Turkey. A feed maker importing mineral premix is a plausible feed-grade zinc end-user, but note it buys finished premix (which already contains zinc) rather than raw ZnSO4. Right sector; weak direct contactability.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Akhwat Poultry & Cattle Feeds (Akhwat Group / APC)",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Jalalabad (HQ), branches in Kabul, Mazar-e-Sharif, Kunduz, Baghlan, Faryab, Farah, Khost",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "https://akhwatgroup.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "One of Afghanistan's largest feed manufacturers, Shaikh"
+      ],
+      "business": "One of Afghanistan's largest feed manufacturers, Shaikh Mesry Industrial Park; Starter/Grower/Finisher/Layer poultry feed and cattle feed at national scale (~200 MT/day claimed). Director Besmillah Habib.",
+      "why_fit": "VERIFIED large-scale compound-feed maker with national reach and a reachable group website; trace minerals (feed-grade zinc sulphate) are a standard formulation input at this volume. High potential consumption. Caveat: no evidence of direct ZnSO4 import; would likely buy premix.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Swat Agro Chemicals Afghanistan",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kabul",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "https://www.facebook.com/p/Swat-Agro-Chemicals-Afghanistan-100064746247033/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Afghanistan operation of a Pakistani agrochemical/plant"
+      ],
+      "business": "Afghanistan operation of a Pakistani agrochemical/plant-nutrition distributor; sells pesticides plus zinc micronutrients (Headland Zn buffered zinc sulphate, Zinc Force, etc.).",
+      "why_fit": "Most product-relevant lead: it already distributes zinc-sulphate-based micronutrients in Afghanistan, so ZnSO4 is core to its catalogue. Strong caveats keep it off a top rating: it is a branch of a Peshawar/Lahore-based Pakistani parent and sources FINISHED BRANDED product from that parent, so it is unlikely to buy bulk raw Iran-origin ZnSO4; contact is Facebook-page only.",
+      "linkedin": "https://pk.linkedin.com/company/swat-agro-chemicals",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Afghan Safi Feed Mill (ASFM)",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Jalalabad / Kabul",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "https://afghansafirefinery.com/Feed-Mill",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Private poultry/cattle/fish feed producer, registered w"
+      ],
+      "business": "Private poultry/cattle/fish feed producer, registered with the Ministry of Commerce & Industry; part of Afghan Safi Group; imports Indian soya-bean meal via Torkham.",
+      "why_fit": "Genuine compound-feed manufacturer, so feed-grade zinc sulphate is a routine trace-mineral input. Lowered from 3 to 2 because of entity confusion (an Uzbekistan namesake 'Afghan Safi MCHJ', plus 'Afghan Safi Feed Mill Malyar' and 'Ikbal Safi' variants) and because contactability runs through a lightly-maintained refinery-group site rather than a dedicated feed-mill channel.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Milli Feed Mill",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Kabul",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "https://www.dnb.com/business-directory/company-profiles.milli_feed_mill.235519df4a30ab624ed87b03d2379a71.html",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Animal/poultry feed mill, Kolola Poshta Road, Kabul; pr"
+      ],
+      "business": "Animal/poultry feed mill, Kolola Poshta Road, Kabul; principal Nematullah Sahak; site millifeedmill.com.",
+      "why_fit": "Real feed manufacturer (verified in D&B / ExportHub directories), so trace-mineral micronutrients including feed-grade zinc sulphate are standard inputs. Kept but rated low: thin public detail, no evidence of active importing, weak/indirect contactability.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Nangarhar Valley Development / Agriculture Corporation (NVDA)",
+      "categories": [
+        "Afghanistan"
+      ],
+      "city": "Jalalabad, Nangarhar",
+      "dest_iso": "AF",
+      "phones": [],
+      "email": "",
+      "website": "https://mail.gov.af/en/node/597",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "State-owned large-scale agricultural corporation (under"
+      ],
+      "business": "State-owned large-scale agricultural corporation (under the Ministry of Agriculture) managing the Nangarhar canal scheme; citrus, olive and field-crop production; described as Afghanistan's largest landowner.",
+      "why_fit": "Verified very large agricultural end-user; zinc-deficient Afghan soils make zinc sulphate a relevant crop micronutrient. Kept at low rating: as a state entity it procures via formal tender rather than an open buy-lead, so actionability for a private ZnSO4 seller is low, and there is no evidence it currently buys this product.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Jaffer Brothers Agro Services (Pvt) Ltd — Jaffer Group of Companies",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Karachi",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "https://www.jaffer.com/",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Large diversified group; its agro arm imports and distr"
+      ],
+      "business": "Large diversified group; its agro arm imports and distributes fertilizers, micronutrients and crop-protection products nationwide",
+      "why_fit": "VERIFIED import buyer of this exact product: its 'Grozin' zinc sulphate (27% Zn as metal, monohydrate) is manufactured by Agromed Pte Ltd, Singapore and imported/distributed by Jaffer across Pakistan (confirmed via jaffer.com product page + multiple retailer listings). Established, reachable, clearly already imports ZnSO4.",
+      "linkedin": "https://www.linkedin.com/company/jaffer-group-of-companies",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Five Star Fertilizers (Sajjad Gujjar)",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Punjab (nationwide distribution)",
+      "dest_iso": "PK",
+      "phones": [
+        "+92 300 4205428"
+      ],
+      "email": "",
+      "website": "https://www.sajjadgujjar.com/",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Importer and distributor of fertilizers and micronutrie"
+      ],
+      "business": "Importer and distributor of fertilizers and micronutrients to farmers, dealers and distributors",
+      "why_fit": "VERIFIED: sajjadgujjar.com self-describes as 'Sajjad Gujjar — Importer' and sells directly-imported Granular Zinc Sulphate Monohydrate 33% (ZnSO4.H2O) with lab certificates. Imports THIS exact product; directly reachable by phone/WhatsApp. Caveat: personal-brand trader, so likely smaller volumes than a group.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "ZarkhaizBee",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Punjab, nationwide",
+      "dest_iso": "PK",
+      "phones": [
+        "+92 345 9445714"
+      ],
+      "email": "",
+      "website": "https://zarkhaizbee.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Online agri-input / gardening shop and wholesaler of fe"
+      ],
+      "business": "Online agri-input / gardening shop and wholesaler of fertilizers and micronutrients with nationwide delivery",
+      "why_fit": "VERIFIED sells the exact product: Zinc Sulphate Monohydrate 33% granular / 35% powder in bulk (custom packing, ~Rs550/kg wholesale) via zarkhaizbee.com and Daraz. Downgraded from 4 to 3: it is a small e-commerce reseller, not a confirmed importer, so a modest bulk buyer at best.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Suncrop Group",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Multan (8-B Industrial Estate)",
+      "dest_iso": "PK",
+      "phones": [
+        "+92 61 111 580 580"
+      ],
+      "email": "info@suncropgroup.com",
+      "website": "https://www.suncropgroup.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "One of Pakistan's largest agri-input groups (multiple c"
+      ],
+      "business": "One of Pakistan's largest agri-input groups (multiple companies) — manufacturer, importer, formulator and distributor of pesticides, fertilizers and micronutrients",
+      "why_fit": "Large, real, sector-fit group with a micronutrients line and import capability. Downgraded from 4 to 3: no evidence found that it handles or imports zinc sulphate specifically — plausible bulk buyer on scale/capability grounds only.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Pak Agro Fertilizers & Chemicals (Pvt) Ltd",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Kotmomin, District Sargodha",
+      "dest_iso": "PK",
+      "phones": [
+        "+92 48 6681009"
+      ],
+      "email": "contact@pakagrofertilizers.com",
+      "website": "https://pakagrofertilizers.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Importer, formulator and distributor of fertilizers and"
+      ],
+      "business": "Importer, formulator and distributor of fertilizers and pesticides, with a micronutrients product line",
+      "why_fit": "VERIFIED self-described 'Importer, Formulator and Distributor' with a zinc micronutrient line (e.g. Microphos); no explicit ZnSO4 SKU confirmed. Named, reachable decision-maker; plausible feedstock/finished-product buyer.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Evyol Group (Kanzo Ag / AgPharma / Combagro)",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Lahore",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "http://www.evyolgroup.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Fast-growing agri-input group: sales, service and distr"
+      ],
+      "business": "Fast-growing agri-input group: sales, service and distribution of pesticides, seeds, fertilizer and micronutrients",
+      "why_fit": "Large real player in the zinc micronutrient space, but VERIFIED products are EDTA chelated zinc 5% (Crest/Select/Impact brands) — a substitute product, not zinc sulphate. Zinc-sulphate feedstock link is speculative. Kept at 3 on sector adjacency and scale.",
+      "linkedin": "https://pk.linkedin.com/company/evyolgroup",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Excel Chemicals",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Karachi",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "https://www.excel-chemicals.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Karachi industrial-chemical and laboratory-reagent supp"
+      ],
+      "business": "Karachi industrial-chemical and laboratory-reagent supplier since 1998 (ISO certified)",
+      "why_fit": "VERIFIED established Karachi supplier (owns excel-chemicals.com) whose 100+ chemical range explicitly runs 'from Acetic Acid to Zinc Sulphate'. Real, sector-fit trader that could import bulk ZnSO4 for industrial/lab/feed buyers; likely smaller technical-grade volumes.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Pakref (Kappa International Pte Ltd)",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Karachi",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "https://www.exporthub.com/pakref/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Karachi-based industrial and specialty chemical supplie"
+      ],
+      "business": "Karachi-based industrial and specialty chemical supplier/distributor",
+      "why_fit": "Downgraded from 3 to 2: only presence is a thin exporthub.com storefront (no owned domain), and the 'Pte Ltd' name is Singapore-style; confirmed only as a generic 'industrial chemicals Karachi' listing, with no independently verified zinc sulphate SKU. Real-ish but weak.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Tara Group of Pakistan",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Pakistan (nationwide)",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Agri-input company marketing micronutrient fertilizers "
+      ],
+      "business": "Agri-input company marketing micronutrient fertilizers (Tara Zinco 21% granular zinc sulphate, Tara Zinc liquid) nationwide",
+      "why_fit": "VERIFIED but weak as an import buyer: it manufactures its own branded domestic zinc sulphate (Tara Zinco 21%G, Tara Zinc Liquid 10% w/v), so it competes rather than imports. Only a possible raw-feedstock buyer. Tangential fit.",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "İlpaş (İlpaş İlaç Tohum Fidan Gübre Üretim ve Pazarlama A.Ş.)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Bursa",
+      "dest_iso": "TR",
+      "phones": [
+        "+90 224 224 04 02"
+      ],
+      "email": "ilpas@ilpas.com",
+      "website": "https://www.ilpas.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Manufacturer of specialty/micronutrient fertilizers (CO"
+      ],
+      "business": "Manufacturer of specialty/micronutrient fertilizers (COMPO line, drip/foliar/granular, slow-release), including micro-element mixes containing zinc, boron, manganese, molybdenum, iron, copper.",
+      "why_fit": "Blends zinc into its micro-element fertilizer products, so it buys zinc sulphate as a raw material rather than producing ZnSO4 itself. Established, reachable fertilizer maker in Turkey. Not a seller of ZnSO4 as such.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Ünikim Gübre (Bitki Besleme)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Turkey",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.unikim.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Producer of liquid and water-soluble micronutrient/trac"
+      ],
+      "business": "Producer of liquid and water-soluble micronutrient/trace-element fertilizers for foliar and drip application (e.g. Micromix Kombi micro-element mix).",
+      "why_fit": "Manufactures blended micro-element fertilizers containing zinc, so it consumes zinc sulphate as an input. Right sector, clearly uses the product; direct decision-maker contact not yet confirmed.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Doğuş Yem Katkı Maddeleri ve Yem Premiks",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Tarsus, Mersin",
+      "dest_iso": "TR",
+      "phones": [
+        "+90 530 172 12 38"
+      ],
+      "email": "info@dogusyemkatki.com.tr",
+      "website": "https://dogusyemkatki.com.tr",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Manufacturer of animal-feed additives and vitamin/miner"
+      ],
+      "business": "Manufacturer of animal-feed additives and vitamin/mineral/amino-acid premixes for ruminant and poultry feed.",
+      "why_fit": "Mineral premixes use zinc sulphate as a trace-element (Zn) source, so this premix maker buys ZnSO4 as raw material. Small/mid firm, directly reachable by phone/email/WhatsApp.",
+      "linkedin": "https://tr.linkedin.com/company/dogusyemkatki",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Makro Tarım (Makro Tarım İnş. Taah. Tur. Paz. San. Tic. Ltd. Şti.)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Döşemealtı, Antalya",
+      "dest_iso": "TR",
+      "phones": [
+        "+90 242 344 83 88"
+      ],
+      "email": "info@makrotarim.com.tr",
+      "website": "https://makrotarim.com.tr",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Producer/exporter of organic, water-soluble granular an"
+      ],
+      "business": "Producer/exporter of organic, water-soluble granular and liquid fertilizers and micro-element compounds since 1996 (Antalya OSB).",
+      "why_fit": "Produces micro-element fertilizer blends that contain zinc, so it buys zinc sulphate as an input. Larger reachable manufacturer; note it exports finished blends and may have established sourcing.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "ÖYKÜ Yem",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Adana",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://oykuyem.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Manufacturer of feed premixes, phosphates and feed addi"
+      ],
+      "business": "Manufacturer of feed premixes, phosphates and feed additives for ruminants and poultry (Adana free/organized zone).",
+      "why_fit": "Mineral/trace premixes contain zinc sulphate as the Zn source, so it consumes ZnSO4 as raw material. Right sector; contact person not yet confirmed.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Öztar İlaç (Ozmegamin)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Turkey",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.oztarilac.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Manufacturer of premixes, vitamins and feed additives f"
+      ],
+      "business": "Manufacturer of premixes, vitamins and feed additives for livestock.",
+      "why_fit": "Trace-mineral premixes use zinc sulphate as a zinc source, making it a plausible ZnSO4 buyer. Right sector, plausible fit; contact person not yet confirmed.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Farmavet International",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Turkey",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.farmavet.com.tr",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Since 1992, manufacturer of feed additives, premixes (F"
+      ],
+      "business": "Since 1992, manufacturer of feed additives, premixes (FARMIX), animal feed and veterinary/animal-nutrition products.",
+      "why_fit": "Vitamin-mineral premixes require a zinc source such as zinc sulphate, so it is a plausible raw-material buyer. Established sector player; larger firm may already have contracted suppliers.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Gümüştaş Madencilik (Gümüştaş Maden)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Gümüşhane",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.gumustasmaden.com.tr",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Operator of a lead-zinc-copper ore froth-flotation / co"
+      ],
+      "business": "Operator of a lead-zinc-copper ore froth-flotation / concentration plant in Gümüşhane (Pb-Zn-Cu concentrates).",
+      "why_fit": "Zinc sulphate is a standard sphalerite depressant reagent in lead-zinc flotation, so a flotation plant of this type is an industrial ZnSO4 (technical grade) consumer. Different grade/spec than feed/agri; plausible industrial buyer.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "AS Kimya Sanayi ve Dış Ticaret A.Ş.",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Turkey",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.askimya.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Chemical raw-material importer/distributor (200+ produc"
+      ],
+      "business": "Chemical raw-material importer/distributor (200+ products, 5000+ customers across Turkey and abroad); catalogues Zinc Sulphate among its products.",
+      "why_fit": "As a raw-material import/distribution house it is a realistic channel to import zinc sulphate (incl. from competitive sources) for resale in Turkey. Caveat: it also lists ZnSO4 for sale, so it is a distributor rather than an end-user.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Taymaz Dış Ticaret (Taymaz Ltd.)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Turkey",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "info@taymazltd.com.tr",
+      "website": "https://taymazltd.com.tr",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Foreign-trade (import/export) trading house dealing in "
+      ],
+      "business": "Foreign-trade (import/export) trading house dealing in fertilizers, listing çinko sülfat (zinc sulphate) in its fertilizer import/export line.",
+      "why_fit": "A fertilizer trading company is a possible import/distribution channel for Iran-sourced ZnSO4. Low confidence: the site positions it as a supplier/exporter of the product, so its role as a buyer vs. seller is ambiguous.",
+      "linkedin": "",
+      "needs_enrichment": false,
       "bulk_likely": false
     }
   ]

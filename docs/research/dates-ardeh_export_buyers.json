@@ -1,9 +1,9 @@
 {
   "source": "verified-hunt-2025+",
-  "total": 9,
-  "with_phone": 0,
-  "with_email": 0,
-  "with_website": 0,
+  "total": 88,
+  "with_phone": 25,
+  "with_email": 11,
+  "with_website": 79,
   "buyers": [
     {
       "company": "Mohammed Mudassir Ali",
@@ -192,6 +192,1824 @@
       "posted": "2026-07-06",
       "source_url": "https://www.exportersindia.com/buyers/fresh-dates.htm",
       "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "DOLPHIN TRADING CO. (likely = Dolphin Sea Co. for General Trading)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Sulaymaniyah",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "nut-dry-fruits.htm",
+      "match_score": 82,
+      "verdict": "confirmed - date (06 Jun 2026) and buy-side (pulses/nuts/dried fruits importer) re-verified directly on the TradeKey source; named Sulaymaniyah entity corroborated by a real Dolphin Sea foodstuffs importer with cold-chain. Caveats: request is generic dried-goods, dates/ardeh not named; TradeKey contact gated; handle-to-legal-entity link inferred not proven.",
+      "tier": "active",
+      "buys": [
+        "Pulses, nuts and dried fruits (bulk import). Generic dr"
+      ],
+      "wants": "Pulses, nuts and dried fruits (bulk import). Generic dried-goods buy request; dates/ardeh NOT explicitly named.",
+      "posted": "2026-06-06",
+      "source_url": "https://importer.tradekey.com/iraq/nut-dry-fruits.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "AL-Fairoz Al-Thahabi General Trading Ltd. Co.",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad (Palestine St, opposite Bank of Baghdad)",
+      "dest_iso": "IQ",
+      "phones": [
+        "+964 773 095 7222"
+      ],
+      "email": "info@fairozthahabi.com",
+      "website": "https://fairozthahabi.com/",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Importer/distributor of nuts, dried fruits, seeds, choc"
+      ],
+      "business": "Importer/distributor of nuts, dried fruits, seeds, chocolates and snack/energy/protein/date bars; retail + wholesale; LCL/FCL sourcing + customs clearance. (Also a broad general trader touching steel/construction, but the food line is real and explicit.)",
+      "why_fit": "VERIFIED on their own site: product list explicitly names imported date varieties Mazafati, Sayer, Zahedi and Piarom PLUS pistachios/figs and energy/protein bars - i.e. they already import this exact Iran-sourced date line. Published phone + email. Prime first call. (Ardeh/tahini not listed, so it would be a line-extension for them.)",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Sahel al Iraq Co. (FMCG Distribution)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Iraq + Kurdistan Region (nationwide)",
+      "dest_iso": "IQ",
+      "phones": [],
+      "email": "",
+      "website": "http://saheliraq.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "One of the largest FMCG distributors in Iraq and Kurdis"
+      ],
+      "business": "One of the largest FMCG distributors in Iraq and Kurdistan (~20 yrs), with refrigerated warehousing and nationwide delivery.",
+      "why_fit": "Refrigerated cold-chain is exactly what wet Mazafati rutab needs, and a nationwide FMCG network is the right retail channel for date bars and packaged ardeh. Big-volume channel potential, but no confirmed dried-fruit/date line today, so a channel-fit not a product-fit. Direct phone/email not retrieved - reach via LinkedIn/website.",
+      "linkedin": "https://www.linkedin.com/company/sahel-al-iraq/",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Knji Company for General Trade",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Zakho (Duhok / Kurdistan, Ibrahim Khalil border road)",
+      "dest_iso": "IQ",
+      "phones": [
+        "+964 750 789 8180"
+      ],
+      "email": "info@knjicompany.com",
+      "website": "https://www.knjicompany.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Import/export of spices, pulses and nuts (verified on s"
+      ],
+      "business": "Import/export of spices, pulses and nuts (verified on site; expanded into food from a furniture-trading base, 20+ yrs).",
+      "why_fit": "Established dry-goods/nuts importer sitting on the main Ibrahim Khalil border-trade corridor - a natural candidate to add Iranian dates and ardeh to an existing dried-food book. Reachable with two mobiles + email. Right sector; dates/tahini not yet in the stated line, and food is a newer expansion from furniture.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Al Tawasul Al Iraqia (Co. for General Trading)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad HQ (al-Nidhal area); branches Erbil, Sulaymaniyah, Mosul, Basra, Karbala, Amara",
+      "dest_iso": "IQ",
+      "phones": [
+        "+964 781 800 0009"
+      ],
+      "email": "info@tawasulco.com",
+      "website": "https://tawasulco.com/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Premier national FMCG distributor (Nestle, Cadbury, Mon"
+      ],
+      "business": "Premier national FMCG distributor (Nestle, Cadbury, Mondelez, Heinz, Lipton, Knorr, IFFCO, Americana); est. 2003, ~500 staff, ~13,500 outlets.",
+      "why_fit": "Premier national distribution reach for packaged/branded goods - relevant only if go4it sells finished, branded date bars or ardeh jars into retail. They distribute branded FMCG, NOT dried fruit/dates, so this is a pure channel-fit with no current category overlap. Downgraded from 3 to 2 accordingly.",
+      "linkedin": "https://www.linkedin.com/company/al-tawasul-al-iraqiya-co-ltd",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Waddi Al Urdun Ltd (Food Stuff & Animal Products)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Erbil (Gweear Complex, Bldg 16)",
+      "dest_iso": "IQ",
+      "phones": [
+        "+964 751 010 4028"
+      ],
+      "email": "info@waddialurdun.com",
+      "website": "https://waddialurdun.com/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Food importer and exclusive agent for international che"
+      ],
+      "business": "Food importer and exclusive agent for international cheese/dairy brands (Veldhuyzen, Somerdale, Westminster); also honey/oils/frozen; nationwide Kurdistan/Iraq distribution; est. 1980.",
+      "why_fit": "Established Kurdistan food importer with an agency/distribution model and cold logistics for dairy - infrastructure that transfers to chilled Mazafati and packaged ardeh. Current focus is cheese/dairy, so adjacent-category fit, not a confirmed date buyer.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Jannah Al-Iraq Food Trading Co. Ltd. (Janat / Ganat al-Iraq)",
+      "categories": [
+        "Iraq"
+      ],
+      "city": "Baghdad (Jamila wholesale market, District 514)",
+      "dest_iso": "IQ",
+      "phones": [
+        "+964 770 010 2030"
+      ],
+      "email": "ganataliraq@gmail.com",
+      "website": "https://ganataliraq.com.iq/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Food importer/distributor and exclusive agent (ghee, po"
+      ],
+      "business": "Food importer/distributor and exclusive agent (ghee, powdered milk, rice brands); est. 1998; verified customs import records.",
+      "why_fit": "Active importer/exclusive-agent based in Jamila, Baghdad's main wholesale food hub - a plausible channel to add Iranian dates/ardeh, but current range is dairy/rice so fit is weak/tangential today.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Bhanji General Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (DBCS Building, Al Garhoud, Deira)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 4 2677866"
+      ],
+      "email": "",
+      "website": "dates.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Dates listed inside a broad food buy request (\"...garli"
+      ],
+      "wants": "Dates listed inside a broad food buy request (\"...garlic, dates and garlic onions\", plus cashew, sunflower oil, cardamom, avocados). Not Mazafati-specific.",
+      "posted": "2026-07-12",
+      "source_url": "https://importer.tradekey.com/uae/dates.htm",
+      "role": "Reachable via HQ line; procurement person not published",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "BAZAARDATES (TradeKey handle)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "United Arab Emirates",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "dates.htm",
+      "match_score": 82,
+      "verdict": "plausible",
+      "tier": "active",
+      "buys": [
+        "Dates, one listing explicitly \"Mazafati dates\" (exact m"
+      ],
+      "wants": "Dates, one listing explicitly \"Mazafati dates\" (exact match to go4it's Iranian Mazafati), monthly frequency",
+      "posted": "2026-04-05",
+      "source_url": "https://importer.tradekey.com/uae/dates.htm",
+      "role": "Not disclosed (anonymized trade handle, not a verifiable legal entity)",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Natural Commodities (Natural Food Commodities)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Al Madinat Al Rayyan Business Center, Downtown)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 56 559 6170"
+      ],
+      "email": "info@natural-commodities.com",
+      "website": "https://natural-commodities.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Wholesale dates & dried-commodity supplier/trader; own "
+      ],
+      "business": "Wholesale dates & dried-commodity supplier/trader; own site states it sources dates from UAE, Saudi, Iran, Pakistan",
+      "why_fit": "Site explicitly lists IRAN among its date-sourcing origins, so already in-market for Iranian dates and the easiest warm pitch for Mazafati/Kimia. Top fit of the batch.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Al Barakah Dates Factory LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Dubai Industrial City)",
+      "dest_iso": "AE",
+      "phones": [
+        "+971-4-4324751"
+      ],
+      "email": "",
+      "website": "https://albarakahdatesfactory.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Largest privately owned date processing/packaging plant"
+      ],
+      "business": "Largest privately owned date processing/packaging plant in the Middle East (since 1988); date paste/syrup/powder, 40,000+ MT cold storage, exports to 90+ countries",
+      "why_fit": "Consumes very large volumes of raw dates as feedstock for paste/syrup lines; a natural bulk buyer of Iranian varieties, though current sourcing origins are not confirmed as Iran.",
+      "linkedin": "https://www.linkedin.com/company/al-barakah-dates-factory-llc",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Bayara / Gyma Food Industries LLC (Savola Group)",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Dubai Investment Park 2)",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://bayara.com",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Regional leader in nuts, dried fruits, DATES, seeds, sp"
+      ],
+      "business": "Regional leader in nuts, dried fruits, DATES, seeds, spices, pulses; ~23,000 MT/yr; new 100,000 sq ft plant. Bayara is the retail brand of manufacturer Gyma Food Industries.",
+      "why_fit": "Already imports, processes and packs dates at scale for retail/foodservice across MENA, so a plausible bulk private-label buyer of Mazafati. (The earlier list double-counted this as two companies; Bayara and Gyma are the same entity. Tahini/halawa line is unconfirmed.)",
+      "linkedin": "https://www.linkedin.com/company/bayara",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Galaxy Premium Dates Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Al Khabaisi, Deira)",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://galaxypremiumdates.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Pure-play premium dates wholesaler/retailer; currently "
+      ],
+      "business": "Pure-play premium dates wholesaler/retailer; currently imports from Saudi Arabia, Palestine, Jordan",
+      "why_fit": "Dedicated multi-origin dates importer with no Iranian line yet, so a logical target to add premium Mazafati; clearly reachable via storefront.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Reesha General Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai (Oud Metha)",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://reeshadubai.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Foodservice importer/distributor/re-exporter of rice, s"
+      ],
+      "business": "Foodservice importer/distributor/re-exporter of rice, sugar, dates, oil, pulses, spices across Middle East, Asia and Africa",
+      "why_fit": "Actively trades dates at wholesale and re-exports; could slot Iranian Mazafati into its dates line and Africa re-export flow.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Lifco Al Rawabi Trading Co. LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Sharjah / Dubai",
+      "dest_iso": "AE",
+      "phones": [
+        "+971 6 533 5635"
+      ],
+      "email": "alrawabi@lifco.com",
+      "website": "https://lifcorawabi.com",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Major UAE food distributor since 1980; distributes the "
+      ],
+      "business": "Major UAE food distributor since 1980; distributes the Al Rabih tahini/halawa/molasses range to 1,000+ retail & foodservice clients nationwide",
+      "why_fit": "Established distributor of tahini/halawa (Al Rabih), i.e. a ready retail channel for the ardeh/tahini side; note it distributes a finished brand rather than clearly bulk-sourcing raw ardeh.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Truebell Marketing & Trading LLC",
+      "categories": [
+        "United Arab Emirates"
+      ],
+      "city": "Dubai / Sharjah",
+      "dest_iso": "AE",
+      "phones": [],
+      "email": "",
+      "website": "https://www.truebell.org",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Large importer/distributor of gourmet food, beverage an"
+      ],
+      "business": "Large importer/distributor of gourmet food, beverage and FMCG serving HoReCa, retail and institutional clients",
+      "why_fit": "Real, large gourmet importer that could add premium dates/tahini for HoReCa and retail, but no current dates or tahini line was confirmed, so the fit is speculative.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "ГУ «Тувинский республиканский центр по гидрометеорологии и мониторингу окружающей среды» (Tuva Hydrometeorology Center)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Kyzyl, Republic of Tuva",
+      "dest_iso": "RU",
+      "phones": [
+        "95637078"
+      ],
+      "email": "",
+      "website": "www.tenderer.ru",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "44-FZ food-supply lot that explicitly names 'финики' (d"
+      ],
+      "wants": "44-FZ food-supply lot that explicitly names 'финики' (dates) within a mixed dried-fruit basket (хурма/чернослив/финики/груша/черника/рябина + apricot/raisin/prune/candied fruit); total lot budget ~530,662 RUB. Dates are one line item; would be filled by a Russian dried-fruit wholesaler, not a direct Iran import.",
+      "posted": "2026-08-06",
+      "source_url": "https://www.tenderer.ru/zakupki/tendery-suhofrukty",
+      "role": "Procurement/contract dept - no individual named in listing",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "ООО «ТРОН» (MosThrone)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow (Fud City, pavilion 4-066)",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 (977) 1-400-400"
+      ],
+      "email": "",
+      "website": "https://mosthrone.com",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Wholesale importer/distributor of nuts, dried fruits an"
+      ],
+      "business": "Wholesale importer/distributor of nuts, dried fruits and Iranian goods on the Fud City agro-cluster",
+      "why_fit": "CONFIRMED already imports the exact line directly from Iran: Mazafati dates (Premium/Silver/Gold boxes), CliFood date paste and date syrup - covers both the dates AND paste side. Established Iran channel.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Шахин / Shahin LTD",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow (Kaluzhskoe sh. area / Fud City)",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 (929) 684-69-79"
+      ],
+      "email": "",
+      "website": "http://shahinltd.ru",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Importer-distributor of Iranian food products into the "
+      ],
+      "business": "Importer-distributor of Iranian food products into the RF since 2014",
+      "why_fit": "CONFIRMED already imports this exact product - Iranian Mazafati and Kab-Kab dates plus Sayer/Zahedi/Arab varieties, saffron, raisins. Dedicated Iran-Russia channel, reachable.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "ООО «Мир Поставок»",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow (Fud City)",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 (495) 77-104-77"
+      ],
+      "email": "",
+      "website": "https://mir-postavok.ru",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Large nut & dried-fruit importer-wholesaler, self-impor"
+      ],
+      "business": "Large nut & dried-fruit importer-wholesaler, self-importing since 2005",
+      "why_fit": "Confirmed real importer of dates and dried fruit; lists Iran among sourcing countries and handles own customs/certification. Dates sourced from both Egypt and Iran (not crisply Iran-only), so strong but not top-tier fit.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "SunFruits",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Russia (national online wholesaler/retailer)",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://sunfruits.ru",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Dried-fruit importer/retailer specialising in premium d"
+      ],
+      "business": "Dried-fruit importer/retailer specialising in premium dates",
+      "why_fit": "Confirmed: purchases Mazafati dates directly from Iranian suppliers and cold-stores them (+2..+5C). Already sourcing this exact product from Iran, but smaller online-retail scale.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "ООО «Твелманс Тиссью» (Twelmans)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Volgograd",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 (905) 391-51-00"
+      ],
+      "email": "",
+      "website": "https://twelmans.ru",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Direct importer of Iranian food products for wholesale "
+      ],
+      "business": "Direct importer of Iranian food products for wholesale & HoReCa (canned veg, tomato paste, pomegranate sauce)",
+      "why_fit": "Confirmed direct Iran import + customs pipeline; official rep of ChiChiLas/Rojin/BADR/Makenzi. Not yet doing dates/ardeh - strong adjacency to add Mazafati/ardeh to an existing Iranian-product catalogue.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "ООО «Белое Дерево» / бренд Finix",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Novosibirsk",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "http://landing.wtree.ru/finix",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Manufacturer of natural date bars (Finix), 19 years in "
+      ],
+      "business": "Manufacturer of natural date bars (Finix), 19 years in market",
+      "why_fit": "Confirmed industrial end-user consuming dates/date paste as core raw material for its bars - a manufacturing buyer of bulk dates, single decision-maker for raw-material sourcing.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Take a Bite / Bite (бренд Bite)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://bite.ru",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Leading Russian fruit-&-nut bar producer"
+      ],
+      "business": "Leading Russian fruit-&-nut bar producer",
+      "why_fit": "Confirmed: dates are a headline binding ingredient in its bars - high-volume industrial end-user of whole dates/date paste. Best-in-list prospect on tonnage if qualified as supplier.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Royal Mubarak (ООО «Роял Мубарак»)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow (Teply Stan, Kaluzhskoe sh. 22 km)",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 (495) 924-64-66"
+      ],
+      "email": "royalfinik@yandex.ru",
+      "website": "https://royal-mubarak.ru",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Wholesale dates & dried-fruit supplier serving RF and C"
+      ],
+      "business": "Wholesale dates & dried-fruit supplier serving RF and CIS (INN 7736292210)",
+      "why_fit": "Confirmed wholesaler of Mazafati (Caspian) and Kab-Kab dates in bulk - already trading this product, but also sources some dates from Israel and holds its own supply, so an add-supplier target only.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Frutoss",
+      "categories": [
+        "Russia"
+      ],
+      "city": "St. Petersburg (+ Krasnodar branch)",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 (812) 248-000-1"
+      ],
+      "email": "",
+      "website": "https://frutoss.ru",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Nuts & dried-fruit wholesaler/retailer, own production"
+      ],
+      "business": "Nuts & dried-fruit wholesaler/retailer, own production",
+      "why_fit": "Confirmed: carries Iranian dates as a dedicated category (Zohidi, Kab-Kab, 1kg/5kg) and buys dried fruit wholesale. Smaller regional reseller already sourcing Iranian dates.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "РостАгроЭкспорт",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Krasnodar",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 913 907-95-56"
+      ],
+      "email": "info@rosagro.biz",
+      "website": "https://rosagro.biz",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Wholesale dried-fruit / agri supplier, 12+ years"
+      ],
+      "business": "Wholesale dried-fruit / agri supplier, 12+ years",
+      "why_fit": "Confirmed sells Mazafati dates wholesale with direct supplies from Iran. Already moving this exact product with own Iran channel, so add-supplier target only. NOTE: Krasnodar-based, not Moscow as originally listed.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Ореховый Городок / NutsCity",
+      "categories": [
+        "Russia"
+      ],
+      "city": "St. Petersburg",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://nutscity.ru",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Wholesale & retail nuts, dried fruits, own production"
+      ],
+      "business": "Wholesale & retail nuts, dried fruits, own production",
+      "why_fit": "Confirmed SPb distributor buying wholesale; stocks dates (incl. pitted). NOTE: correct site is nutscity.ru (orehioptom.ru is a separate seller); the tahini/sesame-paste claim could not be verified.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Мануфактура «Ингерман»",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Dolgoprudny (Moscow Oblast); SPb / Ekaterinburg / Rostov",
+      "dest_iso": "RU",
+      "phones": [
+        "+7 (495) 369-43-09"
+      ],
+      "email": "",
+      "website": "https://ingershop.ru",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Wholesale supplier of confectionery ingredients & paste"
+      ],
+      "business": "Wholesale supplier of confectionery ingredients & pastes since 2017",
+      "why_fit": "Confirmed sells tahini (тахини/тхина) without additives in 1/3/5/11 kg wholesale formats across multiple cities - plausible buyer of bulk Iranian ardeh to repack, but already has a tahini supply line.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Живой продукт (urbech.net)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Makhachkala, Dagestan",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://urbech.net",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Leading Russian urbech (stone-ground raw nut/seed paste"
+      ],
+      "business": "Leading Russian urbech (stone-ground raw nut/seed paste) manufacturer, 40+ SKUs incl. white/black/brown sesame",
+      "why_fit": "Confirmed sesame-paste manufacturer, but grinds its own paste from RAW sesame seeds (no roasting/oil) - would buy Iranian sesame seed rather than finished ardeh, so fit for the paste product itself is moderate.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Азовская кондитерская фабрика (АКФ)",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Azov, Rostov Oblast",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://www.azovkf.ru",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Major southern-Russia confectioner; tahini-peanut and t"
+      ],
+      "business": "Major southern-Russia confectioner; tahini-peanut and tahini-sunflower halva, kozinaki, sherbet (~5.5 t/month)",
+      "why_fit": "Confirmed industrial tahini-halva producer - heavy consumer of sesame paste/ardeh as raw material. Right sector and tonnage, but sourcing likely entrenched.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Кондитерская фабрика «Кремлина»",
+      "categories": [
+        "Russia"
+      ],
+      "city": "Moscow (Ruzheynyy per.)",
+      "dest_iso": "RU",
+      "phones": [],
+      "email": "",
+      "website": "https://kremlina.ru",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Confectionery manufacturer producing date-&-peanut bars"
+      ],
+      "business": "Confectionery manufacturer producing date-&-peanut bars and dried-fruits-in-chocolate",
+      "why_fit": "Confirmed uses Iranian dates as raw material (date-peanut bars, dried fruit in chocolate incl. 'Iranian dates'). End-user manufacturing buyer, though only part of range uses dates.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Shiva Bandi",
+      "categories": [
+        "India"
+      ],
+      "city": "Karimnagar, Telangana",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "kimia-dates.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Original Kimia dates - 12 x 500 kg (~6,000 kg)"
+      ],
+      "wants": "Original Kimia dates - 12 x 500 kg (~6,000 kg)",
+      "posted": "~2026-07 (listed 'one month ago')",
+      "source_url": "https://www.exportersindia.com/buyers/kimia-dates.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Suresh Jain",
+      "categories": [
+        "India"
+      ],
+      "city": "Vijayawada, Andhra Pradesh",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "kimia-dates.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Original Kimia dates - 1,000 kg"
+      ],
+      "wants": "Original Kimia dates - 1,000 kg",
+      "posted": "~2026-07 (listed 'one month ago')",
+      "source_url": "https://www.exportersindia.com/buyers/kimia-dates.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Sundaravarman K",
+      "categories": [
+        "India"
+      ],
+      "city": "Cuddalore, Tamil Nadu",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "kimia-dates.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Original Kimia dates - 200 cartons"
+      ],
+      "wants": "Original Kimia dates - 200 cartons",
+      "posted": "~2026-07 (listed 'one month ago')",
+      "source_url": "https://www.exportersindia.com/buyers/kimia-dates.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Sandeep Agarwal",
+      "categories": [
+        "India"
+      ],
+      "city": "Kolkata, West Bengal",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "kimia-dates.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Kimia dates - 1,000 kg"
+      ],
+      "wants": "Kimia dates - 1,000 kg",
+      "posted": "~2026-07 (listed 'one month ago')",
+      "source_url": "https://www.exportersindia.com/buyers/kimia-dates.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Adil Shamsi",
+      "categories": [
+        "India"
+      ],
+      "city": "Saharanpur, Uttar Pradesh",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "kimia-dates.htm",
+      "match_score": 92,
+      "verdict": "confirmed",
+      "tier": "active",
+      "buys": [
+        "Original Kimia dates - 100 kg"
+      ],
+      "wants": "Original Kimia dates - 100 kg",
+      "posted": "2026-06-09",
+      "source_url": "https://www.exportersindia.com/buyers/kimia-dates.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Tapan Keshri",
+      "categories": [
+        "India"
+      ],
+      "city": "India (city not stated on listing)",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "kimia-dates.htm",
+      "match_score": 82,
+      "verdict": "plausible (named + explicit June date, but location unspecified)",
+      "tier": "active",
+      "buys": [
+        "Original Kimia dates - 1,000 cartons"
+      ],
+      "wants": "Original Kimia dates - 1,000 cartons",
+      "posted": "2026-06-02",
+      "source_url": "https://www.exportersindia.com/buyers/kimia-dates.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Sahil Abbas",
+      "categories": [
+        "India"
+      ],
+      "city": "Kanpur, Uttar Pradesh",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "kimia-dates.htm",
+      "match_score": 82,
+      "verdict": "plausible (date + buy-side re-verified on source, but a 100-tonne single request from an individual is a red flag; qualify before quoting)",
+      "tier": "active",
+      "buys": [
+        "Original Kimia (Mazafati) dates - 100,000 kg"
+      ],
+      "wants": "Original Kimia (Mazafati) dates - 100,000 kg",
+      "posted": "~2026-07 (listed 'one month ago')",
+      "source_url": "https://www.exportersindia.com/buyers/kimia-dates.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Hanumanth Reddy",
+      "categories": [
+        "India"
+      ],
+      "city": "Hyderabad, Telangana",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "kimia-dates.htm",
+      "match_score": 82,
+      "verdict": "plausible (listing on source; displayed phone looks garbled)",
+      "tier": "active",
+      "buys": [
+        "Kimia dates - 2,000 kg"
+      ],
+      "wants": "Kimia dates - 2,000 kg",
+      "posted": "~2026-07 (listed 'one month ago')",
+      "source_url": "https://www.exportersindia.com/buyers/kimia-dates.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Aziz Trade Links Pvt. Ltd. (Barkaat Group)",
+      "categories": [
+        "India"
+      ],
+      "city": "Mumbai (Mandvi / Masjid Bunder + APMC), Maharashtra",
+      "dest_iso": "IN",
+      "phones": [
+        "+91-7942801670"
+      ],
+      "email": "",
+      "website": "https://www.aziztradelinks.com/ (also barkaatgroup.in)",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Importer, wholesaler and distributor of Irani Mazafati "
+      ],
+      "business": "Importer, wholesaler and distributor of Irani Mazafati / Kimia soft black dates (Grade A wet dates); repacks into consumer packs under the Barkaat brand for pan-India distribution. Est. 1992.",
+      "why_fit": "Long-established specialist importer of Iranian Mazafati/Kimia with own brand; clearly already buys this exact product. Absorbs the former separate 'Barkaat Packaging' entry - same family, same building (Hilal Manzil, Bhandari St, Mandvi) and same Barkaat brand, so treated as one contact.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Hurzuk Enterprise LLP",
+      "categories": [
+        "India"
+      ],
+      "city": "Navi Mumbai (Seawoods HQ + APMC Vashi + Turbhe MIDC cold-store), Maharashtra",
+      "dest_iso": "IN",
+      "phones": [
+        "+91-8879666906"
+      ],
+      "email": "hurzuk.abid@gmail.com",
+      "website": "https://www.hurzuk.in/ (also dates.business)",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Export house / general trading LLP (inc. 2013) that imp"
+      ],
+      "business": "Export house / general trading LLP (inc. 2013) that imports Bam Iranian Mazafati (Kimia) wet dates; grades, cold-stores (0-5C), repacks and distributes. Runs the dates.business trade portal.",
+      "why_fit": "Directly and repeatedly deals THIS exact product (Iranian Mazafati/Kimia) at importer-level scale with dedicated cold storage; openly reachable, natural repeat buyer for an Iran-origin supplier.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Fawaid International",
+      "categories": [
+        "India"
+      ],
+      "city": "Mandvi, Kutch, Gujarat",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.exportersindia.com/fawaid-international/",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Self-described biggest dates importer/supplier in Gujar"
+      ],
+      "business": "Self-described biggest dates importer/supplier in Gujarat (25+ years); Kimia sourced from Iran, plus Ajwa, Safawi, Medjool, Zahedi.",
+      "why_fit": "Explicitly states its Kimia is sourced from Iran and is a high-volume regional importer; strong reachable buy-side fit outside the Mumbai cluster.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Infinity Import Export Pvt. Ltd.",
+      "categories": [
+        "India"
+      ],
+      "city": "Vashi, Navi Mumbai (APMC Masala Market), Maharashtra",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.exportersindia.com/infinity-import-export-private-limited/",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Registered private limited (inc. 2011, ROC Mumbai; CIN "
+      ],
+      "business": "Registered private limited (inc. 2011, ROC Mumbai; CIN U74900MH2011PTC222868); explicitly imports/exports Iranian wet dates (Mazafati) and Kimia dates. Directors incl. Arash Hossein Shafiei.",
+      "why_fit": "Confirmed corporate importer of the exact product with an Iranian-origin director (direct-Iran sourcing signal); stronger than a mere trader. Reachable in the primary import hub.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Seema Trading Co.",
+      "categories": [
+        "India"
+      ],
+      "city": "Vashi, Navi Mumbai (APMC Market-1), Maharashtra",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.exportersindia.com/seema-trading-company-company5804039/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Trader/wholesaler whose line is almost entirely Iranian"
+      ],
+      "business": "Trader/wholesaler whose line is almost entirely Iranian date varieties - Original Kimia, Tohid, Neamat, Meshkat - out of the APMC Vashi dates market.",
+      "why_fit": "Product line is essentially all Iranian varieties in India's main dates import hub, so clearly handles this exact product; rated 4 (not 5) because it presents as a mandi trader/retailer and direct import is not individually confirmed.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "MTC International Trading",
+      "categories": [
+        "India"
+      ],
+      "city": "Delhi (Okhla)",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.mtc-international.co.in/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Trader/supplier (est. 2015; owners Haider & Waseem) off"
+      ],
+      "business": "Trader/supplier (est. 2015; owners Haider & Waseem) offering Kimia (marketed as premium Iranian) dates, MOQ ~100 kg, to the North India market; lists importer among its roles.",
+      "why_fit": "Actively deals Kimia/Iranian dates in Delhi and claims an importer role; plausible re-buyer of Iran-origin stock, moderate scale, reachable.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Trio Agencies",
+      "categories": [
+        "India"
+      ],
+      "city": "Chennai (Periamet), Tamil Nadu",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.tradeindia.com/products/best-price-kimia-dates-5547362.html",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Distributor/supplier (est. 2016) selling Kimia dates in"
+      ],
+      "business": "Distributor/supplier (est. 2016) selling Kimia dates in small consumer packs (600g+150g) across India.",
+      "why_fit": "Real, sector-fit and sells Kimia, but small consumer-pack reseller likely buying repacked stock domestically rather than importing; low-scale fit.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Samta Speciality Foods",
+      "categories": [
+        "India"
+      ],
+      "city": "Santacruz West, Mumbai, Maharashtra",
+      "dest_iso": "IN",
+      "phones": [
+        "19-0036276"
+      ],
+      "email": "",
+      "website": "https://www.thecompanycheck.com/org/samta-speciality-foods/b982f98e9d",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Dry-fruit/dates wholesaler & retailer (inc. 2021; MSME "
+      ],
+      "business": "Dry-fruit/dates wholesaler & retailer (inc. 2021; MSME Micro enterprise) offering dates among cashew, raisins, etc.",
+      "why_fit": "Real, sector-adjacent (sells dates) but a small micro-scale dry-fruit shop with no evidence of Iranian-date import; the earlier 'biggest importer' framing is not supported.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Pisum Food Services Pvt. Ltd. (BTW Group)",
+      "categories": [
+        "India"
+      ],
+      "city": "Pimpri-Chinchwad, Pune, Maharashtra",
+      "dest_iso": "IN",
+      "phones": [],
+      "email": "",
+      "website": "https://www.pisumfoodservices.com/",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Food trading company (inc. 2015) with dates/dry-fruit i"
+      ],
+      "business": "Food trading company (inc. 2015) with dates/dry-fruit in a broad agro portfolio; primarily an EXPORTER of Indian spices, pulses, grains, fruits.",
+      "why_fit": "Right sector and reachable, but export-oriented with no evidence of Iranian-date import; soft fit.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Fakiha Tul Madina",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Pakistan (online/e-commerce; Punjab)",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "dates.htm",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "Two 2026 buy requests for 'dates' (distributor/tender-s"
+      ],
+      "wants": "Two 2026 buy requests for 'dates' (distributor/tender-style sourcing); exact variety and quantity only revealed on contacting the buyer. Their own retail line is premium imported dates.",
+      "posted": "2026-07-13 (also 2026-06-29)",
+      "source_url": "https://importer.tradekey.com/pakistan/dates.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Rawdah Delights",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Pakistan",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "dates.htm",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "2026 buy request for 'dates', sourcing from verified ex"
+      ],
+      "wants": "2026 buy request for 'dates', sourcing from verified exporters (variety/qty not public).",
+      "posted": "2026-05-26",
+      "source_url": "https://importer.tradekey.com/pakistan/dates.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Master (Master Agro/Poultry, Karachi)",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Karachi",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "dates.htm",
+      "match_score": 75,
+      "verdict": "pending",
+      "tier": "active",
+      "buys": [
+        "2026 price inquiry for 'dates'."
+      ],
+      "wants": "2026 price inquiry for 'dates'.",
+      "posted": "2026-04-08",
+      "source_url": "https://importer.tradekey.com/pakistan/dates.htm",
+      "role": "",
+      "linkedin": "",
+      "needs_enrichment": true,
+      "bulk_likely": false
+    },
+    {
+      "company": "Al Habib International Traders",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Muzaffargarh (Punjab)",
+      "dest_iso": "PK",
+      "phones": [
+        "0335-0531571"
+      ],
+      "email": "",
+      "website": "alhabibintltraders.com",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Wholesale importer and bulk distributor of dates across"
+      ],
+      "business": "Wholesale importer and bulk distributor of dates across Pakistan for 25+ years; supplies retailers, super stores and petrol-mart chains.",
+      "why_fit": "Explicitly imports IRANIAN Mazafati and Zahidi dates (alongside Saudi Majdool/Sukri/Amber). Exactly the buyer profile for Iran-sourced Mazafati, already runs the import channel, and is directly reachable by phone.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Asim Fruit Merchant",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Lahore (Badami Bagh fruit market)",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "https://www.tendata.com/en/buyer/asim-fruit-merchant-PAKId5a1aeb9083eab96c600aa0447ca234b.html",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Fruit/dry-fruit import trading house; proprietor Mr. Mu"
+      ],
+      "business": "Fruit/dry-fruit import trading house; proprietor Mr. Muhammad Asim.",
+      "why_fit": "Customs/trade-data records (Tendata, Eximpedia, ExportHub) show it importing 'dates mazafati' plus raisins and chickpeas with upstream partners in IRAN. A confirmed active importer of the exact product.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Sanaullah EP Co. / Taften Traders",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Taftan (Balochistan, Iran border) / Quetta",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "https://www.volza.com/p/mazafati-dates/import/import-in-pakistan/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Border trading house clearing goods at the Taftan/Mirja"
+      ],
+      "business": "Border trading house clearing goods at the Taftan/Mirjaveh crossing.",
+      "why_fit": "Named in Pakistan Mazafati-dates import customs data as a buyer; located at the main land gateway for Iranian dates entering Pakistan, so a natural high-volume importer of Iran-sourced Mazafati.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Ms Mehran Traders",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Pakistan",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "https://www.seair.co.in/ms-mehran-traders-importers-in-pakistan",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Import trading company (agri-commodity distribution)."
+      ],
+      "business": "Import trading company (agri-commodity distribution).",
+      "why_fit": "Listed among noteworthy Pakistan Mazafati-dates buyers/importers in trade-data directories (Seair). Right sector and product; contact detail thin.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Isra International (Pvt) Ltd",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Karachi",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "https://www.exporthub.com/pakistan/fresh-dates-importers/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Import/trading company registered as a fresh-dates impo"
+      ],
+      "business": "Import/trading company registered as a fresh-dates importer.",
+      "why_fit": "Karachi-based fresh-dates importer at Pakistan's main import port; full office address published. Plausible channel for Iranian Mazafati; needs confirmation it currently sources from Iran.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "RB Traders",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Pakistan",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "https://www.go4worldbusiness.com/member/view/3236354/rb-traders.html",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Dates buyer/importer (dry dates and Gulf varieties: Mab"
+      ],
+      "business": "Dates buyer/importer (dry dates and Gulf varieties: Mabroom, Ajwa, Safawi, Mejdool, Sukkari).",
+      "why_fit": "Verified dates buyer on go4WorldBusiness with an established import operation; currently Saudi-variety focused, so an incremental fit that could add Iranian Mazafati to its range.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "WellShop.pk",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Karachi / online nationwide",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "https://wellshop.pk/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Online importer-retailer of specialty and imported food"
+      ],
+      "business": "Online importer-retailer of specialty and imported foods.",
+      "why_fit": "Directly imports/sells tahini (stone-ground sesame paste for hummus) - the exact ardeh product line. A ready channel for imported sesame paste; verify volume/private-label appetite.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Naheed Supermarket / Naheed.pk",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Karachi",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "https://www.naheed.pk/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Large supermarket chain and e-commerce grocer stocking "
+      ],
+      "business": "Large supermarket chain and e-commerce grocer stocking imported specialty foods.",
+      "why_fit": "Retails imported tahini brands (Al Ameera Tahina, Turk Farms Tahini) and premium dates - an established buyer of imported Middle-Eastern pantry goods that could source ardeh and Mazafati directly or via distributor.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Khan Dry Fruit",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Pakistan (online + retail)",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "https://www.khandryfruit.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Dry-fruit and dates retailer/wholesaler."
+      ],
+      "business": "Dry-fruit and dates retailer/wholesaler.",
+      "why_fit": "Actively stocks and sells fresh IRANIAN Mazafati dates (1kg packs), so it already buys the product somewhere in the chain; a candidate for direct import or wholesale supply.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Ideal Trading Company",
+      "categories": [
+        "Pakistan"
+      ],
+      "city": "Karachi",
+      "dest_iso": "PK",
+      "phones": [],
+      "email": "",
+      "website": "https://www.go4worldbusiness.com/member/view/3997840/ideal-trading-company.html",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "General trading firm dealing in Pakistani dates (khajor"
+      ],
+      "business": "General trading firm dealing in Pakistani dates (khajor), marbles and metal fabrication.",
+      "why_fit": "A Karachi trading company already active in the dates category; only tangentially matched (deals mainly local dates), so a weak/incremental prospect for Iran-sourced product.",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Hurmax (Selçuk Gıda San. ve Tic. Ltd. Şti.)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "İstanbul",
+      "dest_iso": "TR",
+      "phones": [
+        "+90 216 669 02 74"
+      ],
+      "email": "",
+      "website": "https://www.hurmax.com.tr/",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Turkey's largest date wholesaler; imports, produces and"
+      ],
+      "business": "Turkey's largest date wholesaler; imports, produces and packages dates and date products, distributes wholesale nationwide and exports",
+      "why_fit": "Explicitly imports and wholesales Iranian Mazafati dates (the exact product); described as Turkey's biggest date importer/wholesaler and directly reachable — top target for an Iran-sourced dates supplier",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Canceviz Hurma (Canceviz Toptan Kuruyemiş)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Konya",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "info@canceviz.com.tr",
+      "website": "https://cancevizhurma.com/",
+      "match_score": 90,
+      "tier": "potential",
+      "rating": 5,
+      "buys": [
+        "Konya's largest wholesale/retail date supplier and drie"
+      ],
+      "business": "Konya's largest wholesale/retail date supplier and dried-nut wholesaler",
+      "why_fit": "States it imports dates DIRECTLY from producers in Iran (Mazafati), Saudi Arabia and Jordan, cutting out middlemen — already buys this exact Iran-sourced product and is reachable by email",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Hurma Pazarı (YÖRETAT)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Ankara",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.hurmapazari.com/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Wholesale date market (Gimat); import, export, producti"
+      ],
+      "business": "Wholesale date market (Gimat); import, export, production and wholesale of dates and date products",
+      "why_fit": "Import/wholesale house whose range explicitly includes fresh Mazafati (İran hurması); set up specifically for date import/wholesale, so a natural buyer of Iranian dates",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Safter Hurma (İset Reklam Organizasyon Hizmetleri Ltd. Şti.)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Turkey",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.safterhurma.com/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Wholesale and retail date supplier importing from leadi"
+      ],
+      "business": "Wholesale and retail date supplier importing from leading date-producing countries",
+      "why_fit": "States it imports Mazafati, Piarom and Rabbi dates from Iran — i.e. already sources this exact Iranian product; wholesale buyer, reachable via site",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Hurma Shop (YÖRETAT)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Ankara",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.hurmashop.com/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Food-ministry-certified date production/packaging + who"
+      ],
+      "business": "Food-ministry-certified date production/packaging + wholesale and online date sales",
+      "why_fit": "Sister brand of Hurma Pazarı under YÖRETAT; imports and wholesales dates including Iranian Mazafati, so a plausible direct buyer of Iran-sourced dates",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Kervan Kuruyemiş (Kervan Kuruyemiş Gıda San. Tic. Ltd. Şti.)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "İstanbul",
+      "dest_iso": "TR",
+      "phones": [
+        "+90 212 640 01 33"
+      ],
+      "email": "",
+      "website": "https://www.kervankuruyemis.com.tr/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Wholesale dried-nuts, spices and dates brand operating "
+      ],
+      "business": "Wholesale dried-nuts, spices and dates brand operating since 1964; multiple Istanbul branches (Bayrampaşa, Maltepe, Ümraniye)",
+      "why_fit": "Actively sells İran Hurması (Mazafati) at wholesale, so must source Iranian dates; established, high-volume, phone-reachable wholesaler",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "MTROYAL",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Turkey",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://mtroyal.com.tr/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Turkey-based Iran import/export sourcing company handli"
+      ],
+      "business": "Turkey-based Iran import/export sourcing company handling Iran-to-Turkey product trade",
+      "why_fit": "Specializes in importing Iranian goods into Turkey and explicitly handles Iranian dates (Mazafati/Zahedi/Khassui); a sourcing buyer/agent for exactly this Iran-to-Turkey flow",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Elmas Hurma (Elmas Toptan Hurma)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Ankara",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.elmashurma.com/iran-hurmasi/",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Wholesale date supplier (İran hurması, Acve, fresh date"
+      ],
+      "business": "Wholesale date supplier (İran hurması, Acve, fresh dates)",
+      "why_fit": "Wholesales İran Hurması / Mezafati by the case, so sources Iranian dates; a right-sector, reachable buyer",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "HURMA.COM",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Ankara",
+      "dest_iso": "TR",
+      "phones": [
+        "+90 312 911 90 50"
+      ],
+      "email": "",
+      "website": "https://www.hurma.com/toptan-iran-hurmasi",
+      "match_score": 83,
+      "tier": "potential",
+      "rating": 4,
+      "buys": [
+        "Wholesale and online date retailer/distributor"
+      ],
+      "business": "Wholesale and online date retailer/distributor",
+      "why_fit": "Sells wholesale İran Hurması (Mazafati, 10x500g cases) and serves Hac/Umre and wholesale buyers — needs Iranian date supply; phone-reachable",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Kuruyemiş Borsası",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Turkey",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.kuruyemisborsasi.com/collections/toptan-hurma",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Online/wholesale dried-fruit and nut retailer with a to"
+      ],
+      "business": "Online/wholesale dried-fruit and nut retailer with a toptan (wholesale) date range",
+      "why_fit": "Lists toptan İran Hurması among its wholesale dates, indicating it buys Iranian dates for resale; right sector and reachable",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Kuruyemix",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Turkey",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://kuruyemix.com.tr/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Turkish dried-nuts and snacks e-commerce brand"
+      ],
+      "business": "Turkish dried-nuts and snacks e-commerce brand",
+      "why_fit": "Carries Hurma İran Mazafati as a listed product, so sources Iranian Mazafati dates; plausible repeat buyer",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Gülmarka",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Turkey",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://gulmarka.com.tr/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Dried fruit / date online retailer"
+      ],
+      "business": "Dried fruit / date online retailer",
+      "why_fit": "Sells İran Hurması Mazafati (fresh, 500-600g) — sources Iranian Mazafati; right sector though scale/sourcing channel unconfirmed",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Altın Neva Hurma (Cümralı Hurma Pazarı)",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Konya (Çumra)",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.altinnevahurma.com/",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Wholesale/retail date seller (Medine, Bağdat, iran hurm"
+      ],
+      "business": "Wholesale/retail date seller (Medine, Bağdat, iran hurması, taze/kuru hurma)",
+      "why_fit": "Explicitly lists iran hurması in its range; Konya wholesale date hub buyer, plausibly sources Iranian dates",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Özgür Leblebi ve Kuruyemiş",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Turkey",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.ozgurleblebi.com/Mazafati-Hurmasi",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Roasted-chickpea and dried-nut retailer/wholesaler"
+      ],
+      "business": "Roasted-chickpea and dried-nut retailer/wholesaler",
+      "why_fit": "Sells Mazafati (İran) Hurması as a catalog item, so buys Iranian Mazafati; smaller but right-sector and reachable",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Fiks Kurumsal",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Turkey",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.fikskurumsal.com/kategori/hurma",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Corporate/wholesale food supplier with a dates category"
+      ],
+      "business": "Corporate/wholesale food supplier with a dates category",
+      "why_fit": "Offers Iranian, Arabian and Jerusalem dates at wholesale for corporate supply — sources Iranian dates; plausible B2B buyer",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Kayısı Center",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Turkey",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.kayisicenter.com/kategori/toptan-hurma",
+      "match_score": 76,
+      "tier": "potential",
+      "rating": 3,
+      "buys": [
+        "Wholesale dried-apricot and dried-fruit supplier with a"
+      ],
+      "business": "Wholesale dried-apricot and dried-fruit supplier with a wholesale date line",
+      "why_fit": "Provides professional wholesale date supply; right sector (dried fruit wholesale) and plausibly stocks Iranian dates, sourcing channel not confirmed",
+      "linkedin": "",
+      "needs_enrichment": false,
+      "bulk_likely": false
+    },
+    {
+      "company": "Tamr Hurma",
+      "categories": [
+        "Turkey"
+      ],
+      "city": "Turkey",
+      "dest_iso": "TR",
+      "phones": [],
+      "email": "",
+      "website": "https://www.tamrhurma.com/toptan_hurma.html",
+      "match_score": 69,
+      "tier": "potential",
+      "rating": 2,
+      "buys": [
+        "Wholesale date importer/retailer"
+      ],
+      "business": "Wholesale date importer/retailer",
+      "why_fit": "Imports dates but states it sources direct from Arabia (Saudi) rather than Iran; right sector but weaker fit for Iran-specific product",
+      "linkedin": "",
+      "needs_enrichment": false,
       "bulk_likely": false
     }
   ]
