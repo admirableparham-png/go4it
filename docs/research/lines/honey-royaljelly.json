@@ -15,9 +15,9 @@
   "rfqs_file": "",
   "meta": {
     "name": "Honey & royal jelly",
-    "positioning": "Real 2025+ foreign buy-side demand for this Iran-sourced product (verified + de-noised).",
+    "positioning": "Buyers grouped by destination country, priority order (Iraq flagship -> UAE -> Afghanistan -> Georgia/Armenia/Pakistan/Qatar/Kazakhstan). Tier-1 active (posted 2025+ RFQ, verdict badge) rank above Tier-2 rated potential.",
     "brands": [],
-    "note": "Moderate for natural honey, thin for royal jelly. TradeKey and go4WorldBusiness show a steady 2025-2026 stream of honey buy-leads across the USA, UK, France, Malaysia, Afghanistan, Azerbaijan, Bangladesh, Spain, Greece, Norway, Zimbabwe, Nigeria and the Maldives — but most are small-volume, gated/anonymous contacts, or origin-locked to non-Iranian honey (Manuka/NZ, Kyrgyz, Trinidad). Royal jelly demand is genuinely thin: few named importers (Beetopia in South Korea is the standout), mostly gated or undated, and buyers typically prefer Vietnam/China origin. Best realistic fit for Iranian origin is regional/neighboring buyers (Afghanistan, the Gulf, Central Asia, Maldives) rather than premium Western markets."
+    "note": "Top-8 target markets from the Comtrade-grounded ranking. Iraq is the flagship (Iran already ~57% of imports, +74% YoY, 1-3 truck-days). 20 buyers posted a 2025+ honey RFQ (14 confirmed) - Pakistan 7, Qatar 6, UAE 5; plus 95 rated potential importers/distributors. Iraq/Afghanistan/Armenia/Kazakhstan trade is mostly informal/land so they lean Tier-2 (direct-approach importers). Gulf monarchies (Saudi/Kuwait/Bahrain/Oman) are demand-rich but currently blocked on Iran-linked banking (2025-26 snapback) - excluded on purpose."
   },
   "families": [],
   "scoring": {
@@ -28,11 +28,19 @@
     "penalty": []
   },
   "display_order": [
-    "Maldives",
+    "Iraq",
+    "United Arab Emirates",
     "Afghanistan",
+    "Georgia",
+    "Armenia",
+    "Pakistan",
+    "Qatar",
+    "Kazakhstan",
+    "Russia",
+    "Maldives",
     "Malaysia",
+    "South Korea",
     "France",
-    "United States",
-    "South Korea"
+    "United States"
   ]
 }
