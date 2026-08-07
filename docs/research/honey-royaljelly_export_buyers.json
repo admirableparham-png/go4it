@@ -1,8 +1,8 @@
 {
   "source": "verified-hunt-2025+",
   "total": 150,
-  "with_phone": 55,
-  "with_email": 35,
+  "with_phone": 59,
+  "with_email": 37,
   "with_website": 132,
   "buyers": [
     {
@@ -229,8 +229,10 @@
       ],
       "city": "UAE (MENA regional office)",
       "dest_iso": "AE",
-      "phones": [],
-      "email": "",
+      "phones": [
+        "+971 50 5405061"
+      ],
+      "email": "MEsales@popcakesa.co.za",
       "website": "honey.html",
       "match_score": 82,
       "verdict": "plausible",
@@ -243,7 +245,7 @@
       "source_url": "https://www.go4worldbusiness.com/buyers/united%20arab%20emirates/honey.html",
       "role": "",
       "linkedin": "https://ae.linkedin.com/company/peachtree-foods-mena",
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "bulk_likely": false
     },
     {
@@ -1233,7 +1235,9 @@
       ],
       "city": "Business Bay, Dubai",
       "dest_iso": "AE",
-      "phones": [],
+      "phones": [
+        "+971 4 810 6999"
+      ],
       "email": "",
       "website": "honey.htm",
       "match_score": 92,
@@ -1247,7 +1251,7 @@
       "source_url": "https://importer.tradekey.com/uae/honey.htm",
       "role": "",
       "linkedin": "",
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "bulk_likely": false
     },
     {
@@ -1257,7 +1261,9 @@
       ],
       "city": "Dubai (Sheikh Zayed Road, Umm Suqeim Bldg)",
       "dest_iso": "AE",
-      "phones": [],
+      "phones": [
+        "+971 4 3388040"
+      ],
       "email": "",
       "website": "pure-honey.htm",
       "match_score": 92,
@@ -1271,7 +1277,7 @@
       "source_url": "https://importer.tradekey.com/uae/pure-honey.htm",
       "role": "",
       "linkedin": "",
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "bulk_likely": false
     },
     {
@@ -1305,8 +1311,10 @@
       ],
       "city": "Dubai, UAE",
       "dest_iso": "AE",
-      "phones": [],
-      "email": "",
+      "phones": [
+        "+971 4 282 1770"
+      ],
+      "email": "info@binhaidargroup.com",
       "website": "honey.htm",
       "match_score": 82,
       "verdict": "plausible",
@@ -1319,7 +1327,7 @@
       "source_url": "https://importer.tradekey.com/uae/honey.htm",
       "role": "",
       "linkedin": "",
-      "needs_enrichment": true,
+      "needs_enrichment": false,
       "bulk_likely": false
     },
     {
