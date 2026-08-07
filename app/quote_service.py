@@ -41,22 +41,37 @@ def fx_rate(session, base: str, quote: str = "USD") -> float:
     return float(row.rate)
 
 
-def build_params(session, quote_currency: str = "USD") -> dict:
-    """Assemble the pricing-parameter snapshot from the DB (CostParams + RateCards)."""
+def _pick_card(session, leg: str, dest_country: str):
+    """Active RateCard for this leg: prefer one scoped to dest_country, else fall back to the first
+    active lane (legacy single-corridor behavior for markets without a dedicated lane)."""
+    cards = session.exec(
+        select(RateCard).where(RateCard.leg == leg, RateCard.active == True)  # noqa: E712
+    ).all()
+    if dest_country:
+        for c in cards:
+            if c.dest_country == dest_country:
+                return c
+    return cards[0] if cards else None
+
+
+def build_params(session, quote_currency: str = "USD", dest_country: str = "") -> dict:
+    """Assemble the pricing-parameter snapshot from the DB (CostParams + RateCards), scoped to the
+    destination country when a dedicated corridor exists. Backward-compatible: a destination with no
+    dedicated CostParams/RateCards falls back to the legacy global set (first active lane, all params)."""
     params = dict(DEFAULT_PARAMS)
-    for cp in session.exec(select(CostParam)).all():
+    cps = session.exec(select(CostParam)).all()
+    dest_cps = [c for c in cps if dest_country and c.dest_country == dest_country]
+    for cp in (dest_cps or cps):            # scoped params if this market has them, else legacy: all
         params[cp.key] = float(cp.value)
 
-    inland = session.exec(
-        select(RateCard).where(RateCard.leg == "inland", RateCard.active == True)  # noqa: E712
-    ).first()
-    intl = session.exec(
-        select(RateCard).where(RateCard.leg == "international", RateCard.active == True)  # noqa: E712
-    ).first()
+    inland = _pick_card(session, "inland", dest_country)
+    intl = _pick_card(session, "international", dest_country)
     if inland:
         params["inland_freight_per_truck"] = float(inland.rate_per_truck)
+        params["inland_freight_per_tonne"] = float(inland.rate_per_tonne)
     if intl:
         params["intl_freight_per_truck"] = float(intl.rate_per_truck)
+        params["intl_freight_per_tonne"] = float(intl.rate_per_tonne)
         params["truck_capacity_t"] = float(intl.truck_capacity_t or 25)
 
     params["quote_currency"] = quote_currency
@@ -66,7 +81,7 @@ def build_params(session, quote_currency: str = "USD") -> dict:
 
 def create_quote(session, lead: Lead, product: Product, incoterm: str = "DAP") -> Quote:
     """Compute and persist a draft Quote for a lead/product, freezing the params."""
-    params = build_params(session)
+    params = build_params(session, dest_country=lead.dest_country)
     fx = fx_rate(session, product.currency, "USD")
     quantity = lead.quantity or product.min_order_qty or 1
 

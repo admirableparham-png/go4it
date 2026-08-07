@@ -59,7 +59,12 @@ def run(line_slug):
             score = b.get("match_score", "")
             enrich = " | NEEDS ENRICHMENT" if b.get("needs_enrichment") else ""
             bulk = " | BULK" if b.get("bulk_likely") else ""
-            notes = f"match {score} | {cats} | buys: {buys} | {b.get('city', '')}{bulk}{enrich}"
+            tier = b.get("tier", "")
+            tag = (b.get("verdict") or "").upper() or (f"{tier} ★{b.get('rating')}" if tier == "potential"
+                                                       and b.get("rating") else tier.upper())
+            tag_s = f" | {tag}" if tag else ""
+            role_s = f" | role: {b.get('role')}" if b.get("role") else ""
+            notes = f"match {score} | {cats}{tag_s} | buys: {buys} | {b.get('city', '')}{role_s}{bulk}{enrich}"
             phones = b.get("phones") or []
             ext = b.get("osmid") or slug(company)
             lead = Lead(
@@ -69,7 +74,8 @@ def run(line_slug):
                 dest_country=(b.get("dest_iso") or spec.get("dest", {}).get("iso", "")),
                 dest_city=b.get("city") or "",
                 buyer_company=company, phone=(phones[0] if phones else ""),
-                email=b.get("email") or "", website=b.get("website") or "", notes=notes[:600],
+                email=b.get("email") or "", website=b.get("website") or "",
+                source_url=b.get("source_url") or "", posted_at=to_dt(b.get("posted")), notes=notes[:600],
             )
             if create_lead(s, lead, run=False) is not None:
                 new += 1

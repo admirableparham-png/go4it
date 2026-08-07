@@ -34,6 +34,32 @@ def default_message(lead, quote=None, product=None):
     return subject, "\n".join(lines)
 
 
+def honey_first_touch(lead, delivered_unit=None, dest_name="", trial_kg=25):
+    """A tailored first-touch (subject, body) for a HONEY buyer lead — leads with the offer, the
+    indicative delivered price to their market, and the bankable payment terms (the real differentiator)."""
+    name = (lead.contact_name or lead.buyer_company or "").strip()
+    who = name.split()[0] if name else "there"
+    subject = "Iranian natural honey — direct export offer (single-origin, Certificate of Origin)"
+    price = ""
+    if delivered_unit:
+        where = f" to {dest_name}" if dest_name else ""
+        price = (f" Indicative delivered price{where}: about ${delivered_unit:.2f}/kg CPT on a 500 kg "
+                 f"order (EXW $8.00/kg).")
+    lines = [
+        f"Hello {who},", "",
+        "We are a direct exporter of genuine single-origin Iranian natural honey — multifloral, thyme, "
+        "Sidr, honeydew, and honey with royal jelly — supplied in 25 kg food-grade drums, with "
+        "Certificate of Origin and laboratory specifications (moisture / HMF / antibiotic-free) available "
+        "on request.", "",
+        f"EXW ex-works Iran is $8.00/kg.{price} Payment by Letter of Credit, SWIFT bank transfer, or "
+        f"cryptocurrency. A {trial_kg} kg trial order is available so you can verify the quality first.", "",
+        "Which grade and quantity suit you, and what is your delivery destination? I'll send full "
+        "specifications and can arrange a sample.", "",
+        "Best regards,", "go4it",
+    ]
+    return subject, "\n".join(lines)
+
+
 def send_email(to_addr, subject, body):
     """Send via SMTP. Returns (ok: bool, error: str, message_id: str) — never raises.
 

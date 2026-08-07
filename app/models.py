@@ -115,8 +115,9 @@ class RateCard(SQLModel, table=True):
     lane_from: str = ""            # e.g. Isfahan
     lane_to: str = ""             # e.g. Sadakhlo (GE border)
     leg: str = "international"      # inland | international
+    dest_country: str = ""         # ISO2 this lane serves (""=legacy/any); scopes corridors per market
     rate_per_truck: float = 0
-    rate_per_tonne: float = 0
+    rate_per_tonne: float = 0      # LCL/small-volume lane: freight scales per tonne, not per truck
     truck_capacity_t: float = 25
     currency: str = "USD"
     active: bool = True

@@ -48,11 +48,15 @@ def compute_quote(*, exw_price, quantity, weight_kg_per_unit, incoterm, params, 
     lines = [("Goods (EXW)", "per-unit", goods)]
 
     if incoterm in _DELIVERED_TERMS:
+        # LCL/small-volume lanes price per-tonne (freight scales linearly with weight);
+        # truckload lanes price per-truck (a part-truck still books a whole truck).
+        inland_pt = _d(params.get("inland_freight_per_tonne", 0))
+        intl_pt = _d(params.get("intl_freight_per_tonne", 0))
+        inland_amt = inland_pt * tonnes if inland_pt > 0 else _d(params.get("inland_freight_per_truck", 0)) * trucks
+        intl_amt = intl_pt * tonnes if intl_pt > 0 else _d(params.get("intl_freight_per_truck", 0)) * trucks
         buckets = [
-            ("Inland freight (Iran)", "per-shipment",
-             _d(params.get("inland_freight_per_truck", 0)) * trucks),
-            ("International freight to border", "per-shipment",
-             _d(params.get("intl_freight_per_truck", 0)) * trucks),
+            ("Inland freight (Iran)", "per-shipment", inland_amt),
+            ("International freight to border", "per-shipment", intl_amt),
             ("Export clearance", "per-shipment", _d(params.get("export_clearance", 0))),
             ("Certificate of origin", "per-shipment", _d(params.get("coo_fee", 0))),
             ("Insurance", "per-unit", goods * _d(params.get("insurance_pct", 0)) / _d(100)),

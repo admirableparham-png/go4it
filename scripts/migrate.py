@@ -24,6 +24,7 @@ MIGRATIONS = [
     ("lead", "accepted_at", "TIMESTAMP"),
     ("quote", "accepted_at", "TIMESTAMP"),
     ("quote", "buyer_response", "VARCHAR DEFAULT ''"),
+    ("ratecard", "dest_country", "VARCHAR DEFAULT ''"),
 ]
 
 
