@@ -1,0 +1,1241 @@
+{
+  "product": "honey-royaljelly",
+  "cells": [
+    {
+      "active": [
+        {
+          "buyer": "Pureva",
+          "city": "",
+          "wants": "Honey, jams, molasses, halvah, tahini, hazelnut paste with cacao, butter, margarine, praline, black pepper, red pepper, granulated sugar (verbatim match confirmed live on source page)",
+          "posted": "May 25, 2025 (confirmed on-page as \"May-25-25\")",
+          "contact": "",
+          "source_url": "https://www.go4worldbusiness.com/buyers/iraq/honey.html",
+          "role": "",
+          "linkedin": "",
+          "verdict": "plausible"
+        }
+      ],
+      "potential": [
+        {
+          "company": "Arwiqa Alibdaa Co.",
+          "city": "Basra",
+          "business": "Basra-based food & agri-commodity trading/import company (Al Alasyia, Al Jazeer Street; also Baghdad office); customs records show imports of meat, cereals, sauces, citrus/lemon and other foodstuffs.",
+          "why_fit": "CONFIRMED via independent cross-check: ImportGenius, Volza, Panjiva, NBD Trade Data and ImportKey all independently list Arwiqa Alibdaa as Iraq's top natural-honey importer at ~53% share / 9 shipments; phone number 07702508974 matches the listed contact exactly. Strongest lead in the list.",
+          "contact": "+964 770 250 8974 (Basra office; verified against Volza/ImportGenius listings)",
+          "website": "",
+          "linkedin": "",
+          "rating": 5
+        },
+        {
+          "company": "Almanara Alkhadraa (Almanara Food)",
+          "city": "Baghdad",
+          "business": "Baghdad food importer/distributor operating since 1990-91, running multiple FMCG brands (Bayara, Nice Cafe, Mara, Smile Sun, Comaro, etc.) across sauces, dates, nuts, oils, olives, dairy and more.",
+          "why_fit": "CONFIRMED live: almanarafood.com explicitly lists \"Natural Honey\" as a stocked product category alongside dates/nuts/spices; phone (+964 07713333563 / 07823333563) and email (info@almanarafood.com) both verified live on the site. A real, in-category, reachable buyer.",
+          "contact": "+964 7713333563 / +964 7823333563, info@almanarafood.com",
+          "website": "https://almanarafood.com/",
+          "linkedin": "",
+          "rating": 5
+        },
+        {
+          "company": "Hingvîn Honey",
+          "city": "Duhok",
+          "business": "Iraq-based honey and royal jelly producer/supplier, established 1992, operating in Iraqi Kurdistan.",
+          "why_fit": "CONFIRMED real via independent B2B listing (Tradewheel profile: \"Hingvîn Honey | Honey, Royal Jelly Supplier from Iraq\", Duhok, since 1992) matching the researcher's claim. Existing honey/royal-jelly specialist, natural partner for bulk Iranian-honey/royal-jelly inputs.",
+          "contact": "",
+          "website": "",
+          "linkedin": "",
+          "rating": 4
+        },
+        {
+          "company": "Al Mouyasser (Fattal Group affiliate)",
+          "city": "Erbil (branches: Baghdad, Sulaymaniyah, Najaf, Basra)",
+          "business": "Major FMCG/beauty/healthcare distributor founded 2003, temperature-controlled warehousing, part of the regional Fattal Group.",
+          "why_fit": "CONFIRMED real via multiple independent sources (LinkedIn, Facebook, ZoomInfo, Iraq Jobs Scout) all corroborating Erbil HQ + Baghdad/Sulaymaniyah/Najaf/Basra branches + 2003 founding + Fattal Group affiliation, matching the researcher's claim word-for-word. Large-scale distributor, honey not currently confirmed in catalog (new-supplier pitch).",
+          "contact": "Contact via website form (direct staff emails are paywalled on ZoomInfo/Lusha)",
+          "website": "https://www.almouyasser.com/",
+          "linkedin": "https://www.linkedin.com/company/al-mouyasser-llc",
+          "rating": 4
+        },
+        {
+          "company": "Fresh Food Company",
+          "city": "Sulaymaniyah",
+          "business": "Distributes fresh produce, seafood, and imported pantry staples (Italian tomatoes, Spanish olive oil, American beans/soups) to grocery stores across Kurdistan (Erbil, Duhok, Halabja, Ranya, Zakho).",
+          "why_fit": "Company and contact details CONFIRMED live (site up, phone/email verified) but downgraded: the live site's actual product list (produce, seafood, canned/pantry imports) shows NO honey or honey-adjacent category at all - the \"premium food items\" framing was more general than the why_fit implied. Still a real, reachable grocery-channel contact, just a colder intro than rated.",
+          "contact": "+964 7725257206, info@freshfood-iq.com",
+          "website": "https://freshfood-iq.com/",
+          "linkedin": "",
+          "rating": 3
+        },
+        {
+          "company": "Khudairi Group",
+          "city": "Baghdad (also Basra, Erbil, Sulaymaniyah)",
+          "business": "Iraq's oldest major food & beverage distributor lineage, founded 1963 as Nadir Foods (Al Nadir Trading), now part of a large diversified group also active in paint, energy, machinery and investments.",
+          "why_fit": "CONFIRMED real and independently corroborated (MAGNiTT, IBBC, Nadir Foods/Khudairi Foods sites, LinkedIn) - 1963 Nadir Foods founding and \"largest food & beverage distributor\" legacy claim check out. No honey found in current product mix on their site; SKU fit still needs confirming as noted.",
+          "contact": "",
+          "website": "https://www.khudairigroup.com/",
+          "linkedin": "https://www.linkedin.com/company/khudairi-group",
+          "rating": 4
+        },
+        {
+          "company": "Umqasr Lights Trading",
+          "city": "Basra (Umm Qasr)",
+          "business": "Trading and customs-clearance company based at Umm Qasr, Iraq's main southern import port; primary tracked imports are electrical/mechanical goods, plastics, iron/steel items.",
+          "why_fit": "CONFIRMED real via multiple independent trade-data platforms (Panjiva, Volza, Trademo, TradeAtlas); Volza specifically confirms a 6% share of Iraq's tracked natural-honey imports with 1 shipment, matching the researcher's \"small confirmed share\" claim exactly. Logistics-ready port operator.",
+          "contact": "+964 782 144 333 / +964 770 318 999",
+          "website": "",
+          "linkedin": "",
+          "rating": 3
+        },
+        {
+          "company": "Sahel al Iraq Co.",
+          "city": "Iraq-wide / Kurdistan Region",
+          "business": "Described (and independently corroborated by search results) as the largest FMCG distributor in Iraq and the Kurdistan Region, with ~20 years of refrigerated warehousing and nationwide delivery experience.",
+          "why_fit": "CONFIRMED real (own site + LinkedIn company page, and the \"largest FMCG distributor... 20 years... refrigerated warehousing\" claim is corroborated verbatim in search results). Site itself returned minimal content on fetch, so full product mix / honey presence still unconfirmed - long-term distribution partner framing stands.",
+          "contact": "",
+          "website": "http://saheliraq.com/",
+          "linkedin": "",
+          "rating": 3
+        },
+        {
+          "company": "Iraqi National Company",
+          "city": "Baghdad (Adhamiyah)",
+          "business": "Importer-distributor of confectionery/snacks, juices/soft drinks/water, and spices/herbs/seasonings; also has a Karada, Baghdad presence.",
+          "why_fit": "CONFIRMED real via an independent food-importer directory (bestfoodimporters.com) matching location and product categories (confectionery/snacks, juice/soft drinks, spices). Adjacent sweets/spice infrastructure in Baghdad; honey still not confirmed in their catalog, so this remains a line-extension pitch.",
+          "contact": "",
+          "website": "http://www.iraqi-national.com/",
+          "linkedin": "",
+          "rating": 3
+        },
+        {
+          "company": "Nay Al Basra General Trading Company",
+          "city": "Basra",
+          "business": "Foodstuff trading company specializing in peanuts, sunflower seeds, pumpkin seeds and cashews; markets itself as bringing \"the best global food products to Iraq.\"",
+          "why_fit": "CONFIRMED real and live: website matches the exact product list (peanuts/sunflower/pumpkin/cashew) and contact details verified live on-site. No honey on the site at all, so this stays a speculative nuts-to-honey cross-sell rather than a direct match.",
+          "contact": "+964 770 079 1816, info@nayalbasra.com",
+          "website": "https://nayalbasra.com/",
+          "linkedin": "",
+          "rating": 2
+        },
+        {
+          "company": "Waddi Al Urdun Ltd",
+          "city": "Erbil (roots trace to Baghdad, 1980)",
+          "business": "Importer of cheese and specialty food products, exclusive Iraqi agent for numerous European/international food brands.",
+          "why_fit": "CORRECTED UPWARD: live site fetch shows the researcher's \"honey isn't in their current catalog\" claim is WRONG - Waddi Al Urdun already prominently features and sells \"El Brezal Honey\" (a Turkish import, \"El Brezal Rosemary Honey\") on their homepage. They are already an active honey buyer/seller, not just a cheese cross-sell target, making a cheaper Iranian-origin alternative a direct, on-category pitch. Company and contact independently confirmed live.",
+          "contact": "+964 7510104028, info@waddialurdun.com",
+          "website": "https://waddialurdun.com/",
+          "linkedin": "",
+          "rating": 4
+        },
+        {
+          "company": "BGT Company",
+          "city": "Erbil (Dream City)",
+          "business": "Foodstuff trading company since 1992 distributing 27+ brands across juices, energy drinks, rice, coffee and bakery categories in Erbil.",
+          "why_fit": "CONFIRMED real and live: site matches \"since 1992,\" Dream City/Erbil location, and a broad multi-brand FMCG portfolio; contact verified live. No honey among their listed brands, so this stays a speculative-but-plausible introduction as originally framed.",
+          "contact": "+964 750 750 5070, Info@bgt-company.com",
+          "website": "https://bgtiraq.com/",
+          "linkedin": "",
+          "rating": 2
+        }
+      ],
+      "country": "Iraq",
+      "note": "Verification method: WebFetch on the go4worldbusiness source_url + WebSearch on each company name (+\\\"honey\\\" where relevant). ACTIVE: Pureva's listing is real - the source URL resolves and shows the exact product list and \\\"May-25-25\\\" post date verbatim, so the RFQ itself checks out. Downgraded to \\\"plausible\\\" (not \\\"confirmed\\\") because \\\"Pureva\\\" has no independent footprint anywhere outside that one directory page - no company website, city, contact, or other trade-data record found; unrelated companies with similar names (a French water-filter startup, a UK pharma shell) turned up in search but are clearly not this buyer. Treat as a real lead-gen-site RFQ from an unverified counterparty - confirm identity/creditworthiness before committing. POTENTIAL: all 12 companies are real, live operations (verified via their own websites and/or independent trade-data or directory sources) - none were dropped as fabricated. Two rating corrections: (1) Fresh Food Company lowered 4->3 because their live site shows zero honey-adjacent products, weaker than the original why_fit implied; (2) Waddi Al Urdun raised 2->4 because their site actually already sells \\\"El Brezal\\\" Turkish honey - the researcher's claim that honey wasn't in their catalog was factually wrong, and this makes them a direct in-category target, not a cold cross-sell. Arwiqa Alibdaa's 53%/9-shipment honey-import claim and Umqasr Lights' 6%/1-shipment claim were both independently corroborated via Volza/ImportGenius/Panjiva. Al Mouyasser's exact company profile (2003 founding, Fattal Group, 5-city footprint) was independently corroborated via LinkedIn/Facebook/ZoomInfo. Khudairi Group's 1963/Nadir Foods founding story checked out via multiple independent sources, though no honey signal was found on their current site. All other ratings left as originally assigned since they already correctly flagged honey as unconfirmed/speculative for those entries."
+    },
+    {
+      "active": [
+        {
+          "buyer": "Admiral Foodstuff Trading",
+          "city": "Business Bay, Dubai",
+          "wants": "Honey, dry fruits and nuts — general foodstuff-trading buyer sourcing multiple commodities incl. honey",
+          "posted": "Recurring TradeKey listing, live-reconfirmed Jul 24, 2026 (\"Need to buy Honey, dry fruits, nuts\"); the earlier Oct 2025 sighting claimed by researcher was not independently re-verified this pass",
+          "contact": "",
+          "source_url": "https://importer.tradekey.com/uae/honey.htm",
+          "role": "",
+          "linkedin": "",
+          "verdict": "confirmed"
+        },
+        {
+          "buyer": "Eyeon General Trading LLC",
+          "city": "Dubai (Sheikh Zayed Road, Umm Suqeim Bldg)",
+          "wants": "\"Looking for Pure Natural Honey\" — note: company's primary listed trade per independent directories is cosmetics/steel alloy/sugar, not foodstuff, so this reads as an opportunistic one-off sourcing request rather than a core-business buy",
+          "posted": "Jul 01, 2026 (confirmed live, exact match)",
+          "contact": "",
+          "source_url": "https://importer.tradekey.com/uae/pure-honey.htm",
+          "role": "",
+          "linkedin": "",
+          "verdict": "confirmed"
+        },
+        {
+          "buyer": "Peachtree Foods MENA",
+          "city": "Dubai (registered address Nadd Al Sheba 4; LinkedIn lists Dubai Silicon Oasis)",
+          "wants": "Generic \"Honey\" buy-lead, no quantity/spec given on the listing itself. Caveat: company is a real, LinkedIn-verified hospitality breakfast-solutions vendor (automatic pancake machines for hotels, e.g. Swissotel) founded 2021 — not a classic foodstuff importer, so honey is plausibly a condiment/ingredient buy for its hotel clients rather than bulk resale",
+          "posted": "Jun 02, 2025 (confirmed live, exact match: \"Jun-02-25\")",
+          "contact": "",
+          "source_url": "https://www.go4worldbusiness.com/buyers/united-arab-emirates/honey.html",
+          "role": "",
+          "linkedin": "https://ae.linkedin.com/company/peachtree-foods-mena",
+          "verdict": "confirmed"
+        },
+        {
+          "buyer": "Organi",
+          "city": "United Arab Emirates",
+          "wants": "\"Pure Organic White Honey 100%\" (listing text confirmed live as \"Buy about Pure Organic White Honey 100%\")",
+          "posted": "May 18, 2026 (confirmed live, exact match)",
+          "contact": "",
+          "source_url": "https://importer.tradekey.com/uae/pure-honey.htm",
+          "role": "",
+          "linkedin": "",
+          "verdict": "unverified"
+        },
+        {
+          "buyer": "Bin Haidar",
+          "city": "Dubai, UAE",
+          "wants": "\"Honey for Dubai\" — poster uses only the surname, not a full registered company name. \"Bin Haidar\" is a genuine Dubai trading-family name (e.g. Abdulla Ali Bin Haider General Trading LLC, Abbas Bin Haidar General Trading LLC, Bin Haidar Investment Company with an agricultural-investments arm), but which specific entity posted this lead could not be pinned down",
+          "posted": "Live listing reconfirmed Jul 30, 2026; a separate search also surfaced a Dec 10, 2025 sighting of the same name, consistent with researcher's \"recurring through 2026\" claim though not with a single Dec 2025 date",
+          "contact": "",
+          "source_url": "https://importer.tradekey.com/uae/honey.htm",
+          "role": "",
+          "linkedin": "",
+          "verdict": "plausible"
+        }
+      ],
+      "potential": [
+        {
+          "company": "VVRL General Trading Co. LLC",
+          "city": "Deira, Dubai",
+          "business": "General/foodstuff trading and import company (Hor Al Anz Building, Deira)",
+          "why_fit": "Confirmed via Volza/Trademo/NBD trade-data listings: ~19% share of UAE natural-honey imports (34 shipments), top sourcing countries India/Pakistan — an independently corroborated high-volume bulk honey buyer.",
+          "contact": "",
+          "website": "",
+          "linkedin": "",
+          "rating": 5
+        },
+        {
+          "company": "Kohli Foodstuff Trading LLC",
+          "city": "Dubai",
+          "business": "Foodstuff trading/import company",
+          "why_fit": "Confirmed via trade-data search: 17% share (39 shipments) and 15% share (27 shipments) of UAE natural-honey imports depending on metric — matches researcher's claimed range, a real top-tier repeat bulk-honey buyer.",
+          "contact": "",
+          "website": "",
+          "linkedin": "",
+          "rating": 5
+        },
+        {
+          "company": "Emirpro Foodstuff Trading LLC",
+          "city": "Dubai",
+          "business": "Foodstuff trading/import company",
+          "why_fit": "Confirmed real company (41 3B St, Dubai) with an independently corroborated ~19% share (33 shipments) of UAE natural-honey imports per Volza. Caveat: other trade-data sources show its most active current shipments are sunflower oil/seed from Russia/Kazakhstan, so honey may be a secondary rather than primary commodity for them.",
+          "contact": "",
+          "website": "",
+          "linkedin": "",
+          "rating": 4
+        },
+        {
+          "company": "Beehive Honey Trading LLC",
+          "city": "Bur Dubai (Al Barsha 1), Dubai",
+          "business": "Honey & apiary-accessories trading company (est. 2016), dedicated honey specialist",
+          "why_fit": "Confirmed real (company #359066, incorporated Nov 1, 2016, Bur Dubai/Al Barsha 1, AED 500,000 paid capital, licensed for honey & apiary accessories) — exactly the specialist honey-importer profile most likely to evaluate a new bulk source.",
+          "contact": "+971-4-2685500",
+          "website": "",
+          "linkedin": "",
+          "rating": 5
+        },
+        {
+          "company": "Honey Trading Company LLC",
+          "city": "Bur Dubai, Dubai (Al Manal Centre, Opp Souk Al Wasl)",
+          "business": "Trading company at this address — name implies honey, but flagged below",
+          "why_fit": "Company name suggests a direct-fit honey specialist, but verification found a discrepancy: one business directory (atninfo) categorizes an entity at this listing under \"Textiles,\" not honey/foodstuff, and a separately-found phone number for a Dubai \"Honey Trading LLC\" didn't match the researcher's contact number. Could be a directory data error or a different entity entirely — downgraded pending direct confirmation.",
+          "contact": "+971-4-2218617",
+          "website": "",
+          "linkedin": "",
+          "rating": 3
+        },
+        {
+          "company": "Geohoney (B A Barry Group)",
+          "city": "Dubai (DWTC, Blue Tower)",
+          "business": "Honey brand, packer/blender and e-commerce retailer with 200+ honey SKUs; runs a bulk sourcing program",
+          "why_fit": "Confirmed real: B A BARRY DMCC, founded by Basem Barry in 2017, Dubai-headquartered FMCG/sourcing group; Geohoney's site actively lists bulk honey purchase terms (100kg-1M ton MOQ range) confirming it is a live bulk-buying counterpart.",
+          "contact": "info@babarry.com / +971 56 241 3670",
+          "website": "https://geohoney.com/",
+          "linkedin": "https://www.linkedin.com/company/geohoney",
+          "rating": 5
+        },
+        {
+          "company": "APIS Arabia Foods LLC",
+          "city": "Dubai (National Industries Park)",
+          "business": "Honey processing & packing plant (40 tons/day capacity, 125-ton storage), private-label and bulk/institutional honey supplier since 2021",
+          "why_fit": "Confirmed real: UAE facility operational since 2021 (matches researcher's date) inside a larger honey group (Apis India, tracing to 1924) with BRC/ISO/HACCP/USFDA/SFDA certifications — a genuine large-scale bulk-honey buyer/processor.",
+          "contact": "sales@apisarabia.ae / +971 4 343 9442",
+          "website": "https://apisarabia.ae/",
+          "linkedin": "https://www.linkedin.com/company/apis-arabia-foods-llc/",
+          "rating": 4
+        },
+        {
+          "company": "Habibi Honey",
+          "city": "Dubai",
+          "business": "Wholesale/retail honey supplier since 2010, currently imports from its own bee farm in Pakistan",
+          "why_fit": "Confirmed real (habibihoneyuae.com, active Instagram, since 2010, sources Sidr honey from own Pakistan farm) — an established Dubai wholesaler for which a cheaper verified Iranian source is a plausible supply diversification.",
+          "contact": "info@habibihoneyuae.com / +971 56 465 9800",
+          "website": "https://habibihoneyuae.com/",
+          "linkedin": "",
+          "rating": 4
+        },
+        {
+          "company": "Al Sidr Natural Honey LLC",
+          "city": "Abu Dhabi",
+          "business": "Honey producer/retailer since 1986, certified by Abu Dhabi Food Control Authority",
+          "why_fit": "Confirmed real (founded 1986 in Al Danah, Abu Dhabi, by Mohammad Younis Al-Khdour; ADFCA-certified) — long-established retail brand, plausible buyer of a cheap bulk line to blend alongside its premium Sidr range.",
+          "contact": "",
+          "website": "https://alsidrnaturalhoney.com/",
+          "linkedin": "",
+          "rating": 3
+        },
+        {
+          "company": "Al Seer Group",
+          "city": "Dubai (Sheikh Zayed Road)",
+          "business": "FMCG / food & beverage distributor and wholesaler, 55+ years in market, GCC-wide logistics",
+          "why_fit": "Well-established, widely-documented major UAE FMCG distributor; no red flags found. Scale to add a new honey SKU or private-label line if price and compliance docs are right.",
+          "contact": "info@alseer.com / +971 4 372 5300",
+          "website": "https://www.alseer.com/",
+          "linkedin": "",
+          "rating": 3
+        },
+        {
+          "company": "Truebell Marketing & Trading LLC",
+          "city": "Dubai (Dubai Investment Park 2)",
+          "business": "One of GCC's largest independent food & licensed-beverage importers/distributors/wholesalers, since 1984",
+          "why_fit": "Well-established, widely-documented distributor; no red flags found. 400,000+ sq ft storage and GCC-wide distribution give it scale to absorb container-load honey volumes.",
+          "contact": "",
+          "website": "https://www.truebell.org/",
+          "linkedin": "https://www.linkedin.com/company/truebell-marketing-and-trading-llc",
+          "rating": 3
+        },
+        {
+          "company": "Life Pharmacy UAE",
+          "city": "Dubai (HQ; 200+ outlets nationwide)",
+          "business": "Pharmacy and wellness retail chain",
+          "why_fit": "Well-established, widely-documented UAE pharmacy chain; no red flags found. Already merchandises Manuka/wellness honey, a plausible private-label seed opportunity.",
+          "contact": "",
+          "website": "https://www.lifepharmacy.com/",
+          "linkedin": "",
+          "rating": 3
+        },
+        {
+          "company": "Bayara (Savola Group)",
+          "city": "Dubai",
+          "business": "Dried fruits, nuts, spices, dates and pulses producer-distributor; 2,000+ retail points and 150+ shop-in-shops across 30+ countries",
+          "why_fit": "Well-established, widely-documented regional FMCG brand; no red flags found. Honey is a natural adjacent category to its existing dried-fruit/nuts range, though this is speculative since no honey SKU or sourcing program was found.",
+          "contact": "",
+          "website": "https://bayara.com/",
+          "linkedin": "",
+          "rating": 2
+        }
+      ],
+      "country": "United Arab Emirates",
+      "note": "Verified all 5 active buyers by fetching their exact source_url pages live and cross-checking company identity via independent web search: 3 CONFIRMED (Admiral Foodstuff Trading, Eyeon General Trading LLC, Peachtree Foods MENA — real companies, live TradeKey/go4worldbusiness listings matched with correct dates/quotes; Peachtree and Eyeon flagged as unusual-but-plausible since their primary businesses are hospitality/pancake-equipment and cosmetics/steel-alloy/sugar respectively, not foodstuff import), 1 PLAUSIBLE (Bin Haidar — real Dubai trading-family surname with multiple matching \"Bin Haidar General Trading\" entities, but the exact posting entity is unconfirmable and dates only roughly match the researcher's claim), 1 UNVERIFIED (Organi — the TradeKey listing itself checks out exactly, but no independent registry/website/LinkedIn evidence that \"Organi\" is a real company; kept per instructions since it isn't an obviously fabricated name). None were dropped as fabricated. For potential buyers, all 13 are confirmed real via independent search (trade-data platforms, company directories, official sites/LinkedIn); none dropped. One rating was lowered: Honey Trading Company LLC (5→3) because a business directory categorizes an entity at that address as \"Textiles\" rather than honey/foodstuff and a separately-found phone number didn't match the researcher's contact — likely a directory data mismatch but worth direct confirmation before outreach. Emirpro Foodstuff Trading LLC's honey-import share was independently corroborated but flagged since other trade data shows its more recent shipments are mostly sunflower from Russia/Kazakhstan."
+    },
+    {
+      "country": "Afghanistan",
+      "active": [],
+      "potential": [
+        {
+          "company": "Weyar Afghan Trading Company",
+          "city": "Kabul",
+          "business": "Importer, distributor and agent/broker of FMCG food categories: confectionery & snacks, juice/soft drinks & water, organic & health food, spices/herbs/seasonings, and tea & coffee.",
+          "why_fit": "Confirmed real, active Kabul food-import/distribution house (founded 2014 by Ahmad Reshad Sidiqi); official site weyarafghan.org and directory listings (bestfoodimporters.com, abc.af) match the stated category list including Organic & Health Food, so an Iranian honey SKU is a low-friction extension.",
+          "contact": "+93 20 221 2040 (office, Dist.10 Shahr-e-Naw, Kabul)",
+          "website": "weyarafghan.org",
+          "linkedin": "",
+          "rating": 5
+        },
+        {
+          "company": "Finest Group / Finest Supermarket",
+          "city": "Kabul",
+          "business": "Upscale supermarket chain (retail arm of SMN Group) importing and selling foreign food brands to Kabul's middle-to-upper-end and expatriate shoppers.",
+          "why_fit": "Confirmed real: operating since 2006, retail division of SMN Investments led by Sadat M. Naderi, multiple stores incl. Wazir Akbar Khan (matches contact number found); a plausible retail channel for an affordably-premium imported honey.",
+          "contact": "+93 78 220 0503 (Wazir Akbar Khan store)",
+          "website": "finestgroup.com.af",
+          "linkedin": "",
+          "rating": 4
+        },
+        {
+          "company": "Sadaf Aria Food Manufacturing Company",
+          "city": "Herat",
+          "business": "Snack-food manufacturer (biscuits, cakes, popcorn, puff snacks) operating 8 brands and 34 branches nationwide; ~$19.3M revenue.",
+          "why_fit": "Confirmed real via official site sadafaria.com, ZoomInfo and LinkedIn; established 2009 in Herat Industrial City with the branch/brand counts as described. Herat HQ near the Iran corridor is a genuine plus, but this is a snack maker, not a food distributor -- honey fit is plausible but indirect, hence a mid rating.",
+          "contact": "",
+          "website": "sadafaria.com",
+          "linkedin": "af.linkedin.com/company/sadaf-aria-food-manufacturing-company",
+          "rating": 3
+        },
+        {
+          "company": "Omaid Bahar Fruit Processing Ltd",
+          "city": "Kabul",
+          "business": "Afghanistan's largest juice/beverage/dairy manufacturer (30+ SKUs) with a country-wide FMCG distribution operation.",
+          "why_fit": "Confirmed real via omaidbahar.com, LinkedIn, D&B and Gulfood exhibitor listing; first fruit-processing facility of its kind in Afghanistan with a genuine national distribution arm. Honey is not currently in its portfolio, so this remains a structural/plausible fit rather than a confirmed buyer interest.",
+          "contact": "+93 78 600 2008",
+          "website": "omaidbahar.com",
+          "linkedin": "linkedin.com/company/omaid-bahar-fruit-processing-ltd",
+          "rating": 3
+        },
+        {
+          "company": "Imports Afghanistan Finest Goods (Imports AFG LLC)",
+          "city": "Kabul",
+          "business": "Diaspora-facing trading house importing/exporting dry & fresh fruits, tea (Chai Delbar brand), rice and saffron (Delbar brand) between Afghanistan, the US and Germany.",
+          "why_fit": "Confirmed real: importsafg.com is live, founded 2003, offices in USA (Virginia), Germany and Kabul's Jada-e Maiwand match the researcher's claim; Delbar-branded saffron/tea lines confirmed, so a honey SKU would sit naturally alongside them.",
+          "contact": "shamid@importsafg.com",
+          "website": "importsafg.com",
+          "linkedin": "",
+          "rating": 3
+        },
+        {
+          "company": "Hakim Loqman Trading Co",
+          "city": "Herat",
+          "business": "Dried-fruit, nut and saffron trading house (pistachio, raisins, dates, grapes, walnuts) trading worldwide out of Herat.",
+          "why_fit": "Confirmed real via globalsuppliersonline.com listing; established 2001, Azadi Ave Herat address and 'Mohammad, Export Manager' contact match exactly. Herat location on the Iran corridor and adjacency to dried-fruit/honey gift-pack bundling supports the fit.",
+          "contact": "Export Manager: Mohammad (Azadi Ave, Herat)",
+          "website": "",
+          "linkedin": "",
+          "rating": 3
+        },
+        {
+          "company": "Maiwand Hajizada Limited",
+          "city": "Kabul",
+          "business": "Trading company (established 2009) importing tea, cosmetics and confectionery into Kabul.",
+          "why_fit": "Confirmed real via TradeIndia/IndiaBizClub/mclloydbis company profiles; address (Muskin Yar Market, Jadeh Maiwand) matches, and trade data shows 1,018 recorded import transactions with the most recent in 2024 -- a genuinely active importer, strengthening (not just plausible) the case for it as an adjacent-category channel.",
+          "contact": "Contact: Mohammad Rafi Hajizada (Muskin Yar Market, Jadeh Maiwand, Kabul)",
+          "website": "",
+          "linkedin": "",
+          "rating": 3
+        },
+        {
+          "company": "Sidiqi Kaweyan Ltd (Kaweyan Group)",
+          "city": "Kabul",
+          "business": "Woman-founded dried-fruit export house (raisins, etc.) with a dedicated export-import division (Naweyan Nawed Ltd.) and contracts with buyers in Malaysia, Turkey and Saudi Arabia.",
+          "why_fit": "Confirmed real and substantial: founder Kamila Sidiqi is a well-documented entrepreneur (subject of 'The Dressmaker of Khair Khana'); Kaweyan Group has secured large raisin-export deals (e.g. 4,000t/$2M to Russia). Core proven activity is export outward, not import buying, so origin-openness for inbound Iranian honey remains unconfirmed -- rating held at 2 as researcher assessed.",
+          "contact": "",
+          "website": "kaweyangroup.com",
+          "linkedin": "",
+          "rating": 2
+        },
+        {
+          "company": "Masood Hamidzada Co. Ltd",
+          "city": "Kabul",
+          "business": "Active tea importer/buyer in Kabul with import purchasing activity on record into 2026.",
+          "why_fit": "Confirmed to exist as a distinct listing: appears on Tradekey's Afghanistan tea-buyer directory with a posting dated April 26, 2026, supporting the researcher's '2026 activity' claim. No independent company website or corporate registry record found beyond the trade-directory listing, so treat as a real but thinly-documented buyer.",
+          "contact": "",
+          "website": "",
+          "linkedin": "",
+          "rating": 2
+        },
+        {
+          "company": "Season Corporation (Season Honey)",
+          "city": "Jalalabad (branches in Herat, Kabul, Mazar-e-Sharif)",
+          "business": "Afghanistan's main domestic honey processor and packer, purifying and packaging locally produced honey for sale across Afghan provinces.",
+          "why_fit": "Confirmed real: a USAID-backed honey processor (\"Season Honey Company\") was established via the Nangarhar Beekeepers' Association, collecting raw honey from 500+ beekeepers across Laghman/Kunar/Nuristan/Nangarhar and supplying Nangarhar/Kabul/Balkh markets -- this closely matches the researcher's entry, though the exact legal name found in sources is 'Season Honey Company' rather than 'Season Corporation' (likely same entity, name unconfirmed exactly). As a domestic producer/competitor rather than a distributor, buyer intent for imported honey remains speculative -- rating held at 2.",
+          "contact": "",
+          "website": "",
+          "linkedin": "",
+          "rating": 2
+        },
+        {
+          "company": "Aqyanos Herat Trading Company",
+          "city": "Herat",
+          "business": "General import/export trading company based in Herat.",
+          "why_fit": "Confirmed to exist: listed as an active employer on jobs.af (Afghanistan's main job portal), consistent with a real operating Herat trading company, but no product-line detail (food, honey, or otherwise) could be independently verified -- the honey fit remains speculative based on general Herat/Iran-corridor positioning only.",
+          "contact": "",
+          "website": "",
+          "linkedin": "",
+          "rating": 2
+        }
+      ],
+      "note": "Active list was empty in the researcher's output, so no active RFQ buyers required verification. For the 11 potential buyers: all 11 checked out as real, operating companies via official sites, trade directories (TradeIndia, Tradekey, ZoomInfo, D&B, globalsuppliersonline), LinkedIn, or Jobs.af -- none were fabricated, so none were dropped. Strongest independent confirmations: Weyar Afghan Trading (matches exactly, kept at 5), Finest Group (matches exactly, kept at 4), Maiwand Hajizada Ltd (trade data shows 1,018 import transactions through 2024, strengthening its case), and Masood Hamidzada Co. Ltd (found as an actual live Tradekey tea-buyer listing dated April 2026, supporting the '2026 activity' claim). One naming discrepancy: 'Season Corporation' could not be found verbatim -- the real, well-documented USAID-backed entity is 'Season Honey Company' (Nangarhar Beekeepers' Association), almost certainly the same operation but flagged since the exact legal name is unconfirmed. Kaweyan Group's core proven business is raisin export outward (not honey import), so its rating stayed at 2 despite being a large, credible, well-documented company. No ratings were downgraded from the researcher's estimates; none were upgraded except noting stronger-than-claimed evidence where found."
+    },
+    {
+      "active": [
+        {
+          "buyer": "\"Jeremy\" (individual buyer profile on ExportHub; no company name disclosed)",
+          "city": "Georgia (city not specified on listing)",
+          "wants": "Honey - general one-time import inquiry, no quantity/spec stated. CAUTION: ExportHub itself has numerous credible complaints (ComplaintsBoard ~1.0/5, users reporting purchased 'leads' turned out non-responsive/not real) about lead quality, so treat buying intent as low-confidence even though the listing itself is real.",
+          "posted": "Live page (re-fetched directly, bypassing a 403 block) currently shows Posted 04 Aug 2026 / Expires 21 Aug 2026 - NOT June 15/Aug 10, 2026 as originally reported. Other listings on the same page show much longer posted-to-expiry windows (10-14 weeks) vs this one's ~17 days, and the date shifted to track near the actual fetch date across two separate checks - consistent with an evergreen/auto-refreshed listing rather than a fixed historical RFQ. Do not treat the specific date as reliable.",
+          "contact": "Phone masked as 9955***119 (confirmed matches +995 Georgia prefix); email masked as Je*********i@ho****l.fr; full contact gated behind ExportHub supplier registration",
+          "source_url": "https://www.exporthub.com/importers/honey/",
+          "role": "",
+          "linkedin": "",
+          "verdict": "unverified"
+        }
+      ],
+      "country": "Georgia",
+      "note": "ACTIVE: WebFetch on exporthub.com was blocked (403) directly, but a proxied fetch of the live page confirmed the Jeremy/Georgia honey listing exists (masked contact 9955***119 / Je*********i@ho****l.fr matches exactly, +995 prefix confirms Georgia-country not Georgia-USA). However the researcher's posted/expiration dates do NOT match what the live page shows today, and a second check minutes apart showed the 'posted' date tracking near-current - a classic evergreen-listing pattern. ExportHub also has substantial, credible user complaints about non-real/unresponsive 'leads.' Downgraded to unverified (kept, not dropped, since the listing and country match are real) - do not present this as a dated, verified RFQ; treat as a low-confidence, generic inbound inquiry at best.\n\nPOTENTIAL: all 12 companies confirmed as real, operating Georgian businesses via independent web search (official sites, Yell.ge/Kompass/D&B/LinkedIn directory listings) - none dropped as fabricated. Corrections made: (1) Tbilisi Holding Company - correct official site is tbilisiholding.com (not thc.ge/thcgeorgia.com as reported); their 5-distribution-center claim (Tbilisi/Batumi/Kutaisi/Akhaltsikhe/Telavi) was independently confirmed verbatim, but no source ties 'Everest 2010 Ltd' to THC - that pairing is unconfirmed and may be a conflation of two separate real companies; kept THC, flagged Everest link as unverified. (2) Nikora Trade - website corrected to nikoratrade.ge (confirmed domain); nikoraholding.ge/nikorasupermarket.ge are related but the exact one researcher cited was slightly off. (3) Black Sea Trading Group - D&B lists this as primarily a beer/wine/spirits wholesaler headquartered in Batumi, not a general food importer, and the Tbilisi Vazha-Pshavela address wasn't independently confirmed; rating cut 3->2 on scope/location uncertainty. (4) Horizon - a real 'Horizon Imports Georgia' LLC exists per TradeAtlas but is registered in Gldani, not Vazisubani as claimed; identity/location match unconfirmed, yahoo.com contact email is a weaker signal for a real company; kept at rating 2 with caveat. (5) Orbita Company - verification came back stronger than the original rating suggested (own orbita.ge site, LinkedIn presence, serves 7,000+ client companies nationwide with dedicated logistics) - bumped rating 2->3. (6) Matchakhela Ltd/Datunua, Europroduct, Goodwill, Diplomat Georgia, Aversi Pharma, PSP Pharma, Megako Trade all had their key facts (capacity, branch counts, product ranges, phone/email) independently corroborated closely or exactly; ratings left as given.",
+      "potential": [
+        {
+          "company": "JSC Nikora Trade",
+          "city": "Tbilisi",
+          "business": "Georgia's largest supermarket chain (~380 branches nationwide incl. Nikora Supermarket and Libres) with its own production, retail and import/distribution arms; ~6,000 employees",
+          "why_fit": "Confirmed real and large-scale: independently verified via Yell.ge/D&B/Kompass/LinkedIn. Largest grocery retailer with an active import network and a dedicated import/trade division - a realistic route to national shelf placement for imported honey",
+          "contact": "corporate@nikoratrade.ge (domain confirmed real; info@nikoratrade.ge is the verified public contact)",
+          "website": "nikoratrade.ge",
+          "linkedin": "https://ge.linkedin.com/company/nikoratrade2000",
+          "rating": 5
+        },
+        {
+          "company": "Tbilisi Holding Company (THC)",
+          "city": "Tbilisi (5 distribution centers confirmed: Tbilisi, Batumi, Kutaisi, Akhaltsikhe, Telavi)",
+          "business": "Major food importer and nationwide distributor (30+ years, ~500 imported food SKUs) supplying 5,000+ retail and HORECA facilities; also runs Schirnhofer and Panda retail chains",
+          "why_fit": "Confirmed real via official site; the 5-center distribution footprint matches exactly. NOTE: could not confirm any link between THC and 'Everest 2010 Ltd' (a separate, also-real Didube-based fats/oils/seafood importer) - the researcher's pairing of the two as one entity is unverified; treat as two distinct leads if pursuing both",
+          "contact": "info@thc.ge (unconfirmed - use site contact form to verify)",
+          "website": "tbilisiholding.com (corrected - thc.ge/thcgeorgia.com as originally listed were not confirmed as their domain)",
+          "linkedin": "",
+          "rating": 5
+        },
+        {
+          "company": "Europroduct LLC",
+          "city": "Tbilisi",
+          "business": "Food importer, distributor and multi-location retailer of European branded groceries",
+          "why_fit": "Confirmed: europroduct.ge's own product catalog lists an honey category including Alce Nero brand honey alongside local Georgian honey - a proven, current honey-category buyer",
+          "contact": "info@europroduct.ge, +995 32 265 25 45",
+          "website": "europroduct.ge",
+          "linkedin": "",
+          "rating": 5
+        },
+        {
+          "company": "Goodwill (supermarket chain)",
+          "city": "Tbilisi / Batumi",
+          "business": "Georgian supermarket chain since 2004, 7 branches (2 hypermarkets, 5 supermarkets/Gourmet format) across Tbilisi (Galleria, Saburtalo, Vake, Krtsanisi, Didi Dighomi) and Batumi",
+          "why_fit": "Confirmed real and matches description closely, including the 'Gourmet' premium format - a natural fit for imported specialty honey",
+          "contact": "via goodwill.ge",
+          "website": "goodwill.ge",
+          "linkedin": "",
+          "rating": 4
+        },
+        {
+          "company": "Matchakhela Ltd (brand: Datunua)",
+          "city": "Khelvachauri, near Batumi",
+          "business": "Honey processing and packing factory (5 tons/day capacity, own lab) producing Blossom, Acacia, Linden and Chestnut honey under the Datunua brand; NFA export-recognized",
+          "why_fit": "Confirmed via independent sources with details matching almost exactly. This is precisely the 'honey re-packer' profile - a working packing line that could blend in or private-label imported honey",
+          "contact": "+995 577 304 262",
+          "website": "",
+          "linkedin": "",
+          "rating": 4
+        },
+        {
+          "company": "Diplomat Georgia LLC",
+          "city": "Tbilisi (branches in Tbilisi and Samtredia)",
+          "business": "FMCG distributor, Georgian subsidiary of Diplomat Group (Israel); exclusive distributor for P&G and Nestle to ~8,500 direct customers; 13,000 sqm distribution center, SAP ERP, 700+ staff",
+          "why_fit": "Confirmed real, large, professionally run distributor. The ~8,500-customer figure is corroborated; the '~51,000 distribution points' figure could not be independently confirmed (plausible as indirect reach but unverified)",
+          "contact": "via diplomat.com.ge (domain confirmed live)",
+          "website": "diplomat.com.ge",
+          "linkedin": "https://ge.linkedin.com/company/diplomat-georgia",
+          "rating": 3
+        },
+        {
+          "company": "Black Sea Trading Group / Black Sea Group",
+          "city": "Batumi (D&B-listed HQ); Tbilisi presence unconfirmed",
+          "business": "Per Dun & Bradstreet, primarily a wholesale importer/distributor of beer, wine and distilled alcoholic beverages, based in Batumi",
+          "why_fit": "Company is real, but official records show it as an alcohol wholesaler rather than a general food distributor; the claimed Tbilisi office (71 Vazha-Pshavela Ave.) and broad food/HORECA scope could not be independently corroborated. Rating lowered on scope/location uncertainty",
+          "contact": "via Yell.ge/D&B listing (Batumi office confirmed: 41 Sh. Khimshiashvili St.)",
+          "website": "",
+          "linkedin": "",
+          "rating": 2
+        },
+        {
+          "company": "Aversi Pharma LLC",
+          "city": "Tbilisi (nationwide, 230+ pharmacy locations per current sources)",
+          "business": "One of Georgia's largest pharmacy/healthcare chains (founded 1994, ~6,700 employees); online shop sells vitamins and dietary supplements",
+          "why_fit": "Confirmed real and matches the 'herbal-pharmacy chain' profile - plausible channel for royal jelly/functional honey products",
+          "contact": "info@aversi.ge, (032) 2 900 800",
+          "website": "aversi.ge",
+          "linkedin": "",
+          "rating": 3
+        },
+        {
+          "company": "PSP Pharma LLC",
+          "city": "Tbilisi (nationwide, 350+ branches)",
+          "business": "Georgia's market-leading pharmacy chain since 2013 (confirmed via Forbes Georgia/Wikipedia), first online pharmacy in Georgia, ~2M customers/month",
+          "why_fit": "Confirmed real, largest branch network in the country - a scale channel for royal jelly/honey-based supplements, though fit remains speculative (no confirmed current honey/supplement SKU)",
+          "contact": "via psp.ge",
+          "website": "psp.ge",
+          "linkedin": "https://ge.linkedin.com/company/psp-pharmacy",
+          "rating": 2
+        },
+        {
+          "company": "Horizon",
+          "city": "Tbilisi (claimed Vazisubani; a real 'Horizon Imports Georgia' LLC is registered in Gldani per TradeAtlas)",
+          "business": "Food products import and distribution company",
+          "why_fit": "A same-named real importer exists, but its registered district doesn't match the researcher's claim and identity could not be fully confirmed; yahoo.com contact address is a weaker signal. Keep as a low-confidence lead only",
+          "contact": "horizon.ge@yahoo.com, (599) 10 09 22",
+          "website": "",
+          "linkedin": "",
+          "rating": 2
+        },
+        {
+          "company": "Megako Trade",
+          "city": "Tbilisi (Samgori)",
+          "business": "Food and tea products import and distribution company",
+          "why_fit": "Confirmed real via Yell.ge - address, phone (271 25 67) and email (office@megako.ge) all match exactly",
+          "contact": "office@megako.ge, (032) 271 25 67",
+          "website": "",
+          "linkedin": "",
+          "rating": 2
+        },
+        {
+          "company": "Orbita Company",
+          "city": "Tbilisi (Didube)",
+          "business": "Food and confectionery import/distribution company, founded 1996, exclusive representative for several international FMCG brands, serves 7,000+ client companies nationwide with own logistics network",
+          "why_fit": "Confirmed real with a stronger profile than initially rated - own site (orbita.ge), active LinkedIn, and a large nationwide client base make this a credible wholesale channel; rating raised slightly on verification",
+          "contact": "info@orbita.ge, (032) 235 68 92",
+          "website": "orbita.ge",
+          "linkedin": "https://ge.linkedin.com/company/orbita-distribution-company",
+          "rating": 3
+        }
+      ]
+    },
+    {
+      "country": "Armenia",
+      "active": [],
+      "potential": [
+        {
+          "company": "Andaco LLC",
+          "city": "Yerevan",
+          "business": "Major food & beverage import/distribution company (family business since 1997), covers an estimated ~89% of Armenia's retail and HoReCa market; owns Parma Supermarket and Andaco Spirits as subsidiaries.",
+          "why_fit": "A third-party importer directory (bestfoodimporters.com) explicitly lists \"Honey, Sugars & Spreads\" as one of Andaco's product categories alongside dairy, gourmet and organic/health food lines. Andaco's own site (andaco.am) only shows top-level Food/Wine/Beverage catalogue links and doesn't itself display the honey sub-category, so this is corroborated but not self-confirmed on their primary site. Still a proven-scale national distributor.",
+          "contact": "+374 10 560046",
+          "website": "https://www.andaco.am",
+          "linkedin": "https://am.linkedin.com/company/andaco-llc",
+          "rating": 5
+        },
+        {
+          "company": "Haleb Store",
+          "city": "Yerevan",
+          "business": "Organic/specialty food importer, own-producer and wholesale distributor; runs 3 Yerevan shops and wholesales ~100+ of its 800-product range to roughly 300 retailers nationwide.",
+          "why_fit": "Confirmed real and active: independent sourcing corroborates that Haleb wholesales 100+ products into SAS, Yerevan City, Carrefour, Parma and Zovq simultaneously. Honey as a specific stocked category wasn't independently re-verified beyond the researcher's claim, but the wholesale-reach claim checks out and the company profile (organic/specialty foods) is a strong category fit.",
+          "contact": "+374 91 206288",
+          "website": "https://haleb.store/en",
+          "linkedin": "",
+          "rating": 5
+        },
+        {
+          "company": "Food Depot LLC",
+          "city": "Yerevan",
+          "business": "HoReCa & Retail food/beverage distributor founded 2022; direct distributor of 100+ global brands (~2,000 SKUs), owns warehousing and fleet, and now runs Carrefour Armenia's local franchise operations.",
+          "why_fit": "Confirmed real and independently verified: Food Depot LLC did take over local franchise/operational management of Carrefour Armenia (shift away from Majid Al Futtaim), matching the researcher's claim exactly. Young, well-capitalized, fast-scaling distributor with direct retail-shelf access.",
+          "contact": "+374 11 303301",
+          "website": "https://fooddepot.am",
+          "linkedin": "https://am.linkedin.com/company/food-depot-llc",
+          "rating": 4
+        },
+        {
+          "company": "SAS Group / SAS Supermarkets",
+          "city": "Yerevan",
+          "business": "One of Armenia's fastest-growing supermarket chains and a leading food-importing company with established partnerships with world producers; also runs SAS.am online supermarket.",
+          "why_fit": "Confirmed real; independently verified as self-described one of Armenia's leading grocery/food-importing companies with international supplier partnerships (30,000+ item online catalogue). The specific claim that they merchandise both Armenian and imported honey brands in-store was not independently re-verified but is plausible given the scale and category breadth.",
+          "contact": "",
+          "website": "https://www.sas.am/en/",
+          "linkedin": "https://www.linkedin.com/company/sas-group-armenia",
+          "rating": 4
+        },
+        {
+          "company": "Yerevan City Supermarket Chain",
+          "city": "Yerevan",
+          "business": "Armenia's largest supermarket chain (~30 outlets) with direct-import relationships and high-volume warehousing/purchasing capacity.",
+          "why_fit": "Confirmed real: independently verified as founded 2007, largest chain in Yerevan with 30 outlets (7 hypermarkets). Direct-import capability claim is consistent with its scale, though not separately itemized in sources checked. Strong retail-reach fit.",
+          "contact": "",
+          "website": "https://yerevan-city.am/",
+          "linkedin": "https://am.linkedin.com/company/yerevan-city",
+          "rating": 4
+        },
+        {
+          "company": "Alpha Food Service",
+          "city": "Yerevan",
+          "business": "Importer/distributor of premium food, beverage, and bakery/pastry ingredients since 2005; supplies ~3,000 HoReCa businesses across Armenia with ~100 international brands (Monin, Zeelandia, IREKS, Unigra, etc.).",
+          "why_fit": "Confirmed real and independently verified (founded 2005, ~3,000 HoReCa/bakery/retail partners, named brand portfolio matches). Honey is not a confirmed current catalogue line for them, as the researcher already flagged - kept as a speculative but well-reasoned bakery-ingredient-adjacent lead.",
+          "contact": "+374 10 728799",
+          "website": "https://www.foodservice.am/",
+          "linkedin": "https://am.linkedin.com/company/alpha-food-service",
+          "rating": 3
+        },
+        {
+          "company": "Nor Zovq (Zovq) Supermarket Chain",
+          "city": "Yerevan",
+          "business": "Mid-market Armenian supermarket chain, ~28-29 branches, operating since 1999.",
+          "why_fit": "Confirmed real: independently verified chain history (from 1999/2001), ~29 branches. Note: press coverage (CIVILNET) reports the chain's owner/heads were charged with tax evasion in 2023 - doesn't invalidate it as a retail buyer lead but worth flagging as a diligence item. The specific in-store honey-stocking claim wasn't independently re-verified.",
+          "contact": "+374 10 543107",
+          "website": "https://norzovq.am",
+          "linkedin": "",
+          "rating": 3
+        },
+        {
+          "company": "Parma Supermarket",
+          "city": "Yerevan",
+          "business": "Online + physical supermarket chain (subsidiary of Andaco LLC), noted in market coverage as carrying the widest honey assortment among Armenian online supermarkets.",
+          "why_fit": "Confirmed: directly fetched parma.am and verified a dedicated \"Honey\" product category exists on-site (e.g., a featured 'Langnese' honey 500g SKU), substantiating active honey category management. Buying likely routes through parent Andaco's import desk as claimed.",
+          "contact": "",
+          "website": "https://parma.am/en/",
+          "linkedin": "",
+          "rating": 4
+        },
+        {
+          "company": "Go Green Armenia",
+          "city": "Yerevan",
+          "business": "Organic/health-food retailer with multiple Yerevan locations, selling chemical-free natural produce and specialty items including raw pure honey.",
+          "why_fit": "Confirmed real and honey-relevant: independently verified the store sells raw Karavajar honey from Armenia as a flagship organic product, matching the researcher's claim closely. Good clean-label fit though smaller scale than mainstream retail.",
+          "contact": "+374 91 054279 / gogreenarmenia@gmail.com",
+          "website": "https://gogreenworld.store/",
+          "linkedin": "",
+          "rating": 3
+        },
+        {
+          "company": "Natali Pharm",
+          "city": "Yerevan",
+          "business": "Armenia's largest pharmaceutical importer/distributor, operating 99+ pharmacies nationwide plus a \"Natali Agro\" division; imports from the US, EU, CIS and Asia.",
+          "why_fit": "Confirmed real (largest Armenian pharmacy chain, ~99+ locations, authorized distributor for 40+ global drug manufacturers). Honey is not a confirmed current category for them - kept as a speculative but real, plausible lead per the researcher's original framing.",
+          "contact": "+374 10 729173",
+          "website": "https://natalipharm.am/en/",
+          "linkedin": "",
+          "rating": 2
+        },
+        {
+          "company": "Grand Candy",
+          "city": "Yerevan",
+          "business": "Armenia's largest confectionery manufacturer (~40% of the domestic confectionery market), producing 400+ products including cakes, cookies and ice cream.",
+          "why_fit": "Confirmed real (largest Armenian confectioner, founded 2000 from a Soviet-era factory, 400+ products, own retail chain). Honey as a bulk ingredient is speculative/unconfirmed as the researcher noted - kept as a plausible but unverified ingredient-buyer lead, not a finished-goods reseller.",
+          "contact": "",
+          "website": "https://www.grandcandy.am/eng",
+          "linkedin": "",
+          "rating": 2
+        }
+      ],
+      "note": "Active list was already empty in the researcher's output - nothing to verify or fabricate there; leaving it empty rather than inventing RFQ postings. For potential buyers, all 11 companies were independently verified as real, operating businesses via web search and/or direct site fetch (Andaco, Haleb Store, Food Depot, SAS Group, Yerevan City, Alpha Food Service, Nor Zovq, Parma, Go Green Armenia, Natali Pharm, Grand Candy) - none dropped as fabricated. Two ratings were adjusted: Parma Supermarket raised 3->4 after directly confirming a live \"Honey\" product category and SKU on parma.am (stronger evidence than the rest of the honey-specific claims, which mostly rely on the researcher's unverified market-coverage assertions). SAS Group, Yerevan City, and Nor Zovq's specific \"already stocking honey\" claims could not be independently re-confirmed (only the companies' general scale/import-business claims were verified) - treat those specific honey-merchandising details as researcher-asserted, not independently confirmed. Andaco's \"Honey, Sugars & Spreads\" category claim is corroborated by a third-party importer directory (bestfoodimporters.com) but does not appear on Andaco's own homepage. Note also that Nor Zovq's ownership faced a 2023 tax-evasion charge per CIVILNET - a diligence flag, not a fabrication issue. Alpha Food Service, Natali Pharm and Grand Candy remain correctly framed as speculative/unconfirmed honey buyers (ratings 3, 2, 2 respectively) since honey is not a confirmed line for any of them."
+    },
+    {
+      "active": [
+        {
+          "buyer": "Al-Jannat Honey",
+          "city": "Pakistan (city not disclosed on listing)",
+          "wants": "Posted open buy-lead \"Any Company Selling Honey\" — sourcing inquiry for a honey supply relationship",
+          "posted": "07 Jun 2026",
+          "contact": "",
+          "source_url": "https://importer.tradekey.com/buyoffer/Any-Company-Selling-Honey-3471825.html",
+          "role": "Saqib Ali (listed contact name; full details gated behind TradeKey sign-in)",
+          "linkedin": "",
+          "verdict": "confirmed"
+        },
+        {
+          "buyer": "Ali Enterprises",
+          "city": "Pakistan (city not disclosed on listing)",
+          "wants": "\"Need to Buy Honey\" — general honey purchase inquiry, no volume stated",
+          "posted": "18 Jul 2026",
+          "contact": "",
+          "source_url": "https://importer.tradekey.com/buyoffer/Need-To-Buy-Honey-3725407.html",
+          "role": "Malik Aitezaz (listed contact name; full details gated behind TradeKey sign-in)",
+          "linkedin": "",
+          "verdict": "confirmed"
+        },
+        {
+          "buyer": "Ihsan Muzamil Enterprises",
+          "city": "Pakistan (Peshawar, KP — per independent trade-directory records)",
+          "wants": "\"I Am Looking For Honey\" — honey sourcing inquiry, no volume stated. Note: independent records (Volza/D&B/Exim trade data) show this same-named firm is primarily a honey EXPORTER (154 export shipments, ~$2.3M), so this buy-lead is plausibly for supplementary/blend-grade stock rather than a first-time importer",
+          "posted": "26 Apr 2026",
+          "contact": "",
+          "source_url": "https://importer.tradekey.com/buyoffer/I-Am-Looking-For-Honey-3288205.html",
+          "role": "Ihsan Ullah (listed contact name; matches a LinkedIn profile \"Ihsan Ullah — Ihsan muzamil enterprises\", independently corroborating the buyer name)",
+          "linkedin": "",
+          "verdict": "confirmed"
+        },
+        {
+          "buyer": "Xfinity Flex One",
+          "city": "Pakistan (city not disclosed on listing)",
+          "wants": "\"I Am Looking For Company To Supply Honey\" — seeking an ongoing honey supplier relationship. Unusual company name (coincides with a US Comcast streaming-device product) — no independent web presence found for a Pakistani firm by this name beyond TradeKey itself, consistent with a small individual trader account rather than an established company",
+          "posted": "18 Jun 2026",
+          "contact": "",
+          "source_url": "https://importer.tradekey.com/buyoffer/I-Am-Looking-For-Company-To-Supply-Honey-3481437.html",
+          "role": "Ali Rizwan (listed contact name; full details gated behind TradeKey sign-in)",
+          "linkedin": "",
+          "verdict": "confirmed"
+        },
+        {
+          "buyer": "Abid ch (individual buyer; company name not disclosed on public listing)",
+          "city": "Pakistan",
+          "wants": "\"We Require Honey\" — direct buy inquiry, no volume stated",
+          "posted": "04 Jul 2026",
+          "contact": "",
+          "source_url": "https://importer.tradekey.com/buyoffer/We-Require-Honey-3672911.html",
+          "role": "",
+          "linkedin": "",
+          "verdict": "confirmed"
+        },
+        {
+          "buyer": "Umer Khan (individual buyer; company name not disclosed on public listing)",
+          "city": "Pakistan",
+          "wants": "\"Need Supplier Who Can Provide Honey\" — sourcing inquiry, no volume stated",
+          "posted": "17 Jun 2026",
+          "contact": "",
+          "source_url": "https://importer.tradekey.com/buyoffer/Need-Supplier-Who-Can-Provide-Honey-3444177.html",
+          "role": "",
+          "linkedin": "",
+          "verdict": "confirmed"
+        },
+        {
+          "buyer": "Al Hamd Traders",
+          "city": "Pakistan (city not disclosed on listing; a same-named trading firm is registered in Lahore/Karachi per D&B and other directories)",
+          "wants": "\"Need Supplier Who Can Provide Honey Sachet\" — sourcing small-pack/sachet honey for resale, no volume stated",
+          "posted": "06 Apr 2026",
+          "contact": "",
+          "source_url": "https://importer.tradekey.com/buyoffer/Need-Supplier-Who-Can-Provide-Honey-Sachet-3163899.html",
+          "role": "Syed Majid Hussain (listed contact name; full details gated behind TradeKey sign-in)",
+          "linkedin": "",
+          "verdict": "confirmed"
+        }
+      ],
+      "potential": [
+        {
+          "company": "Ashifa Food (Alshifa Honey)",
+          "city": "Lahore",
+          "business": "Honey packer, manufacturer and nationwide distributor since 2001 (verified live on ashifafood.com); also sold on Al-Fatah's own online store, confirming real retail distribution",
+          "why_fit": "Already a scaled bulk honey packer/repacker selling raw and organic honey across Pakistan — a natural buyer of cheap, high-quality imported bulk honey to blend, repack or supplement local supply",
+          "contact": "+92 42 3527 4487-88 / ashifafood@gmail.com (site also lists 0309 9407733, 0321 5274488)",
+          "website": "https://ashifafood.com/",
+          "linkedin": "",
+          "rating": 5
+        },
+        {
+          "company": "Islamic Honey Centre (now rebranded on-site as \"Islamic Foods\")",
+          "city": "Lahore (HQ, Kot Lakpat); nationwide branded outlets",
+          "business": "Honey and organic-products retail chain; site claims \"35 years of experience\" (~1991 founding, close to the researcher's 1993), nationwide reach and wholesale presence",
+          "why_fit": "Nationwide honey-focused retail chain with decades of scale — needs continuous large-volume honey supply and has existing infrastructure to absorb an imported product line",
+          "contact": "021-34817778 (Karachi branch, unverified directly but plausible)",
+          "website": "https://islamichoney.com/",
+          "linkedin": "https://pk.linkedin.com/company/islamic-honey-centre",
+          "rating": 5
+        },
+        {
+          "company": "Al Khair Premium Natural Products",
+          "city": "Karachi (Korangi)",
+          "business": "Confirmed live herbal/natural products retailer with an extensive honey line (Acacia, Sidr/Beri, Wild Flower, Kalonji, Shilajit honey); site claims 25+ years in business and exports to 30+ countries",
+          "why_fit": "Established herbal-products distributor already selling packaged honey nationally under its own brand — plausible buyer for an origin-open supplier switch/addition",
+          "contact": "",
+          "website": "https://alkhairnatural.com/ (redirects to shop.alkhairnatural.com)",
+          "linkedin": "https://pk.linkedin.com/company/al-khair-premium-natural-products",
+          "rating": 4
+        },
+        {
+          "company": "Khaas Honey",
+          "city": "Karachi",
+          "business": "Confirmed live honey-only brand (Sidr/Beri, multi-floral, royal-jelly blends); site emphasizes NIH certification and mountain sourcing",
+          "why_fit": "Growing honey-only e-commerce brand likely to want a lower-cost import source to scale volume; chamber/association membership claim not independently verified but plausible",
+          "contact": "",
+          "website": "https://khaashoney.com/",
+          "linkedin": "",
+          "rating": 4
+        },
+        {
+          "company": "Honeeza",
+          "city": "Swabi, KPK",
+          "business": "Confirmed live honey brand; site explicitly states: \"Honeeza provides bulk and wholesale options for retailers, cafes, organic stores, and resellers\"",
+          "why_fit": "Directly confirmed bulk/wholesale supply arm — one of the most direct-fit potential buyers for a large, cheap imported honey shipment to repack under private label",
+          "contact": "",
+          "website": "https://honeeza.com/",
+          "linkedin": "",
+          "rating": 4
+        },
+        {
+          "company": "Maakhie",
+          "city": "Lahore",
+          "business": "Confirmed live honey producer/supplier (Beri/Sidr, Berseem, Kikar/Acacia honey) with sourcing network reaching Kashmir; note: primary domain (www.maakhie.com) failed DNS resolution at check time even though the site's own pages and Google index are live, so verify reachability before outreach",
+          "why_fit": "Active honey supplier brand with Lahore distribution; a smaller producer plausibly open to blending in imported honey to meet growing city-wide demand",
+          "contact": "+92 331 7009888",
+          "website": "https://www.maakhie.com/",
+          "linkedin": "",
+          "rating": 3
+        },
+        {
+          "company": "Al Thaqafah",
+          "city": "Islamabad",
+          "business": "Confirmed live online Islamic/organic store selling multiple Sidr honey SKUs plus dates and attar products",
+          "why_fit": "Existing honey SKU within a halal/Islamic-lifestyle retail concept; smaller scale but a plausible reseller for a premium imported honey line",
+          "contact": "Khurram Alvi, Co-Founder & Chief Marketing Officer (name not visible on the site itself; unverified independently, keep but flag)",
+          "website": "https://althaqafah.com.pk/",
+          "linkedin": "",
+          "rating": 3
+        },
+        {
+          "company": "Al-Fatah",
+          "city": "Lahore (HQ, operating since 1941 as Al-Hamra/Al-Fatah); branches in Lahore, Islamabad, Faisalabad, Sialkot, Rawalpindi, Gujranwala, Mandi Bahauddin",
+          "business": "Confirmed large Pakistani departmental/superstore chain with a dedicated honey category (Sidr, Manuka, Alshifa Honey and other brands)",
+          "why_fit": "Large multi-branch retail chain with a long history importing variety goods — plausible shelf-space buyer for an imported honey SKU at scale",
+          "contact": "",
+          "website": "https://alfatah.pk/",
+          "linkedin": "https://pk.linkedin.com/company/al-fatah",
+          "rating": 4
+        },
+        {
+          "company": "Naheed (Naheed.pk / Naheed Supermarket)",
+          "city": "Karachi",
+          "business": "Confirmed live Karachi-based grocery/e-commerce platform carrying honey under its Breakfast/Groceries category",
+          "why_fit": "High-traffic modern-trade grocery retailer already merchandising honey — a realistic buyer for a competitively priced imported honey brand",
+          "contact": "",
+          "website": "https://www.naheed.pk/",
+          "linkedin": "",
+          "rating": 3
+        },
+        {
+          "company": "Suleman Brother's",
+          "city": "Karachi",
+          "business": "Confirmed live importer/distributor of consumer food products since 1970, currently dairy-focused (Facebook, Volza company profile, business directories corroborate)",
+          "why_fit": "Established food-import house with existing import licensing, customs and cold-chain infrastructure — could add honey as a new category with minimal setup friction",
+          "contact": "0092-21-34915073 (Contact: Mr. Muhammad Shahid Khosa — unverified independently, keep but flag)",
+          "website": "http://www.sulemanbros.com/",
+          "linkedin": "",
+          "rating": 3
+        },
+        {
+          "company": "Burque Corporation Pvt Ltd",
+          "city": "Karachi",
+          "business": "Confirmed live large FMCG/electronics/pharma/petroleum distribution company operating in Pakistan, Tanzania and Zambia (site did not show Malawi or a specific founding year)",
+          "why_fit": "Scaled national FMCG distribution network that could take on an imported honey brand and place it across its existing retail footprint",
+          "contact": "jobs@burque.com.pk (general company contact)",
+          "website": "https://www.burque.com.pk/",
+          "linkedin": "https://pk.linkedin.com/company/burque-corporation-private-limited",
+          "rating": 3
+        },
+        {
+          "company": "Fazal Din's Pharma Plus",
+          "city": "Lahore (HQ); multiple nationwide branches (exact count of 120+ not independently confirmed)",
+          "business": "Confirmed live large retail pharmacy chain in Pakistan offering healthcare and wellness products",
+          "why_fit": "Pharmacy-chain shelf space is a plausible channel for premium/medicinal-positioned honey and royal jelly, with nationwide reach",
+          "contact": "(92 42) 37320136 / 37320135",
+          "website": "https://pharmaplus.com.pk/",
+          "linkedin": "https://pk.linkedin.com/company/fazal-din's-pharma-plus",
+          "rating": 3
+        },
+        {
+          "company": "HerbsAsia",
+          "city": "Lahore (Sundar Industrial Estate)",
+          "business": "Confirmed live organic/herbal e-commerce retailer with a dedicated \"Honey & Oil\" product category",
+          "why_fit": "Herbal-wellness retail brand already selling honey online — well positioned to add a differentiated imported honey or royal jelly line",
+          "contact": "",
+          "website": "https://herbsasia.pk/",
+          "linkedin": "https://pk.linkedin.com/company/herbsasia",
+          "rating": 3
+        }
+      ],
+      "country": "Pakistan",
+      "note": "All 7 active leads CONFIRMED: every source_url resolves to a real, live TradeKey RFQ (title, contact name, and 2026 posted-date all matched exactly), and the buyer/company names (Al-Jannat Honey, Ali Enterprises, Ihsan Muzamil Enterprises, Xfinity Flex One, Al Hamd Traders) were independently cross-checked against TradeKey's own public Pakistan-honey buyer directory (importer.tradekey.com/pakistan/honey.htm), where all 5 appear with matching titles/dates -- so the buyer names are not fabricated, just gated on the individual RFQ pages themselves. Ihsan Muzamil Enterprises and Al Hamd Traders are also independently real per third-party trade-directory/D&B records; Ihsan Muzamil Enterprises is notably itself a honey exporter. \"Xfinity Flex One\" is a real listed TradeKey account name but has zero independent web footprint as a company, consistent with a small individual trader rather than an established firm -- flagged in its entry, not dropped, since the RFQ itself is genuine. Caveat: TradeKey is a low-trust B2B marketplace with high spam/duplicate-listing rates, so \"confirmed\" here means the posting and named buyer are real and TradeKey-verifiable, not that a live business need still exists -- these two-to-four-month-old leads should be independently re-confirmed before outreach. All 13 potential buyers checked live via their websites/searches: all are real, honey-relevant Pakistani companies; none dropped. Only flags: Maakhie's www subdomain failed to resolve at check time despite a live indexed site (verify before outreach), and a few secondary contact-person/phone details (Khaas chamber membership, Al Thaqafah's named co-founder, Suleman Bros' named contact) could not be independently corroborated beyond the researcher's original claim, so they're kept but marked unverified. No potential-buyer ratings needed adjustment."
+    },
+    {
+      "active": [
+        {
+          "buyer": "Adil Azeez (buyer, Qatar)",
+          "city": "Qatar",
+          "wants": "Manuka Honey, quantity 100 Kilograms, CIF, LC payment",
+          "posted": "May 26, 2026",
+          "contact": "",
+          "source_url": "https://www.go4worldbusiness.com/buylead/view/1300723/wanted-:-honey-like-manuka-honey.html",
+          "role": "Buyer/procurement contact",
+          "linkedin": "",
+          "verdict": "confirmed"
+        },
+        {
+          "buyer": "Gordon (recurring Doha honey buyer, posts under this name periodically since 2021)",
+          "city": "Doha, Qatar",
+          "wants": "Natural Honey, various varieties, consumer packaging, 1 x Twenty-Foot Container, CNF Doha",
+          "posted": "May 5, 2026",
+          "contact": "",
+          "source_url": "https://www.go4worldbusiness.com/buylead/view/1296340/wanted-:-honey.html",
+          "role": "Buyer/importer contact",
+          "linkedin": "",
+          "verdict": "confirmed"
+        },
+        {
+          "buyer": "Abu Saif Cafe & Apiaries (Bu Saif Apiaries, Souq Waqif honey cafe, owner Khalid Saif Al-Suwaidi) - NOTE: buyer identity NOT shown on the source page itself (locked behind sign-in); this name/phone attribution comes from a separate Instagram cross-reference the researcher made, not from TradeKey",
+          "city": "Doha, Qatar",
+          "wants": "Royal Jelly, bottled clear glass, 5 pcs of 500mg, one-time purchase (RFQ text and quantity confirmed live on TradeKey)",
+          "posted": "July 16, 2026 (confirmed on source page)",
+          "contact": "Phone (business, from Instagram): +974 5088 8560 / +974 4443 3030 - unverified link to this specific RFQ",
+          "source_url": "https://importer.tradekey.com/buyoffer/Quotation-Required-For-Royal-Jelly-1983411.html",
+          "role": "Cafe/apiary owner (honey producer also sourcing royal jelly)",
+          "linkedin": "",
+          "verdict": "plausible"
+        },
+        {
+          "buyer": "Beverly Saonoy",
+          "city": "Qatar",
+          "wants": "Royal Jelly (quantity/spec not stated in listing)",
+          "posted": "July 31, 2026",
+          "contact": "",
+          "source_url": "https://importer.tradekey.com/buyoffer/Buy-Royal-Jelly-2741473.html",
+          "role": "Buyer/procurement contact",
+          "linkedin": "",
+          "verdict": "confirmed"
+        },
+        {
+          "buyer": "Accurate Services",
+          "city": "Qatar",
+          "wants": "Honey Royal Jelly Bath Soap with Loofah / herbal soap - confirmed live listing, but buyer's own free-text description only specifies soap-bar sizes (125gm/70gm, ~1300 boxes); does not actually discuss honey/royal jelly content, so treat as soap product only nominally honey-branded, not raw honey",
+          "posted": "July 23, 2026",
+          "contact": "",
+          "source_url": "https://importer.tradekey.com/buyoffer/Buy-About-Honey-Royal-Jelly-Bath-Soap-With-Loofah-Herbal-Soap-2602719.html",
+          "role": "Buyer/procurement contact (self-identifies as \"Accurate Services, a supplier in Qatar\")",
+          "linkedin": "",
+          "verdict": "confirmed"
+        },
+        {
+          "buyer": "Bin-Al-Sheikh Trading Company",
+          "city": "Qatar",
+          "wants": "\"Bio Herbs Honey Men's\" - herbal/honey-based health product, Health & Medicines category - COULD NOT VERIFY: source URL redirects to a TradeKey \"Invalid access, denied\" error page (listing not resolvable). A web search surfaced only a same-named buyer inquiry dated August 2024, not June 2026 - date and even existence of this specific 2026 posting is unconfirmed",
+          "posted": "June 11, 2026 (UNCONFIRMED - see note)",
+          "contact": "",
+          "source_url": "https://importer.tradekey.com/buyoffer/Inquiry-About-Bio-Herbs-Honey-Men-amp-039-s-2362297.html",
+          "role": "Buyer/procurement contact",
+          "linkedin": "",
+          "verdict": "unverified"
+        }
+      ],
+      "potential": [
+        {
+          "company": "Fineway International W.L.L. (Talal Group)",
+          "city": "Doha",
+          "business": "FMCG distributor and importer (subsidiary of Talal Group, est. 2006); confirmed real company and confirmed sole distributor of \"Aranya Honey\" brand in the UAE/Qatar market per company sources, corroborating the honey-import claim. Warehousing at Logistic Park-A, Birkath Al Awamir, Street 53, Zone 92, Doha.",
+          "why_fit": "Already actively importing and distributing natural honey at commercial scale in Qatar - proven buyer with logistics/retail reach; a strong fit for a competitively-priced Iranian origin.",
+          "contact": "+974 4487 9880 / mobile +974 6640 0702, +974 7716 5625",
+          "website": "https://finewayqa.com",
+          "linkedin": "https://www.linkedin.com/company/fineway-international-trading-llc",
+          "rating": 5
+        },
+        {
+          "company": "Al Mutasaliq Trading Center Import & Distribution Company",
+          "city": "Doha",
+          "business": "Specialist importer/distributor of Saffron, Coffee, Tea, Jams, Honey, Halva, Dates and Sauces; confirmed real, multiple independent sources (company site, Talabat, Rafeeq grocery) corroborate it as \"a leader in the importation of ... Natural Refined Honey\" with its own honey-packing operation.",
+          "why_fit": "Honey is a core existing product line, not a tangential add-on - directly sources and resells refined/natural honey, a near-perfect category match for an Iranian honey exporter.",
+          "contact": "P.O. Box 13036, Birkat Al-Awamer, Zone 91, Street 3089, Building 116, Doha",
+          "website": "https://www.almutasaliq.com",
+          "linkedin": "https://www.linkedin.com/company/al-mutasaliq-trading-center-import-distribution-company",
+          "rating": 5
+        },
+        {
+          "company": "Al Osslan Honey and Beehive Products Trading",
+          "city": "Qatar",
+          "business": "Honey-and-beehive-products specialist trading company; confirmed present on ExportHub as a Qatar honey trading company dealing exclusively in pure honey and seeking international partners.",
+          "why_fit": "A pure-play honey trader openly soliciting new supplier partnerships - origin-open by demonstrated behavior, ideal outreach target for a bulk Iranian honey offer.",
+          "contact": "",
+          "website": "",
+          "linkedin": "",
+          "rating": 5
+        },
+        {
+          "company": "United International Trading Co. W.L.L. (UITC)",
+          "city": "Doha",
+          "business": "Confirmed large diversified importer/distributor (~1,000 employees, ~$195M sales, est. 1983) with a food division. Company reality and scale confirmed independently; the specific claim of being Qatar's #1 honey importer by shipment volume rests on the researcher's cited Volza/Tridge trade data, which could not be independently re-verified in this pass.",
+          "why_fit": "Highest-volume honey import channel identified in Qatar trade data - scale buyer with existing honey-category infrastructure; pharma/nutraceutical arm is also a natural fit for royal jelly.",
+          "contact": "Key principal: Muhammad Mustafa Al-Serafy",
+          "website": "",
+          "linkedin": "https://www.linkedin.com/company/united-international-trading-company-w-l-l",
+          "rating": 4
+        },
+        {
+          "company": "Al Othoba Trading",
+          "city": "Doha",
+          "business": "Confirmed real, fast-growing Qatar food-products supplier/distributor with Turkey-sourced product lines (tahina, spices confirmed on their site); the specific 20g Turkish honey sachet SKU could not be independently confirmed but is consistent with their catalog pattern.",
+          "why_fit": "Already stocks an imported honey SKU (currently Turkish-sourced) for foodservice - a live, swappable/parallel sourcing opportunity for cheaper Iranian origin.",
+          "contact": "+974 6698 4092 / info@alothoba.com",
+          "website": "https://alothoba.com",
+          "linkedin": "",
+          "rating": 4
+        },
+        {
+          "company": "Al Meera Consumer Goods Company (QSC)",
+          "city": "Doha",
+          "business": "Confirmed real, publicly listed (Qatar Exchange) national grocery retailer, est. 2005, state-linked ownership (~26% Qatar Holding). Formal supplier registration process not independently confirmed but consistent with a listed retailer of this size.",
+          "why_fit": "Matches the brief's named target (\"Al Meera\" retail procurement) - largest domestic retail shelf-space opportunity for packaged Iranian honey, though access requires formal vendor onboarding.",
+          "contact": "Supplier registration via website contact form",
+          "website": "https://www.almeera.com.qa/suppliers",
+          "linkedin": "",
+          "rating": 4
+        },
+        {
+          "company": "Geohoney (Rare Earth General Trading, UAE-based, active in Doha)",
+          "city": "Doha (regional HQ Dubai)",
+          "business": "Confirmed real multi-origin raw/natural honey brand with an active dedicated Doha delivery page and 2-4 day delivery across Doha.",
+          "why_fit": "Operates a multi-origin honey sourcing/blending model with existing Doha delivery infrastructure - plausible bulk/private-label buyer open to adding a new low-cost origin.",
+          "contact": "",
+          "website": "https://geohoney.com",
+          "linkedin": "",
+          "rating": 4
+        },
+        {
+          "company": "Ali Bin Ali Group (Qatar Quality Products / FMCG & Distribution division)",
+          "city": "Doha",
+          "business": "Confirmed real, one of Qatar's largest FMCG/retail conglomerates (est. 1945, $1.4B revenue, 4,400+ employees). Honey not specifically confirmed as a current product line in available sources.",
+          "why_fit": "Massive existing FMCG distribution network and retail relationships across Qatar - capacity to launch and scale a new honey brand nationally, though honey is not currently a stated core line.",
+          "contact": "",
+          "website": "https://alibinali.com",
+          "linkedin": "https://www.linkedin.com/company/abaholding/",
+          "rating": 3
+        },
+        {
+          "company": "Al Rawabi Group of Companies / Rawabi Food International",
+          "city": "Doha",
+          "business": "Confirmed real, large Qatari FMCG conglomerate (est. 1980, 3,500+ employees) with a dedicated FMCG wholesale/distribution arm (Rawabi Food International) supplying restaurants, hotels, and retailers.",
+          "why_fit": "Broad multi-origin import mandate and wholesale distribution reach make it a plausible new-category (honey) buyer for HORECA and retail channels.",
+          "contact": "P.O. Box 21651, Doha",
+          "website": "https://rfoodinternational.com",
+          "linkedin": "https://www.linkedin.com/company/al-rawabi-group-of-companies",
+          "rating": 3
+        },
+        {
+          "company": "MST Qatar",
+          "city": "Doha",
+          "business": "Confirmed real FMCG importer/distributor explicitly serving retail, wholesale, and HORECA channels in Qatar.",
+          "why_fit": "HORECA-focused distribution model directly matches the brief's hotel/catering-supplier target segment for bulk honey (breakfast buffets, F&B use).",
+          "contact": "",
+          "website": "https://mstqatar.com",
+          "linkedin": "",
+          "rating": 3
+        },
+        {
+          "company": "Al Abdullah Trading and Contracting W.L.L.",
+          "city": "Doha",
+          "business": "Confirmed real food trading/distribution company, founded 1976 by Mohammed Hassan Al Abdulla, explicitly serving the HoReCa segment in Qatar.",
+          "why_fit": "Long-established HORECA-focused food distributor with an existing hotel/catering client base - a natural channel for bulk imported honey.",
+          "contact": "",
+          "website": "https://alabdullahgroup.com",
+          "linkedin": "",
+          "rating": 3
+        },
+        {
+          "company": "Truth Care Pharmacy",
+          "city": "Doha (online, delivers Qatar-wide)",
+          "business": "Confirmed real Qatar online pharmacy chain; confirmed to actively sell \"Masvitam Royal Jelly & Propolis Syrup 100ml,\" a product explicitly containing Royal Jelly, Honey, and Propolis - direct match to the researcher's claim.",
+          "why_fit": "Herbal-pharmacy retail channel already selling royal-jelly/honey-based supplement products - fits the brief's pharmacy-chain gifting/health segment for royal jelly.",
+          "contact": "",
+          "website": "https://www.truthcarepharmacy.com",
+          "linkedin": "",
+          "rating": 4
+        },
+        {
+          "company": "Care n Cure Online Pharmacy",
+          "city": "Doha (online, delivers Qatar-wide)",
+          "business": "Confirmed real, long-established Qatar pharmacy chain (55+ outlets since 2000) with active online Propolis and Herbal Care product collections; a specific royal-jelly SKU was not independently located.",
+          "why_fit": "Active herbal/propolis retail assortment signals openness to honey-adjacent health products, including royal jelly, for its Qatar customer base.",
+          "contact": "",
+          "website": "https://www.carencurepharmacy.com",
+          "linkedin": "",
+          "rating": 3
+        }
+      ],
+      "country": "Qatar",
+      "note": "Verified all 6 active leads via WebFetch on their source URLs plus corroborating WebSearch. CONFIRMED (4): Adil Azeez/Manuka honey and Gordon/natural honey (both go4worldbusiness listings - WebFetch couldn't render the JS page directly, but independent search-index snippets matched the researcher's specific figures - 100kg/CIF/LC and 20ft container/CNF Doha - closely enough to trust); Beverly Saonoy/Royal Jelly and Accurate Services/honey-royal-jelly soap (both TradeKey pages loaded directly and matched buyer name, product, and date exactly). PLAUSIBLE (1): Abu Saif Cafe & Apiaries - the underlying Royal Jelly RFQ is real and matches on TradeKey (qty, date), but the page itself never reveals a buyer name/company (locked behind sign-in); the specific cafe/owner/phone attribution came from a separate Instagram lookup the researcher stitched on, which I could not verify links to this RFQ - flagged, not dropped. UNVERIFIED (1, kept per instructions since not obviously fabricated): Bin-Al-Sheikh Trading Company - the TradeKey URL now redirects to an \"Invalid access, denied\" error page, and search only turned up a similarly-named honey inquiry dated August 2024, not the claimed June 2026 - could not confirm this specific 2026 posting exists. No active leads were dropped as fabricated.\n\nFor POTENTIAL buyers: spot-checked all 13 via WebSearch. All are confirmed real, operating companies with real websites/registrations - none dropped as fake. Honey-relevance for the top-rated ones (Fineway/Aranya Honey brand, Al Mutasaliq, Al Osslan) was independently corroborated, so their 5-ratings stand. UITC's honey-import claim rests entirely on the researcher's cited Volza/Tridge trade data, which I could not independently re-verify, so I trimmed 5->4. Truth Care Pharmacy's exact royal-jelly-honey-propolis SKU was independently confirmed by name, so I bumped 3->4. All other ratings left as given - they were already appropriately hedged by the researcher where honey-specificity was uncertain (Ali Bin Ali, Al Rawabi, MST, Al Abdullah, Care n Cure)."
+    },
+    {
+      "active": [],
+      "potential": [
+        {
+          "company": "Taj Mahal International Trade Company (Taj Mahal Trade KZ)",
+          "city": "Almaty",
+          "business": "Import/export wholesaler of dates, nuts, dried fruits, foodstuffs and oils; also fresh fruit/veg and general commodities.",
+          "why_fit": "Confirmed real, active import channel for exotic/dried foodstuffs into Kazakhstan (same customer base and shelf space as honey); origin-agnostic sourcing model makes adding Iranian natural honey a low-friction SKU extension.",
+          "contact": "info@tajmahaltradekz.com, +7 747 110-53-43 / +7 771 194-10-99",
+          "website": "https://tajmahaltradekz.com",
+          "linkedin": "",
+          "rating": 5
+        },
+        {
+          "company": "Metro Cash & Carry Kazakhstan LLP",
+          "city": "Almaty",
+          "business": "B2B wholesale cash-and-carry chain (part of METRO AG) supplying small retailers, HoReCa, and institutional buyers; operates 6 stores + 7 delivery warehouses across Kazakhstan.",
+          "why_fit": "Confirmed real, large-scale professional wholesale buyer with an existing food-import supplier-onboarding process; honey is a staple grocery/HoReCa SKU.",
+          "contact": "",
+          "website": "https://www.metro-kz.com",
+          "linkedin": "https://kz.linkedin.com/company/metro-cash-and-carry-kazakhstan",
+          "rating": 4
+        },
+        {
+          "company": "Magnum Cash & Carry LLP",
+          "city": "Almaty",
+          "business": "Kazakhstan's largest retail chain (180+ stores, Magnum Hyper/Super/Express/Daily formats), hypermarkets and supermarkets nationwide.",
+          "why_fit": "Confirmed real and at national scale (KASE-listed, ~350k customers/day); retail-chain procurement stocking branded and private-label groceries including honey. Note: could not directly confirm honey is currently in-assortment, but category fit for a grocery chain of this size is standard.",
+          "contact": "info@magnum.kz",
+          "website": "https://www.magnum.kz",
+          "linkedin": "",
+          "rating": 4
+        },
+        {
+          "company": "HorecaExpert",
+          "city": "Almaty",
+          "business": "HORECA-focused food product supply company sourcing from Kazakhstan, Turkey and European manufacturers for restaurants, hotels and caterers via direct manufacturer contracts and own logistics.",
+          "why_fit": "Confirmed real, business model matches researcher's description closely; hospitality channel regularly needs table/breakfast honey. Smaller/local operation than the retail chains above, so kept at same rating rather than raised.",
+          "contact": "info@horecaexpert.kz",
+          "website": "https://horecaexpert.kz",
+          "linkedin": "",
+          "rating": 4
+        },
+        {
+          "company": "Green Food (Green Food KZ)",
+          "city": "Astana",
+          "business": "Wholesale supplier/trader of premium nuts and dried fruits (almonds, pistachios, raisins, dried apricots, prunes) with established import logistics.",
+          "why_fit": "Confirmed real; runs the same import-logistics and wholesale-distribution playbook needed for honey (dried goods, bulk import, B2B resale) - natural cross-sell category.",
+          "contact": "",
+          "website": "http://greenfoodkaz.com",
+          "linkedin": "",
+          "rating": 4
+        },
+        {
+          "company": "Dudar",
+          "city": "Almaty",
+          "business": "FMCG distribution company (est. 1991, 18 branches, ~$200M revenue) covering household, personal care, beauty-salon products, and a Foodstuffs category (Ritter Sport, Yarmarka, Chernogolovka, Nutrilak).",
+          "why_fit": "Confirmed real, and confirmed via direct site check that it does carry a genuine Foodstuffs distribution line (not just non-food FMCG as one source implied), though current food SKUs are chocolate/confectionery/infant nutrition rather than honey - a plausible but unproven onboarding target.",
+          "contact": "+7 701 027-83-47",
+          "website": "https://dudar.kz",
+          "linkedin": "",
+          "rating": 3
+        },
+        {
+          "company": "Raimbek Group",
+          "city": "Almaty",
+          "business": "Diversified Kazakh food production/retail holding - juice bottling (~50% of KZ juice market via Juicy/Palma/Fantan brands), UHT dairy (Raimbek Agro), and premium alcohol distribution (Raimbek Alco).",
+          "why_fit": "Confirmed real and large (~$313M revenue); honey is not a current product line, so this remains an exploratory/long-shot approach as the researcher flagged - rating held at 3, not raised.",
+          "contact": "",
+          "website": "https://raimbek.com/en",
+          "linkedin": "https://www.linkedin.com/company/raimbek-fmcg-division",
+          "rating": 3
+        },
+        {
+          "company": "KAZ FOOD SERVICE LLP",
+          "city": "Atyrau",
+          "business": "Food wholesaler/caterer (founded 2016) supplying 2,500+ grocery, dairy, bakery, confectionery and meat/fish items to Oil & Gas sector camps, HoReCa, retail and production-industry clients.",
+          "why_fit": "Confirmed real, description matches company site closely; broad price-sensitive institutional catalogue plausibly has room for an imported honey SKU.",
+          "contact": "manager@kazfoods.kz, +7 7122 29-24-20",
+          "website": "https://www.kazfoods.kz",
+          "linkedin": "",
+          "rating": 3
+        },
+        {
+          "company": "Biotus.kz",
+          "city": "Almaty",
+          "business": "Online distributor of dietary supplements and health products, part of a multi-country Biotus retail network; sells vitamins, sports nutrition, and confirmed bee-product lines.",
+          "why_fit": "Confirmed real and, via direct product-page verification, already sells royal jelly (Solgar Royal Jelly, Prince of Peace Ginseng+Royal Jelly) and propolis/propolis honey products nationwide in Kazakhstan today - a stronger, more concrete fit than the original description suggested. Rating raised 3->4 on this evidence.",
+          "contact": "",
+          "website": "https://biotus.kz",
+          "linkedin": "",
+          "rating": 4
+        },
+        {
+          "company": "Europharma (Aqniet Group)",
+          "city": "Shymkent",
+          "business": "Largest pharmacy chain in Central Asia (200+ pharmacies across 16 cities, ~970 employees), part of Aqniet Group (est. 1995, ~$221.9M revenue).",
+          "why_fit": "Confirmed real and at the scale claimed; pharmacy-chain procurement is a plausible channel for royal jelly/medicinal-grade honey, though the in-house herbal-manufacturing angle cited by the researcher could not be independently confirmed - treat as a slightly softer claim.",
+          "contact": "",
+          "website": "https://europharma.kz",
+          "linkedin": "",
+          "rating": 3
+        }
+      ],
+      "country": "Kazakhstan",
+      "note": "No active (posted-RFQ) buyers were supplied by the researcher for verification, so that list is correctly empty - nothing was fabricated to fill it. All 10 potential buyers were checked via web search (and one direct WebFetch) against official sites, LinkedIn, Wikipedia/KASE listings, and directories: every company is real and its stated line of business matches independent sources - none were dropped as fabricated. One correction: Biotus.kz's fit was under-rated: direct product-page search confirmed it already retails royal jelly and propolis/propolis-honey products nationwide in Kazakhstan, so its rating was raised from 3 to 4. Dudar's food-distribution claim was double-checked (one source suggested it was non-food-only) and confirmed genuine (Foodstuffs category incl. Ritter Sport, Yarmarka, Chernogolovka, Nutrilak), though its current food SKUs skew toward confectionery/infant nutrition rather than honey. Magnum's honey-in-assortment claim and Europharma's in-house herbal-manufacturing claim could not be independently confirmed (both companies are real and large; those specific product-line details are plausible but unverified) - kept but flagged. All contact emails/phones/LinkedIn URLs were left as provided since they could not be independently validated beyond company legitimacy."
+    }
+  ],
+  "totals": {
+    "active": 20,
+    "confirmed": 14,
+    "potential": 95
+  }
+}
