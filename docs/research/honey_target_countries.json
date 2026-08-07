@@ -1,0 +1,811 @@
+{
+  "headline": "Send cheap Iranian honey first to the markets Iran already wins on the ground: Iraq is the clear #1 and the single best easy win — Iran already holds ~57% of an import market that grew +74% YoY, reachable in 1-3 truck-days across open land borders with halal as the default. The next tier is the short-lane, origin-friendly neighbors: the UAE (Dubai cash/hawala corridor, a 150-200km Gulf hop, deep Iranian merchant acceptance), then Afghanistan, Georgia, Armenia, Pakistan and Qatar's direct Bushehr-Doha line. The through-line: prioritize short land/short-sea routes into Muslim-majority (or origin-neutral) markets that already accept Iranian honey and where payment can route around SWIFT — not distant markets where banking or origin bias kills the deal before quality matters.",
+  "tiers_note": "Tiers map directly to the composite score: Prime (>=78) = strong import demand + Iran can win on price/quality + physically and financially reachable; Strong (66-77) = solid on most axes with only minor friction; Opportunistic (54-65) = a real angle but material caveats (small market, payment workarounds, or entrenched incumbents); Niche (<54) = thin, small-volume, or high-friction markets worth only an opportunistic side-lane — and note that in this set no destination scored into Prime, so Iraq at Strong is the effective flagship.",
+  "ranked": [
+    {
+      "country": "Iraq",
+      "region": "Middle East / Fertile Crescent (land-neighbor)",
+      "composite": 75,
+      "blocked": false,
+      "tier": "Strong",
+      "scores": {
+        "demand": 6,
+        "competition": 7,
+        "iran_edge": 9,
+        "shipping": 9,
+        "access": 7
+      },
+      "notes": {
+        "demand": "Iraq's honey import market hit about $5.1M / 1.1k tons in 2024, up 74% YoY (IndexBox) -- small in absolute dollars but genuinely growing, pulled by population growth, gifting/medicinal culture, and thin domestic output in Kurdistan/Diyala that can't meet local demand; UN Comtrade has no clean Iraq honey-import line, so this is estimated from market-report and mirror-trade data, not a national statistics office.",
+        "competition": "Unlike honey markets flooded by cheap Chinese/Turkish/Indian supply, Iraq's import mix is Iran-led (~57% of import value historically) with UAE (~16%, mostly re-export/trans-shipment) and Germany (~12%, premium segment) filling the rest, so a new cheap Iranian shipper is mostly competing with other Iranian exporters, not entrenched foreign incumbents.",
+        "iran_edge": "Iran is already the dominant honey source for Iraq and has an established export industry (Sidr/\"golden honey\" brands like Zayger, FRITC marketing specifically to Iraq and the Gulf), backed by a currency cost advantage and a shared halal-default, honey-as-medicine culture -- this isn't a market Iran needs to break into, it's one it already leads.",
+        "shipping": "Multiple official land crossings (Shalamcheh, Mehran, Khosravi, Bashmakh, Parviz Khan) put Iran's honey regions (W. Azerbaijan, Kurdistan, Kermanshah, and Sidr country in the south) roughly 1-3 truck-days from Iraqi markets -- about as cheap and easy as export logistics get.",
+        "access": "Honey is inherently halal so certification is a non-issue, and despite US sanctions Iran-Iraq trade runs at roughly $11.2B in 11 months via dinar/rial settlement and non-SWIFT banking workarounds (per Tehran Times/Kurdistan24 reporting) -- real friction (documentation, periodic US pressure on Iraqi banks) but demonstrably not a blocker."
+      },
+      "why_iran": "Iran already supplies ~57% of Iraq's honey imports, so it is defending a lead, not breaking in. Five official land crossings (Shalamcheh, Mehran, Khosravi, Bashmakh, Parviz Khan) put Iran's honey belts 1-3 truck-days from Iraqi markets — about as cheap as export logistics get. Rial cost advantage plus a shared halal-default, honey-as-medicine culture, and branded exporters (Zayger's 'golden honey', FRITC) are already marketing directly into Iraq. The real rival is other Iranian shippers, not entrenched foreign incumbents.",
+      "watch_outs": "Small absolute market (~$5.1M / 1.1kt) with numbers estimated from mirror-trade, not an official statistics office; payment runs on dinar/rial non-SWIFT settlement exposed to periodic US pressure on Iraqi banks. Because Iran already leads, the game is margin and quality discipline to defend share, not a land-grab.",
+      "signal": "Iraq honey imports grew +74% YoY to ~$5.1M / 1.1kt in 2024 (IndexBox), with Iran already capturing ~57% of import value and active branded exporters shipping in — a real, current growth line.",
+      "verdict": "Iraq isn't a market to chase, it's one Iran already leads (~57% import share) and that's growing fast (+74% in 2024), so the real opportunity is defending/expanding that lead with better quality and margin, not fighting off entrenched foreign competition."
+    },
+    {
+      "country": "United Arab Emirates",
+      "region": "GCC / Middle East",
+      "composite": 63,
+      "blocked": false,
+      "tier": "Opportunistic",
+      "scores": {
+        "demand": 6,
+        "competition": 5,
+        "iran_edge": 7,
+        "shipping": 9,
+        "access": 5
+      },
+      "notes": {
+        "demand": "UAE has almost no domestic beekeeping capacity for its climate, a wealthy population with a strong cultural honey-as-health/gifting habit, and a large re-export/HORECA trade through Dubai, so it's a real and steadily growing import market -- no clean Comtrade honey line was available so this is an estimate from market knowledge, not a cited trade statistic.",
+        "competition": "The cheap-bulk segment is already worked by India and Ethiopia/Sudan, mid-range by Turkey and Egypt, and the premium shelf by Yemeni/Saudi Sidr and NZ Manuka, but UAE also has a well-documented fake/cut-honey problem that leaves an opening for anyone who can prove genuine, lab-clean natural honey at a low price.",
+        "iran_edge": "Iran is a genuine top-10 global honey producer with rial-driven production costs that undercut most competitors, decent natural quality, and Dubai already has a deep, decades-old Iranian merchant/trading community (Deira/Bastakiya) that moves Iranian food goods informally, so buyer acceptance of Iranian origin is not a real obstacle here the way it would be in the EU or US.",
+        "shipping": "Bandar Lengeh/Bandar Abbas to Dubai/Sharjah is a ~150-200km Persian Gulf hop that has carried cargo by dhow (lenj) and short-sea container service for generations specifically for this kind of low-value bulk food good, making it one of the cheapest, fastest corridors Iran has to any foreign market.",
+        "access": "Honey/food is generally exempt from OFAC's Iran sanctions, so the goods themselves aren't barred, but formal SWIFT/LC banking is effectively closed for Iran-origin trade -- deals get done via Dubai exchange-house hawala, cash, or dirham settlement instead of normal letters of credit, and Iranian honey still needs UAE ESMA/MOCCAE residue and adulteration testing plus halal paperwork (routine, not a real barrier)."
+      },
+      "why_iran": "Almost no domestic beekeeping, a wealthy honey-as-health/gifting culture, and a big Dubai HORECA/re-export trade make this a genuine import market — and the Bandar Lengeh/Bandar Abbas-to-Dubai run is a 150-200km Gulf hop, one of Iran's cheapest lanes. A decades-old Iranian merchant community in Deira already moves Iranian food goods, so origin acceptance is a non-issue, and the UAE's documented fake/cut-honey problem opens a clear 'prove it's genuine, lab-clean, and cheap' lane.",
+      "watch_outs": "The cheap-bulk tier is already worked by India, Ethiopia and Sudan; formal SWIFT/LC banking is effectively closed, so payment must route via Dubai exchange-house hawala, cash or dirham settlement; goods still need ESMA/MOCCAE residue and adulteration testing plus halal paperwork (routine, not a barrier).",
+      "signal": "No specific 2025 tender found — inferred from the longer-running Gulf wellness/premium-honey demand trend and the UAE's continuing non-oil trade with Iran, not a confirmed 2025 data point.",
+      "verdict": "UAE is a genuinely workable market for cheap Iranian honey through the Dubai cash/hawala trading corridor -- the product, shipping, and buyer acceptance are all easy, and the only real friction is routing payment around the banking block rather than the market being closed."
+    },
+    {
+      "country": "Afghanistan",
+      "region": "South/Central Asia (landlocked, direct Iran border)",
+      "composite": 58,
+      "blocked": false,
+      "tier": "Opportunistic",
+      "scores": {
+        "demand": 4,
+        "competition": 5,
+        "iran_edge": 8,
+        "shipping": 8,
+        "access": 5
+      },
+      "notes": {
+        "demand": "~41M mostly-poor population uses honey for gifting/medicinal purposes, but Afghanistan's Beekeepers Union declared national honey self-sufficiency in June 2025 (~8,000 farms, ~11,000t/yr capacity), so most of the addressable demand is now being met domestically rather than growing for imports.",
+        "competition": "Not wide open: RFE/RL (2026) names Pakistan and Iran as the two cheap-import sources already undercutting Afghan domestic beekeepers, and 2025 import unit prices ran as low as $0.99-2.97/kg, so a new entrant is fighting an already-thin-margin market, not an empty one.",
+        "iran_edge": "Iran is already one of the two named cheap-import sources (alongside Pakistan) undercutting Afghan beekeepers on price, backed by low production costs, rial depreciation, shared Dari/Farsi and Herat bazaar trade networks, and native halal status — Iran does not need to win this market, it already has a foothold in it.",
+        "shipping": "Short direct overland corridor via Islam Qala-Dogharoun (Herat) or Milak-Zaranj (Nimroz) — truck only, no sea freight or transshipment — riding on Iran's already-large and growing general export flow to Afghanistan (+31% YoY, ~$517M in one 2024 quarter).",
+        "access": "No EU-style residue/lab-testing regime and halal is automatic (Muslim-majority), and Iran-Afghanistan trade already runs largely on hawala/cash/barter outside Western banking so Iran sanctions don't block the flow directly — but Afghanistan's own banking sector is collapsed (frozen central bank reserves since 2021) making formal L/C deals hard, and Afghan beekeepers are actively lobbying the Taliban government in 2025-2026 for tariffs/import restrictions on foreign honey."
+      },
+      "why_iran": "Iran is already named (alongside Pakistan) as one of the two cheap-import sources undercutting Afghan beekeepers, so the foothold exists. A short truck-only overland corridor via Islam Qala-Dogharoun (Herat) or Milak-Zaranj (Nimroz) needs no sea freight, and low rial-driven cost, shared Dari/Farsi and Herat bazaar networks, plus automatic halal ride on Iran's already-large export flow (+31% YoY, ~$517M in one 2024 quarter).",
+      "watch_outs": "Afghanistan's Beekeepers Union declared honey self-sufficiency (June 2025, ~11kt/yr) and is lobbying the Taliban for tariffs/import curbs; it's a sub-$3/kg commodity fight ($0.99-2.97/kg unit prices) with thin margins; and Afghanistan's collapsed banking sector (frozen reserves since 2021) means hawala/barter only. This is defend-the-foothold, not a growth bet.",
+      "signal": "Afghan self-sufficiency declared June 2025 with public pressure for import curbs (Pajhwok/RFE-RL) — a headwind — even as Iran remains one of two named cheap-import sources at $0.99-2.97/kg.",
+      "verdict": "Iran already has a real, cheap toehold in Afghanistan's honey trade via a dead-simple land corridor, but it's a sub-$3/kg commodity market being squeezed by newly-achieved Afghan self-sufficiency and rising domestic protectionism, so it's a defend-the-foothold play, not a growth bet."
+    },
+    {
+      "country": "Georgia",
+      "region": "South Caucasus",
+      "composite": 55,
+      "blocked": false,
+      "tier": "Opportunistic",
+      "scores": {
+        "demand": 3,
+        "competition": 5,
+        "iran_edge": 7,
+        "shipping": 8,
+        "access": 6
+      },
+      "notes": {
+        "demand": "Georgia (pop. ~3.7M) is actually a small net honey EXPORTER, not an importer — 34t/US$271k exported in 2024 (ranked 73rd globally, just 0.01% of world export volume), domestic production ~1,900t from ~14,000 mostly family-holding beekeepers, and a deep 'land of honey' culture (oldest known honey specimen, 4300 BC) that channels most consumption through trusted local/roadside sellers rather than imported or supermarket product; no clean Comtrade import row exists and no Georgian trade-press signal points to import growth, so this is estimated from production/export proxies, not hard import data.",
+        "competition": "No documented flood of cheap India/China/Argentina/NZ bulk honey into Georgia the way there is into Gulf or EU markets — the pie is just too small to attract them at scale — but Turkey is Georgia's default cheap-import channel for consumer agri-goods generally (14.9% share, Georgia's top source) and sits next door with EU-aligned paperwork, so any imported or blended honey Georgia does buy defaults to Turkish or generic Chinese-bulk product rather than a wide-open field.",
+        "iran_edge": "Iran is the world's 3rd-largest honey producer (~80-90kt/yr off 6M hives, output rising 5-10%/yr) with a rial-driven cost floor far below Turkish or EU honey, and it already has a proven regional foothold — Iranian honey is a documented export to next-door Azerbaijan, and ~13,000 Iranian-linked companies already operate inside Georgia — so cheap Iranian honey could realistically undercut Turkish/Chinese blends if repackaged or private-labeled, though it carries no independent premium brand recognition of its own in Georgia.",
+        "shipping": "The Iran-Azerbaijan-Georgia overland corridor (part of the touted Persian Gulf-to-Black-Sea route) is real and actively being built out — the Aras river bridge is complete, a Feb 2025 Iran-Georgia-Azerbaijan Joint Economic Commission made progress, and Iran's president visited Baku in Apr 2025 to push it further — putting Iran's main honey belt (W. Azerbaijan/Ardabil, near Tabriz) within a short multi-day truck haul of Tbilisi on a route that already moves Iranian cargo today.",
+        "access": "Georgia enforces no Western secondary sanctions and is openly described in Western press as an Iran-trade/transit hub (~$285M in Georgian imports from Iran in 2024 alone, up ~3x since 2012) with famously low/near-zero baseline tariffs, so Iranian honey is not legally barred and halal is irrelevant in this Orthodox-Christian market — but Georgia's EU DCFTA/Association Agreement commitments mean honey (any origin) faces real antibiotic-residue and labeling lab testing, and Western correspondent-bank de-risking of Iran-linked USD flows means payment has to route around direct SWIFT/USD settlement (cash, GEL, or UAE-intermediated invoicing, the same workaround pattern documented for Iran-Georgia trade generally)."
+      },
+      "why_iran": "Iran is the world's #3 producer with a rial cost floor far below Turkish or EU honey, and the Iran-Azerbaijan-Georgia overland corridor is real and actively being built out (Aras bridge complete, corridor cargo already moving). ~13,000 Iranian-linked companies already operate in Georgia and baseline tariffs are near-zero, so cheap Iranian honey could realistically undercut the default Turkish/Chinese blends if repackaged or private-labeled.",
+      "watch_outs": "Georgia is a small (3.7M) net honey EXPORTER with a deep local-honey culture, so there's barely a consumer import market to chase; EU DCFTA commitments force real antibiotic-residue and labeling lab testing; payment must route around SWIFT/USD (cash, GEL, or UAE-intermediated invoicing); and Iranian honey has no independent brand recognition there.",
+      "signal": "Feb 2025 Iran-Azerbaijan-Georgia Joint Economic Commission progress plus Iran's April 2025 Baku visit accelerated the transit corridor — a real 2025 signal, but shipping/corridor-relevant, not honey-demand; no Georgia honey-import lead found.",
+      "verdict": "Georgia is not sanctions-blocked to Iranian honey and the Iran-Azerbaijan-Georgia corridor is genuinely favorable, but Georgia is a self-sufficient honey-exporting country of only 3.7M people with a strong local-honey culture, so the real constraint isn't access — it's that there's barely a market there worth chasing ahead of the larger Gulf/Asian buyers Iran already sells honey to."
+    },
+    {
+      "country": "Armenia",
+      "region": "Caucasus",
+      "composite": 55,
+      "blocked": false,
+      "tier": "Opportunistic",
+      "scores": {
+        "demand": 3,
+        "competition": 5,
+        "iran_edge": 5,
+        "shipping": 8,
+        "access": 8
+      },
+      "notes": {
+        "demand": "Armenia is a net honey EXPORTER (about 2,000 tonnes produced in 2024, sold as premium/diaspora product to the US, France, Saudi Arabia, Kazakhstan), and with only ~3M people and strong domestic beekeeping pride, genuine import demand is a thin sliver -- mostly cheap bulk for blending/food-industry use, not a growing consumer honey-import market (no clean Comtrade import row exists for Armenia, so this is an estimate).",
+        "competition": "No entrenched India/China/Turkey flood as in Gulf markets, but Russia already owns Armenia's small cheap-import niche via zero-tariff EAEU trade -- Armenia imported ~$202K of honey from Russia in 2025 vs. exporting only ~$5K back -- so Iran would be displacing a specific incumbent, not entering a vacuum.",
+        "iran_edge": "The May 2025 EAEU-Iran FTA puts Iranian honey on comparable tariff footing to Russia's for the first time, and Iran's cost base can likely undercut on price, but Russia keeps an entrenched logistics/political edge as a fellow EAEU member and Armenia's dominant trade partner, plus Armenians' own honey carries strong national-pride branding at retail -- so it's a plausible bulk-tier win, not a clean sweep.",
+        "shipping": "Iran is one of only two countries Armenia has an open land border with (Turkey and Azerbaijan are both closed), and the Agarak-Nordooz crossing on the Aras river is a confirmed, actively-used primary freight artery linking Tabriz/Tehran directly to Yerevan with no third-country transit -- real but with reported customs-inspection delays on the Iranian side.",
+        "access": "Armenia is not sanctions-aligned against Iran and keeps normal banking/trade with it; the EAEU-Iran full-fledged FTA entered into force May 15, 2025, cutting the average duty from 20% to 4.5% and eliminating tariffs on ~87% of goods, though EAEU sanitary/residue-testing and labeling rules for honey still require real lab compliance."
+      },
+      "why_iran": "The EAEU-Iran FTA (in force May 15, 2025) put Iranian honey on comparable tariff footing to Russia's for the first time, and Iran is one of only two open land borders Armenia has (Turkey and Azerbaijan are both closed) — the Agarak-Nordooz crossing is a confirmed, actively-used freight artery linking Tabriz/Tehran directly to Yerevan with no third-country transit, and rial cost can undercut on price.",
+      "watch_outs": "Armenia is small (~3M), a net honey exporter, and largely self-sufficient; its modest cheap-import niche is already held by Russia via zero-tariff EAEU trade; Russia keeps a logistics/political edge and Armenian honey carries national-pride retail branding; expect Iranian-side customs-inspection delays and EAEU residue/labeling lab compliance. A low-volume bulk side-lane, not a flagship.",
+      "signal": "EAEU-Iran full FTA entered into force May 15, 2025 — average duty cut from 20% to 4.5%, tariffs eliminated on ~87% of goods — a concrete dated tailwind; no honey-specific tender known.",
+      "verdict": "Armenia is logistically and politically wide open to Iranian honey via the Agarak-Nordooz corridor and the new EAEU-Iran FTA, but it's a small, largely self-sufficient market whose modest cheap-import niche is already held by Russia -- worth a low-volume bulk side-lane, not a flagship market."
+    },
+    {
+      "country": "Pakistan",
+      "region": "South Asia",
+      "composite": 54,
+      "blocked": false,
+      "tier": "Opportunistic",
+      "scores": {
+        "demand": 4,
+        "competition": 4,
+        "iran_edge": 7,
+        "shipping": 6,
+        "access": 6
+      },
+      "notes": {
+        "demand": "Total honey market is only ~$50M with imports a sliver of that (~$1.8M/yr) and per-capita consumption just 50g vs. a 150g global average, so current import demand is small — though 240M people, a Quranic/cultural affinity for honey, and rising middle-class gifting/HORECA use give real upside off a very low base.",
+        "competition": "Pakistan's honey import bill is tiny (~$1.8M/yr) and already 70% held by Afghanistan, Germany and China, plus a large domestic (often adulterated) crop crowds the cheap end, leaving Iran to fight for the narrow 'trusted natural honey' niche rather than open market share.",
+        "iran_edge": "Rial devaluation gives Iran a genuine cost edge, its mountain/multi-floral honey already carries a real regional 'medicinal/natural' reputation, there's no consumer-level stigma against Iranian origin in a Muslim-majority market, and Iran is already Pakistan's #2 destination (behind Iraq) in the HS-04 dairy/eggs/honey export category — proof the trade lane and buyer acceptance already exist.",
+        "shipping": "Short sea leg from Bandar Abbas/Chabahar to Karachi (2-3 days) plus the Taftan-Mirjaveh land crossing into Balochistan both work today, and Iran-Pakistan are actively pushing Chabahar-Gwadar corridor cooperation, but the land route runs through an insecure, informality-heavy border region that adds real friction and delay risk.",
+        "access": "Pakistan actively runs (and in 2025 further eased) a barter-trade mechanism built specifically to move Iran-origin goods without SWIFT/dollar exposure (simultaneous import/export, consortia allowed, 120-day settlement, no fixed item list), so it is not blocked, but payment stays informal/barter rather than bankable, honey still faces Pakistan's normal Ch.4 customs duty + sales/regulatory duty stack plus halal/health-certificate paperwork, and actual bilateral trade ($3.1B FY24-25) still runs well under the $10B official target, showing real execution friction."
+      },
+      "why_iran": "Rial devaluation gives a genuine cost edge, Iran's mountain/multi-floral honey carries a real regional 'medicinal/natural' reputation, and there's no origin stigma in a Muslim-majority market. Iran is already Pakistan's #2 destination in the HS-04 category, so the lane and buyer acceptance exist, served by a short sea leg (Bandar Abbas/Chabahar-Karachi, 2-3 days) or the Taftan-Mirjaveh land crossing.",
+      "watch_outs": "The import pie is tiny (~$1.8M/yr) and already ~70% held by Afghanistan, Germany and China, with a large adulterated domestic crop crowding the cheap end; payment stays informal/barter, not bankable; the land route runs through insecure Balochistan; and honey still faces Pakistan's Ch.4 duty + regulatory-duty stack plus halal/health certs. A low-volume relationship play to test, not a scale market.",
+      "signal": "Pakistan eased its Iran/Russia/Afghanistan barter-trade rules in 2025 (simultaneous import/export, private consortia, 120-day settlement, no fixed item list) — a concrete lowering of the payment barrier.",
+      "verdict": "Pakistan is a real but small opportunity — Iran already has a working (if barter-only) trade channel and a genuine cost/quality edge, but the honey import pie is only ~$1.8M/year and mostly already split between Afghan, German and Chinese supply, so this is a low-volume relationship play to test via the barter lane, not a market worth scaling into first."
+    },
+    {
+      "country": "Qatar",
+      "region": "GCC / Middle East",
+      "composite": 50,
+      "blocked": false,
+      "tier": "Niche",
+      "scores": {
+        "demand": 5,
+        "competition": 3,
+        "iran_edge": 6,
+        "shipping": 7,
+        "access": 4
+      },
+      "notes": {
+        "demand": "No UN Comtrade honey-import row for Qatar was available so this is an estimate from general knowledge: Qatar's ~3M mostly-expat population imports essentially all the honey it consumes (negligible domestic beekeeping), with real but modest absolute volume driven by health-conscious buying, gifting culture and hotel/HORECA use rather than mass staple consumption.",
+        "competition": "India, the US and China already supply roughly 54% of Qatar's honey imports, with Indian bulk honey landing at rock-bottom FOB prices (~$1.2-2/kg), so the cheap tier of the market is already entrenched and hard to underprice.",
+        "iran_edge": "Iran is the world's third-largest honey producer with genuine mountain/floral single-origin honey, and rial devaluation makes it cheap in USD terms too, which is a real wedge against India's bulk honey (dogged by well-documented syrup-adulteration scandals) -- but Iran lacks India's decades-deep trading relationships and brand presence in Gulf retail/HORECA channels.",
+        "shipping": "A direct weekly Bushehr-Doha sea line plus Bandar Abbas-to-Hamad Port service gives a short 3-5 day Gulf crossing, one of the shortest and cheapest sea lanes Iran has to any export market.",
+        "access": "GCC common external tariff is only 5% and pure natural honey needs no halal certificate, but Qatar requires a Certificate of Conformity with ISO/IEC 17025 lab testing for every honey shipment, and there is no direct USD correspondent banking for Iranian entities under US secondary sanctions, so payment has to route through riyal/barter/UAE-intermediary channels rather than being blocked outright."
+      },
+      "why_iran": "As the world's #3 producer with genuine mountain/floral single-origin honey and rial-cheap USD pricing, Iran has a real wedge against India's adulteration-tainted bulk supply. The logistics are among Iran's shortest: a direct weekly Bushehr-Doha sea line plus Bandar Abbas-to-Hamad Port service (3-5 day crossing), and Iran already lists Qatar among its top honey-export destinations.",
+      "watch_outs": "India, the US and China already supply ~54% of imports with Indian bulk landing at ~$1.2-2/kg (hard to underprice); Qatar requires a Certificate of Conformity with ISO/IEC 17025 lab testing per shipment; and there's no direct USD correspondent banking, so payment routes through riyal/barter/UAE intermediary.",
+      "signal": "Iran-Qatar bilateral trade rose ~53% to ~$265M in the first 9 months of the Iranian year, a new direct weekly Bushehr-Doha shipping line launched, and Iran lists Qatar among its top honey destinations — real momentum, though no Qatar-specific honey tonnage is published.",
+      "verdict": "Qatar is a small but genuinely open and growing lane for cheap, good Iranian honey -- ship it direct via Bushehr against India's cheap-but-adulteration-tainted bulk supply, and structure payment around USD banking (riyal/barter/UAE intermediary) rather than through it."
+    },
+    {
+      "country": "Kazakhstan",
+      "region": "Central Asia",
+      "composite": 50,
+      "blocked": false,
+      "tier": "Niche",
+      "scores": {
+        "demand": 4,
+        "competition": 5,
+        "iran_edge": 6,
+        "shipping": 7,
+        "access": 4
+      },
+      "notes": {
+        "demand": "No clean UN Comtrade import row for KZ honey was available, so this is estimated: ~20M population with meaningful domestic East-Kazakhstan/Altai beekeeping covering much local need, plus tea-culture and Nowruz-season gifting use, so net import demand is real but modest and only slowly growing -- nowhere near Gulf-style honey-import volumes.",
+        "competition": "Russia dominates on EAEU tariff-free access and the trusted 'Altai honey' brand, with Turkey and cheap (often adulterated) Chinese honey also present; Ukraine's post-2022 wartime export disruption has cracked the door open but this is not a wide-open field.",
+        "iran_edge": "Iran's rial-driven cost base makes its honey genuinely cheap and quality is real (Kurdistan/Ardabil honey plus royal jelly), but it has no established brand or distribution trust in Kazakhstan yet, so the price edge has to fight uphill against the default-trusted Russian/Altai incumbents.",
+        "shipping": "The short Caspian sea route (Amirabad/Bandar Anzali to Aktau) plus the operational Iran-Turkmenistan-Kazakhstan rail corridor give a direct land/sea path that bypasses Russia entirely -- one of the more favorable corridors Iran has to any export market.",
+        "access": "EAEU common external tariff plus mandatory SPS/antibiotic-residue lab certification add real cost and paperwork, and Iranian banks' SWIFT cutoff forces payment via barter, third-country intermediaries (UAE/Turkey) or local-currency swaps -- workable and Kazakhstan does not itself ban Iranian goods, but far from frictionless."
+      },
+      "why_iran": "Iran's rial-driven cost base makes its honey genuinely cheap, quality is real (Kurdistan/Ardabil honey plus royal jelly), and the short Caspian route (Amirabad/Bandar Anzali-Aktau) plus the operational Iran-Turkmenistan-Kazakhstan rail corridor give a direct land/sea path that bypasses Russia entirely.",
+      "watch_outs": "Russia dominates on EAEU tariff-free access and the trusted 'Altai honey' brand; ~20M population with meaningful domestic Altai beekeeping keeps net import demand modest; Iran has no brand or distribution trust yet; and EAEU common tariff + SPS/antibiotic-residue certification plus the SWIFT cutoff (barter/third-country/local-currency payment) add real friction.",
+      "signal": "Iran and the EAEU signed an upgraded permanent FTA in Dec 2023 (superseding the 2018 interim deal); phased entry around 2025 would cut EAEU tariffs on more Iranian agri-food goods — a near-term tailwind if honey/royal jelly are covered; no honey-specific demand signal known.",
+      "verdict": "Kazakhstan is a real but secondary, Russia-dominated market where Iran's price edge and the new Caspian/rail corridor make physical entry easy, so it merits opportunistic pursuit timed to the Iran-EAEU FTA rather than treatment as a primary target."
+    },
+    {
+      "country": "Russia",
+      "region": "Eurasia / EAEU (Russia, reachable via Caucasus-Caspian corridor)",
+      "composite": 49,
+      "blocked": false,
+      "tier": "Niche",
+      "scores": {
+        "demand": 2,
+        "competition": 4,
+        "iran_edge": 5,
+        "shipping": 7,
+        "access": 8
+      },
+      "notes": {
+        "demand": "Russia has been a net honey EXPORTER since 2014 with self-sufficiency consistently above 100% (bee colonies up 4.2% y/y, ~65,000t domestic output expected in 2025 per the Agriculture Ministry), and honey imports have been shrinking since a 2012 peak with a further reduction in 2024, so this is a small, culturally self-supplied market, not a big or growing import demand pool (UN Comtrade has no clean Russia honey-import series, so this is estimated from production/trade-press data, flagged as instructed).",
+        "competition": "Not wide open: Russia's own cheap domestic honey (Bashkortostan, Altai, ~65,000t/yr, self-sufficiency >100%) crowds out most of the market, and the thin existing import niche is already held by Armenia, Azerbaijan and Turkey (trusted, EAEU-linked, used as parallel-import routes) plus premium Italian/German honey — but no single cheap giant (unlike India/China in the EU/US) has locked down the import slice, so a determined cheap new entrant has some room.",
+        "iran_edge": "Iran has a genuine cost edge (weak rial, cheap labor/land) and real production (named alongside China, Turkey, Argentina, India, Ukraine as a concentrated global producer) plus a fresh near-zero EAEU tariff after the May-2025 FTA, but it has zero established honey-brand recognition in Russia versus Armenia/Azerbaijan and must fight the same \"cheap Asian honey = adulterated\" stigma that already dogs India/China in Western markets.",
+        "shipping": "The Iran-Russia leg of the INSTC (Caspian ferry Anzali/Amirabad→Astrakhan, or land transit via Azerbaijan) is a real and actively-funded corridor — Russia is bankrolling the rail/port buildout and Iran-Russia cargo volumes were up roughly 87% y/y in early 2026 — far shorter and cheaper than the sea routes Argentina, Brazil or NZ competitors must use, though it's still a thinner, younger lane than Turkey's mature Black Sea route.",
+        "access": "Iran is one of the rare origins NOT sanctions-blocked here: the EAEU-Iran FTA took effect May 15, 2025 and cut Iran's average export tariff into the bloc (Russia dominant) from 6.6% to 0.8%, and Russia-Iran have built a parallel Mir-Shetab payment link plus barter/local-currency settlement specifically to route around SWIFT, so banking is navigable, not blocked; real food-safety enforcement still applies (Rosselkhoznadzor's 2024 residue-testing program caught antibiotic violations in several honey batches under GOST/EAEU HMF and fructose-glucose-ratio rules), so it is not a rubber-stamp market either."
+      },
+      "why_iran": "Iran is one of the rare origins NOT sanctions-blocked here: the EAEU-Iran FTA (May 15, 2025) cut its average export tariff into the bloc from 6.6% to 0.8%, and Mir-Shetab plus barter/local-currency settlement route around SWIFT. The INSTC Caspian lane (Anzali/Amirabad-Astrakhan) is far shorter and cheaper than the sea routes Argentina, Brazil or NZ must use, with Iran-Russia cargo up ~87% YoY.",
+      "watch_outs": "Russia is a self-sufficient net honey EXPORTER (~65kt/yr, >100% self-sufficiency) with a shrinking import book — the wrong market for volume; Iran has zero brand recognition vs Armenia/Azerbaijan and fights the 'cheap Asian honey = adulterated' stigma; and Rosselkhoznadzor residue testing (GOST/EAEU HMF, fructose-glucose ratio) is real. A small relationship play, not a demand bet.",
+      "signal": "EAEU-Iran FTA in force May 15, 2025 (tariff 6.6%→0.8%) and Iranian trade press reports honey-specific export talks with Russia underway, but the line item is historically near-zero (Comtrade showed ~$47 in 2017).",
+      "verdict": "Russia is politically and financially wide open to Iranian honey (FTA + sanctions-bypass banking) but is the wrong market to chase for VOLUME because it is a self-sufficient net honey exporter with a shrinking import book, so treat it as a small niche/relationship play riding the INSTC corridor rather than a demand-driven bet, and put real volume expectations on the EAEU neighbors (Armenia, Azerbaijan, Central Asia) that actually import."
+    },
+    {
+      "country": "Algeria",
+      "region": "North Africa (Maghreb) / MENA",
+      "composite": 48,
+      "blocked": false,
+      "tier": "Niche",
+      "scores": {
+        "demand": 5,
+        "competition": 6,
+        "iran_edge": 6,
+        "shipping": 4,
+        "access": 3
+      },
+      "notes": {
+        "demand": "45M population with real cultural/traditional-medicine and gifting demand for honey, but Algeria has its own substantial beekeeping sector (Kabylie region is regionally famous) and doesn't show up as a major formal honey importer in trade data, so net import demand is moderate, not huge.",
+        "competition": "No entrenched cheap-honey flood the way India/China/Turkey dominate more import-open markets, because Algeria's forex-conservation import-licensing regime already limits everyone's formal honey imports, so there's no dominant incumbent to dislodge but also no open door either.",
+        "iran_edge": "Iran's weak rial makes its honey genuinely cheap in USD terms and quality is respectable versus adulterated Chinese product, and unlike Gulf Sunni-monarchy markets, Algeria has no Sunni-Shia stigma against Iranian origin given its independent, non-Gulf-aligned foreign policy.",
+        "shipping": "No direct sea lane or land corridor exists; realistic routing is Bandar Abbas to a Gulf/Turkey transshipment hub then via Suez to Algiers/Oran, likely 3-5 weeks, materially slower and costlier than Algeria's usual short-sea suppliers (Turkey, Spain, Tunisia).",
+        "access": "Honey faces normal Algerian tariffs/VAT and food-safety residue checks (halal itself is a non-issue), but the real chokepoint is Algeria's strict forex-conservation import-licensing regime combined with Algerian banks' reluctance to clear Iran-linked payments due to US secondary-sanctions exposure on their correspondent banking, forcing cash or hawala-style workarounds."
+      },
+      "why_iran": "The weak rial makes Iranian honey genuinely cheap in USD, quality is respectable versus adulterated Chinese product, and unlike Gulf Sunni-monarchy markets Algeria has no Sunni-Shia stigma against Iranian origin given its independent, non-Gulf-aligned foreign policy.",
+      "watch_outs": "Algeria has its own substantial beekeeping sector (Kabylie) so net import demand is moderate; a strict forex-conservation import-licensing regime limits all imports; there's no direct lane (Gulf/Turkey transship then Suez to Algiers/Oran, ~3-5 weeks); and Algerian banks avoid Iran-linked payments, forcing cash/hawala workarounds.",
+      "signal": "None honey-specific; the closest is Algeria's ongoing 2025 tightening of import licensing to conserve forex reserves — which works against new entrants generally rather than opening the market.",
+      "verdict": "Not formally sanctioned-shut like a Western market, but Algeria's own protectionist forex/import-licensing regime plus Iran-linked banking friction and a long, indirect shipping route make it a slow, second-tier target worth only opportunistic pursuit, not a priority push."
+    },
+    {
+      "country": "Nigeria",
+      "region": "West Africa / Sub-Saharan Africa",
+      "composite": 48,
+      "blocked": false,
+      "tier": "Niche",
+      "scores": {
+        "demand": 6,
+        "competition": 5,
+        "iran_edge": 6,
+        "shipping": 3,
+        "access": 3
+      },
+      "notes": {
+        "demand": "Nigeria imported roughly 6.5K tons of honey in 2024 with a reported ~38% import CAGR since 2013 (off a small base), plus large unmet demand in a 220M+ population with strong traditional-medicine and Ramadan/gifting honey use, but absolute import volume is still niche relative to population size.",
+        "competition": "Nigeria's honey imports are dominated by UK, China and UAE at an average landed price of only ~$1,447/ton ($1.45/kg) in 2024, a price point that signals heavily syrup-cut/adulterated product flooding the cheap end, leaving little branded 'real, halal-certified' competition.",
+        "iran_edge": "Iran cannot beat sub-$1.50/kg fake honey on raw price, but genuine, inherently halal Iranian honey can credibly win a growing 'authentic honey' segment among Nigeria's roughly half-Muslim, price-conscious population that is wary of Chinese syrup-cut imports, if positioned as real honey at a fair (not rock-bottom) price.",
+        "shipping": "There is no direct Iran-Nigeria sea or land corridor; cargo must transship via Jebel Ali/Dubai or a European hub to reach Lagos/Apapa, pushing transit to roughly 30-40+ days and adding freight/handling cost that erodes Iran's cheap-origin advantage on a low-value-per-kg bulk commodity.",
+        "access": "NAFDAC registration and halal fit are manageable and Nigeria itself has no Iran import ban, but Iran's exclusion from SWIFT/US-correspondent banking (reinforced by the late-2025 UN snapback) means payment must route through a UAE/Turkey intermediary or hawala-style channel rather than a direct L/C or wire, which is real, recurring friction."
+      },
+      "why_iran": "Iran can't beat sub-$1.50/kg fake honey on raw price, but genuine, inherently-halal Iranian honey can credibly win a growing 'authentic honey' segment among Nigeria's roughly half-Muslim, price-conscious population that is wary of Chinese syrup-cut imports — positioned as real honey at a fair, not rock-bottom, price.",
+      "watch_outs": "Imports are dominated by UK/China/UAE at a brutal ~$1.45/kg landed price signaling heavily adulterated product; there's no direct corridor (transship via Jebel Ali/Europe, 30-40+ days) that erodes the cheap-origin edge on a low-value bulk good; NAFDAC registration applies; and post-snapback payment must run through a UAE/Turkey intermediary or hawala.",
+      "signal": "Nigeria and Iran held a Dec 2025 ministerial explicitly flagging agriculture for deepened non-oil trade — a concrete diplomatic opening, though no honey-specific deal or buyer lead yet.",
+      "verdict": "Nigeria is a real but modest, price-brutal honey market where cheap Iranian honey can only win a halal-authenticity niche against a sea of adulterated UK/China/UAE imports, and it's worth a small, patient pilot rather than a flagship bet, since you'll need a UAE- or Turkey-routed banking and shipping workaround before it can scale."
+    },
+    {
+      "country": "Uzbekistan",
+      "region": "Central Asia",
+      "composite": 47,
+      "blocked": false,
+      "tier": "Niche",
+      "scores": {
+        "demand": 4,
+        "competition": 3,
+        "iran_edge": 5,
+        "shipping": 7,
+        "access": 5
+      },
+      "notes": {
+        "demand": "No clean Comtrade honey-import series exists for Uzbekistan (estimated from general knowledge, not verified trade data); modest but real demand from ~36M people, tea-drinking/gifting culture and an emerging health-food segment (manuka-honey market reported as 'early stage' in 2025-26), largely satisfied by domestic beekeeping plus CIS imports rather than a big open import gap.",
+        "competition": "Fairly entrenched: Kyrgyzstan is reportedly Uzbekistan's leading honey supplier, ~85.6% of Kazakhstan's honey exports and ~52% of Russia's honey exports flow into Uzbekistan, so CIS/EAEU-adjacent neighbors with geographic and trade-agreement advantages already own most of the shelf.",
+        "iran_edge": "Iran's raw production cost is genuinely lower than Russian/Kazakh honey and Iran has a credible honey-quality reputation in the Gulf/MENA, but it carries zero established brand presence in Uzbekistan and, unlike Kyrgyzstan/Kazakhstan, has no CIS/EAEU tariff-preference edge over the incumbents — a price-only entry, not a clear win.",
+        "shipping": "Genuinely favorable: an active Iran-Turkmenistan-Uzbekistan rail/road corridor (Sarakhs-Mary-Turkmenabat-Bukhara) already runs freight service (Uzbekistan-Turkmenistan-Iran-Turkiye rail launched 2022, revived/expanded through 2025), putting Iran within a few days' land transit of Tashkent versus weeks by sea for competitors like Argentina or NZ.",
+        "access": "Not sanctions-blocked (Uzbekistan trades openly with Iran, halal marking is voluntary/SMIIC-based since May 2025), but real friction remains: bilateral banking channels are explicitly still 'under improvement' per the 2025-27 roadmap, tariffs on food run roughly 5-20%+ with no honey-specific rate confirmed, and Iran's own March 2026 blanket food-export ban (honey only exempted in April) shows Tehran can cut off supply on short notice."
+      },
+      "why_iran": "Iran's raw production cost is genuinely lower than Russian/Kazakh honey and it has a credible Gulf/MENA quality reputation, backed by an active Iran-Turkmenistan-Uzbekistan rail/road corridor (Sarakhs-Mary-Turkmenabat-Bukhara) that puts Iran within a few days' land transit of Tashkent versus weeks by sea for competitors.",
+      "watch_outs": "Kyrgyzstan is the leading supplier and Kazakh/Russian honey floods in — CIS/EAEU-adjacent neighbors with tariff advantages own the shelf; Iran has no CIS/EAEU preference (price-only entry) and no brand presence; bilateral banking is still 'under improvement'; food tariffs run ~5-20%+; and Iran's own March 2026 food-export ban (honey only exempted in April) shows Tehran can cut supply on short notice.",
+      "signal": "Iran-Uzbekistan trade jumped 40.5% YoY in Jan-Feb 2026 with a $2B target and 2025-27 roadmap, and honey was among the first goods carved out of Iran's March 2026 blanket food-export ban — signaling Tehran treats honey as a protected/priority export.",
+      "verdict": "Uzbekistan is open and logistically workable via the Turkmenistan land corridor but not lucrative on its own — Iran would be undercutting already-cheap, geographically favored CIS suppliers (Kyrgyzstan, Kazakhstan, Russia) in a market of unproven import size, so treat it as an opportunistic secondary lane, not a primary bet."
+    },
+    {
+      "country": "Turkmenistan",
+      "region": "Central Asia",
+      "composite": 44,
+      "blocked": false,
+      "tier": "Niche",
+      "scores": {
+        "demand": 2,
+        "competition": 5,
+        "iran_edge": 6,
+        "shipping": 8,
+        "access": 3
+      },
+      "notes": {
+        "demand": "No clean Comtrade honey-import row exists for Turkmenistan, so this is estimate-from-knowledge: shipment-tracking data shows only ~$12k recorded honey imports in 2022 (174th-largest importer globally) and ~52 shipments in a recent 12-month window, against a small (~7M), cash-poor, state-controlled economy where much real consumption likely runs through untracked bazaar/land-border trade rather than formal imports.",
+        "competition": "The small formal market is already split among Turkey (~73% of shipments), India (~13%) and Russia (~12%) across 28 exporters serving just 33 buyers, so it spans both premium (Turkish) and cheap (Indian) price points but no single entrenched giant owns it, leaving room but not a clean gap.",
+        "iran_edge": "Iran has real cost/proximity leverage and a shared ethnic-Turkmen population straddling the Golestan border that could ease buyer trust and undercut India/Turkey on landed price, but Iranian honey has essentially zero recorded import history into Turkmenistan today, so the edge is structural, not yet proven with buyers.",
+        "shipping": "Direct land border with multiple crossings (Sarahs-Bajgiran, Artyk) that Turkmenistan customs has been actively modernizing through 2025-2026 makes for a 1-2 day truck run from Iran's honey regions to Ashgabat with no sea freight or transshipment risk.",
+        "access": "Honey itself faces no halal or special sanitary barrier, but Turkmenistan's non-convertible manat and state import-licensing regime already make payment repatriation hard for any exporter, and the September 2025 UN snapback sanctions on the Central Bank of Iran and Iranian banks block USD/EUR settlement, pushing any real trade onto slow barter or informal-cash channels."
+      },
+      "why_iran": "Iran has real cost/proximity leverage plus a shared ethnic-Turkmen population straddling the Golestan border that could ease buyer trust, and a direct land border with multiple crossings (Sarahs-Bajgiran, Artyk) makes for a 1-2 day truck run to Ashgabat with no sea freight or transshipment — a structural edge to undercut India/Turkey on landed price.",
+      "watch_outs": "The formal market is genuinely tiny (~$12k recorded imports in 2022, 174th globally); the non-convertible manat and state import-licensing make payment repatriation hard for any exporter; the Sept 2025 UN snapback blocks USD/EUR settlement, pushing trade onto slow barter/informal cash; and Iranian honey has essentially zero recorded import history there, so the edge is unproven.",
+      "signal": "Turkmenistan modernized its Iran-border customs posts (Artyk, Sarahs-Bajgiran) through 2025-2026 and honey shipment counts rose ~33% YoY in the latest tracked period — but off a near-zero base, with no Iran-specific honey buy lead found.",
+      "verdict": "Turkmenistan is a cheap, short land-hop from Iran with real cultural/cost edge but a genuinely tiny honey market and a payment problem (Turkmenistan's own FX controls stacked on top of post-snapback Iranian bank sanctions), so it's worth an opportunistic barter-style shipment, not a dedicated export strategy."
+    },
+    {
+      "country": "Maldives",
+      "region": "South Asia / Indian Ocean island nation",
+      "composite": 43,
+      "blocked": false,
+      "tier": "Niche",
+      "scores": {
+        "demand": 3,
+        "competition": 4,
+        "iran_edge": 7,
+        "shipping": 5,
+        "access": 3
+      },
+      "notes": {
+        "demand": "Only ~520K residents plus ~2M mostly luxury-resort tourists drive consumption (breakfast buffets, spa/gift-shop jars), so absolute volume is small — Maldives' entire 'dairy/eggs/honey' HS-04 import bucket runs roughly $100-110M/year but honey itself is a sliver of that, with growth tracking slow tourism-arrival recovery rather than any independent honey boom.",
+        "competition": "Not saturated but already crowded on the cheap end — Indian brands (Dabur-style) move easily via the 700km India-Maldives lane, Chinese honey is surging into the region (+232% YoY in nearby South Asian trade data), UAE re-export supplies Yemeni/Sidr and global blends, and NZ/Australian Manuka owns the premium resort-spa shelf, leaving a real but narrow gap for a new cheap origin.",
+        "iran_edge": "Iran's rial-collapse production costs and genuine top-10-producer quality (wildflower/multi-floral, Sabalan-style) can undercut Indian and match Chinese pricing while beating both on real quality, and Maldives (100% Sunni Muslim, no domestic honey lobby) has zero cultural or religious resistance to Iranian origin — the edge is real on price and product, just unbranded internationally.",
+        "shipping": "No direct Bandar Abbas-to-Malé service exists; cargo has to transship through Jebel Ali/Dubai (a well-worn short-sea Iran-UAE leg) or Colombo onto a Malé feeder, adding 3-5 weeks and an extra handling leg versus a direct lane — workable and not exotic, but not cheap-and-easy either given Malé's small, low-frequency container gateway.",
+        "access": "Halal certification (mandatory under Maldives' Halal Act) and English labeling are non-issues for Iranian exporters, and antibiotic/residue lab checks by Maldives Food & Drug Authority are manageable, but the real chokepoint is banking: Maldives banks clear dollars through Indian/Sri Lankan/Western correspondents that enforce OFAC secondary-sanctions screening, and even the traditional Iran workaround via UAE dirham transfers has gotten 'very difficult' per recent reporting, forcing any deal through a re-invoicing UAE intermediary or hawala-style settlement."
+      },
+      "why_iran": "Iran's rial-collapse costs and genuine top-10-producer quality (wildflower/multi-floral, Sabalan-style) can undercut Indian pricing and match Chinese while beating both on real quality, and the Maldives (100% Sunni Muslim, no domestic honey lobby) has zero cultural or religious resistance to Iranian origin.",
+      "watch_outs": "Tiny market (~520K residents plus tourism), with honey only a sliver of the HS-04 bucket; no direct Bandar Abbas-Malé service (transship via Jebel Ali or Colombo, +3-5 weeks); mandatory halal plus MFDA residue testing; and banking is the wall — Maldives banks clear USD through Indian/SL/Western correspondents enforcing OFAC, and even the UAE-dirham workaround has gotten 'very difficult.' A marginal add-on only.",
+      "signal": "No Maldives-specific honey tender or demand spike found — only generic regional context (tourism recovery, Chinese/UAE honey growth into South Asia); treat as background noise, not a buy signal.",
+      "verdict": "Maldives is a real but very small, tourism-shaped honey market where Iran's price and quality edge is genuine yet the payoff is too thin to justify building a dedicated Iran-to-Maldives lane and payment channel — only pursue it as a marginal add-on riding an existing UAE or Colombo trading/banking relationship, not as a standalone target."
+    },
+    {
+      "country": "Malaysia",
+      "region": "Southeast Asia",
+      "composite": 42,
+      "blocked": false,
+      "tier": "Niche",
+      "scores": {
+        "demand": 4,
+        "competition": 4,
+        "iran_edge": 5,
+        "shipping": 4,
+        "access": 4
+      },
+      "notes": {
+        "demand": "No clean Comtrade honey-import row for Malaysia, so this is estimated from proxy trade-data aggregators (WITS/IndexBox): the total import market is small and roughly flat at ~3,000 tonnes / ~US$10-13M a year, split across many origins, with no Gulf-style gifting culture; the real growth story is domestic kelulut (stingless-bee) honey, a premium segment that competes with rather than pulls in imports.",
+        "competition": "Crowded but not locked up: New Zealand (Manuka, premium), China, Thailand (0% ASEAN tariff) and Singapore (re-export hub) together hold roughly 60%+ of import value, and Malaysia is itself a known transshipment/relabeling point for cheap Chinese honey (flagged in a US DOJ anti-dumping case and FDA's adulterated-honey red-list) - yet Iran has already broken into the top-5 supplier list by 2024/25, so there is real room, not saturation.",
+        "iran_edge": "Iran already sells into Malaysia at the highest average unit price of any of its honey export markets (2025 trade data), suggesting genuine quality/authenticity acceptance in a market notorious for laundered/adulterated Chinese honey - a real purity-based differentiator - but Iran has no established 'clean origin' brand in Asia the way NZ Manuka does, so it's competing on demonstrable purity plus price, not reputation.",
+        "shipping": "No land or short-sea shortcut - it's Bandar Abbas to Port Klang via the Persian Gulf, Indian Ocean and Malacca Strait, roughly 25-35 days transit; major mainline carriers avoid direct Iranian port calls for sanctions-compliance reasons so cargo typically transships through UAE hubs, and Iranian port congestion/customs delays add real unpredictability on top of the long transit.",
+        "access": "Tariff is a non-issue (0% MFN duty on HS 0409 natural honey under Malaysia's AHTN 2017 schedule; only the standard 5-10% SST applies, same for every origin), and JAKIM halal certification plus antibiotic-residue/lab testing are routine, origin-neutral requirements, not Iran-specific hurdles - but banking is the real wall: Malaysian banks (CIMB, RHB) have a documented history of closing Iranian-linked accounts under US pressure, and Iran's own government said in Feb 2026 that sanctions are still stalling trade/investment with Malaysia, so payment has to route through third-country (likely UAE) intermediaries rather than a direct wire."
+      },
+      "why_iran": "Iran already sells into Malaysia at the highest average unit price of any of its honey export markets and has broken into the top-5 supplier list by 2024/25 — a genuine purity-based differentiator in a market notorious for laundered/adulterated Chinese honey — and there's 0% MFN duty on HS 0409, so it competes on demonstrable purity plus price.",
+      "watch_outs": "Small (~3,000t/yr, ~$10-13M) and roughly flat; NZ/China/Thailand/Singapore hold ~60%+ of import value; ~25-35 day sea transit with UAE transshipment (mainline carriers avoid Iranian port calls); JAKIM halal plus residue testing; and banking is the real wall — CIMB/RHB have closed Iranian-linked accounts, so payment routes through UAE. Never a volume play.",
+      "signal": "Real and current — Iran's 2025 natural-honey exports to Malaysia were ~$769K, reportedly Iran's #1 honey destination by value and its highest-priced, with containers already moving.",
+      "verdict": "Malaysia is a small (~3,000t/yr) but real and already-growing outlet where Iranian honey has quietly become a top-5 supplier at the best price Iran gets anywhere, so keep building it via UAE-routed payment and logistics, but banking friction and modest total market size mean it will never be a volume play."
+    },
+    {
+      "country": "Bangladesh",
+      "region": "South Asia",
+      "composite": 36,
+      "blocked": false,
+      "tier": "Niche",
+      "scores": {
+        "demand": 3,
+        "competition": 5,
+        "iran_edge": 4,
+        "shipping": 5,
+        "access": 2
+      },
+      "notes": {
+        "demand": "Small, fragmented import market — domestic Sundarbans mangrove and mustard-flower honey (BSCIC-backed) covers most everyday demand; imported honey is a thin premium/religious-use niche (sunnah honey, gifting) growing slowly with urban middle-class e-commerce (Daraz, Chaldal, Shajgoj), not a bulk-consumption culture.",
+        "competition": "Cheap end is dominated by domestic Bangladeshi honey; the premium/religious shelf is owned by Saudi and Yemeni Sidr honey brands, with Chinese and Indian honey undercutting on raw price — crowded at both ends, but almost no established 'pure natural Iranian' entrant occupying the middle.",
+        "iran_edge": "Rial collapse makes Iranian honey (including genuine jujube/Sidr-type varietals that could credibly rival Yemeni Sidr branding) very cheap in USD terms and quality is real, but Iran has zero existing brand recognition with Bangladeshi buyers and domestic honey is already cheap, so price alone won't clear the trust/awareness gap without real marketing investment.",
+        "shipping": "No usable land corridor (Pakistan sits between and isn't a practical transit); only route is sea from Bandar Abbas or Chabahar around the Indian subcontinent into Chittagong, roughly 12-18 days — workable and not ruinous for a low-volume/high-value good, but not a short or cheap lane either.",
+        "access": "Bangladeshi banks are extremely wary of direct Iran-linked USD transactions because of US correspondent-banking exposure, so payment realistically has to route through UAE/Oman intermediaries or barter-style arrangements; add Bangladesh's typical high customs-plus-supplementary-duty stacking on imported consumer foods and mandatory BSTI/BFSA lab testing (Bangladesh has actively cracked down on honey adulteration in recent years) and formal entry is a real grind even with no explicit legal ban on Iranian goods."
+      },
+      "why_iran": "The rial collapse makes Iranian honey very cheap in USD, including genuine jujube/Sidr-type varietals that could credibly rival Yemeni Sidr branding, and the quality is real.",
+      "watch_outs": "Small fragmented import market — domestic Sundarbans and mustard-flower honey covers everyday demand while the premium/religious shelf is owned by Saudi/Yemeni Sidr; Iran has zero brand recognition so price alone won't clear the trust gap; there's no land corridor (12-18 day sea to Chittagong); banks are wary of Iran-linked USD (UAE/Oman intermediary or barter); and high customs-plus-supplementary-duty stacking with BSTI/BFSA lab testing makes formal entry a grind.",
+      "signal": "None Iran-specific; the only general 2025-2026 signal is Bangladesh's rising urban appetite for 'pure/organic' packaged honey via e-commerce — no tender or buy-lead.",
+      "verdict": "Bangladesh is a small, high-friction market for Iranian honey — real banking/payment barriers and tariff-plus-testing hurdles outweigh a thin demand pool already served by cheap domestic and Saudi/Yemeni Sidr honey, so it should sit low on the priority list behind better-connected Muslim markets like Iraq, UAE, or Central Asia."
+    },
+    {
+      "country": "Azerbaijan",
+      "region": "South Caucasus",
+      "composite": 33,
+      "blocked": false,
+      "tier": "Niche",
+      "scores": {
+        "demand": 2,
+        "competition": 2,
+        "iran_edge": 2,
+        "shipping": 8,
+        "access": 4
+      },
+      "notes": {
+        "demand": "Azerbaijan produced ~4,757-6,000t of honey domestically in 2025 for a 10.2M population and is close to self-sufficient, so actual imports are tiny (~20t from Ukraine + ~23t from Russia in early 2025 combined) rather than a growing deficit market.",
+        "competition": "The small trickle of imports that exists is already held by Russia (volumes up 5.3x in early 2025) and Ukraine via cheap CIS-style logistics and consumer trust, and the domestic Beekeepers Association is actively lobbying to shut the import channel to everyone, not just to a new entrant.",
+        "iran_edge": "Iran's weak-rial cost advantage is close to irrelevant here because the live policy fight is over banning ALL honey imports on self-sufficiency grounds, and Iranian origin carries extra political baggage after the March 2026 Nakhchivan drone-strike/IRGC-assassination-plot crisis that led Baku to recall its diplomats from Tehran.",
+        "shipping": "The Astara land crossing is genuinely strong: 24/7 operation, truck capacity being expanded to ~800/day, a new rail bridge (2024), and roughly $900M/year in bilateral trade already flowing, so a shipment could move in under a day once loaded.",
+        "access": "There is no honey-specific sanction and a fresh customs-cooperation MOU (signed ~Aug 2026, after the March 2026 crisis) is easing paperwork, but a pending Ministry of Agriculture proposal to ban honey imports outright plus fragile, recently-hostile bilateral politics make durable market access unreliable."
+      },
+      "why_iran": "Iran's best regional land corridor: the Astara crossing runs 24/7 with truck capacity expanding to ~800/day, a new 2024 rail bridge, and ~$900M/yr in bilateral trade already flowing, so a shipment can move in under a day once loaded.",
+      "watch_outs": "Azerbaijan is a near-self-sufficient producer (~4.7-6kt in 2025) with tiny imports, and its Beekeepers Association is actively lobbying to ban ALL honey imports on self-sufficiency grounds; Iranian origin carries extra political baggage after the March 2026 Nakhchivan drone-strike/IRGC-plot crisis that led Baku to recall diplomats. The cost edge is near-irrelevant when the live policy fight is a total import ban — skip as a priority.",
+      "signal": "Azerbaijan's Ministry of Agriculture is considering a full honey-import ban (2025, a negative demand signal), while a fresh Iran-Azerbaijan customs-cooperation MOU (~Aug 2026) eases corridor logistics even as the diplomatic relationship stays volatile.",
+      "verdict": "Not blocked by sanctions, but skip it as a priority: Azerbaijan is a near-self-sufficient honey producer that is actively trying to ban imports altogether, so even Iran's best land corridor in the region can't create demand for a market that doesn't want outside honey."
+    },
+    {
+      "country": "Saudi Arabia",
+      "region": "GCC / Middle East",
+      "composite": 25,
+      "blocked": true,
+      "tier": "Niche",
+      "scores": {
+        "demand": 8,
+        "competition": 3,
+        "iran_edge": 5,
+        "shipping": 6,
+        "access": 2
+      },
+      "notes": {
+        "demand": "Saudi Arabia has among the highest per-capita honey consumption in the world (Quranic/Hadith 'prophetic medicine' status, heavy gifting culture, wellness trend) and domestic beekeeping covers only a minority of that demand, so imports are large — I have no clean Comtrade row for this, this is an estimate from general Gulf honey-trade knowledge, not a cited figure.",
+        "competition": "The market is already crowded at both ends — cheap Chinese/Indian/Vietnamese honey (much of it syrup-adulterated) owns the low-price tier, while Yemeni Sidr, domestic Najdi, Turkish and NZ Manuka brands own the premium tier, leaving only a narrow mid-price lane open.",
+        "iran_edge": "Iran is a genuine top-10 global honey producer with a real rial-driven USD cost advantage and decent raw quality, but it carries zero brand equity in the Saudi market and buyer hesitancy on declared Iranian origin, so realistically the honey would have to move unbranded or blended rather than sold as 'Iranian honey.'",
+        "shipping": "Bushehr/Bandar Abbas to Dammam is a short Gulf crossing comparable in distance to the well-worn Iran-UAE short-sea lane, but there is no established direct Iran-to-Saudi commercial trade corridor today, so a shipper would be building the lane from scratch rather than using an existing one.",
+        "access": "No honey-specific import ban and the technical rules are routine (GCC ~5% common external tariff, GSO honey-purity/HMF/antibiotic-residue lab testing, honey is inherently halal) — the real wall is banking: Saudi banks avoid USD/SWIFT exposure to Iranian-origin trade for OFAC secondary-sanctions risk, so payment kills direct deals, not customs."
+      },
+      "why_iran": "Real, sizeable demand and a decent Iranian cost/quality edge are both wasted here because Saudi banks won't clear Iranian-origin trade payments — don't chase Saudi Arabia directly, only reachable (if at all) by re-exporting/relabeling through a UAE intermediary.",
+      "watch_outs": "",
+      "signal": "No specific 2025-2026 honey demand/tender signal known. The only concrete backdrop is the ongoing (China-brokered, since 2023) Iran-Saudi diplomatic normalization slowly reopening non-oil trade talk, which has not yet produced a honey-specific data point I can point to.",
+      "verdict": "Real, sizeable demand and a decent Iranian cost/quality edge are both wasted here because Saudi banks won't clear Iranian-origin trade payments — don't chase Saudi Arabia directly, only reachable (if at all) by re-exporting/relabeling through a UAE intermediary."
+    },
+    {
+      "country": "Kuwait",
+      "region": "GCC / Persian Gulf, Middle East",
+      "composite": 25,
+      "blocked": true,
+      "tier": "Niche",
+      "scores": {
+        "demand": 4,
+        "competition": 2,
+        "iran_edge": 4,
+        "shipping": 2,
+        "access": 1
+      },
+      "notes": {
+        "demand": "Kuwait is a small market (pop. ~4.3M, regional Middle East honey CAGR ~1.8% per IndexBox) with steady but unspectacular demand driven by gifting, health-conscious households and some HORECA use, not a fast-growing category.",
+        "competition": "Turkey (49%), India (34%) and Pakistan (8%) already supply ~92% of Kuwait's honey imports at rock-bottom $2-4/kg (Volza 2024-25 shipment data), leaving almost no open lane for a new cheap-origin entrant to undercut.",
+        "iran_edge": "Cheap rial-denominated Iranian mountain/wildflower honey is quality-competitive with Turkish honey and genuinely low-cost, but it can't out-cheap India/Pakistan on raw per-kg price, and Iranian origin carries a compliance stigma that pushes GCC buyers toward already-trusted Turkish or Indian suppliers instead.",
+        "shipping": "Iran-Kuwait is a short intra-Gulf sea hop (~300km, no Strait of Hormuz transit required) that would normally be fast and cheap, but since Iran shut Hormuz on Feb 28 2026 the whole Persian Gulf has become a war-risk zone with shipping traffic collapsed (~2 ships/day vs ~73 normal per CNN/Al Jazeera tracking) and war-risk insurance premiums spiking, so moving any Gulf-origin cargo right now is hard.",
+        "access": "Kuwait's ~5% GCC tariff plus halal/health-certificate and antibiotic-residue testing are routine and passable, but the Sept 2025 UN/EU snapback sanctions re-froze Iran's central bank and major banks, and even though food is nominally exempt, banks and freight/insurance firms refuse Iran-linked paperwork on compliance risk, so Iranian-origin cargo is effectively unbankable into a US-aligned market like Kuwait right now."
+      },
+      "why_iran": "Kuwait is a small, already-cheap market locked up by Turkey, India and Pakistan, and right now Iran-origin honey is doubly stuck behind snapback-sanctions banking freezes and a live Persian Gulf war, so this is not a market to chase until both clear.",
+      "watch_outs": "",
+      "signal": "No Kuwait-specific Iranian-honey buy-lead found; the real 2025-2026 signal is negative -- the Sept 2025 UN/EU snapback sanctions plus the Feb 2026 Hormuz closure and ongoing US/Israel-Iran conflict have frozen Iran-linked banking and Gulf shipping just as Kuwait's honey import mix stayed flat, cheap, and locked in with Turkey/India/Pakistan.",
+      "verdict": "Kuwait is a small, already-cheap market locked up by Turkey, India and Pakistan, and right now Iran-origin honey is doubly stuck behind snapback-sanctions banking freezes and a live Persian Gulf war, so this is not a market to chase until both clear."
+    },
+    {
+      "country": "Oman",
+      "region": "GCC / Gulf — Musandam-Strait of Hormuz frontier",
+      "composite": 25,
+      "blocked": true,
+      "tier": "Niche",
+      "scores": {
+        "demand": 3,
+        "competition": 3,
+        "iran_edge": 4,
+        "shipping": 6,
+        "access": 2
+      },
+      "notes": {
+        "demand": "Oman's total natural-honey imports were only ~RO 2.13M (~$5.5M) in 2025 against a ~4.9M population, and record domestic output (934,443 kg, +~50% in three years) is squeezing import reliance rather than growing it — real but small and only modestly growing demand.",
+        "competition": "The cheap end is already owned: China (RO 542K, largest 2025 supplier), India (RO 417K), Saudi Arabia (RO 407K), Australia (RO 234K) and UAE (RO 229K) cover Oman's honey imports, with Turkey/Australia leading the comb-honey niche — little obvious gap for a new low-cost origin.",
+        "iran_edge": "Iran's collapsed rial and genuinely good wildflower/thyme honey (Kurdistan, Ardabil) give a real cost/quality basis to compete, but it's undercut by already rock-bottom Chinese and Indian pricing and, more decisively right now, by Iran's own Feb 2026 drone strikes on Oman making Iranian origin a hard commercial sell.",
+        "shipping": "On paper this is the shortest lane in the Gulf — Khasab sits ~50km across the Strait from Iran's Qeshm/Bandar Abbas with a centuries-old dhow trade route — but that exact corridor (Khasab, Bukha, Duqm, Salalah) took Iranian drone strikes in Feb 2026 and only got a fragile Iran-Oman shipping-corridor agreement on Aug 5, 2026, so cheap geography is currently offset by live war risk and insurance costs.",
+        "access": "5% GCC tariff plus routine halal-certificate and GSO pesticide-residue paperwork are manageable, but US/UN sanctions have escalated sharply since 2025 (UN snapback Sept 2025, ~1,000 OFAC Iran-linked designations since Feb 2025 targeting the shadow-banking 'rahbar' networks Iranian exporters actually use to get paid), so the real blocker is moving money for the trade, not the honey rules themselves."
+      },
+      "why_iran": "Oman is a small, already-crowded honey market where China and India own the cheap end, and the one physical/financial lane that would make cheap Iranian honey work just came out of active Iran-Oman drone strikes with sanctions choking the payment rails — park this until the shipping-corridor thaw proves durable and a real banking path exists, and look at lower-risk GCC entry points instead.",
+      "watch_outs": "",
+      "signal": "No honey-specific tender or buy-lead found. The closest concrete 2025-2026 signal is the Aug 5, 2026 Iran-Oman Strait-of-Hormuz shipping-corridor agreement — a genuine bilateral trade-channel thaw, but it follows Iran's own Feb 2026 drone strikes on Omani ports (19 killed) and concerns oil-shipping lanes, not honey demand.",
+      "verdict": "Oman is a small, already-crowded honey market where China and India own the cheap end, and the one physical/financial lane that would make cheap Iranian honey work just came out of active Iran-Oman drone strikes with sanctions choking the payment rails — park this until the shipping-corridor thaw proves durable and a real banking path exists, and look at lower-risk GCC entry points instead."
+    },
+    {
+      "country": "Bahrain",
+      "region": "GCC (Persian Gulf)",
+      "composite": 25,
+      "blocked": true,
+      "tier": "Niche",
+      "scores": {
+        "demand": 3,
+        "competition": 4,
+        "iran_edge": 6,
+        "shipping": 5,
+        "access": 1
+      },
+      "notes": {
+        "demand": "Small population (~1.5-1.7M incl. expats) with modest per-capita honey use for health/gifting/Ramadan, but Bahrain is a minor GCC honey market next to Saudi Arabia (large Sidr-honey culture) and the UAE (regional re-export hub); no UN Comtrade honey-import line was found, so this is an estimate, not a measured figure.",
+        "competition": "Cheap-tier is already held by India and China (both low-cost, established Gulf suppliers), with Turkey, Yemeni Sidr, Saudi domestic, and NZ Manuka covering the mid/premium tiers; some room exists because recurring Chinese-honey adulteration scandals have made buyers actively look for a trustworthy alternative cheap origin.",
+        "iran_edge": "Iran is a top-10 global honey producer with real rial-driven cost advantage and a regionally respected quality reputation (Kurdistan/Ardabil/Isfahan honey already moves informally through Gulf trade networks), but the 'Iran' origin label itself is a liability given local politics, so the edge only converts if origin can be softened via UAE transshipment/repackaging.",
+        "shipping": "Geographically short Gulf crossing from Bandar Abbas/Bushehr/Bandar Lengeh (~150-300nm) with a long history of dhow trade, but there is no land route (Bahrain is an island reachable only from Saudi via the King Fahd Causeway), and sanctions push most formal containerized cargo through UAE transshipment (Dubai/Khor Fakkan) rather than direct Iran-Bahrain lines, adding cost and time.",
+        "access": "GCC common tariff on honey is low (~5%) and halal/testing rules are routine, not the blocker; the real barrier is that Bahrain severed diplomatic relations with Iran in 2016, hosts the US Navy 5th Fleet, and is one of the most US/Saudi-aligned states on Iran policy, so Bahraini banks will de-risk and refuse to clear any payment naming Iran as counterparty or origin, forcing any real trade to hide behind UAE re-labeling."
+      },
+      "why_iran": "Bahrain is too small a market and too politically hostile to Iran (severed relations, US 5th Fleet, sanctions-cautious banks) to chase directly — any Iranian honey that reaches it will do so disguised as UAE-origin re-export, not as a direct Iran-Bahrain trade lane.",
+      "watch_outs": "",
+      "signal": "none known — no specific 2025-2026 Bahrain honey tender, buy-lead, or growth event I can point to; the closest generic tailwind is the broader GCC push to source verified-pure honey after repeated Chinese-honey adulteration findings, which is a regional trend, not a Bahrain-specific signal.",
+      "verdict": "Bahrain is too small a market and too politically hostile to Iran (severed relations, US 5th Fleet, sanctions-cautious banks) to chase directly — any Iranian honey that reaches it will do so disguised as UAE-origin re-export, not as a direct Iran-Bahrain trade lane."
+    },
+    {
+      "country": "Turkey",
+      "region": "West Asia / Southeast Europe (direct land neighbor via the Iran-Turkey border)",
+      "composite": 25,
+      "blocked": true,
+      "tier": "Niche",
+      "scores": {
+        "demand": 2,
+        "competition": 2,
+        "iran_edge": 2,
+        "shipping": 8,
+        "access": 3
+      },
+      "notes": {
+        "demand": "UN Comtrade had no clean import row for Turkey, so this is estimated from general knowledge and stated as such: Turkey is the world's #2 honey producer (FAO, ~115,000 tons in 2023) with ~9 million hives and is largely self-sufficient, so genuine appetite for imported honey (vs. its own Anatolian/pine honey, of which it makes ~92% of the world's supply) is thin despite a population of ~85M with real honey-eating habits.",
+        "competition": "Saturated by Turkey's own enormous, politically-protected beekeeping sector (FAO: ~115,000t in 2023, world #2), and the actual cheap end of the market is already captured domestically and illegally by sugar-syrup fake honey (Turkish Ministry of Agriculture flagged 43 adulteration producers and seized ~8,150 tons of syrup inputs in early 2025), leaving little legitimate room for a new cut-rate outside origin.",
+        "iran_edge": "Cheap Iranian honey has no obvious wedge: Turkish buyers already have a cheaper-than-real option in domestic counterfeit sugar-syrup honey, the legitimate market is shielded by tariffs favoring the huge local hive base, and Iranian origin carries no recognized premium or scarcity story in Turkish retail/HORECA the way it might in a honey-deficit market.",
+        "shipping": "This is Iran's one strong card: a live, high-volume overland corridor already exists at the Gurbulak-Bazargan crossing (Turkey's busiest Iran gate, historically 400-500 trucks/day, 239,749 vehicle crossings in 2025) carrying billions of dollars of real trade (Turkey's Iran imports ran ~$2.0B in the first 10 months of 2025), so a honey shipment could ride the same truck lane in a few days for little cost -- though 2025 also saw reports of long truck queues/congestion at that crossing worth budgeting into transit time.",
+        "access": "No outright Iran trade ban (Turkey runs ~$2B+ in Iran imports/yr via the land border, so it isn't sanctions-closed like the EU/US), but honey specifically sits behind Turkey's protective agri-tariff wall for its ~9M-hive domestic industry, food-safety/adulteration enforcement on honey is being tightened right now (2025 crackdown), and Iran-linked payments still need workarounds (lira/barter-style settlement) because Turkish banks stay cautious of US secondary-sanctions exposure on USD clearing."
+      },
+      "why_iran": "Turkey is a honey producer, not a honey importer -- skip it as a cheap-Iranian-honey target: its own ~115,000t/yr output and ~9M protected hives, plus a domestic sugar-syrup fraud problem that already owns the cheap end of the market, leave no real opening despite the easy, already-flowing overland route from Iran.",
+      "watch_outs": "",
+      "signal": "No concrete Turkey-side buy-lead or import tender for honey is known. The visible 2025 signals actually cut the other way: Turkey's Ministry of Agriculture ran a public crackdown on fake/adulterated honey (43 producers flagged, ~8,150 tons of syrup inputs and ~100,000 counterfeit labels seized, ~EUR25M in seizures), showing regulators tightening scrutiny on honey rather than opening the market to new low-cost origins; separately, 2025 border-crossing congestion reports at Gurbulak-Bazargan are a logistics friction signal, not a demand one.",
+      "verdict": "Turkey is a honey producer, not a honey importer -- skip it as a cheap-Iranian-honey target: its own ~115,000t/yr output and ~9M protected hives, plus a domestic sugar-syrup fraud problem that already owns the cheap end of the market, leave no real opening despite the easy, already-flowing overland route from Iran."
+    },
+    {
+      "country": "Jordan",
+      "region": "MENA / Levant",
+      "composite": 25,
+      "blocked": true,
+      "tier": "Niche",
+      "scores": {
+        "demand": 4,
+        "competition": 3,
+        "iran_edge": 5,
+        "shipping": 4,
+        "access": 1
+      },
+      "notes": {
+        "demand": "Jordan's ~11.5M population has real but modest honey demand (gifting/traditional use, limited HORECA vs. Gulf states), softened by a genuine domestic Jordan Valley/Ajloun beekeeping sector that already covers much of premium consumption; Comtrade gives no clean honey-import line, so this is an estimate and there's no visible growth signal to point to.",
+        "competition": "The cheap end is already held by GAFTA-duty-free Arab/Sudanese honey and Turkey (which has its own Jordan FTA), plus India and China as the global rock-bottom benchmark - the latter still tainted by the 2023-2024 Gulf/MENA adulterated-honey scandals, which has only made regional buyers more price- and paperwork-obsessive, not more open to an unproven new origin.",
+        "iran_edge": "Iran is a real top-10 global honey producer with a genuine cost edge from the collapsed rial (US Treasury itself called the currency's 2025 collapse the 'grand culmination' of its Iran-pressure strategy) and a decent regional quality reputation, but with no FTA/GAFTA preference into Jordan that price edge gets partly taxed away and formal buyers are wary of the origin label.",
+        "shipping": "No direct Iran-Jordan border: the realistic path is overland via Iraq (Mehran/Khosravi crossing, ~1,500-1,800km across Iraq to the Trebil post into Jordan, several days, with Anbar-corridor security and customs friction) or the long way by sea from Bandar Abbas around to Aqaba - workable but neither short nor cheap.",
+        "access": "Honey itself clears halal/JFDA residue testing fine, but Iran has no FTA/GAFTA preference into Jordan (full tariff vs. Turkish-FTA and Arab GAFTA rivals), and banking is the real killer: the UN Security Council's Sept 2025 snapback of Iran sanctions plus ~1,000 OFAC Iran-related designations since Feb 2025 (including a Jan 2026 action targeting the UAE shadow-banking/transshipment hubs Iranian exporters typically use) make formal, banked trade through a tightly US-aligned Jordan nearly impossible."
+      },
+      "why_iran": "Skip Jordan for now: it is a small, already-crowded honey market with no Iran trade preference or land border, and post-snapback banking realities make above-board Iranian-origin honey trade with a tightly US-aligned Jordan effectively unworkable, so chase a market with a real border, an FTA, or looser banking scrutiny instead.",
+      "watch_outs": "",
+      "signal": "No Jordan-specific honey demand-growth lead is known. The one concrete 2025-2026 signal is a headwind, not a demand tailwind: the September 2025 UN Security Council snapback of Iran sanctions and the January 2026 Treasury crackdown on Iran-linked shadow-banking/transshipment networks, arriving right as Jordan is being publicly pushed toward Abraham Accords normalization.",
+      "verdict": "Skip Jordan for now: it is a small, already-crowded honey market with no Iran trade preference or land border, and post-snapback banking realities make above-board Iranian-origin honey trade with a tightly US-aligned Jordan effectively unworkable, so chase a market with a real border, an FTA, or looser banking scrutiny instead."
+    },
+    {
+      "country": "Lebanon",
+      "region": "MENA / Levant",
+      "composite": 25,
+      "blocked": true,
+      "tier": "Niche",
+      "scores": {
+        "demand": 4,
+        "competition": 4,
+        "iran_edge": 5,
+        "shipping": 2,
+        "access": 2
+      },
+      "notes": {
+        "demand": "No clean UN Comtrade honey line for Lebanon so this is estimate-from-knowledge: honey has real cultural pull (breakfast, mouneh, Ramadan/Eid gifting) across ~5.4M residents plus ~1.5M Syrian refugees, but the 2019-ongoing currency collapse (LBP down >90%) and 2024 war damage have crushed discretionary import spending, so volumes are modest and not clearly growing.",
+        "competition": "Turkey, Egypt and cheap Chinese honey already supply the low end of the Lebanese/Levant market alongside a domestic (often premium-priced) beekeeping sector, so it's crowded at the cheap tier though not a single entrenched monopoly.",
+        "iran_edge": "Iran's cost base (world's #1 producer, ~77,000t/yr, export prices around $1.7-2.5/kg) undercuts Turkish/Egyptian honey and its quality is regionally respected, but Iranian-origin branding carries political baggage outside Lebanon's Shia community, so volume would likely require private-label repackaging rather than an \"Iran\" front-of-pack claim.",
+        "shipping": "The Iran-Iraq-Syria-Lebanon land corridor Hezbollah/Iran relied on for years was severed when Assad fell in December 2024, and both the new Damascus government and the Lebanese army are now actively closing Bekaa Valley border crossings, leaving only a long, costly sea route around the Gulf/Suez into Beirut port.",
+        "access": "Tariff/halal/residue-testing barriers are minor and loosely enforced given state weakness, but Lebanon's insolvent, capital-controlled banking system plus US sanctions on Iran (and precedent like the 2019 US Treasury shutdown of Jammal Trust Bank for Hezbollah-linked transactions) make any formal bank-mediated Iran-Lebanon payment channel effectively unusable."
+      },
+      "why_iran": "Skip Lebanon for now: real cultural demand for cheap honey exists, but the land corridor is severed, Lebanon's banking system can't move Iranian-linked payments, and both Beirut and Damascus are actively cracking down on the exact route this trade would need.",
+      "watch_outs": "",
+      "signal": "None known specific to honey; the dominant 2025-2026 signal is actually negative for this route — Lebanon's post-war government and Syria's post-Assad authorities are actively dismantling the Iran-Hezbollah land corridor under US/Gulf pressure, which is the exact channel this trade would need.",
+      "verdict": "Skip Lebanon for now: real cultural demand for cheap honey exists, but the land corridor is severed, Lebanon's banking system can't move Iranian-linked payments, and both Beirut and Damascus are actively cracking down on the exact route this trade would need."
+    },
+    {
+      "country": "Egypt",
+      "region": "North Africa / MENA",
+      "composite": 25,
+      "blocked": true,
+      "tier": "Niche",
+      "scores": {
+        "demand": 3,
+        "competition": 3,
+        "iran_edge": 3,
+        "shipping": 2,
+        "access": 1
+      },
+      "notes": {
+        "demand": "Egypt is largely self-sufficient in honey, so formal imports are tiny (~$0.2-0.3M/yr per UN Comtrade-adjacent trend data, no clean Comtrade honey-import row for Egypt as noted), leaving only a modest niche for imported or premium-gift honey despite the huge population.",
+        "competition": "The real incumbent is Egypt's own ~2-million-beekeeper domestic industry (15,000-20,000t/yr, ~$300M) plus Saudi/Gulf Sidr honey for gifting, not a foreign bulk exporter, so there's little open shelf space for a new cheap origin to muscle into.",
+        "iran_edge": "Iranian honey is cheap and decent quality but carries no brand recognition in Egypt and cannot undercut Egypt's own duty-free, EGP-priced domestic honey, so any real price edge only exists versus other imports (India, China, Saudi), not versus the dominant local supply.",
+        "shipping": "There is no direct Iran-Egypt trade corridor (no embassies for decades, only recent diplomatic thaw), and the plausible sea route transits the Red Sea/Bab-el-Mandeb, a live Houthi attack zone through 2024-2025, forcing costly rerouting or risky ship-to-ship transfers near Suez/Port Said that draw sanctions scrutiny.",
+        "access": "Egypt is anchored to a US/IMF program and its banks are acutely wary of correspondent-banking blowback from Iran-linked payments; OFAC directly sanctioned an Egyptian businessman in 2025 for helping move Iranian cargo, so bankable, on-the-books trade in Iranian-origin honey is effectively closed (informal/relabeled-via-UAE channels only)."
+      },
+      "why_iran": "Egypt is a large, self-sufficient honey producer with a near-nonexistent formal import market and a US/IMF-anchored banking system that snapback sanctions have made openly hostile to Iranian-origin trade, so this is not a market worth chasing right now.",
+      "watch_outs": "",
+      "signal": "UN Security Council reimposed snapback sanctions on Iran in Sept 2025 (EU/UK followed) even as Egypt-Iran diplomatic thaw continued (Pezeshkian at Cairo's Dec 2024 D-8 summit, FM Araghchi's June 2025 Cairo visit); the political warming has not extended to trade or banking, and OFAC separately sanctioned an Egyptian businessman in 2025 for facilitating Iran-linked shipping.",
+      "verdict": "Egypt is a large, self-sufficient honey producer with a near-nonexistent formal import market and a US/IMF-anchored banking system that snapback sanctions have made openly hostile to Iranian-origin trade, so this is not a market worth chasing right now."
+    },
+    {
+      "country": "Indonesia",
+      "region": "Southeast Asia",
+      "composite": 25,
+      "blocked": true,
+      "tier": "Niche",
+      "scores": {
+        "demand": 4,
+        "competition": 3,
+        "iran_edge": 4,
+        "shipping": 1,
+        "access": 1
+      },
+      "notes": {
+        "demand": "Indonesia's honey import market is real but tiny (~US$9-11M in 2024-25, up roughly 21% YoY per Indexbox), driven by traditional/health use across a 280M population rather than Western-style HORECA consumption, so growth is off a very low base, not evidence of a huge market.",
+        "competition": "New Zealand, Saudi Arabia and Thailand together already supply roughly 71% of Indonesia's honey imports (NZ on Manuka premium, Saudi on religious/halal-cultural pull, Thailand and Argentina on cheap bulk volume), so a new cheap origin has to displace entrenched suppliers rather than fill an open gap.",
+        "iran_edge": "Iran already names Indonesia among its ~22 honey export destinations and can undercut everyone on raw cost, but it has no brand equity like Saudi's religious appeal or NZ's Manuka story, and Iranian origin has become politically loaded in Jakarta since the 2026 Iran war.",
+        "shipping": "There is no short sea or land corridor from Iran to Indonesia (normal routing is 25-30+ days via UAE/Singapore transshipment), and as of early August 2026 Iran's main export port Bandar Abbas is an active war zone under repeated US strikes with the Strait of Hormuz still barely passable to commercial shipping.",
+        "access": "Halal certification is achievable for a Muslim-majority buyer and Indonesia's new MFN tariff bands (0/15/25%) aren't prohibitive, but Iranian banks are cut off from normal SWIFT settlement (forcing hawala/shadow-banking payment) and Washington has floated a 25% blanket tariff on any country trading with Iran, which Jakarta is watching closely after already excluding Iran from a 2025 naval exercise and moving to auction Iranian assets."
+      },
+      "why_iran": "Indonesia was a modest but genuine outlet for cheap Iranian honey until Iran's own export port turned into an active war zone and Jakarta visibly cooled toward Tehran, so shelve this lane until the Hormuz conflict actually ends rather than committing working capital now.",
+      "watch_outs": "",
+      "signal": "Negative, not positive: since the Iran war began Feb 28 2026, Jakarta excluded Iran from a naval exercise under US pressure, tried to auction $68.8M of Iranian assets, evacuated its citizens from Iran, and Iran's own export port (Bandar Abbas) was still being bombed as of Aug 5 2026 -- the opposite of a buy-lead, this is a live disruption signal.",
+      "verdict": "Indonesia was a modest but genuine outlet for cheap Iranian honey until Iran's own export port turned into an active war zone and Jakarta visibly cooled toward Tehran, so shelve this lane until the Hormuz conflict actually ends rather than committing working capital now."
+    },
+    {
+      "country": "South Korea",
+      "region": "Northeast Asia",
+      "composite": 25,
+      "blocked": true,
+      "tier": "Niche",
+      "scores": {
+        "demand": 5,
+        "competition": 6,
+        "iran_edge": 4,
+        "shipping": 4,
+        "access": 1
+      },
+      "notes": {
+        "demand": "South Korea's honey import volume is modest by global standards, but 2023-2025 bee colony collapse (mites plus heatwaves) crashed domestic acacia-honey output and pushed prices up sharply, increasing import reliance on top of steady baseline demand from Chuseok/New Year gift-set culture and growing bakery/cafe HORECA use.",
+        "competition": "Supply comes mainly from Argentina, Vietnam, China, Canada and Hungary plus premium NZ manuka; no single cheap origin has locked the shelf the way China dominates some other Asian markets, and Chinese honey specifically carries an adulteration-suspicion discount, leaving genuine room for a credible new cheap origin.",
+        "iran_edge": "Iran's currency collapse plus genuinely strong unifloral honeys (astragalus, thyme and similar) give a real cost/quality edge on paper, but Iran has zero brand recognition in Korea and buyers, freshly burned by a 2024 domestic fake/corn-syrup-honey scandal, now demand verified traceability that an unfamiliar sanctioned origin struggles to document credibly.",
+        "shipping": "No land or short-sea option exists; cargo must move Bandar Abbas to Busan via the Persian Gulf, Indian Ocean and Malacca Strait, typically with a UAE or Singapore transshipment, adding 30+ days transit and extra handling versus the incumbent Vietnam/China lanes.",
+        "access": "Honey faces a real Korean tariff plus mandatory antibiotic-residue and (post-scandal) sugar-adulteration lab testing, but the decisive barrier is banking: Korean banks, still scarred by the multi-billion-dollar frozen-won Iran clearing-house episode that the US ended in 2019, will not process Iran-linked wires, so payment realistically requires UAE/Oman intermediaries and origin relabeling."
+      },
+      "why_iran": "South Korea has real post-collapse import demand and no dominant cheap incumbent, but Korean banks' sanctions-driven refusal to touch Iran-linked payments (legacy of the frozen-won clearing dispute) makes direct trade impractical, so this is a market only reachable via a UAE-relabeled play, not worth chasing as a direct Iran-origin lane right now.",
+      "watch_outs": "",
+      "signal": "2023-2025 Korean bee colony collapse (mites plus extreme heat) cut domestic honey output and spiked retail prices roughly 40-70%, raising import reliance, while a 2024 domestic fake/adulterated-honey scandal simultaneously tightened lab-testing and origin-traceability requirements on all imports.",
+      "verdict": "South Korea has real post-collapse import demand and no dominant cheap incumbent, but Korean banks' sanctions-driven refusal to touch Iran-linked payments (legacy of the frozen-won clearing dispute) makes direct trade impractical, so this is a market only reachable via a UAE-relabeled play, not worth chasing as a direct Iran-origin lane right now."
+    },
+    {
+      "country": "India",
+      "region": "South Asia",
+      "composite": 23,
+      "blocked": true,
+      "tier": "Niche",
+      "scores": {
+        "demand": 2,
+        "competition": 1,
+        "iran_edge": 2,
+        "shipping": 6,
+        "access": 1
+      },
+      "notes": {
+        "demand": "India is a net honey EXPORTER (mainly to the US, now under US anti-dumping duties) sitting on cheap, large-scale domestic production feeding Dabur/Patanjali/Baidyanath, so genuine import demand for foreign honey is negligible even though domestic consumption itself is growing modestly on the Ayurveda/immunity-wellness trend -- this is an estimate from general knowledge, not a Comtrade import line, as none was available.",
+        "competition": "The real competitor isn't Turkey, China, or Ukraine -- it's India's own beekeepers and bulk blenders cutting real honey with cheap sugar syrup (CSE's 2020 NMR test found 10 of 13 major brands, including Dabur and Patanjali, adulterated), a price floor no legitimately-priced imported honey can undercut.",
+        "iran_edge": "Iran has genuine production-cost and quality advantages as one of the world's larger honey producers, but they evaporate once a ~75-80% tariff wall is stacked on landed cost versus near-zero-marginal-cost (and often adulterated) domestic Indian honey, and Iranian origin carries no brand or purity signal in India that would let it compete on anything but price.",
+        "shipping": "Bandar Abbas to Mumbai/Kandla/JNPT is a well-worn, roughly 5-7 day Arabian Sea corridor already used for Iranian dates and dried fruit, so the physical logistics are genuinely workable -- shipping is the one axis that isn't the problem here.",
+        "access": "Natural honey imports face a ~60% basic customs duty plus 10% social-welfare surcharge and 5% IGST (roughly 75-80% cumulative landed-cost markup), heightened FSSAI/NMR adulteration scrutiny since the 2020 'Honeygate' scandal, and critically no functioning banking rail for Iran-origin goods -- India's rupee-payment channel with Iran covers oil settlement (and is itself under fresh strain in 2025-26 per recent reporting), not commodity food imports."
+      },
+      "why_iran": "Skip India: it doesn't need to import honey, its own domestic (partly adulterated, near-free) supply already beats any legitimate landed price after a ~75-80% tariff wall, and there is no banking rail to get paid for Iran-origin goods outside the fragile oil-only rupee channel -- put the Iranian honey into markets that actually import it, like the Gulf, Central Asia, or China.",
+      "watch_outs": "",
+      "signal": "none known -- the only 2025-2026 India honey-policy news is the government extending its Minimum Export Price on honey to protect its own exporters, which is an export-protection signal, not an import-demand or buy-lead signal for foreign honey",
+      "verdict": "Skip India: it doesn't need to import honey, its own domestic (partly adulterated, near-free) supply already beats any legitimate landed price after a ~75-80% tariff wall, and there is no banking rail to get paid for Iran-origin goods outside the fragile oil-only rupee channel -- put the Iranian honey into markets that actually import it, like the Gulf, Central Asia, or China."
+    },
+    {
+      "country": "Morocco",
+      "region": "North Africa / Maghreb (MENA)",
+      "composite": 21,
+      "blocked": true,
+      "tier": "Niche",
+      "scores": {
+        "demand": 3,
+        "competition": 2,
+        "iran_edge": 2,
+        "shipping": 2,
+        "access": 1
+      },
+      "notes": {
+        "demand": "Morocco is a real but small importer - largest honey-import market in Africa by value in 2024 at only about $10M / 4.9K tons (China/Spain/India + Egypt/Argentina cover the bulk), because Morocco is largely self-sufficient in domestic apiculture (Atlas Mountains thyme/eucalyptus honey is a national product); imports fill cheap gap-fill/industrial-blend demand rather than mass retail or HORECA, with only modest growth off a tiny base.",
+        "competition": "China, Spain and India alone supply about 71% of Morocco's honey import value, with Egypt and Argentina adding another ~25%, so five entrenched cheap-to-mid-cost origins (Spain zero-tariff and next door under the Morocco-EU deal) already lock up roughly 96% of a ~$10M market, leaving almost no open shelf space for a new low-cost origin.",
+        "iran_edge": "Iranian honey has no brand recognition or buyer trust in Morocco and would still be underpriced by Chinese/Indian bulk honey and beaten on landed cost/speed by tariff-free neighbor Spain, so a genuine farm-gate cost or quality edge in Iran doesn't convert into a purchasing reason without an existing relationship or a price gap wide enough to offset the extra friction.",
+        "shipping": "No direct shipping line or land corridor connects Iran to Morocco; cargo would need transshipment via Jebel Ali/Salalah or Turkey then a Suez-Mediterranean leg into Tangier Med or Casablanca (roughly 4-6 weeks all-in), and Iran-linked cargo commonly faces P&I insurance and documentation friction that push exporters toward relabeling through a UAE/Turkey hub rather than shipping direct.",
+        "access": "Morocco severed diplomatic relations with Iran in 2018 (no embassy, no ambassador) over alleged Iran/Hezbollah arms support to the Polisario Front, and while quiet Saudi/UAE-mediated normalization talks resumed in late 2024 and continued into 2025-2026, no resolution has landed; with no bilateral banking or correspondent-bank channel, Moroccan banks will de-risk any Iran-linked LC or wire under US secondary-sanctions exposure, so honey's own import rules (tariffs, labeling, halal - honey needs no slaughter so this is a non-issue) are not the blocker, the diplomatic/banking freeze is."
+      },
+      "why_iran": "Skip Morocco for now: it is a small, already-saturated import market (China/Spain/India/Egypt/Argentina hold ~96% of a $10M total) with no diplomatic relations or bankable payment channel to move Iranian-origin honey in cleanly, so any real trade would have to route as unlabeled grey-market re-export through a UAE or Turkey hub rather than a direct Iran-to-Morocco sale.",
+      "watch_outs": "",
+      "signal": "Only concrete 2025-2026 signal is geopolitical, not honey-specific: Saudi/UAE-mediated Morocco-Iran normalization talks (Rabat meetings starting autumn 2024, described as still active/unresolved into 2026 per Morocco World News and Institut Géopolitique Horizons reporting). No honey-sector buy-lead, tender, or demand-growth event is known.",
+      "verdict": "Skip Morocco for now: it is a small, already-saturated import market (China/Spain/India/Egypt/Argentina hold ~96% of a $10M total) with no diplomatic relations or bankable payment channel to move Iranian-origin honey in cleanly, so any real trade would have to route as unlabeled grey-market re-export through a UAE or Turkey hub rather than a direct Iran-to-Morocco sale."
+    },
+    {
+      "country": "China",
+      "region": "East Asia",
+      "composite": 19,
+      "blocked": true,
+      "tier": "Niche",
+      "scores": {
+        "demand": 2,
+        "competition": 1,
+        "iran_edge": 1,
+        "shipping": 4,
+        "access": 2
+      },
+      "notes": {
+        "demand": "China's total 2025 honey imports were only about $48.7M against ~460,000t of domestic production, and the tiny import slice that exists is a premium/gifting niche (New Zealand $33.4M, Australia $8.79M — manuka-style branded honey), not a market pulling in cheap bulk honey — this is my own estimate since no clean Comtrade import row was available.",
+        "competition": "China is itself the world's #1 honey producer (463,000t in 2024, 23% of global output) and #1 exporter (187,000t / $260M in 2025, mostly to Japan/UK/Belgium/Poland/Saudi), so a new cheap origin would be undercutting the very country it's trying to sell into.",
+        "iran_edge": "Iran can't out-cheap China's own mass-produced (often syrup-adulterated, artificially low-priced) domestic honey, and it has zero brand equity to compete with the manuka-driven premium import narrative that owns the small niche China does import.",
+        "shipping": "The Xi'an-Tehran rail corridor (operational since May 2025, ~15 days, running through Kazakhstan/Kyrgyzstan/Uzbekistan/Turkmenistan) is real and growing in frequency, and a Persian Gulf-to-China sea route also exists, but both are long, multi-border/multi-transshipment, bulk-industrial-oriented lanes, not a honey-optimized trade route.",
+        "access": "15% MFN tariff on HS 0409 is manageable, but honey needs a GACC facility/country equivalence registration and GB 14963-2011 antibiotic-residue lab testing that no Iran-China honey protocol appears to exist for yet, and while food is technically NDAA-exempt from US sanctions, real Iran-China payment rails run through opaque state-level oil-for-goods conduits (Sinosure/Chuxin) not built for a legitimate SME food exporter."
+      },
+      "why_iran": "China produces and exports more honey than it will ever import, so there is no cheap-honey market there for Iran to win — skip it and put the effort into actual honey-importing destinations.",
+      "watch_outs": "",
+      "signal": "none known — no honey-specific buy-lead, tender, or demand spike found for China in 2025-2026; the only concrete 2025 development is the general Xi'an-Tehran rail corridor going operational, which is infrastructure, not honey demand",
+      "verdict": "China produces and exports more honey than it will ever import, so there is no cheap-honey market there for Iran to win — skip it and put the effort into actual honey-importing destinations."
+    }
+  ],
+  "avoid": [
+    {
+      "country": "Saudi Arabia",
+      "reason": "Large, genuine demand and a decent Iran cost/quality edge are both wasted: Saudi banks won't clear Iranian-origin payments under OFAC secondary-sanctions risk, so it's reachable only via UAE re-export/relabeling."
+    },
+    {
+      "country": "Kuwait",
+      "reason": "Doubly stuck — the Sept 2025 UN/EU snapback froze Iran-linked banking and the Feb 2026 Hormuz closure turned the Gulf into a war-risk zone — atop a small market already locked up by Turkey, India and Pakistan."
+    },
+    {
+      "country": "Oman",
+      "reason": "Small, crowded market (China/India own the cheap end) whose one cheap physical/financial lane just came out of Feb 2026 Iranian drone strikes on Omani ports, with ~1,000 OFAC designations choking the payment rails."
+    },
+    {
+      "country": "Bahrain",
+      "reason": "Severed relations with Iran (2016), hosts the US 5th Fleet, and its banks refuse any Iran-named payment — any Iranian honey arrives only disguised as UAE re-export, not a direct lane."
+    },
+    {
+      "country": "Turkey",
+      "reason": "A honey producer (#2 world, ~115kt, ~9M protected hives), not an importer; domestic sugar-syrup fake honey already owns the cheap end, leaving no legitimate opening despite the easy overland route."
+    },
+    {
+      "country": "Jordan",
+      "reason": "No land border, no FTA/GAFTA preference, and tightly US-aligned; post-snapback banking plus the Jan 2026 Treasury crackdown on UAE transshipment hubs make banked Iranian-origin trade effectively unworkable."
+    },
+    {
+      "country": "Lebanon",
+      "reason": "The Iran-Iraq-Syria-Lebanon land corridor was severed after Assad fell (Dec 2024), Beirut/Damascus are actively closing the route, and the insolvent capital-controlled banking system can't move Iran-linked payments."
+    },
+    {
+      "country": "Egypt",
+      "reason": "A large, self-sufficient producer with a near-nonexistent formal import market and a US/IMF-anchored banking system openly hostile to Iranian-origin trade (OFAC sanctioned an Egyptian facilitator in 2025)."
+    },
+    {
+      "country": "Indonesia",
+      "reason": "A modest but genuine outlet turned unworkable: since Feb 2026 Iran's own export port (Bandar Abbas) is an active war zone and Jakarta has visibly cooled toward Tehran under US pressure — shelve until the Hormuz conflict ends."
+    },
+    {
+      "country": "South Korea",
+      "reason": "Real post-colony-collapse import demand and no dominant cheap incumbent, but Korean banks refuse Iran-linked wires (legacy of the frozen-won clearing dispute), so it's reachable only via a UAE-relabeled play."
+    },
+    {
+      "country": "India",
+      "reason": "A net honey exporter that doesn't need imports; a ~75-80% tariff wall plus near-free (often adulterated) domestic supply and no banking rail for Iran-origin goods outside the fragile oil-only rupee channel."
+    },
+    {
+      "country": "Morocco",
+      "reason": "Severed diplomatic relations (2018) with no bankable payment channel, atop a small, saturated ~$10M market where China/Spain/India/Egypt/Argentina already hold ~96% — any trade would be grey-market re-export via a UAE/Turkey hub."
+    },
+    {
+      "country": "China",
+      "reason": "The world's #1 honey producer and exporter — it produces and ships out far more than it will ever import, and its tiny import niche is premium manuka-style, so there is no cheap-honey market for Iran to win."
+    }
+  ],
+  "count": 30
+}

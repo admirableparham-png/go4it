@@ -1,0 +1,37 @@
+{
+  "hs_code": "0409",
+  "label": "HS 0409",
+  "years": {
+    "2023": {
+      "tonnes": 5.0,
+      "cif_usd": 56700,
+      "unit_price_usd_kg": 11.363
+    }
+  },
+  "trend_pct_first_to_last": null,
+  "latest_year": "2023",
+  "latest_tonnes": 5.0,
+  "latest_cif": 56700,
+  "latest_price": 11.363,
+  "top_suppliers": [
+    {
+      "country": "China",
+      "code": 156,
+      "tonnes_total": 3.2,
+      "cif_usd_total": 36700,
+      "unit_price_usd_kg": 11.362,
+      "watch_competitor": true
+    },
+    {
+      "country": "code568",
+      "code": 568,
+      "tonnes_total": 1.8,
+      "cif_usd_total": 20000,
+      "unit_price_usd_kg": 11.364,
+      "watch_competitor": false
+    }
+  ],
+  "total_cif": 56700,
+  "unit_basis": "kg",
+  "_incomplete": false
+}

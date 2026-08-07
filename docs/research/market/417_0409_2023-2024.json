@@ -1,0 +1,66 @@
+{
+  "hs_code": "0409",
+  "label": "HS 0409",
+  "years": {
+    "2023": {
+      "tonnes": 22.8,
+      "cif_usd": 10053,
+      "unit_price_usd_kg": 0.441
+    },
+    "2024": {
+      "tonnes": 0.2,
+      "cif_usd": 3850,
+      "unit_price_usd_kg": 19.444
+    }
+  },
+  "trend_pct_first_to_last": -62,
+  "latest_year": "2024",
+  "latest_tonnes": 0.2,
+  "latest_cif": 3850,
+  "latest_price": 19.444,
+  "top_suppliers": [
+    {
+      "country": "Kazakhstan",
+      "code": 398,
+      "tonnes_total": 132.0,
+      "cif_usd_total": 19482,
+      "unit_price_usd_kg": 0.148,
+      "watch_competitor": true
+    },
+    {
+      "country": "China",
+      "code": 156,
+      "tonnes_total": 0.3,
+      "cif_usd_total": 418,
+      "unit_price_usd_kg": 1.432,
+      "watch_competitor": true
+    },
+    {
+      "country": "Russia",
+      "code": 643,
+      "tonnes_total": 2.2,
+      "cif_usd_total": 3584,
+      "unit_price_usd_kg": 1.652,
+      "watch_competitor": true
+    },
+    {
+      "country": "Uzbekistan",
+      "code": 860,
+      "tonnes_total": 1.5,
+      "cif_usd_total": 3472,
+      "unit_price_usd_kg": 2.249,
+      "watch_competitor": true
+    },
+    {
+      "country": "Malaysia",
+      "code": 458,
+      "tonnes_total": 0.4,
+      "cif_usd_total": 7700,
+      "unit_price_usd_kg": 19.444,
+      "watch_competitor": false
+    }
+  ],
+  "total_cif": 34656,
+  "unit_basis": "kg",
+  "_incomplete": false
+}
