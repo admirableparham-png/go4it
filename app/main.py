@@ -35,9 +35,8 @@ from .line_spec import all_specs
 from .models import (Activity, CommandJob, ComplianceDoc, CostParam, Deal,
                      FxRate, IngestionRun, Lead, Match, Outreach, Product,
                      Quote, RateCard, Supplier, User)
-from .outreach import default_message, honey_first_touch, send_email
-from .quote_service import build_params, create_quote
-from .quoting import compute_quote
+from .outreach import build_parts, default_message, honey_message, send_email
+from .quote_service import create_quote
 from .research_engine import (PARTNERS, country_options, market_report,
                               product_options, rank_opportunities, recommend_destinations,
                               resolve_query)
@@ -901,19 +900,10 @@ def lead_detail(request: Request, lead_id: int):
             key=lambda p: p.name)
         latest_q = quotes[0] if quotes else None
         latest_p = products.get(latest_q.product_id) if latest_q else None
-        # Honey leads get a tailored first-touch (offer + indicative delivered price to their market).
+        # Honey leads get the KIMIEL wholesale / private-label first-touch (founder's template).
         is_honey = (lead.source or "").startswith("iran-export-honey") or "honey" in (lead.category or "").lower()
         if is_honey and not latest_q:
-            hp = next((p for p in products.values() if p.category == "food-honey"), None)
-            du, dn = None, {"IQ": "Iraq", "AE": "the UAE", "QA": "Qatar", "PK": "Pakistan",
-                            "GE": "Georgia", "AM": "Armenia", "AF": "Afghanistan",
-                            "KZ": "Kazakhstan"}.get(lead.dest_country, "")
-            if hp:
-                params = build_params(session, dest_country=lead.dest_country)
-                du = compute_quote(exw_price=hp.exw_price, quantity=hp.min_order_qty or 500,
-                                   weight_kg_per_unit=hp.weight_kg_per_unit or 1, incoterm="CPT",
-                                   params=params, fx=1)["delivered_unit"]
-            default_subject, default_body = honey_first_touch(lead, du, dn)
+            default_subject, default_body = honey_message(lead)
         else:
             default_subject, default_body = default_message(lead, latest_q, latest_p)
         # newest buyer-safe quote link to drop into a message (approved/sent quotes only)
@@ -1153,7 +1143,8 @@ def lead_outreach(request: Request, lead_id: int, channel: str = Form("email"),
             return HTMLResponse("Not found", status_code=404)
         status, error, mid = "logged", "", ""
         if send and channel == "email":
-            ok, error, mid = send_email(recipient or lead.email, subject, body)
+            text, html = build_parts(body)                # append the KIMIEL signature (HTML + plain)
+            ok, error, mid = send_email(recipient or lead.email, subject, text, html=html)
             status = "sent" if ok else "failed"
         session.add(Outreach(
             lead_id=lead.id, direction="out", channel=channel,

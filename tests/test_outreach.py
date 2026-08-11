@@ -1,6 +1,6 @@
 """Tests for the buyer-outreach message builder + SMTP guard."""
 from app.models import Lead, Product, Quote
-from app.outreach import default_message, send_email
+from app.outreach import build_parts, default_message, honey_message, send_email
 
 
 def test_default_message_basic():
@@ -8,7 +8,19 @@ def test_default_message_basic():
     subject, body = default_message(lead)
     assert "Ceramic tiles" in subject
     assert "Sara" in body                 # greets by first name
-    assert "Best regards" in body
+
+
+def test_greeting_has_no_guessed_name():
+    lead = Lead(product="Honey", buyer_company="Peachtree Foods MENA", dest_country="AE")
+    _, body = honey_message(lead)
+    assert "Nick" not in body             # never guess a personal name
+    assert body.startswith("Dear ")       # company purchasing-team greeting
+
+
+def test_build_parts_appends_signature():
+    text, html = build_parts("Hello,\n\nSome body text.")
+    assert "Best regards" in text and "KIMIEL" in text        # plain-text signature appended
+    assert "<html" in html.lower() and "kimiel" in html.lower()  # HTML alt + styled signature
 
 
 def test_default_message_includes_quote_offer():
