@@ -151,9 +151,11 @@ def notify_needs_call(lead) -> bool:
 
 
 def notify_buyer_reply(lead, from_addr, subject, snippet="") -> bool:
-    """Alert: a buyer replied — the founder should answer personally."""
+    """Alert: a buyer replied — the founder should answer personally. Leads with a row of money emojis
+    so a hot reply jumps out in the chat."""
     snip = f"\n<i>{_esc(snippet)[:180]}</i>" if snippet else ""
     return send_message(
-        f"\U0001F4E5 <b>Buyer replied — reply now</b>\n"
+        f"\U0001F4B0\U0001F4B5\U0001F4B0\U0001F4B5\U0001F4B0\U0001F4B5 "
+        f"<b>BUYER REPLIED — reply now!</b>\n"
         f"{_esc(lead.buyer_company) or _esc(from_addr)} ({_loc(lead)})\n{_esc(from_addr)}\n"
         f"<b>{_esc(subject)[:90]}</b>{snip}\n{BASE_URL}/leads/{lead.id}")
