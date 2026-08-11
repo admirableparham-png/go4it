@@ -19,15 +19,20 @@ def signature():
     return OUTREACH_SIGNATURE or _DEFAULT_SIGNATURE
 
 
+def _greeting(lead):
+    """Greet by first name ONLY when a human has recorded a real contact_name — never guess a name
+    from the company (a wrong name reads worse than none). Otherwise a neutral 'Hello,'."""
+    name = (lead.contact_name or "").strip()
+    return f"Hello {name.split()[0]}," if name else "Hello,"
+
+
 def default_message(lead, quote=None, product=None):
     """A ready-to-edit (subject, body) for a first outreach to this buyer."""
-    name = (lead.contact_name or lead.buyer_company or "").strip()
-    who = name.split()[0] if name else "there"
     want = lead.product or (product.name if product else "your requirement")
     subject = f"Re: {want}"
     if quote is not None:
         subject += f" — quote {quote.tracking_code}"
-    lines = [f"Hello {who},", "",
+    lines = [_greeting(lead), "",
              f"Thank you for your interest in {want}. We source directly and handle the "
              "full trade — freight, customs, and delivery."]
     if quote is not None and product is not None:
@@ -45,8 +50,6 @@ def default_message(lead, quote=None, product=None):
 def honey_first_touch(lead, delivered_unit=None, dest_name="", trial_kg=25):
     """A tailored first-touch (subject, body) for a HONEY buyer lead — leads with the offer, the
     indicative delivered price to their market, and the bankable payment terms (the real differentiator)."""
-    name = (lead.contact_name or lead.buyer_company or "").strip()
-    who = name.split()[0] if name else "there"
     subject = "Iranian natural honey — direct export offer (single-origin, Certificate of Origin)"
     price = ""
     if delivered_unit:
@@ -54,7 +57,7 @@ def honey_first_touch(lead, delivered_unit=None, dest_name="", trial_kg=25):
         price = (f" Indicative delivered price{where}: about ${delivered_unit:.2f}/kg CPT on a 500 kg "
                  f"order (EXW $8.00/kg).")
     lines = [
-        f"Hello {who},", "",
+        _greeting(lead), "",
         "We are a direct exporter of genuine single-origin Iranian natural honey — multifloral, thyme, "
         "Sidr, honeydew, and honey with royal jelly — supplied in 25 kg food-grade drums, with "
         "Certificate of Origin and laboratory specifications (moisture / HMF / antibiotic-free) available "
