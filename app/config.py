@@ -77,6 +77,8 @@ SMTP_USER = os.getenv("SMTP_USER", "").strip()
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "").strip()
 SMTP_FROM = os.getenv("SMTP_FROM", "").strip() or SMTP_USER
 SMTP_ENABLED = bool(SMTP_HOST and SMTP_USER and SMTP_PASSWORD)
+# Signature appended to outreach emails. Override in .env with OUTREACH_SIGNATURE (use \n for line breaks).
+OUTREACH_SIGNATURE = os.getenv("OUTREACH_SIGNATURE", "").replace("\\n", "\n").strip()
 
 # --- Production safety -------------------------------------------------------
 # Refuse to boot on a PUBLIC BASE_URL while still using the shipped default secrets (a forgeable

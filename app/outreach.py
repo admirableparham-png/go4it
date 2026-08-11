@@ -7,8 +7,16 @@ import ssl
 from email.message import EmailMessage
 from email.utils import make_msgid
 
-from .config import (BASE_URL, SMTP_ENABLED, SMTP_FROM, SMTP_HOST, SMTP_PASSWORD,
-                     SMTP_PORT, SMTP_USER)
+from .config import (BASE_URL, OUTREACH_SIGNATURE, SMTP_ENABLED, SMTP_FROM, SMTP_HOST,
+                     SMTP_PASSWORD, SMTP_PORT, SMTP_USER)
+
+_DEFAULT_SIGNATURE = ("Best regards,\n\ngo4it — Iran Export Desk\n"
+                      "hello@kimiel.com  |  kimiel.com")
+
+
+def signature():
+    """The closing signature for outreach emails (OUTREACH_SIGNATURE in .env, else a sensible default)."""
+    return OUTREACH_SIGNATURE or _DEFAULT_SIGNATURE
 
 
 def default_message(lead, quote=None, product=None):
@@ -30,7 +38,7 @@ def default_message(lead, quote=None, product=None):
     if quote is not None and (getattr(quote, "share_token", "") or "").strip():
         lines += ["", f"View your quotation: {BASE_URL}/p/{quote.share_token}"]
     lines += ["", "Happy to share full specifications and terms. What quantity and destination "
-              "are you targeting?", "", "Best regards,", "go4it"]
+              "are you targeting?", "", signature()]
     return subject, "\n".join(lines)
 
 
@@ -55,7 +63,7 @@ def honey_first_touch(lead, delivered_unit=None, dest_name="", trial_kg=25):
         f"cryptocurrency. A {trial_kg} kg trial order is available so you can verify the quality first.", "",
         "Which grade and quantity suit you, and what is your delivery destination? I'll send full "
         "specifications and can arrange a sample.", "",
-        "Best regards,", "go4it",
+        signature(),
     ]
     return subject, "\n".join(lines)
 
