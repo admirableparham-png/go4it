@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ q.quote_no }} — KIMIEL Quotation — {{ q.buyer }}</title>
+  <style>
+    :root{ --dark:#14100b; --gold:#f0b53b; --card:#f6f1e8; --ink:#15130f; --muted:#817b71; --line:#e6ddc9; }
+    *{ box-sizing:border-box; }
+    body{ margin:0; background:#e9e4d8; color:var(--ink);
+      font-family:Arial,Helvetica,"Segoe UI",sans-serif; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .toolbar{ max-width:820px; margin:16px auto 0; text-align:right; }
+    .toolbar button{ background:var(--dark); color:#fff; border:0; border-radius:8px; padding:9px 16px;
+      font-size:13px; font-weight:700; cursor:pointer; }
+    .page{ max-width:820px; margin:14px auto; background:#fff; box-shadow:0 10px 30px rgba(0,0,0,.12); }
+    .head{ background:var(--dark); color:#fff; padding:26px 34px 22px; display:flex; justify-content:space-between; align-items:flex-start; gap:24px; }
+    .head .brand img{ display:block; height:34px; width:auto; }
+    .head .brand .tag{ margin-top:12px; color:var(--gold); font-size:9px; font-weight:700; letter-spacing:1.4px; text-transform:uppercase; }
+    .head .meta{ text-align:right; }
+    .head .meta h1{ margin:0; font-size:17px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; line-height:1.25; }
+    .head .meta .ref{ margin-top:12px; color:var(--gold); font-size:10.5px; line-height:1.7; letter-spacing:.5px; }
+    .accent{ height:6px; background:var(--gold); }
+    .body{ padding:26px 34px 30px; }
+    .parties{ display:flex; justify-content:space-between; gap:24px; }
+    .parties .lbl{ color:var(--gold); font-size:10px; font-weight:800; letter-spacing:1.2px; text-transform:uppercase; }
+    .parties .buyer{ font-size:22px; font-weight:800; margin:6px 0 3px; }
+    .parties .sup{ text-align:right; }
+    .parties .sup .name{ font-size:14px; font-weight:800; margin:6px 0 2px; }
+    .parties .muted{ color:var(--muted); font-size:12.5px; }
+    .parties a{ color:var(--gold); text-decoration:none; font-weight:700; }
+    .rule{ border:0; border-top:1px solid var(--line); margin:22px 0; }
+    .secrow{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; }
+    .secrow h2{ margin:0; font-size:15px; font-weight:800; letter-spacing:.3px; }
+    .secrow .hint{ color:var(--muted); font-size:11px; letter-spacing:.6px; text-transform:uppercase; }
+    table{ width:100%; border-collapse:collapse; font-size:12.5px; }
+    thead th{ background:#2a2017; color:#fff; text-align:left; padding:11px 14px; font-size:10.5px;
+      font-weight:700; letter-spacing:.8px; text-transform:uppercase; }
+    thead th.c{ text-align:center; } thead th.r{ text-align:right; }
+    tbody td{ padding:14px; border-bottom:1px solid var(--line); }
+    tbody td.c{ text-align:center; color:#4a4136; } tbody td.r{ text-align:right; font-weight:700; }
+    tbody td.p{ font-weight:800; }
+    .note{ color:var(--muted); font-size:11px; font-style:italic; margin:9px 2px 0; }
+    .cards{ display:flex; gap:18px; margin-top:26px; }
+    .cards .card{ flex:1; background:var(--card); border-radius:12px; padding:18px 20px; }
+    .cards .card .lbl{ color:var(--gold); font-size:10px; font-weight:800; letter-spacing:1.1px; text-transform:uppercase; margin-bottom:10px; }
+    .cards ul{ margin:0; padding:0; list-style:none; }
+    .cards li{ font-size:12.5px; line-height:1.55; padding:3px 0 3px 15px; position:relative; }
+    .cards li:before{ content:""; position:absolute; left:0; top:10px; width:5px; height:5px; border-radius:50%; background:var(--gold); }
+    .cards li b{ font-weight:700; }
+    .next{ background:var(--dark); color:#fff; border-radius:12px; padding:18px 22px; margin-top:26px;
+      display:flex; justify-content:space-between; align-items:center; gap:16px; }
+    .next .lbl{ color:var(--gold); font-size:10px; font-weight:800; letter-spacing:1.1px; text-transform:uppercase; margin-bottom:7px; }
+    .next .msg{ font-size:14px; font-weight:700; }
+    .next .site{ color:#b9b3a8; font-size:11px; white-space:nowrap; }
+    .legal{ color:var(--muted); font-size:9.5px; line-height:1.6; margin-top:22px; }
+    .foot{ display:flex; justify-content:space-between; color:var(--muted); font-size:10px; letter-spacing:.6px;
+      text-transform:uppercase; border-top:1px solid var(--line); margin-top:18px; padding-top:14px; }
+    @media print{
+      @page{ margin:12mm; }
+      body{ background:#fff; } .toolbar{ display:none; } .page{ box-shadow:none; margin:0; max-width:100%; }
+    }
+    @media(max-width:640px){ .parties,.cards,.next,.head{ flex-direction:column; } .parties .sup,.head .meta{ text-align:left; } }
+  </style>
+</head>
+<body>
+  <div class="toolbar"><button onclick="window.print()">Print / Save as PDF</button></div>
+  <div class="page">
+    <div class="head">
+      <div class="brand">
+        <img src="https://kimiel.com/kimiel-logo.png" alt="KIMIEL">
+        <div class="tag">Bulk Honey Supply &nbsp;|&nbsp; Dubai, UAE</div>
+      </div>
+      <div class="meta">
+        <h1>Budgetary Commercial<br>Quotation</h1>
+        <div class="ref">{{ q.quote_no }}<br>ISSUED {{ q.issued }}<br>VALID THROUGH {{ q.valid }}</div>
+      </div>
+    </div>
+    <div class="accent"></div>
+    <div class="body">
+      <div class="parties">
+        <div>
+          <div class="lbl">Prepared for</div>
+          <div class="buyer">{{ q.buyer }}</div>
+          <div class="muted">{{ q.buyer_loc }}</div>
+        </div>
+        <div class="sup">
+          <div class="lbl">Supplier</div>
+          <div class="name">KIMIEL</div>
+          <div class="muted">Dubai, United Arab Emirates</div>
+          <a href="https://kimiel.com">kimiel.com</a>
+        </div>
+      </div>
+
+      <hr class="rule">
+
+      <div class="secrow">
+        <h2>500 KG Bulk Honey Options</h2>
+        <div class="hint">Select one product option per 500 kg order</div>
+      </div>
+      <table>
+        <thead><tr>
+          <th>Product</th><th class="c">Origin</th><th class="c">Quantity</th>
+          <th class="r">Unit Price</th><th class="r">Total</th>
+        </tr></thead>
+        <tbody>
+          {% for r in q.rows %}
+          <tr>
+            <td class="p">{{ r.product }}</td>
+            <td class="c">{{ r.origin }}</td>
+            <td class="c">{{ r.qty }}</td>
+            <td class="r">{{ r.unit }}</td>
+            <td class="r">{{ r.total }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div class="note">Prices are indicative CPT to the named destination city and remain subject to exact address, batch and written freight confirmation.</div>
+
+      <div class="cards">
+        <div class="card">
+          <div class="lbl">Commercial Terms</div>
+          <ul>
+            <li><b>Price basis:</b> CPT {{ q.cpt_place }} (Incoterms 2020)</li>
+            <li><b>Packing:</b> 20 x 25 kg food-grade bulk containers</li>
+            <li><b>Currency:</b> United States dollars (USD)</li>
+            <li><b>Payment:</b> To be agreed in the pro forma invoice</li>
+            <li><b>Lead time:</b> Confirmed after batch reservation</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="lbl">Quality and Documents</div>
+          <ul>
+            <li>Batch-specific laboratory report</li>
+            <li>Commercial invoice and packing list</li>
+            <li>Product origin and batch identification</li>
+            <li>Certificate of Origin where required and confirmed</li>
+            <li>Seasonal colour, texture and aroma variation may occur</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="next">
+        <div>
+          <div class="lbl">Next step</div>
+          <div class="msg">Confirm the selected honey, legal company name and exact delivery address.</div>
+        </div>
+        <div class="site">kimiel.com</div>
+      </div>
+
+      <div class="legal">
+        This is a non-binding budgetary quotation for one 500 kg product option. Final price and availability
+        will be stated in the pro forma invoice after current supplier and freight confirmation. CPT excludes
+        import clearance, duties, taxes, destination handling, unloading and insurance unless agreed in writing.
+        Private-label retail packaging, branding and brand-development services are available under a separate quotation.
+      </div>
+      <div class="foot"><span>KIMIEL | Dubai, United Arab Emirates</span><span>kimiel.com</span></div>
+    </div>
+  </div>
+</body>
+</html>

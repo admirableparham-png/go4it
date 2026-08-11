@@ -35,6 +35,44 @@ HONEY_VARIETIES = [
     ("Mountain Javashir honey", "13.25"),
 ]
 
+# The formal KIMIEL quotation product table (matches the branded PDF).
+QUOTATION_PRODUCTS = [
+    ("Raw 40-Flower Honey", "Iran", 10.25),
+    ("Astragalus Honey (Gavan)", "Iran", 10.25),
+    ("Coriander Honey", "Iran", 10.25),
+    ("Mountain Javashir Honey", "Iran", 13.25),
+]
+_CC3 = {"IQ": "IRQ", "AE": "UAE", "QA": "QAT", "PK": "PAK", "GE": "GEO", "AM": "ARM", "AF": "AFG",
+        "KZ": "KAZ", "RU": "RUS", "OM": "OMN", "SA": "SAU", "KW": "KWT", "BH": "BHR"}
+_COUNTRY_FULL = {"IQ": "Iraq", "AE": "United Arab Emirates", "QA": "Qatar", "PK": "Pakistan",
+                 "GE": "Georgia", "AM": "Armenia", "AF": "Afghanistan", "KZ": "Kazakhstan",
+                 "RU": "Russia", "OM": "Oman", "SA": "Saudi Arabia", "KW": "Kuwait", "BH": "Bahrain"}
+
+
+def quotation_data(lead, today=None):
+    """Per-buyer context for the KIMIEL branded quotation (the PDF sent on the follow-up). Fills the
+    buyer, destination and a dated quote number; the 4-variety price table is fixed."""
+    today = today or date.today()
+    iso = (lead.dest_country or "").strip()
+    cc3 = _CC3.get(iso, iso or "INT")
+    country = _COUNTRY_FULL.get(iso, "")
+    city = (lead.dest_city or "").strip()
+    if "(" in city or len(city) > 24:
+        city = ""
+    place = city or country or "the named destination"
+    cpt = place + (f", {country}" if city and country else "")
+    rows = [{"product": n, "origin": o, "qty": "500 kg", "unit": f"${p:.2f}/kg",
+             "total": f"${p * 500:,.2f}"} for n, o, p in QUOTATION_PRODUCTS]
+    return {
+        "quote_no": f"KIM-{cc3}-{today:%y%m%d}-{(lead.id or 0) % 100:02d}",
+        "issued": today.strftime("%d %B %Y").upper(),
+        "valid": (today + timedelta(days=7)).strftime("%d %B %Y").upper(),
+        "buyer": (lead.buyer_company or "Prospective Buyer").strip(),
+        "buyer_loc": ", ".join(x for x in [city, country] if x) or "-",
+        "cpt_place": cpt,
+        "rows": rows,
+    }
+
 
 def signature_html():
     """The styled KIMIEL HTML signature block (read from app/outreach_signature.html)."""

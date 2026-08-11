@@ -35,7 +35,7 @@ from .line_spec import all_specs
 from .models import (Activity, CommandJob, ComplianceDoc, CostParam, Deal,
                      FxRate, IngestionRun, Lead, Match, Outreach, Product,
                      Quote, RateCard, Supplier, User)
-from .outreach import build_parts, default_message, honey_message, send_email
+from .outreach import build_parts, default_message, honey_message, quotation_data, send_email
 from .quote_service import create_quote
 from .research_engine import (PARTNERS, country_options, market_report,
                               product_options, rank_opportunities, recommend_destinations,
@@ -1155,6 +1155,19 @@ def lead_outreach(request: Request, lead_id: int, channel: str = Form("email"),
              f"{channel} to {recipient or lead.email or lead.phone or '?'} - {status}")
         session.commit()
     return RedirectResponse(f"/leads/{lead_id}", status_code=303)
+
+
+@app.get("/leads/{lead_id}/quotation", response_class=HTMLResponse)
+def kimiel_quotation_view(request: Request, lead_id: int):
+    """Printable KIMIEL branded quotation for this buyer (Cmd/Ctrl+P -> Save as PDF). Meant for the
+    FOLLOW-UP once a buyer replies — not attached to the cold first email."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        lead = session.get(Lead, lead_id)
+        if not lead:
+            return HTMLResponse("Not found", status_code=404)
+        q = quotation_data(lead)
+    return templates.TemplateResponse("kimiel_quotation.html", {"request": request, "q": q, "user": user})
 
 
 @app.post("/leads/{lead_id}/enrich")

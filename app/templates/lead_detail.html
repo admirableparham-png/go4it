@@ -55,6 +55,10 @@
       <a href="https://wa.me/{{ lead.phone|replace('+','')|replace(' ','')|replace('-','')|replace('(','')|replace(')','') }}?text={{ default_body|urlencode }}" target="_blank" rel="noopener" class="btn btn-ghost-emerald btn-sm">WhatsApp</a>
       <a href="tel:{{ lead.phone }}" class="btn btn-neutral btn-sm">Call</a>
     {% endif %}
+    {% if 'honey' in (lead.category or '') or (lead.source or '').startswith('iran-export-honey') %}
+      <a href="/leads/{{ lead.id }}/quotation" target="_blank" rel="noopener" class="btn btn-ghost-sky btn-sm"
+         title="Branded KIMIEL PDF quotation for this buyer &mdash; open, then Print / Save as PDF. Send on the follow-up.">&#128196; KIMIEL quotation</a>
+    {% endif %}
     {% if not lead.email and not lead.phone %}<span class="text-amber-500/80 text-sm">No contact yet{% if not lead.website %} &mdash; no website to enrich from{% endif %}.</span>{% endif %}
     {% if can_edit and lead.website and not lead.email %}
       <form method="post" action="/leads/{{ lead.id }}/enrich" class="inline">
