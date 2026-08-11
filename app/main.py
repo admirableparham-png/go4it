@@ -22,8 +22,8 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from .auth import current_user, role_at_least, verify_password
 from .command_service import parse_command, run_command_job
-from .config import (BASE_URL, CORS_ORIGINS, DEBUG_DIR, INBOX_DIR, INGEST_API_KEY, IS_LOCAL,
-                     SECRET_KEY, SMTP_ENABLED, insecure_default_secrets)
+from .config import (BASE_URL, CORS_ORIGINS, DEBUG_DIR, FOLLOWUP_DAYS_1, FOLLOWUP_ENABLED, INBOX_DIR,
+                     INGEST_API_KEY, IS_LOCAL, SECRET_KEY, SMTP_ENABLED, insecure_default_secrets)
 from .csv_import import parse_products
 from .db import engine, init_db
 from .enrich_service import clean_site, enrich_lead
@@ -41,7 +41,8 @@ from .research_engine import (PARTNERS, country_options, market_report,
                               product_options, rank_opportunities, recommend_destinations,
                               resolve_query)
 from .sources.go4world_csv import Go4WorldCsvSource
-from .telegram import notify_quote_ready, notify_status_change, send_message
+from .telegram import (notify_outreach_sent, notify_quote_ready, notify_send_failed,
+                       notify_status_change, send_message)
 
 logger = logging.getLogger("go4it")
 BASE_DIR = Path(__file__).parent
@@ -1141,19 +1142,38 @@ def lead_outreach(request: Request, lead_id: int, channel: str = Form("email"),
         lead = session.get(Lead, lead_id)
         if not lead:
             return HTMLResponse("Not found", status_code=404)
+        # first email to this lead? (used to arm the follow-up sequence + label the alert)
+        prior_sent = session.exec(select(func.count()).where(
+            Outreach.lead_id == lead.id, Outreach.direction == "out",
+            Outreach.channel == "email", Outreach.status == "sent")).one()
         status, error, mid = "logged", "", ""
+        to = recipient or lead.email
         if send and channel == "email":
             text, html = build_parts(body)                # append the KIMIEL signature (HTML + plain)
-            ok, error, mid = send_email(recipient or lead.email, subject, text, html=html)
+            ok, error, mid = send_email(to, subject, text, html=html)
             status = "sent" if ok else "failed"
         session.add(Outreach(
             lead_id=lead.id, direction="out", channel=channel,
             recipient=(recipient or lead.email or lead.phone or "")[:200],
             subject=subject[:200], body=body[:4000], status=status, error=error,
             message_id=mid, user_id=user.id if user else None))
+        # arm the auto follow-up on the FIRST successful email (worker sends FU#1 at +FOLLOWUP_DAYS_1)
+        if status == "sent" and prior_sent == 0 and FOLLOWUP_ENABLED:
+            lead.next_action_at = datetime.utcnow() + timedelta(days=FOLLOWUP_DAYS_1)
+            lead.next_action_note = "followup-1"
+            session.add(lead)
         _log(session, lead, user, "outreach",
              f"{channel} to {recipient or lead.email or lead.phone or '?'} - {status}")
         session.commit()
+        # Telegram alerts (best-effort; never block the response)
+        if send and channel == "email":
+            try:
+                if status == "sent":
+                    notify_outreach_sent(lead, subject, "Email")
+                else:
+                    notify_send_failed(lead, to, error or "send failed")
+            except Exception:  # noqa: BLE001
+                pass
     return RedirectResponse(f"/leads/{lead_id}", status_code=303)
 
 

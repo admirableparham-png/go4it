@@ -16,11 +16,12 @@ import time
 
 from sqlmodel import Session
 
-from .config import (ENRICH_BATCH, ENRICH_INTERVAL, GO4WORLD_ENABLED,
-                     GO4WORLD_INTERVAL, IMAP_ENABLED, IMAP_INTERVAL, INBOX_DIR,
-                     INGEST_INTERVAL)
+from .config import (ENRICH_BATCH, ENRICH_INTERVAL, FOLLOWUP_ENABLED, FOLLOWUP_INTERVAL,
+                     GO4WORLD_ENABLED, GO4WORLD_INTERVAL, IMAP_ENABLED, IMAP_INTERVAL, INBOX_DIR,
+                     INGEST_INTERVAL, SMTP_ENABLED)
 from .db import engine, init_db
 from .enrich_service import run_web_enrichment
+from .followups import process_followups
 from .inbound_email import poll_inbox
 from .ingest import ingest_source
 from .sources.go4world_csv import Go4WorldCsvSource
@@ -51,6 +52,15 @@ def run_inbound_email() -> dict:
         return poll_inbox(session, log=logger.info)
 
 
+def run_followups() -> dict:
+    """One follow-up sweep: threaded FU emails + 'call' nudges. No-op unless armed (FOLLOWUP_ENABLED) +
+    SMTP configured. Only ever acts on leads whose first email the founder already sent."""
+    if not (FOLLOWUP_ENABLED and SMTP_ENABLED):
+        return {"skipped": "disabled"}
+    with Session(engine) as session:
+        return process_followups(session, log=logger.info)
+
+
 def run_once():
     """One full pass: CSV inbox always, portal if creds set, enrich/inbound-email if enabled."""
     init_db()
@@ -61,6 +71,8 @@ def run_once():
         out.append(run_enrich())
     if IMAP_ENABLED:
         out.append(run_inbound_email())
+    if FOLLOWUP_ENABLED:
+        out.append(run_followups())
     return out
 
 
@@ -77,6 +89,10 @@ def main():
         init_db()
         print(run_inbound_email())
         return
+    if "--followups" in sys.argv:
+        init_db()
+        print(run_followups())
+        return
     if "--once" in sys.argv:
         for r in run_once():
             print(r)
@@ -89,7 +105,7 @@ def main():
                 else "disabled (set ENRICH_INTERVAL)",
                 f"every {IMAP_INTERVAL}s" if (IMAP_ENABLED and IMAP_INTERVAL > 0)
                 else "disabled (set IMAP_*)")
-    last_portal = last_enrich = last_imap = 0.0
+    last_portal = last_enrich = last_imap = last_followup = 0.0
     while True:
         try:
             init_db()
@@ -106,6 +122,9 @@ def main():
             if IMAP_ENABLED and IMAP_INTERVAL > 0 and now - last_imap >= IMAP_INTERVAL:
                 run_inbound_email()
                 last_imap = now
+            if FOLLOWUP_ENABLED and FOLLOWUP_INTERVAL > 0 and now - last_followup >= FOLLOWUP_INTERVAL:
+                logger.info("followups %s", run_followups())
+                last_followup = now
         except Exception:
             logger.exception("worker pass failed")
         time.sleep(INGEST_INTERVAL)

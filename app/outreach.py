@@ -130,6 +130,39 @@ def honey_message(lead, valid_until=""):
     return subject, "\n".join(lines)
 
 
+def add_business_days(start, n):
+    """start + n business days (skip Sat/Sun). Works on datetime or date; returns the same kind."""
+    d = start
+    added = 0
+    while added < n:
+        d = d + timedelta(days=1)
+        if d.weekday() < 5:                 # Mon-Fri
+            added += 1
+    return d
+
+
+def followup_message(lead, step=1, orig_subject=""):
+    """A threaded follow-up (subject, body) — soft check-in, no signature (build_parts appends it).
+    step 1 = first nudge (+3 days), step 2 = final nudge (+5 business days). Subject reuses the original
+    thread subject as 'Re: ...' so it stays in the same conversation."""
+    base = (orig_subject or "").strip()
+    while base.lower().startswith("re:"):
+        base = base[3:].strip()
+    subject = "Re: " + (base or "KIMIEL - honey supply & private-label offer")
+    lines = [
+        "Dear Sir/Madam,", "",
+        "I am following up on my previous email regarding KIMIEL honey supply from Dubai - I wanted to "
+        "make sure it reached you.", "",
+        "If you are not interested at this time, a brief note is appreciated. If you would prefer a "
+        "different variety, price or packaging, please tell me and we will gladly tailor the offer. "
+        "We would be glad to work with you.",
+    ]
+    if step >= 2:
+        lines += ["", "This is my final follow-up for now so I do not crowd your inbox - but the door "
+                  "stays open whenever the timing suits you."]
+    return subject, "\n".join(lines)
+
+
 def default_message(lead, quote=None, product=None):
     """A ready-to-edit (subject, body) for a first outreach to a non-honey buyer. No signature (appended
     at send)."""
@@ -181,9 +214,10 @@ def build_parts(body):
     return text, html
 
 
-def send_email(to_addr, subject, body, html=None):
+def send_email(to_addr, subject, body, html=None, in_reply_to="", references=""):
     """Send via SMTP. Returns (ok, error, message_id) — never raises. When `html` is given, sends a
-    multipart/alternative (plain `body` + `html`); otherwise a plain-text message."""
+    multipart/alternative (plain `body` + `html`). Pass `in_reply_to` (a prior Message-ID) to make this a
+    threaded reply (follow-ups land in the same conversation)."""
     if not SMTP_ENABLED:
         return False, "SMTP not configured", ""
     if not (to_addr or "").strip():
@@ -196,6 +230,9 @@ def send_email(to_addr, subject, body, html=None):
         msg["From"] = f"KIMIEL <{SMTP_FROM}>" if SMTP_FROM else SMTP_FROM
         msg["To"] = to_addr
         msg["Subject"] = subject or "(no subject)"
+        if in_reply_to:
+            msg["In-Reply-To"] = in_reply_to
+            msg["References"] = references or in_reply_to
         msg.set_content(body or "")
         if html:
             msg.add_alternative(html, subtype="html")

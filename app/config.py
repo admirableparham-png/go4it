@@ -80,6 +80,15 @@ SMTP_ENABLED = bool(SMTP_HOST and SMTP_USER and SMTP_PASSWORD)
 # Signature appended to outreach emails. Override in .env with OUTREACH_SIGNATURE (use \n for line breaks).
 OUTREACH_SIGNATURE = os.getenv("OUTREACH_SIGNATURE", "").replace("\\n", "\n").strip()
 
+# --- Auto follow-up sequence (processed by the worker) ---
+# Master switch: OFF by default so nothing auto-sends until you arm it. The system only ever follows up
+# leads whose FIRST email you sent yourself; it never cold-emails a buyer on its own.
+FOLLOWUP_ENABLED = os.getenv("FOLLOWUP_ENABLED", "false").strip().lower() == "true"
+FOLLOWUP_INTERVAL = int(os.getenv("FOLLOWUP_INTERVAL", "1800"))    # seconds between follow-up sweeps; 0=off
+FOLLOWUP_DAYS_1 = int(os.getenv("FOLLOWUP_DAYS_1", "3"))           # calendar days: main email -> follow-up 1
+FOLLOWUP_BDAYS_2 = int(os.getenv("FOLLOWUP_BDAYS_2", "5"))         # business days: follow-up 1 -> follow-up 2
+FOLLOWUP_GRACE_BDAYS = int(os.getenv("FOLLOWUP_GRACE_BDAYS", "3"))  # business days: follow-up 2 -> "call" nudge
+
 # --- Production safety -------------------------------------------------------
 # Refuse to boot on a PUBLIC BASE_URL while still using the shipped default secrets (a forgeable
 # admin session / open ingest key). Local dev (localhost/127.0.0.1) is exempt so nothing changes there.

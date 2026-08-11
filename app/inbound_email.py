@@ -16,10 +16,11 @@ from email.utils import parseaddr
 
 from sqlmodel import Session, select
 
-from .config import (BASE_URL, IMAP_ENABLED, IMAP_HOST, IMAP_PASSWORD, IMAP_PORT, IMAP_USER)
+from .config import (IMAP_ENABLED, IMAP_HOST, IMAP_PASSWORD, IMAP_PORT, IMAP_USER)
+from .enrich_service import enrich_lead
 from .lead_service import find_lead_by_contact
 from .models import IngestionRun, Lead, Outreach
-from .telegram import send_message
+from .telegram import notify_bounce, notify_buyer_reply, send_message
 
 logger = logging.getLogger("go4it")
 
@@ -89,19 +90,94 @@ def handle_inbound(session: Session, from_addr: str, subject: str, body: str,
         status="received"))
     if lead.buyer_replied_at is None:
         lead.buyer_replied_at = datetime.utcnow()
-        session.add(lead)
+    lead.next_action_at = None            # a reply stops the auto follow-up sequence
+    lead.next_action_note = "replied"
+    session.add(lead)
     session.commit()
     try:
-        send_message(f"Buyer replied: {lead.buyer_company or from_addr}\n"
-                     f"{subject[:80]}\n{BASE_URL}/leads/{lead.id}")
+        notify_buyer_reply(lead, from_addr, subject, snippet=body)
     except Exception:  # noqa: BLE001 - alerts are best-effort
         pass
     return "threaded"
 
 
+def _dsn_details(msg):
+    """From a bounce (DSN) message, pull (failed_recipient, diagnostic) out of its
+    message/delivery-status part when present."""
+    recipient = diag = ""
+    for part in (msg.walk() if msg.is_multipart() else [msg]):
+        if part.get_content_type() == "message/delivery-status":
+            for blk in (part.get_payload() if isinstance(part.get_payload(), list) else []):
+                fr = blk.get("Final-Recipient") or blk.get("Original-Recipient") or ""
+                if ";" in fr:
+                    recipient = fr.split(";", 1)[1].strip().lower()
+                dc = blk.get("Diagnostic-Code") or ""
+                if dc:
+                    diag = " ".join(dc.split())
+    return recipient, diag
+
+
+def detect_bounce(raw: bytes):
+    """If a raw message is a delivery-failure (DSN), return (failed_recipient, reason); else None."""
+    msg = emaillib.message_from_bytes(raw)
+    frm = (parseaddr(msg.get("From", ""))[1] or "").lower()
+    subj = str(msg.get("Subject", "")).lower()
+    ctype = str(msg.get("Content-Type", "")).lower()
+    looks = ("mailer-daemon" in frm or "postmaster" in frm or "report-type=delivery-status" in ctype
+             or msg.get_content_type() == "multipart/report"
+             or any(k in subj for k in ("delivery status notification", "undelivered", "delivery failure",
+                                        "returned mail", "mail delivery failed", "undeliverable")))
+    if not looks:
+        return None
+    rcpt, diag = _dsn_details(msg)
+    if not rcpt:                                    # fallback: scrape the body
+        body = _plain_body(msg)
+        m = re.search(r"[\w.+-]+@[\w-]+\.[\w.-]+", body)
+        rcpt = m.group(0).lower() if m else ""
+        d = re.search(r"55\d[ -].{0,120}", body)
+        diag = d.group(0).strip() if d else "delivery failed"
+    return (rcpt, diag or "delivery failed") if rcpt else None
+
+
+def handle_bounce(session: Session, failed_email: str, reason: str) -> str:
+    """Mark the outbound as failed, clear the bad address, try to re-enrich, and alert. Returns a status."""
+    lead = find_lead_by_contact(session, email=failed_email)
+    if lead is None:
+        try:
+            send_message(f"⚠️ Email bounced for {failed_email} (no matching lead)\n{reason[:160]}")
+        except Exception:  # noqa: BLE001
+            pass
+        return "bounce-unmatched"
+    o = session.exec(select(Outreach).where(
+        Outreach.lead_id == lead.id, Outreach.direction == "out",
+        Outreach.recipient == failed_email).order_by(Outreach.id.desc())).first()
+    if o:
+        o.status = "failed"
+        o.error = reason[:400]
+        session.add(o)
+    if (lead.email or "").lower() == failed_email:
+        lead.email = ""                              # the address is wrong — drop it
+    lead.next_action_at = None                       # stop the sequence
+    lead.next_action_note = "bounced"
+    session.add(lead)
+    session.commit()
+    new_email = ""
+    try:
+        enrich_lead(session, lead)                   # scrape the buyer's own site for a fresh mailbox
+        session.refresh(lead)
+        new_email = lead.email or ""
+    except Exception:  # noqa: BLE001
+        pass
+    try:
+        notify_bounce(lead, failed_email, reason, new_email=new_email)
+    except Exception:  # noqa: BLE001
+        pass
+    return "bounced"
+
+
 def poll_inbox(session: Session, log=logger.info) -> dict:
     """Pull UNSEEN mail over IMAP and thread each reply. No-op unless IMAP is configured."""
-    summary = {"seen": 0, "threaded": 0, "unmatched": 0, "duplicate": 0}
+    summary = {"seen": 0, "threaded": 0, "unmatched": 0, "duplicate": 0, "bounced": 0}
     if not IMAP_ENABLED:
         return summary
     run = IngestionRun(source="email-inbound", status="running")
@@ -119,8 +195,14 @@ def poll_inbox(session: Session, log=logger.info) -> dict:
             if not msgdata or not msgdata[0]:
                 continue
             summary["seen"] += 1
-            frm, subj, body, mid, irt = parse_email(msgdata[0][1])
-            summary[handle_inbound(session, frm, subj, body, mid, irt)] += 1
+            raw = msgdata[0][1]
+            bounce = detect_bounce(raw)               # delivery-failure notice?
+            if bounce:
+                handle_bounce(session, bounce[0], bounce[1])
+                summary["bounced"] += 1
+            else:
+                frm, subj, body, mid, irt = parse_email(raw)
+                summary[handle_inbound(session, frm, subj, body, mid, irt)] += 1
             M.store(num, "+FLAGS", "\\Seen")
         M.logout()
         run.status = "ok"

@@ -100,3 +100,48 @@ def notify_status_change(lead, old, new, actor_name) -> bool:
         f"by {_esc(actor_name)}\n{BASE_URL}/leads/{lead.id}"
     )
     return send_message(text)
+
+
+def _loc(lead) -> str:
+    return _esc(lead.dest_country or "-")
+
+
+def notify_outreach_sent(lead, subject, kind="Email") -> bool:
+    """Alert: an outreach email went out (main email or an auto follow-up) — who + where."""
+    return send_message(
+        f"\U0001F4E4 <b>{_esc(kind)} sent</b> → {_esc(lead.buyer_company) or '-'} ({_loc(lead)})\n"
+        f"{_esc(lead.email) or '-'}\n<i>{_esc(subject)}</i>\n{BASE_URL}/leads/{lead.id}")
+
+
+def notify_send_failed(lead, email, reason) -> bool:
+    """Alert: an email could not be sent (bad/missing address or SMTP error) — go find a correct one."""
+    return send_message(
+        f"⚠️ <b>Email FAILED</b> → {_esc(lead.buyer_company) or '-'} ({_loc(lead)})\n"
+        f"{_esc(email) or '(no address on file)'}\n{_esc(reason)[:200]}\n"
+        f"Find a correct address → {BASE_URL}/leads/{lead.id}")
+
+
+def notify_bounce(lead, email, reason, new_email="") -> bool:
+    """Alert: a sent email bounced (undeliverable) — the address was wrong."""
+    tail = (f"\nNew address found: <b>{_esc(new_email)}</b> — review & resend"
+            if new_email else "\nNo new address found automatically — find manually or call.")
+    return send_message(
+        f"⚠️ <b>Bounced (undeliverable)</b> → {_esc(lead.buyer_company) or '-'} ({_loc(lead)})\n"
+        f"{_esc(email)}\n{_esc(reason)[:160]}{tail}\n{BASE_URL}/leads/{lead.id}")
+
+
+def notify_needs_call(lead) -> bool:
+    """Alert: both follow-ups sent, still no reply — time to phone the buyer."""
+    return send_message(
+        f"\U0001F4DE <b>Time to call</b> — no reply after 2 follow-ups\n"
+        f"{_esc(lead.buyer_company) or '-'} ({_loc(lead)})\n"
+        f"☎ {_esc(lead.phone) or 'no phone on file'}\n{BASE_URL}/leads/{lead.id}")
+
+
+def notify_buyer_reply(lead, from_addr, subject, snippet="") -> bool:
+    """Alert: a buyer replied — the founder should answer personally."""
+    snip = f"\n<i>{_esc(snippet)[:180]}</i>" if snippet else ""
+    return send_message(
+        f"\U0001F4E5 <b>Buyer replied — reply now</b>\n"
+        f"{_esc(lead.buyer_company) or _esc(from_addr)} ({_loc(lead)})\n{_esc(from_addr)}\n"
+        f"<b>{_esc(subject)[:90]}</b>{snip}\n{BASE_URL}/leads/{lead.id}")
