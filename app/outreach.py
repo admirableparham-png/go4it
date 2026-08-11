@@ -58,8 +58,7 @@ def honey_message(lead, valid_until=""):
     """(subject, body) for a HONEY buyer — KIMIEL wholesale / private-label first-touch, per the
     founder's template. Body has NO signature (appended at send). Prices are the founder's delivered
     CPT list; the destination city/country are filled from the lead."""
-    company = (lead.buyer_company or "").strip()
-    greet = f"Dear {company} Purchasing Team," if company else "Dear Sir/Madam,"
+    greet = "Dear Sir/Madam,"                             # generic, no company/personal name (founder pref)
     country = COUNTRY.get(lead.dest_country, "")          # e.g. "the UAE" (reads well mid-sentence)
     market = country or "your market"
     city = (lead.dest_city or "").strip()
