@@ -27,16 +27,14 @@ def _esc(value) -> str:
     return html.escape(str(value if value is not None else ""))
 
 
-def send_message(text: str, _plain: bool = False) -> bool:
-    """Send a message to the configured chat. Returns True on success.
+def _chat_ids():
+    """The recipient chat IDs — TELEGRAM_CHAT_ID may be a comma-separated list (multiple users)."""
+    return [c.strip() for c in str(TELEGRAM_CHAT_ID or "").split(",") if c.strip()]
 
-    On a non-200, logs the reason and retries once in plain text so a formatting
-    problem never silently drops the alert.
-    """
-    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
-        return False
+
+def _send_one(chat_id: str, text: str, _plain: bool = False) -> bool:
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    payload = {"chat_id": TELEGRAM_CHAT_ID, "text": text}
+    payload = {"chat_id": chat_id, "text": text}
     if not _plain:
         payload["parse_mode"] = "HTML"
     try:
@@ -44,15 +42,29 @@ def send_message(text: str, _plain: bool = False) -> bool:
         if r.status_code == 200:
             stats["sent"] += 1
             return True
-        logger.warning("Telegram send failed: HTTP %s — %s", r.status_code, r.text[:300])
+        logger.warning("Telegram send failed (chat %s): HTTP %s — %s", chat_id, r.status_code, r.text[:300])
         stats["failed"] += 1
         if not _plain:
-            return send_message(_TAG_RE.sub("", text), _plain=True)
+            return _send_one(chat_id, _TAG_RE.sub("", text), _plain=True)
         return False
     except Exception as exc:  # never let a notification failure break the trade flow
-        logger.warning("Telegram send error: %s", exc)
+        logger.warning("Telegram send error (chat %s): %s", chat_id, exc)
         stats["failed"] += 1
         return False
+
+
+def send_message(text: str, _plain: bool = False) -> bool:
+    """Send a message to every configured chat (one or many). Returns True if at least one delivered.
+
+    On a non-200, logs the reason and retries once in plain text per chat, so a formatting problem
+    never silently drops the alert. Silent no-op if the bot token / chat IDs aren't configured.
+    """
+    if not TELEGRAM_BOT_TOKEN or not _chat_ids():
+        return False
+    ok_any = False
+    for chat_id in _chat_ids():
+        ok_any = _send_one(chat_id, text, _plain) or ok_any
+    return ok_any
 
 
 def notify_lead_matches(lead, matches) -> bool:
