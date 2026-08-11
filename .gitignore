@@ -46,3 +46,4 @@ docs/customs_inbox/*.csv
 
 # uploaded trade documents (P3.2)
 deal_docs/
+logs/
