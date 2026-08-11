@@ -1177,6 +1177,64 @@ def lead_outreach(request: Request, lead_id: int, channel: str = Form("email"),
     return RedirectResponse(f"/leads/{lead_id}", status_code=303)
 
 
+_CAMPAIGN_STATUS = {
+    "replied": ("\U0001F4B0 Replied", "#34d399"), "to-call": ("\U0001F4DE To call", "#fb7185"),
+    "fu2": ("Follow-up 2 due", "#fbbf24"), "fu1": ("Follow-up 1 due", "#fbbf24"),
+    "sent": ("Emailed", "#38bdf8"), "bounced": ("⚠ Bad email", "#fb7185"),
+    "not-sent": ("Not emailed", "#94a3b8")}
+_CAMPAIGN_RANK = {"replied": 0, "to-call": 1, "fu2": 2, "fu1": 3, "sent": 4, "bounced": 5, "not-sent": 6}
+
+
+@app.get("/campaign", response_class=HTMLResponse)
+def campaign_dashboard(request: Request, source: str = "iran-export-honey-royaljelly"):
+    """Live outreach-campaign board: every buyer's status (emailed / follow-up 1-2 / replied / call)."""
+    from collections import Counter, defaultdict
+    with Session(engine) as session:
+        user = current_user(request, session)
+        leads = session.exec(select(Lead).where(Lead.source == source)).all()
+        ids = [L.id for L in leads]
+        outs = session.exec(select(Outreach).where(Outreach.lead_id.in_(ids))).all() if ids else []
+        by = defaultdict(list)
+        for o in outs:
+            by[o.lead_id].append(o)
+        rows, summ = [], Counter()
+        for L in leads:
+            olist = by.get(L.id, [])
+            sent = [o for o in olist if o.direction == "out" and o.channel == "email" and o.status == "sent"]
+            ins = [o for o in olist if o.direction == "in"]
+            note = L.next_action_note or ""
+            if L.buyer_replied_at:
+                status = "replied"
+            elif note in ("bounced", "bad-email"):
+                status = "bounced"
+            elif not sent:
+                status = "not-sent"
+            elif note == "call":
+                status = "to-call"
+            elif note == "followup-2":
+                status = "fu2"
+            elif note == "followup-1":
+                status = "fu1"
+            else:
+                status = "sent"
+            summ[status] += 1
+            label, color = _CAMPAIGN_STATUS[status]
+            latest_in = max(ins, key=lambda o: o.created_at or datetime.min) if ins else None
+            rows.append({"lead": L, "label": label, "color": color, "rank": _CAMPAIGN_RANK[status],
+                         "emails": len(sent),
+                         "last_out": max((o.created_at for o in sent), default=None),
+                         "reply": (latest_in.body or "")[:90] if latest_in else "",
+                         "next_at": L.next_action_at})
+        rows.sort(key=lambda r: (r["rank"], -r["emails"]))
+    contacted = len(rows) - summ.get("not-sent", 0) - summ.get("bounced", 0)
+    tiles = [("Contacted", contacted), ("Replied", summ.get("replied", 0)),
+             ("Awaiting FU#1", summ.get("fu1", 0)), ("Awaiting FU#2", summ.get("fu2", 0)),
+             ("To call", summ.get("to-call", 0)), ("Bad email", summ.get("bounced", 0))]
+    return templates.TemplateResponse("campaign.html", {
+        "request": request, "user": user, "active": "campaign", "rows": rows, "tiles": tiles,
+        "source": source, "total": len(rows)})
+
+
 @app.get("/leads/{lead_id}/quotation", response_class=HTMLResponse)
 def kimiel_quotation_view(request: Request, lead_id: int):
     """Printable KIMIEL branded quotation for this buyer (Cmd/Ctrl+P -> Save as PDF). Meant for the

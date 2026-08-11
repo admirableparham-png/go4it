@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-4">
+  <div class="eyebrow">&#127855; Outreach</div>
+  <h1 class="text-xl font-bold tracking-tight">Honey campaign <span class="text-slate-500 text-sm font-normal">{{ total }} buyers</span></h1>
+  <p class="text-slate-500 text-sm">Live status of every buyer &mdash; who's emailed, at follow-up 1/2, replied, or to call. Auto-updates as the worker runs.</p>
+</div>
+
+<div class="grid grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+  {% for label, val in tiles %}
+  <div class="card p-3">
+    <div class="text-2xl font-bold {% if label=='Replied' and val %}text-emerald-400{% elif label=='To call' and val %}text-rose-400{% elif label=='Bad email' and val %}text-rose-400{% else %}text-slate-100{% endif %}">{{ val }}</div>
+    <div class="text-[11px] uppercase tracking-wide text-slate-500">{{ label }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="overflow-x-auto rounded-xl border border-slate-800">
+  <table class="w-full text-sm">
+    <thead class="bg-slate-900 text-slate-400 text-xs uppercase">
+      <tr>
+        <th class="text-left font-medium px-3 py-2">Buyer</th>
+        <th class="text-left font-medium px-3 py-2">Dest</th>
+        <th class="text-left font-medium px-3 py-2">Email</th>
+        <th class="text-left font-medium px-3 py-2">Status</th>
+        <th class="text-center font-medium px-3 py-2">Emails</th>
+        <th class="text-left font-medium px-3 py-2">Last sent</th>
+        <th class="text-left font-medium px-3 py-2">Reply / next</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr class="border-t border-slate-800 hover:bg-slate-900/60">
+        <td class="px-3 py-2"><a href="/leads/{{ r.lead.id }}" class="text-sky-300 hover:underline font-medium">{{ r.lead.buyer_company }}</a>
+          {% if r.lead.dest_city %}<div class="text-[11px] text-slate-500">{{ r.lead.dest_city }}</div>{% endif %}</td>
+        <td class="px-3 py-2 text-slate-400">{{ r.lead.dest_country or '&mdash;' }}</td>
+        <td class="px-3 py-2 text-xs text-slate-400">{{ r.lead.email or '&mdash;' }}</td>
+        <td class="px-3 py-2 whitespace-nowrap">
+          <span style="font-size:11px;font-weight:700;color:{{ r.color }};background:{{ r.color }}22;border:1px solid {{ r.color }}44;border-radius:999px;padding:2px 9px;">{{ r.label }}</span>
+        </td>
+        <td class="px-3 py-2 text-center text-slate-300 tabular-nums">{{ r.emails }}</td>
+        <td class="px-3 py-2 text-xs text-slate-400">{{ r.last_out.strftime('%b %d') if r.last_out else '&mdash;' }}</td>
+        <td class="px-3 py-2 text-xs text-slate-400">
+          {% if r.reply %}<span class="text-emerald-300">&#128172; {{ r.reply }}</span>
+          {% elif r.next_at %}next: {{ r.next_at.strftime('%b %d') }}
+          {% else %}&mdash;{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="text-slate-600 text-xs mt-3">Click a buyer to open the full conversation. Replies auto-stop that buyer's follow-ups; the worker sends FU#1 at +3 days, FU#2 at +5 business days.</p>
+{% endblock %}
