@@ -1,13 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
-<style>details > summary{list-style:none} details > summary::-webkit-details-marker{display:none}</style>
+<style>
+  details.svc > summary{ list-style:none; cursor:pointer; }
+  details.svc > summary::-webkit-details-marker{ display:none; }
+  details.svc .s-close{ display:none; }
+  details.svc[open] .s-open{ display:none; }
+  details.svc[open] .s-close{ display:inline; }
+  /* when open, the toggle stops being the loud primary CTA and becomes a clear 'close' */
+  details.svc[open] > summary.svc-toggle{ background:rgba(255,255,255,.06); color:#cbd5e1;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.14); }
+</style>
 <div class="mb-7">
   <div class="eyebrow mb-1">Concierge desk</div>
   <h1 class="text-2xl font-extrabold tracking-tight font-display">What can we <span class="text-aurora">handle</span> for you?</h1>
   <p class="text-slate-400 text-sm mt-1.5">We handle the hard parts of the trade &mdash; finding buyers, getting you paid, moving the goods &mdash; and deliver the result to your account. Every request is private to you.</p>
 </div>
 
-<div class="grid md:grid-cols-2 gap-4">
+<div class="grid md:grid-cols-2 gap-4 items-start">
   {% for s in services %}
   <div class="card card-hover">
     <div class="flex items-start gap-3">
@@ -17,8 +26,8 @@
         <p class="text-slate-500 text-xs mt-0.5">{{ s.blurb }}</p>
       </div>
     </div>
-    <details class="mt-3">
-      <summary class="btn btn-primary btn-sm">Request this &rarr;</summary>
+    <details class="svc mt-3">
+      <summary class="btn btn-primary btn-sm svc-toggle"><span class="s-open">Request this &rarr;</span><span class="s-close">Close &times;</span></summary>
       <form method="post" action="/requests" class="space-y-2 mt-3">
         <input type="hidden" name="request_type" value="{{ s.key }}">
         <div><label class="field-label">{{ s.p_label }}</label><input class="input" name="product" required placeholder="{{ s.p_ph }}"></div>
