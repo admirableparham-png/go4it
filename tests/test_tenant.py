@@ -155,9 +155,11 @@ def test_request_flow_submit_scope_and_approve(ctx):
                        follow_redirects=False).status_code == 403    # traders can't approve
     _login(client, "admin@t.local")
     assert code in client.get("/admin/requests").text     # in the founder's queue
+    assert "1" in client.get("/admin/requests/count").text            # nav pending-badge shows 1
     assert client.post(f"/admin/requests/{rid}/approve", follow_redirects=False).status_code == 303
     with Session(engine) as s:
         assert s.get(ServiceRequest, rid).status == "approved"
+    assert client.get("/admin/requests/count").text.strip() == ""     # none pending after approval
 
 
 def test_services_page_lists_all(ctx):

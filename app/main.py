@@ -2019,6 +2019,17 @@ def admin_requests(request: Request):
         "request": request, "user": user, "active": "admin_requests", "reqs": reqs, "umap": umap})
 
 
+@app.get("/admin/requests/count", response_class=HTMLResponse)
+def admin_requests_count(request: Request):
+    """Tiny HTMX fragment: the count of pending (submitted) requests, for the admin nav badge."""
+    with Session(engine) as session:
+        if not is_admin(current_user(request, session)):
+            return HTMLResponse("")
+        n = session.exec(select(func.count(ServiceRequest.id))
+                         .where(ServiceRequest.status == "submitted")).one()
+    return HTMLResponse(f'<span class="badge badge-amber ml-1">{n}</span>' if n else "")
+
+
 def _notify_requester(session, sr):
     try:
         notify_request_update(sr, session.get(User, sr.requester_id))

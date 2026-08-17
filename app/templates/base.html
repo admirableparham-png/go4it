@@ -144,7 +144,7 @@
         {% for group in groups %}
           {% if not loop.first %}<span class="nav-divider"></span>{% endif %}
           {% for href, key, label in group %}
-            <a href="{{ href }}" class="nav-tab {% if active == key %}nav-tab-active{% endif %}">{{ label }}</a>
+            <a href="{{ href }}" class="nav-tab {% if active == key %}nav-tab-active{% endif %}">{{ label }}{% if key == 'admin_requests' %}<span hx-get="/admin/requests/count" hx-trigger="load, every 60s" hx-swap="innerHTML"></span>{% endif %}</a>
           {% endfor %}
         {% endfor %}
       </nav>
