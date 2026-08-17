@@ -1,22 +1,34 @@
-<div id="req-{{ r.id }}" class="rounded-lg border border-slate-800 bg-slate-900/60 p-3"
+{% set c = {'submitted':'#fbbf24','approved':'#22d3ee','running':'#818cf8','done':'#34d399','rejected':'#fb7185'}.get(r.status,'#94a3b8') %}
+{% set sm = {'submitted':'queued','approved':'approved','running':'running','done':'ok','rejected':'error'} %}
+<div id="req-{{ r.id }}" class="relative rounded-xl p-3.5 pl-4 overflow-hidden"
+     style="border:1px solid {{ c }}55; background:linear-gradient(180deg, {{ c }}18, rgba(255,255,255,.02)); box-shadow:inset 0 1px 0 rgba(255,255,255,.07), 0 12px 34px -18px rgba(0,0,0,.85);"
      {% if r.status in ('submitted','approved','running') %}hx-get="/requests/{{ r.id }}/status" hx-trigger="load delay:5s" hx-swap="outerHTML"{% endif %}>
+  <span style="position:absolute; left:0; top:0; bottom:0; width:3px; background:{{ c }}; box-shadow:0 0 16px {{ c }};"></span>
+
   <div class="flex items-center justify-between gap-2">
-    <div class="text-sm text-slate-200 truncate"><span class="text-slate-500">{{ (r.request_type or 'buyer_hunt')|replace('_',' ') }}:</span> {{ r.product }}{% if r.market %} <span class="text-slate-500">&rarr; {{ r.market }}</span>{% endif %}</div>
-    {% set sm = {'submitted':'queued','approved':'approved','running':'running','done':'ok','rejected':'error'} %}
-    <span class="badge badge-{{ sm.get(r.status,'slate') }} shrink-0 uppercase text-[10px]">
+    <div class="text-[15px] font-semibold text-slate-100 truncate font-display">{{ r.product }}{% if r.market %} <span class="text-slate-400 font-normal">&rarr; {{ r.market }}</span>{% endif %}</div>
+    <span class="badge badge-{{ sm.get(r.status,'slate') }} shrink-0 uppercase text-[10px] font-bold">
       {% if r.status in ('approved','running') %}<span class="animate-pulse">{{ r.status }}&hellip;</span>{% else %}{{ r.status }}{% endif %}</span>
   </div>
+
+  <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+    <span class="text-[10px] uppercase tracking-wide font-bold px-1.5 py-0.5 rounded" style="background:{{ c }}26; color:{{ c }};">{{ (r.request_type or 'buyer_hunt')|replace('_',' ') }}</span>
+    <span class="text-[12.5px] font-medium" style="color:{{ c }};">
+      {% if r.status == 'submitted' %}Sent to admin &mdash; waiting for approval&hellip;
+      {% elif r.status == 'approved' %}Approved &mdash; finding your buyers&hellip;
+      {% elif r.status == 'running' %}Research in progress&hellip;
+      {% elif r.status == 'rejected' %}{{ r.admin_note or 'Not accepted.' }}
+      {% elif r.status == 'done' %}{{ r.result or 'Delivered' }}{% endif %}
+    </span>
+  </div>
+
   {% if r.status == 'done' %}
-    <div class="text-[12px] mt-1"><span class="text-emerald-300 font-medium">{{ r.result or 'Delivered' }}</span>
-      {% if r.leads_delivered %} &middot; <a href="/leads?source={{ r.result_source_tag }}" class="text-sky-400 hover:underline">view {{ r.leads_delivered }} buyers &#8599;</a>{% endif %}
-      {% if r.result_file_path %} &middot; <a href="/requests/{{ r.id }}/result/file" class="text-sky-400 hover:underline">open deliverable &#8599;</a>{% endif %}
-      {% if r.result_url %} &middot; <a href="{{ r.result_url }}" target="_blank" rel="noopener" class="text-sky-400 hover:underline">open link &#8599;</a>{% endif %}</div>
-  {% elif r.status == 'rejected' %}
-    <div class="text-[12px] text-rose-300 mt-1">{{ r.admin_note or 'Not accepted.' }}</div>
-  {% elif r.status == 'submitted' %}
-    <div class="text-[12px] text-slate-500 mt-1">Sent to admin &mdash; waiting for approval&hellip;</div>
-  {% else %}
-    <div class="text-[12px] text-sky-300 mt-1">Approved &mdash; finding your buyers&hellip;</div>
+    <div class="text-[12px] mt-1.5 flex flex-wrap gap-x-3 gap-y-1">
+      {% if r.leads_delivered %}<a href="/leads?source={{ r.result_source_tag }}" class="link font-medium">view {{ r.leads_delivered }} buyers &#8599;</a>{% endif %}
+      {% if r.result_file_path %}<a href="/requests/{{ r.id }}/result/file" class="link font-medium">open deliverable &#8599;</a>{% endif %}
+      {% if r.result_url %}<a href="{{ r.result_url }}" target="_blank" rel="noopener" class="link font-medium">open link &#8599;</a>{% endif %}
+    </div>
   {% endif %}
-  <div class="text-[10px] text-slate-600 mt-1">{{ r.tracking_code }}{% if r.created_at %} &middot; {{ r.created_at.strftime('%b %d, %H:%M') }}{% endif %}</div>
+
+  <div class="text-[10px] text-slate-500 mt-2 tabular-nums">{{ r.tracking_code }}{% if r.created_at %} &middot; {{ r.created_at.strftime('%b %d, %H:%M') }}{% endif %}</div>
 </div>
