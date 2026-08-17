@@ -6,39 +6,64 @@
   <title>go4it — sign in</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <style> body { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; } </style>
+  <style>
+    :root{ --aurora:linear-gradient(120deg,#22d3ee 0%,#818cf8 52%,#c084fc 100%); }
+    html{ background:#070810; }
+    body { font-family:'Inter',ui-sans-serif,system-ui,sans-serif; color:#eef2fb; background:transparent; }
+    body::before{ content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+      background:
+        radial-gradient(55rem 40rem at 15% -10%, rgba(34,211,238,.18), transparent 60%),
+        radial-gradient(50rem 40rem at 90% 10%, rgba(192,132,252,.18), transparent 55%),
+        radial-gradient(60rem 50rem at 50% 120%, rgba(99,102,241,.16), transparent 60%); }
+    body::after{ content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.4;
+      background-image:linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+                       linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+      background-size:46px 46px; -webkit-mask-image:radial-gradient(circle at 50% 20%, #000, transparent 70%);
+      mask-image:radial-gradient(circle at 50% 20%, #000, transparent 70%); }
+    .font-display{ font-family:'Sora','Inter',sans-serif; }
+    .eyebrow{ font-family:'JetBrains Mono',monospace; letter-spacing:.2em; }
+    @keyframes rise{ from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:none} }
+    .rise{ animation:rise .5s cubic-bezier(.22,1,.36,1) both; }
+  </style>
 </head>
-<body class="h-full bg-slate-950 text-slate-100 antialiased">
-  <div class="relative min-h-full flex items-center justify-center px-6 overflow-hidden">
-    <!-- ambient glow -->
-    <div class="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[36rem] h-[36rem] rounded-full bg-emerald-500/10 blur-3xl"></div>
-    <div class="relative w-full max-w-sm">
-      <div class="text-center mb-6">
-        <span class="inline-grid place-items-center w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 text-slate-950 font-extrabold text-lg shadow-lg shadow-emerald-500/25 mb-3">g4</span>
-        <h1 class="text-2xl font-bold tracking-tight">go4it</h1>
-        <p class="text-slate-400 text-sm mt-0.5">Trade desk &mdash; sign in to continue</p>
+<body class="h-full antialiased">
+  <div class="relative min-h-full flex items-center justify-center px-6">
+    <div class="relative w-full max-w-sm rise">
+      <div class="text-center mb-7">
+        <span class="inline-grid place-items-center w-14 h-14 rounded-2xl font-extrabold text-xl mb-4"
+              style="background:var(--aurora); color:#0a0f1e; box-shadow:inset 0 0 0 1px rgba(255,255,255,.2), 0 12px 40px -8px rgba(129,140,248,.7);">g4</span>
+        <h1 class="text-3xl font-extrabold tracking-tight font-display">go4it</h1>
+        <p class="eyebrow text-[11px] uppercase mt-2" style="color:#98a2b8;">Trade Command Center</p>
       </div>
-      <form method="post" action="/login" class="space-y-3 rounded-2xl border border-slate-800 bg-slate-900/80 backdrop-blur p-6 shadow-xl shadow-black/20">
+      <form method="post" action="/login" class="space-y-3 rounded-2xl p-6"
+            style="border:1px solid rgba(255,255,255,.1); background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02)); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 30px 60px -24px rgba(0,0,0,.9);">
         {% if error %}
-          <div class="text-sm text-rose-200 bg-rose-900/20 border border-rose-800/50 rounded-lg px-3 py-2">
+          <div class="text-sm text-rose-200 rounded-xl px-3 py-2" style="background:rgba(190,18,60,.2); border:1px solid rgba(244,63,94,.4);">
             {% if error == 'locked' %}Too many attempts &mdash; please wait a few minutes and try again.{% else %}Invalid email or password.{% endif %}
           </div>
         {% endif %}
         <div>
-          <label class="block text-[11px] uppercase tracking-wide text-slate-500 mb-1">Email</label>
+          <label class="eyebrow block text-[10px] uppercase mb-1.5" style="color:#98a2b8;">Email</label>
           <input name="email" type="email" required placeholder="you@company.com" autofocus
-                 class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 transition focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30">
+                 class="w-full rounded-xl px-3 py-2.5 text-sm text-slate-100 transition focus:outline-none"
+                 style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.17);"
+                 onfocus="this.style.borderColor='rgba(129,140,248,.7)';this.style.boxShadow='0 0 0 3px rgba(129,140,248,.22)'"
+                 onblur="this.style.borderColor='rgba(255,255,255,.17)';this.style.boxShadow='none'">
         </div>
         <div>
-          <label class="block text-[11px] uppercase tracking-wide text-slate-500 mb-1">Password</label>
+          <label class="eyebrow block text-[10px] uppercase mb-1.5" style="color:#98a2b8;">Password</label>
           <input name="password" type="password" required placeholder="••••••••"
-                 class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 transition focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30">
+                 class="w-full rounded-xl px-3 py-2.5 text-sm text-slate-100 transition focus:outline-none"
+                 style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.17);"
+                 onfocus="this.style.borderColor='rgba(129,140,248,.7)';this.style.boxShadow='0 0 0 3px rgba(129,140,248,.22)'"
+                 onblur="this.style.borderColor='rgba(255,255,255,.17)';this.style.boxShadow='none'">
         </div>
-        <button class="w-full bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg py-2.5 text-sm font-semibold transition-colors shadow-lg shadow-emerald-500/20">Sign in</button>
+        <button class="w-full rounded-xl py-2.5 text-sm font-bold transition-all hover:brightness-110"
+                style="background:var(--aurora); color:#0a0f1e; box-shadow:inset 0 1px 0 rgba(255,255,255,.35), 0 10px 28px -8px rgba(129,140,248,.7);">Sign in &rarr;</button>
       </form>
-      <p class="text-center text-[11px] text-slate-600 mt-4">Authorized users only</p>
+      <p class="text-center text-[11px] mt-5 eyebrow uppercase" style="color:#4b5366;">Authorized traders only</p>
     </div>
   </div>
 </body>

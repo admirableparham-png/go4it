@@ -1,6 +1,7 @@
-<div class="mb-6">
-  <h2 class="text-xl font-bold tracking-tight">Welcome{% if user.name %}, {{ user.name }}{% endif %}</h2>
-  <p class="text-slate-500 text-sm mt-0.5">Your desk. Tell us the product you want to sell &mdash; we find the buyers and deliver them right here.</p>
+<div class="mb-7">
+  <div class="eyebrow mb-1">Your desk</div>
+  <h2 class="text-2xl font-extrabold tracking-tight font-display">Welcome{% if user.name %}, <span class="text-aurora">{{ user.name }}</span>{% endif %}</h2>
+  <p class="text-slate-400 text-sm mt-1.5">Tell us the product you want to sell &mdash; we find the buyers, get you paid, and move the goods. All delivered right here.</p>
 </div>
 
 <!-- KPI cards (scoped to you) -->
@@ -13,9 +14,9 @@
 
 <div class="grid lg:grid-cols-3 gap-6">
   <!-- request a buyer search -->
-  <div class="card lg:col-span-1 h-fit" style="border-color:rgba(5,150,105,.4)">
-    <div class="eyebrow" style="color:#34d399">Concierge</div>
-    <h3 class="text-base font-semibold mb-1">Request a buyer search</h3>
+  <div class="card card-hover glow-ring lg:col-span-1 h-fit" style="border-color:rgba(129,140,248,.45)">
+    <div class="eyebrow" style="color:#a5b4fc">&#9670; Concierge</div>
+    <h3 class="text-lg font-bold mb-1 font-display">Request a buyer search</h3>
     <p class="text-slate-500 text-xs mb-3">Enter your product and we'll find buyers for it. We review it, run the search, and deliver the buyers into your account.</p>
     <form method="post" action="/requests" class="space-y-3">
       <input type="hidden" name="request_type" value="buyer_hunt">
