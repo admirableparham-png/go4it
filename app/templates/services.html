@@ -21,9 +21,9 @@
       <summary class="btn btn-primary btn-sm">Request this &rarr;</summary>
       <form method="post" action="/requests" class="space-y-2 mt-3">
         <input type="hidden" name="request_type" value="{{ s.key }}">
-        <div><label class="field-label">{{ 'Payment / subject' if s.key == 'remittance' else 'Your product' }}</label><input class="input" name="product" required placeholder="e.g. Zinc sulphate…"></div>
-        <div><label class="field-label">Market / destination <span class="text-slate-600">(optional)</span></label><input class="input" name="market" placeholder="e.g. Iraq, GCC…"></div>
-        <div><label class="field-label">Details</label><textarea class="input" name="details" rows="2" placeholder="Tell us the specifics — amount, grade, terms, who's involved…"></textarea></div>
+        <div><label class="field-label">{{ s.p_label }}</label><input class="input" name="product" required placeholder="{{ s.p_ph }}"></div>
+        <div><label class="field-label">{{ s.m_label }} <span class="text-slate-600">(optional)</span></label><input class="input" name="market" placeholder="{{ s.m_ph }}"></div>
+        <div><label class="field-label">Details</label><textarea class="input" name="details" rows="2" placeholder="{{ s.d_ph }}"></textarea></div>
         <button class="btn btn-primary btn-block btn-sm" data-busy="Sending">Send to admin</button>
       </form>
     </details>
