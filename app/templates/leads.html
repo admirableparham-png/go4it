@@ -7,8 +7,8 @@
 
 <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
   <div>
-    <h2 class="text-xl font-bold tracking-tight flex items-center gap-2">🎯 Leads <span class="badge badge-slate">{{ total }}</span></h2>
-    <p class="text-slate-500 text-sm mt-0.5">Your buyer pipeline &mdash; filter, sort, and work each lead.</p>
+    <h2 class="text-2xl font-extrabold tracking-tight flex items-center gap-2 font-display">🎯 {% if is_admin %}Leads{% else %}My buyers{% endif %} <span class="badge badge-slate">{{ total }}</span></h2>
+    <p class="text-slate-400 text-sm mt-1">{% if is_admin %}Your buyer pipeline &mdash; filter, sort, and work each lead.{% else %}The buyers we've delivered to you, plus any you add. Filter, sort, and work each one.{% endif %}</p>
   </div>
 </div>
 
@@ -82,18 +82,19 @@
 </form>
 
 {% if leads %}
-<form method="post" action="/leads/bulk">
+<form method="post" action="/leads/bulk" onsubmit="return this.querySelector('[name=action]').value!=='delete' || confirm('Delete the selected leads? This cannot be undone.')">
   <div class="flex flex-wrap items-center gap-2 mb-3 text-xs">
     <span class="text-slate-500">Bulk on selected:</span>
     <select name="action" class="select" style="width:auto">
-      <option value="assign_me">Assign to me</option>
-      <option value="assign">Assign to&hellip;</option>
+      {% if is_admin %}<option value="assign_me">Assign to me</option>
+      <option value="assign">Assign to&hellip;</option>{% endif %}
       <option value="stage">Set stage&hellip;</option>
       <option value="followup_today">Follow up: today</option>
       <option value="followup_week">Follow up: +7 days</option>
       <option value="followup_clear">Clear follow-up</option>
+      <option value="delete">Delete&hellip;</option>
     </select>
-    <select name="owner_id" class="select" style="width:auto"><option value="">(owner)</option>{% for u in users %}<option value="{{ u.id }}">{{ u.name or u.email }}</option>{% endfor %}</select>
+    {% if is_admin %}<select name="owner_id" class="select" style="width:auto"><option value="">(owner)</option>{% for u in users %}<option value="{{ u.id }}">{{ u.name or u.email }}</option>{% endfor %}</select>{% endif %}
     <select name="stage" class="select" style="width:auto"><option value="">(stage)</option>{% for s in stages %}{% if s != 'lost' %}<option value="{{ s }}">{{ s }}</option>{% endif %}{% endfor %}</select>
     <button class="btn btn-neutral btn-sm">Apply</button>
   </div>
@@ -111,31 +112,34 @@
           <th>Stage</th>
           <th>Owner</th>
           <th class="text-right">Matches</th>
+          <th class="w-8"></th>
         </tr>
       </thead>
       <tbody>
+        {% set stage_c = {'new':'#818cf8','quoted':'#22d3ee','negotiating':'#fbbf24','won':'#34d399','lost':'#fb7185'} %}
         {% for ld in leads %}
           {% set owner = user_map.get(ld.owner_id) %}
           <tr>
-            <td><input type="checkbox" name="ids" value="{{ ld.id }}"></td>
+            <td style="box-shadow:inset 3px 0 0 {{ stage_c.get(ld.status,'#64748b') }};"><input type="checkbox" name="ids" value="{{ ld.id }}"></td>
             <td><a href="/leads/{{ ld.id }}" class="font-mono text-[11px] link">{{ ld.tracking_code }}</a></td>
-            <td><a href="/leads/{{ ld.id }}" class="hover:text-sky-300">{{ ld.product }}</a>
+            <td><a href="/leads/{{ ld.id }}" class="text-slate-100 font-medium hover:text-sky-300">{{ ld.product }}</a>
               {% if ld.spec %}<span class="text-slate-500 text-xs"> {{ ld.spec[:40] }}</span>{% endif %}</td>
             <td>
-              <div class="text-slate-300">{{ ld.buyer_company or '—' }}</div>
-              <div class="text-[11px] text-slate-500">
+              <div class="text-slate-200">{{ ld.buyer_company or '—' }}</div>
+              <div class="text-[11px] text-slate-500 mt-0.5">
                 {% if ld.phone %}<a href="tel:{{ ld.phone }}" class="link">{{ ld.phone }}</a>{% endif %}
                 {% if ld.email %}{% if ld.phone %} · {% endif %}<a href="mailto:{{ ld.email }}" class="link">{{ ld.email }}</a>{% endif %}
                 {% if ld.website %} · <a href="{{ ld.website if '://' in ld.website else 'https://' + ld.website }}" target="_blank" rel="noopener" class="link">site&#8599;</a>{% endif %}
-                {% if not ld.phone and not ld.email %}<span class="text-amber-500/70">needs enrichment</span>{% endif %}
+                {% if not ld.phone and not ld.email %}<span class="badge badge-amber text-[10px]">needs enrichment</span>{% endif %}
               </div>
             </td>
-            <td class="text-slate-400">{{ ld.dest_country or '—' }}</td>
+            <td>{% if ld.dest_country %}<span class="badge badge-sky text-[10px]">{{ ld.dest_country }}</span>{% else %}<span class="text-slate-600">—</span>{% endif %}</td>
             <td><span class="badge badge-slate text-[10px]">{{ ld.source }}</span></td>
             <td class="text-xs {% if ld.posted_at %}text-slate-300{% else %}text-slate-600{% endif %}">{{ ld.posted_at.strftime('%b %d, %Y') if ld.posted_at else '—' }}</td>
-            <td><span class="badge badge-{{ ld.status }}">{{ ld.status }}</span></td>
+            <td><span class="badge badge-{{ ld.status }} uppercase text-[10px] font-bold">{{ ld.status }}</span></td>
             <td class="text-slate-400 text-xs">{{ (owner.name or owner.email) if owner else '—' }}</td>
             <td class="text-right text-slate-400 tabular-nums">{{ mcounts.get(ld.id, 0) }}</td>
+            <td class="text-right"><button formaction="/leads/{{ ld.id }}/delete" formmethod="post" onclick="return confirm('Delete this lead? This removes it and its quotes/deals.')" class="text-slate-600 hover:text-rose-400 px-1.5 text-base leading-none" title="Delete lead">&times;</button></td>
           </tr>
         {% endfor %}
       </tbody>

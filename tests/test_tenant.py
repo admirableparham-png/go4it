@@ -162,6 +162,20 @@ def test_request_flow_submit_scope_and_approve(ctx):
     assert client.get("/admin/requests/count").text.strip() == ""     # none pending after approval
 
 
+def test_owner_can_delete_lead_others_cannot(ctx):
+    client, engine, ids = ctx
+    a_lead, a_quote, a_deal = ids["a"]
+    _login(client, "b@t.local")                       # another trader can't delete A's lead
+    assert client.post(f"/leads/{a_lead}/delete", follow_redirects=False).status_code == 404
+    with Session(engine) as s:
+        assert s.get(Lead, a_lead) is not None
+    _login(client, "a@t.local")                       # owner can, and it cleans up quote + deal
+    assert client.post(f"/leads/{a_lead}/delete", follow_redirects=False).status_code == 303
+    with Session(engine) as s:
+        assert s.get(Lead, a_lead) is None
+        assert s.get(Quote, a_quote) is None and s.get(Deal, a_deal) is None
+
+
 def test_services_page_lists_all(ctx):
     client, _, _ = ctx
     _login(client, "a@t.local")

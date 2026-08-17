@@ -159,6 +159,25 @@ def _cascade_owner(session, lead):
         session.add(d)
 
 
+def _delete_lead(session, lead):
+    """Remove a lead and everything hanging off it (matches, quotes, outreach, activity, deals + their
+    docs) so nothing is orphaned. Caller commits. Used for 'I added this by mistake'."""
+    lid = lead.id
+    for m in session.exec(select(Match).where(Match.lead_id == lid)).all():
+        session.delete(m)
+    for o in session.exec(select(Outreach).where(Outreach.lead_id == lid)).all():
+        session.delete(o)
+    for a in session.exec(select(Activity).where(Activity.lead_id == lid)).all():
+        session.delete(a)
+    for q in session.exec(select(Quote).where(Quote.lead_id == lid)).all():
+        session.delete(q)
+    for d in session.exec(select(Deal).where(Deal.lead_id == lid)).all():
+        for cd in session.exec(select(ComplianceDoc).where(ComplianceDoc.deal_id == d.id)).all():
+            session.delete(cd)
+        session.delete(d)
+    session.delete(lead)
+
+
 def _log(session, lead: Lead, user, kind: str, body: str = ""):
     """Append a timeline entry; stamp first_response_at on the first real action."""
     session.add(Activity(lead_id=lead.id, user_id=user.id if user else None,
@@ -492,6 +511,9 @@ def leads_bulk(request: Request, action: str = Form(""), owner_id: str = Form(""
         # scoped: a trader can only bulk-act on leads they OWN (can't touch another tenant's rows by id)
         leads = session.exec(scoped(select(Lead), Lead.owner_id, user).where(Lead.id.in_(ids or [0]))).all()
         for lead in leads:
+            if action == "delete":
+                _delete_lead(session, lead)         # scoped select above => only own leads deletable
+                continue
             if action in ("assign", "assign_me") and not is_admin(user):
                 continue                            # reassigning ownership is the admin's tool only
             if action == "assign_me" and user:
@@ -1111,6 +1133,21 @@ def add_note(request: Request, lead_id: int, body: str = Form(...)):
             _log(session, lead, user, "note", body.strip())
             session.commit()
     return RedirectResponse(f"/leads/{lead_id}", status_code=303)
+
+
+@app.post("/leads/{lead_id}/delete")
+def delete_lead(request: Request, lead_id: int):
+    """Remove a lead the owner (or admin) added — for fixing a mistaken entry. Cleans up dependents."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not role_at_least(user, "agent"):
+            return _forbidden()
+        lead = session.get(Lead, lead_id)
+        if not lead or not owns(lead.owner_id, user):
+            return _not_found()
+        _delete_lead(session, lead)
+        session.commit()
+    return RedirectResponse("/leads", status_code=303)
 
 
 # ----------------------------------------------------------------------------- catalog
