@@ -1,25 +1,59 @@
 {% extends "base.html" %}
 {% set active = 'deals' %}
 {% block content %}
+{% set is_admin = user and user.role == 'admin' %}
 
-<div class="flex flex-wrap items-end justify-between gap-3 mb-6">
-  <div>
-    <h2 class="text-xl font-bold tracking-tight flex items-center gap-2">Deals <span class="badge badge-slate">{{ rows|length }}</span></h2>
-    <p class="text-slate-500 text-sm mt-0.5">Won leads in execution &mdash; sourcing to settlement.</p>
+<div class="mb-6">
+  <div class="eyebrow mb-1">Execution</div>
+  <h2 class="text-2xl font-extrabold tracking-tight font-display flex items-center gap-2">Deals <span class="badge badge-slate">{{ rows|length }}</span></h2>
+  <p class="text-slate-400 text-sm mt-1">{% if is_admin %}Won leads in execution &mdash; sourcing to settlement.{% else %}Orders we're executing for you, end to end.{% endif %}</p>
+</div>
+
+{% if not is_admin %}
+{% set journey = ['Won','Supplier confirmed','Payment received','Freight booked','Export cleared','In transit','Import cleared','Delivered','Settled'] %}
+<div class="card mb-6" style="border-color:rgba(52,211,153,.3)">
+  <div class="flex items-start gap-3">
+    <div class="text-2xl leading-none">&#129309;</div>
+    <div class="min-w-0">
+      <h3 class="font-semibold font-display text-[15px]">What is a deal?</h3>
+      <p class="text-slate-400 text-sm mt-0.5">A won order we <b class="text-slate-200">execute for you</b> &mdash; from confirming supply, to getting you <b class="text-slate-200">paid</b>, to shipping and delivering the goods, and settling your margin at the end. You watch each step here.</p>
+    </div>
+  </div>
+
+  <div class="eyebrow mt-4 mb-2">The journey</div>
+  <div class="flex flex-wrap items-center gap-1.5">
+    {% for s in journey %}
+      <span class="text-[10px] px-2 py-1 rounded-full whitespace-nowrap" style="{% if loop.index0 <= 5 %}background:rgba(52,211,153,.16); color:#6ee7b7; border:1px solid rgba(52,211,153,.32);{% else %}background:rgba(255,255,255,.03); color:#8b93a7; border:1px solid var(--border);{% endif %}">{{ s }}</span>
+      {% if not loop.last %}<span style="color:#475569">&rsaquo;</span>{% endif %}
+    {% endfor %}
+  </div>
+
+  <div class="eyebrow mt-5 mb-2">Example &mdash; a deal in progress</div>
+  <div class="rounded-xl p-4" style="border:1px solid rgba(52,211,153,.35); background:linear-gradient(180deg, rgba(52,211,153,.09), rgba(255,255,255,.02));">
+    <div class="flex items-center justify-between gap-2">
+      <span class="font-mono text-[11px]" style="color:#6ee7b7">G4-202608-0007-D</span>
+      <span class="badge badge-sky uppercase text-[10px] font-bold">in transit</span>
+    </div>
+    <div class="text-[15px] font-semibold text-slate-100 mt-1 font-display">Zinc Sulphate Monohydrate <span class="text-slate-400 font-normal">&rarr; Baghdad Agro Traders</span></div>
+    <div class="mt-3">
+      <div class="flex items-center justify-between text-[11px] mb-1"><span class="text-slate-400">Progress</span><span class="tabular-nums text-slate-300">6 of 9 steps</span></div>
+      <div class="h-2 rounded-full overflow-hidden" style="background:rgba(255,255,255,.06)"><div class="h-2 rounded-full" style="width:66%; background:linear-gradient(90deg,#22d3ee,#34d399)"></div></div>
+    </div>
+    <div class="flex flex-wrap gap-x-6 gap-y-2 mt-3">
+      <div><span class="eyebrow block mb-0.5">Planned margin</span><span class="tabular-nums text-slate-100 font-semibold text-sm">$4,200</span></div>
+      <div><span class="eyebrow block mb-0.5">Next step</span><span class="text-slate-200 text-sm">Import clearance in Iraq</span></div>
+    </div>
   </div>
 </div>
+{% endif %}
 
 {% if rows %}
   <div class="table-wrap">
     <table class="data-table">
       <thead>
         <tr>
-          <th>Deal</th>
-          <th>Buyer</th>
-          <th>Product</th>
-          <th>Stage</th>
-          <th class="text-right">Planned margin</th>
-          <th class="text-right">Realized</th>
+          <th>Deal</th><th>Buyer</th><th>Product</th><th>Stage</th>
+          <th class="text-right">Planned margin</th><th class="text-right">Realized</th>
         </tr>
       </thead>
       <tbody>
@@ -27,11 +61,11 @@
           {% set d = row.d %}
           <tr>
             <td><a href="/deals/{{ d.id }}" class="font-mono link">{{ d.tracking_code }}</a></td>
-            <td class="text-slate-300">{{ row.lead.buyer_company if row.lead else '' }}</td>
-            <td>{{ row.lead.product if row.lead else '' }}</td>
-            <td><span class="badge {{ 'badge-emerald' if d.stage in ['settled','closed'] else 'badge-sky' }}">{{ d.stage.replace('_', ' ') }}</span></td>
+            <td class="text-slate-200">{{ row.lead.buyer_company if row.lead else '' }}</td>
+            <td class="text-slate-100 font-medium">{{ row.lead.product if row.lead else '' }}</td>
+            <td><span class="badge {{ 'badge-emerald' if d.stage in ['settled','closed'] else 'badge-sky' }} uppercase text-[10px] font-bold">{{ d.stage.replace('_', ' ') }}</span></td>
             <td class="text-right text-slate-400 tabular-nums">{{ '%.2f'|format(d.planned_margin) }}</td>
-            <td class="text-right tabular-nums {% if d.realized_margin %}text-emerald-400{% else %}text-slate-600{% endif %}">
+            <td class="text-right tabular-nums {% if d.realized_margin %}text-emerald-400 font-semibold{% else %}text-slate-600{% endif %}">
               {{ '%.2f'|format(d.realized_margin) if d.realized_margin else '—' }}</td>
           </tr>
         {% endfor %}
@@ -39,6 +73,6 @@
     </table>
   </div>
 {% else %}
-  <div class="empty">No deals yet. Mark a lead <b>Won</b> (from its detail page) and a deal opens here.</div>
+  <div class="empty">{% if is_admin %}No deals yet. Mark a lead <b>Won</b> (from its detail page) and a deal opens here.{% else %}No deals yet &mdash; once a buyer accepts a quote, we open the deal and track it here.{% endif %}</div>
 {% endif %}
 {% endblock %}

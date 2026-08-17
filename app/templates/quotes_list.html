@@ -1,28 +1,59 @@
 {% extends "base.html" %}
 {% set active = 'quotes' %}
 {% block content %}
+{% set is_admin = user and user.role == 'admin' %}
 {% set qb = {'sent':'badge-emerald','approved':'badge-sky','draft':'badge-slate','expired':'badge-rose','superseded':'badge-slate'} %}
 
-<div class="flex flex-wrap items-end justify-between gap-3 mb-6">
-  <div>
-    <h2 class="text-xl font-bold tracking-tight flex items-center gap-2">Quotes <span class="badge badge-slate">{{ rows|length }}</span></h2>
-    <p class="text-slate-500 text-sm mt-0.5">Two-price offers (EXW + delivered) generated from your catalog.</p>
+<div class="mb-6">
+  <div class="eyebrow mb-1">Pipeline</div>
+  <h2 class="text-2xl font-extrabold tracking-tight font-display flex items-center gap-2">Quotes <span class="badge badge-slate">{{ rows|length }}</span></h2>
+  <p class="text-slate-400 text-sm mt-1">{% if is_admin %}Two-price offers (EXW + delivered) generated from your catalog.{% else %}Price offers we prepare for your buyers.{% endif %}</p>
+</div>
+
+{% if not is_admin %}
+<div class="card mb-6" style="border-color:rgba(34,211,238,.3)">
+  <div class="flex items-start gap-3">
+    <div class="text-2xl leading-none">&#129534;</div>
+    <div class="min-w-0">
+      <h3 class="font-semibold font-display text-[15px]">What is a quote?</h3>
+      <p class="text-slate-400 text-sm mt-0.5">A formal <b class="text-slate-200">price offer</b> we prepare for one of your buyers &mdash; the delivered price, quantity, terms (Incoterm) and a private link you can send them. If the buyer accepts, it turns into a <b class="text-slate-200">deal</b>.</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4">
+    {% for n, t in [('1','We deliver buyers into your account'),('2','A buyer is interested — we build the quote'),('3','It appears here; you send them the link'),('4','They accept — it becomes a Deal')] %}
+    <div class="rounded-lg p-2.5" style="background:rgba(255,255,255,.03); border:1px solid var(--border);">
+      <div class="text-[10px] font-bold tracking-wider" style="color:#22d3ee">STEP {{ n }}</div>
+      <div class="text-xs text-slate-300 mt-0.5 leading-snug">{{ t }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="eyebrow mt-5 mb-2">Example &mdash; this is what a quote looks like</div>
+  <div class="rounded-xl p-4" style="border:1px solid rgba(34,211,238,.35); background:linear-gradient(180deg, rgba(34,211,238,.09), rgba(255,255,255,.02));">
+    <div class="flex items-center justify-between gap-2">
+      <span class="font-mono text-[11px]" style="color:#7dd3fc">G4-202608-0007-Q1</span>
+      <span class="badge badge-emerald uppercase text-[10px] font-bold">sent</span>
+    </div>
+    <div class="text-[15px] font-semibold text-slate-100 mt-1 font-display">Zinc Sulphate Monohydrate <span class="text-slate-400 font-normal">&rarr; Baghdad Agro Traders</span></div>
+    <div class="flex flex-wrap gap-x-6 gap-y-2 mt-3">
+      <div><span class="eyebrow block mb-0.5">Quantity</span><span class="tabular-nums text-slate-200 text-sm">25,000 kg</span></div>
+      <div><span class="eyebrow block mb-0.5">Incoterm</span><span class="text-slate-200 text-sm">CPT Baghdad</span></div>
+      <div><span class="eyebrow block mb-0.5">Delivered / unit</span><span class="tabular-nums text-slate-100 font-semibold text-sm">$1.34</span></div>
+      <div><span class="eyebrow block mb-0.5">Order total</span><span class="tabular-nums text-slate-100 font-semibold text-sm">$33,500</span></div>
+    </div>
+    <div class="mt-3"><span class="btn btn-secondary btn-sm" style="cursor:default">&#128279; private buyer link &#8599;</span></div>
   </div>
 </div>
+{% endif %}
 
 {% if rows %}
   <div class="table-wrap">
     <table class="data-table">
       <thead>
         <tr>
-          <th>Quote</th>
-          <th>Buyer</th>
-          <th>Product</th>
-          <th class="text-right">Qty</th>
-          <th>Incoterm</th>
-          <th class="text-right">Delivered/unit</th>
-          <th class="text-right">Total</th>
-          <th>Status</th>
+          <th>Quote</th><th>Buyer</th><th>Product</th><th class="text-right">Qty</th>
+          <th>Incoterm</th><th class="text-right">Delivered/unit</th><th class="text-right">Total</th><th>Status</th>
         </tr>
       </thead>
       <tbody>
@@ -30,19 +61,19 @@
           {% set q = row.q %}
           <tr>
             <td><a href="/quotes/{{ q.id }}" class="font-mono link">{{ q.tracking_code }}</a></td>
-            <td class="text-slate-300">{{ row.lead.buyer_company if row.lead else '' }}</td>
-            <td>{{ row.product.name if row.product else '' }}</td>
+            <td class="text-slate-200">{{ row.lead.buyer_company if row.lead else '' }}</td>
+            <td class="text-slate-100 font-medium">{{ row.product.name if row.product else '' }}</td>
             <td class="text-right text-slate-400 tabular-nums">{{ q.quantity }}</td>
             <td class="text-slate-400">{{ q.incoterm }}</td>
             <td class="text-right tabular-nums">{{ '%.2f'|format(q.delivered_unit) }} {{ q.quote_currency }}</td>
-            <td class="text-right text-slate-200 tabular-nums">{{ '%.2f'|format(q.delivered_total) }}</td>
-            <td><span class="badge {{ qb.get(q.status,'badge-slate') }}">{{ q.status }}</span></td>
+            <td class="text-right text-slate-100 tabular-nums font-semibold">{{ '%.2f'|format(q.delivered_total) }}</td>
+            <td><span class="badge {{ qb.get(q.status,'badge-slate') }} uppercase text-[10px] font-bold">{{ q.status }}</span></td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 {% else %}
-  <div class="empty">No quotes yet. Add a lead (a draft quote is auto-created for the best match) or click &ldquo;Quote this&rdquo; on any match.</div>
+  <div class="empty">{% if is_admin %}No quotes yet. Add a lead (a draft quote is auto-created for the best match) or click &ldquo;Quote this&rdquo; on any match.{% else %}No quotes yet &mdash; when we price one of your buyers, it will appear here.{% endif %}</div>
 {% endif %}
 {% endblock %}
