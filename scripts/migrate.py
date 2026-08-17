@@ -11,7 +11,25 @@ import os
 import sqlite3
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DB = os.path.join(BASE, "data.db")
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///data.db")
+
+
+def _db_path():
+    """The on-disk SQLite file this migration should ALTER, derived from DATABASE_URL so it matches the
+    file the app actually serves (in Docker that's /app/var/go4it.db, not <repo>/data.db). Returns None
+    for a non-SQLite URL (Postgres — schema handled by create_all) or an in-memory DB."""
+    try:
+        from sqlalchemy.engine import make_url
+        url = make_url(DATABASE_URL)
+    except Exception:  # noqa: BLE001 — fall back to the legacy repo path
+        return os.path.join(BASE, "data.db")
+    if url.get_backend_name() != "sqlite":
+        return None
+    path = url.database
+    if not path or path == ":memory:":
+        return None
+    return path if os.path.isabs(path) else os.path.join(BASE, path)
+
 
 MIGRATIONS = [
     ("lead", "next_action_at", "TIMESTAMP"),
@@ -32,10 +50,14 @@ MIGRATIONS = [
 
 
 def run():
-    if not os.path.exists(DB):
-        print("no data.db yet — create_all will include new columns on first run")
+    db = _db_path()
+    if db is None:
+        print("non-SQLite (or in-memory) DATABASE_URL — additive migrations handled by create_all; skipping")
         return
-    con = sqlite3.connect(DB)
+    if not os.path.exists(db):
+        print(f"no DB yet at {db} — create_all will include new columns on first run")
+        return
+    con = sqlite3.connect(db)
     cur = con.cursor()
     applied = 0
     for table, column, decl in MIGRATIONS:

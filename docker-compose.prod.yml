@@ -1,0 +1,70 @@
+# go4it — PRODUCTION stack: app (gunicorn) + worker + Caddy (automatic HTTPS).
+#
+#   1) On the server: cp .env.example .env  and set real secrets:
+#        SECRET_KEY=...        (openssl rand -base64 48)
+#        GO4IT_INGEST_KEY=...  (openssl rand -hex 24)
+#        BASE_URL=https://your-domain
+#        DOMAIN=your-domain
+#        CORS_ORIGINS=https://your-domain
+#   2) docker compose -f docker-compose.prod.yml up -d --build
+#
+# The app runs migrations on boot then serves under gunicorn; the worker runs the background loop
+# (inbound email, follow-ups, request reminders); Caddy fetches Let's Encrypt certs for $DOMAIN and
+# reverse-proxies to app:8400. The app REFUSES to boot on a public BASE_URL with default secrets.
+services:
+  app:
+    build: .
+    image: go4it:latest
+    env_file: .env
+    environment:
+      WEB_CONCURRENCY: "${WEB_CONCURRENCY:-2}"        # SQLite is single-writer — keep 1-2 (raise on Postgres)
+      DATABASE_URL: "sqlite:////app/var/go4it.db"
+      INBOX_DIR: "/app/var/inbox"
+      BASE_URL: "${BASE_URL:?set BASE_URL=https://your-domain in .env}"
+    volumes:
+      - go4it-data:/app/var              # DB + inbox
+      - go4it-docs:/app/deal_docs        # uploaded compliance documents
+      - go4it-files:/app/request_files   # delivered concierge files
+      - ./backups:/app/backups
+    expose:
+      - "8400"
+    restart: unless-stopped
+
+  worker:
+    build: .
+    image: go4it:latest
+    env_file: .env
+    environment:
+      DATABASE_URL: "sqlite:////app/var/go4it.db"
+      INBOX_DIR: "/app/var/inbox"
+      BASE_URL: "${BASE_URL}"
+    command: ["python", "-m", "app.worker"]
+    volumes:
+      - go4it-data:/app/var
+      - go4it-docs:/app/deal_docs
+      - go4it-files:/app/request_files
+    depends_on:
+      - app
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: "${DOMAIN:?set DOMAIN=your-domain in .env}"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+    restart: unless-stopped
+
+volumes:
+  go4it-data:
+  go4it-docs:
+  go4it-files:
+  caddy_data:
+  caddy_config:

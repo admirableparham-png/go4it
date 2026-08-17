@@ -16,8 +16,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Run unprivileged; give the app a writable data dir (mount a volume here in prod).
-RUN useradd -m app && mkdir -p /app/var /app/backups && chown -R app:app /app
+# Run unprivileged; give the app writable data dirs (mount volumes on these in prod so the DB,
+# uploaded compliance docs (deal_docs) and delivered concierge files (request_files) all persist).
+RUN useradd -m app && mkdir -p /app/var /app/backups /app/deal_docs /app/request_files \
+    && chown -R app:app /app
 USER app
 
 EXPOSE 8400

@@ -1,0 +1,8 @@
+# go4it reverse proxy — automatic HTTPS (Let's Encrypt) for $DOMAIN, forwarding to the app container.
+# $DOMAIN comes from the caddy service's environment (set DOMAIN=your-domain in .env).
+# If you front this with Cloudflare's proxy (orange cloud), set Cloudflare SSL mode to "Full (strict)";
+# for Caddy to issue its own cert, use DNS-only (grey cloud) so ports 80/443 reach this server directly.
+{$DOMAIN} {
+	encode gzip
+	reverse_proxy app:8400
+}

@@ -1,4 +1,4 @@
-.PHONY: install run prod seed test save backup db-migrate clean worker enrich ingest ingest-portal
+.PHONY: install run prod seed test save backup db-migrate clean worker enrich ingest ingest-portal build deploy logs down
 
 # One-time setup: create a virtualenv and install dependencies.
 install:
@@ -56,3 +56,18 @@ backup:
 # Remove the local database (start fresh).
 clean:
 	rm -f data.db data.db-journal data.db-wal data.db-shm
+
+# --- Docker: production stack (app + worker + Caddy/HTTPS) ---
+# Build the production images.
+build:
+	docker compose -f docker-compose.prod.yml build
+
+# Go live: build + start the full stack detached. Needs a real .env (see .env.example / docs/PRODUCTION.md).
+deploy:
+	docker compose -f docker-compose.prod.yml up -d --build
+
+# Tail prod logs / stop the stack.
+logs:
+	docker compose -f docker-compose.prod.yml logs -f --tail=100
+down:
+	docker compose -f docker-compose.prod.yml down

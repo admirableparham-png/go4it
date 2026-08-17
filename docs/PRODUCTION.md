@@ -25,6 +25,19 @@ This builds the image, runs `scripts/migrate.py`, and serves under **gunicorn + 
 on `:8400`. The SQLite DB + inbox persist in the `go4it-data` volume; DB snapshots land in
 `./backups`. Tune workers with `WEB_CONCURRENCY` (keep it 1–2 on SQLite; raise it on Postgres).
 
+### Full production stack (app + worker + HTTPS) — for a live domain
+`docker-compose.prod.yml` runs the app, the background **worker** (inbound email / follow-ups /
+request reminders) and **Caddy** (automatic Let's Encrypt HTTPS) together. In `.env` set
+`BASE_URL=https://your-domain`, `DOMAIN=your-domain`, `CORS_ORIGINS=https://your-domain`, then:
+
+```bash
+make deploy        # = docker compose -f docker-compose.prod.yml up -d --build
+```
+
+Persistent volumes cover the DB (`/app/var`), uploaded compliance docs (`/app/deal_docs`) **and**
+delivered concierge files (`/app/request_files`) — all survive redeploys. The bundled `Caddyfile`
+fronts the app at `$DOMAIN`; the manual reverse-proxy in §2 is only needed if you run your own.
+
 ## 1b. Run it — bare metal
 
 ```bash

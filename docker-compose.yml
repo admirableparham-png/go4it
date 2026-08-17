@@ -12,11 +12,15 @@ services:
       WEB_CONCURRENCY: "2"                       # SQLite is single-writer — keep low
       DATABASE_URL: "sqlite:////app/var/go4it.db"
       INBOX_DIR: "/app/var/inbox"
-      BASE_URL: "http://localhost:8400"          # set to your real https URL in prod
+      BASE_URL: "${BASE_URL:-http://localhost:8400}"   # from .env in prod; localhost keeps IS_LOCAL=true here
     volumes:
-      - go4it-data:/app/var        # persists the DB + inbox across restarts
-      - ./backups:/app/backups     # DB snapshots land on the host
+      - go4it-data:/app/var             # DB + inbox
+      - go4it-docs:/app/deal_docs       # uploaded compliance documents — MUST persist across redeploys
+      - go4it-files:/app/request_files  # delivered concierge files — MUST persist across redeploys
+      - ./backups:/app/backups          # DB snapshots land on the host
     restart: unless-stopped
 
 volumes:
   go4it-data:
+  go4it-docs:
+  go4it-files:
