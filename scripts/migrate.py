@@ -25,6 +25,9 @@ MIGRATIONS = [
     ("quote", "accepted_at", "TIMESTAMP"),
     ("quote", "buyer_response", "VARCHAR DEFAULT ''"),
     ("ratecard", "dest_country", "VARCHAR DEFAULT ''"),
+    ("quote", "owner_id", "INTEGER"),          # tenant scope; backfilled from lead.owner_id below
+    ("servicerequest", "result_file_path", "VARCHAR DEFAULT ''"),   # Phase 3 file delivery
+    ("servicerequest", "result_url", "VARCHAR DEFAULT ''"),
 ]
 
 
@@ -41,11 +44,21 @@ def run():
             cur.execute(f"ALTER TABLE {table} ADD COLUMN {column} {decl}")
             print(f"+ {table}.{column}")
             applied += 1
+    # Backfill quote.owner_id from the owning lead (tenant scope) for any rows still NULL — so pre-existing
+    # quotes are correctly isolated the moment scoping goes live. Idempotent (only touches NULLs).
+    qcols = {r[1] for r in cur.execute("PRAGMA table_info(quote)")}
+    if "owner_id" in qcols:
+        cur.execute("UPDATE quote SET owner_id = (SELECT owner_id FROM lead WHERE lead.id = quote.lead_id) "
+                    "WHERE owner_id IS NULL")
+        if cur.rowcount:
+            print(f"~ backfilled quote.owner_id for {cur.rowcount} row(s)")
+
     # Indexes the models declare (Field(index=True)) that ALTER TABLE ADD COLUMN doesn't create.
     # create_all() makes them on fresh DBs; migrated DBs need them here to match (else full scans).
     tables = {r[0] for r in cur.execute("SELECT name FROM sqlite_master WHERE type='table'")}
     for idx, table, column in [("ix_quote_share_token", "quote", "share_token"),
-                               ("ix_outreach_message_id", "outreach", "message_id")]:
+                               ("ix_outreach_message_id", "outreach", "message_id"),
+                               ("ix_quote_owner_id", "quote", "owner_id")]:
         if table in tables:
             cur.execute(f"CREATE INDEX IF NOT EXISTS {idx} ON {table}({column})")
     con.commit()

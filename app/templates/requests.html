@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-6">
+  <div class="eyebrow">Concierge</div>
+  <h1 class="text-xl font-bold tracking-tight">My requests</h1>
+  <p class="text-slate-500 text-sm mt-0.5">Ask us to find buyers for your product. We review it, run the search, and deliver the buyers straight into your account.</p>
+</div>
+
+<div class="grid md:grid-cols-3 gap-4">
+  <div class="card md:col-span-1 h-fit">
+    <h3 class="text-sm font-semibold mb-3">Request a buyer search</h3>
+    <form method="post" action="/requests" class="space-y-3">
+      <input type="hidden" name="request_type" value="buyer_hunt">
+      <div><label class="field-label">Your product</label><input class="input" name="product" required placeholder="e.g. Zinc sulphate, saffron, tiles…"></div>
+      <div><label class="field-label">Target market <span class="text-slate-600">(optional)</span></label><input class="input" name="market" placeholder="e.g. Iraq, GCC, Turkey…"></div>
+      <div><label class="field-label">Details</label><textarea class="input" name="details" rows="3" placeholder="Grade, quantity, who you want to reach, any notes…"></textarea></div>
+      <button class="btn btn-primary btn-block" data-busy="Sending">Send to admin</button>
+      <p class="text-slate-500 text-xs">We'll review it and start the search. Your buyers will appear here when it's done.</p>
+    </form>
+  </div>
+
+  <div class="md:col-span-2 space-y-2">
+    {% if reqs %}
+      {% for r in reqs %}{% include 'partials/request_card.html' %}{% endfor %}
+    {% else %}
+      <div class="empty">No requests yet &mdash; submit your first buyer search on the left.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

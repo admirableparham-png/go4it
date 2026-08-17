@@ -80,6 +80,12 @@ SMTP_ENABLED = bool(SMTP_HOST and SMTP_USER and SMTP_PASSWORD)
 # Signature appended to outreach emails. Override in .env with OUTREACH_SIGNATURE (use \n for line breaks).
 OUTREACH_SIGNATURE = os.getenv("OUTREACH_SIGNATURE", "").replace("\\n", "\n").strip()
 
+# --- Telegram alert volume ---
+# Routine "email sent / follow-up N sent" pings are OFF by default: the founder only wants to be pinged
+# when a REAL buyer REPLIES (money-emoji alert), not on every outgoing email. Flip to true in .env to
+# watch a batch go out live. Buyer-reply / bounce / needs-call alerts are unaffected by this switch.
+TELEGRAM_NOTIFY_SENDS = os.getenv("TELEGRAM_NOTIFY_SENDS", "false").strip().lower() == "true"
+
 # --- Auto follow-up sequence (processed by the worker) ---
 # Master switch: OFF by default so nothing auto-sends until you arm it. The system only ever follows up
 # leads whose FIRST email you sent yourself; it never cold-emails a buyer on its own.
@@ -88,6 +94,10 @@ FOLLOWUP_INTERVAL = int(os.getenv("FOLLOWUP_INTERVAL", "1800"))    # seconds bet
 FOLLOWUP_DAYS_1 = int(os.getenv("FOLLOWUP_DAYS_1", "3"))           # calendar days: main email -> follow-up 1
 FOLLOWUP_BDAYS_2 = int(os.getenv("FOLLOWUP_BDAYS_2", "5"))         # business days: follow-up 1 -> follow-up 2
 FOLLOWUP_GRACE_BDAYS = int(os.getenv("FOLLOWUP_GRACE_BDAYS", "3"))  # business days: follow-up 2 -> "call" nudge
+
+# --- Concierge request reminders (worker pings the founder about stale 'submitted' requests) ---
+REQUEST_REMINDER_HOURS = int(os.getenv("REQUEST_REMINDER_HOURS", "12"))       # a request pending this long -> ping
+REQUEST_REMINDER_INTERVAL = int(os.getenv("REQUEST_REMINDER_INTERVAL", "3600"))  # sweep cadence seconds; 0=off
 
 # --- Production safety -------------------------------------------------------
 # Refuse to boot on a PUBLIC BASE_URL while still using the shipped default secrets (a forgeable

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-6">
+  <div class="eyebrow">Admin &middot; Oversight</div>
+  <h1 class="text-xl font-bold tracking-tight">Per-user activity</h1>
+  <p class="text-slate-500 text-sm mt-0.5">Every trader's footprint, separated by person &mdash; so you can see what each is doing and catch mistakes early. Their data is isolated from each other; you see all of it.</p>
+</div>
+
+<div class="table-wrap">
+  <table class="data-table">
+    <thead><tr><th>User</th><th class="text-right">Buyers</th><th class="text-right">Won</th><th class="text-right">Quotes</th><th class="text-right">Deals</th><th>Last action</th><th class="text-right"></th></tr></thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td>
+          <div class="font-medium">{{ r.u.name or r.u.email }}</div>
+          <div class="text-xs text-slate-500">{{ r.u.email }}
+            <span class="badge {{ 'badge-emerald' if r.u.role == 'admin' else 'badge-slate' }} ml-1">{{ 'founder' if r.u.role == 'admin' else 'trader' }}</span>
+            {% if not r.u.active %}<span class="badge badge-rose ml-1">disabled</span>{% endif %}</div>
+        </td>
+        <td class="text-right tabular-nums font-semibold">{{ r.leads }}</td>
+        <td class="text-right tabular-nums text-emerald-400">{{ r.won }}</td>
+        <td class="text-right tabular-nums">{{ r.quotes }}</td>
+        <td class="text-right tabular-nums">{{ r.deals }}</td>
+        <td class="text-xs text-slate-400">{% if r.last %}{{ r.last.kind|replace('_',' ') }} &middot; {{ r.last.created_at.strftime('%b %d, %H:%M') }}{% else %}&mdash;{% endif %}</td>
+        <td class="text-right">{% if r.u.role != 'admin' %}<a class="link text-xs whitespace-nowrap" href="/leads?owner={{ r.u.id }}">view buyers &rarr;</a>{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% if pool %}<p class="text-slate-500 text-xs mt-3"><b>{{ pool }}</b> unassigned buyers in the admin pool (owned by nobody yet) &mdash; assign them to a trader from a lead's page.</p>{% endif %}
+{% endblock %}

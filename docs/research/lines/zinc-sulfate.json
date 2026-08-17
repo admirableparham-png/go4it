@@ -1,7 +1,7 @@
 {
   "slug": "zinc-sulfate",
   "label": "Zinc sulphate",
-  "product": "Zinc sulphate (Iran-sourced) - verified 2025+ foreign buy-requests",
+  "product": "Zinc Sulphate Monohydrate 33% (Iran-sourced) - regional agri/feed/industrial buyers",
   "category": "export-zinc-sulfate",
   "dest": {
     "iso": "",
@@ -15,9 +15,9 @@
   "rfqs_file": "",
   "meta": {
     "name": "Zinc sulphate",
-    "positioning": "Real 2025+ foreign buy-side demand for this Iran-sourced product (verified + de-noised).",
+    "positioning": "Regional-first outreach: Iran ZnSO4 monohydrate 33% (~$1/kg EXW, ISO-17025 CoAs, 25 kg bags) sold on freight+speed+quality to neighbor/landlocked markets, NOT on beating China/India on coastal price.",
     "brands": [],
-    "note": "Thin-to-moderate and concentrated: the only solid named foreign buy-side signals are institutional import tenders (India NFL 2025-26 WSF global tender, verified) plus one decent-fit Poland RFQ (Kantor, go4WorldBusiness); the rest are anonymous masked ExportersIndia leads from India (a net ZnSO4 exporter) = poor fit. Real underlying EU/UK/Eastern-Europe agri demand exists per market reports but seldom shows up as named public buy-leads."
+    "note": "2026-08-11 pivot away from the old India/Poland list (India is a net ZnSO4 EXPORTER = poor fit). New target = agri-input distributors, fertilizer/micronutrient blenders, animal-feed & premix makers, agrochemical importers and (Turkey/GCC) industrial users across Iran's short-haul markets: Afghanistan, Iraq, Central Asia (TM/UZ/TJ/KG/KZ), Caucasus (AZ/AM/GE), Pakistan, Turkey, GCC. Buyer list built by the zinc-buyer-hunt research fleet."
   },
   "families": [],
   "scoring": {
@@ -28,7 +28,23 @@
     "penalty": []
   },
   "display_order": [
-    "India",
-    "Poland"
+    "Afghanistan",
+    "Iraq",
+    "Uzbekistan",
+    "Kazakhstan",
+    "Turkmenistan",
+    "Tajikistan",
+    "Kyrgyzstan",
+    "Azerbaijan",
+    "Armenia",
+    "Georgia",
+    "Pakistan",
+    "Turkey",
+    "United Arab Emirates",
+    "Saudi Arabia",
+    "Oman",
+    "Qatar",
+    "Kuwait",
+    "Bahrain"
   ]
 }

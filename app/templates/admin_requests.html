@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-6">
+  <div class="eyebrow">Admin &middot; Concierge</div>
+  <h1 class="text-xl font-bold tracking-tight">Requests</h1>
+  <p class="text-slate-500 text-sm mt-0.5">Buyer-search and service requests from your traders. Approve to start; the trader is notified on approve / reject / delivery.</p>
+</div>
+
+{% if reqs %}
+<div class="table-wrap">
+  <table class="data-table">
+    <thead><tr><th>Request</th><th>Trader</th><th>Type</th><th>Status</th><th>When</th><th class="text-right">Action</th></tr></thead>
+    <tbody>
+      {% for r in reqs %}
+      {% set who = umap.get(r.requester_id) %}
+      {% set sm = {'submitted':'queued','approved':'approved','running':'running','done':'ok','rejected':'error'} %}
+      <tr>
+        <td>
+          <div class="font-medium">{{ r.product }}{% if r.market %} <span class="text-slate-500 font-normal">&rarr; {{ r.market }}</span>{% endif %}</div>
+          {% if r.details %}<div class="text-xs text-slate-500 max-w-md truncate">{{ r.details }}</div>{% endif %}
+          <div class="text-[10px] text-slate-600">{{ r.tracking_code }}{% if r.leads_delivered %} &middot; {{ r.leads_delivered }} delivered{% endif %}</div>
+        </td>
+        <td class="text-sm">{{ (who.name or who.email) if who else '—' }}</td>
+        <td class="text-xs text-slate-400">{{ (r.request_type or '')|replace('_',' ') }}</td>
+        <td><span class="badge badge-{{ sm.get(r.status,'slate') }}">{{ r.status }}</span></td>
+        <td class="text-xs text-slate-400">{{ r.created_at.strftime('%b %d, %H:%M') if r.created_at else '' }}</td>
+        <td>
+          <div class="flex gap-1 justify-end flex-wrap items-center">
+            {% if r.status == 'submitted' %}
+              <form method="post" action="/admin/requests/{{ r.id }}/approve"><button class="btn btn-primary btn-sm" data-busy="…">Approve</button></form>
+              <form method="post" action="/admin/requests/{{ r.id }}/reject" onsubmit="return confirm('Reject this request?')"><button class="btn btn-neutral btn-sm">Reject</button></form>
+            {% elif r.status in ('approved','running') %}
+              {% if r.status == 'approved' %}<form method="post" action="/admin/requests/{{ r.id }}/start"><button class="btn btn-ghost-sky btn-sm" data-busy="…">Mark researching</button></form>{% endif %}
+              <form method="post" action="/admin/requests/{{ r.id }}/done" enctype="multipart/form-data" class="flex gap-1 items-center flex-wrap">
+                <input class="input" name="result" placeholder="result note" style="width:7rem;padding:.3rem .5rem;font-size:.72rem">
+                <input type="file" name="file" class="text-[10px] text-slate-400" style="max-width:8.5rem">
+                <button class="btn btn-neutral btn-sm">Deliver</button>
+              </form>
+            {% else %}
+              <span class="text-xs text-slate-600">&mdash;</span>
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty">No requests yet.</div>
+{% endif %}
+<p class="text-slate-500 text-xs mt-3">To deliver buyers for a request: run the research, then <span class="text-slate-400" style="font-family:monospace">scripts/deliver_request.py &lt;id&gt; buyers.json</span> &mdash; the buyers land in that trader's account and the request closes as <b>done</b>.</p>
+{% endblock %}

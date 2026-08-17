@@ -35,6 +35,7 @@
 </div>
 {% endmacro %}
 
+{% if is_admin %}
 <div class="flex flex-wrap items-end justify-between gap-3 mb-6">
   <div>
     <h2 class="text-xl font-bold tracking-tight">Overview</h2>
@@ -206,4 +207,7 @@
     </div>
   </div>
 </div>
+{% else %}
+{% include 'partials/dashboard_trader.html' %}
+{% endif %}
 {% endblock %}

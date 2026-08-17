@@ -16,14 +16,20 @@ import time
 
 from sqlmodel import Session
 
-from .config import (ENRICH_BATCH, ENRICH_INTERVAL, FOLLOWUP_ENABLED, FOLLOWUP_INTERVAL,
+from datetime import datetime, timedelta
+
+from sqlmodel import select
+
+from .config import (BASE_URL, ENRICH_BATCH, ENRICH_INTERVAL, FOLLOWUP_ENABLED, FOLLOWUP_INTERVAL,
                      GO4WORLD_ENABLED, GO4WORLD_INTERVAL, IMAP_ENABLED, IMAP_INTERVAL, INBOX_DIR,
-                     INGEST_INTERVAL, SMTP_ENABLED)
+                     INGEST_INTERVAL, REQUEST_REMINDER_HOURS, REQUEST_REMINDER_INTERVAL, SMTP_ENABLED)
 from .db import engine, init_db
 from .enrich_service import run_web_enrichment
 from .followups import process_followups
 from .inbound_email import poll_inbox
 from .ingest import ingest_source
+from .models import ServiceRequest, User
+from .telegram import send_message
 from .sources.go4world_csv import Go4WorldCsvSource
 from .sources.go4world_portal import Go4WorldPortalSource
 
@@ -61,6 +67,34 @@ def run_followups() -> dict:
         return process_followups(session, log=logger.info)
 
 
+_reminded_requests = set()   # in-memory dedup: ping the founder about each stale request only once
+
+
+def run_request_reminders() -> dict:
+    """Ping the founder about concierge requests still 'submitted' after REQUEST_REMINDER_HOURS — once
+    each, so no trader's request is silently dropped. In-memory dedup (a restart may re-ping; harmless)."""
+    if REQUEST_REMINDER_INTERVAL <= 0:
+        return {"skipped": "disabled"}
+    cutoff = datetime.utcnow() - timedelta(hours=REQUEST_REMINDER_HOURS)
+    sent = 0
+    with Session(engine) as session:
+        stale = session.exec(select(ServiceRequest).where(
+            ServiceRequest.status == "submitted", ServiceRequest.created_at <= cutoff)).all()
+        for sr in stale:
+            if sr.id in _reminded_requests:
+                continue
+            requester = session.get(User, sr.requester_id)
+            who = (requester.name or requester.email) if requester else "a trader"
+            try:
+                send_message(f"⏰ <b>Pending request {sr.tracking_code}</b> from {who} — "
+                             f"{sr.product or '-'} → {sr.market or '-'}\nApprove: {BASE_URL}/admin/requests")
+            except Exception:  # noqa: BLE001
+                pass
+            _reminded_requests.add(sr.id)
+            sent += 1
+    return {"reminded": sent}
+
+
 def run_once():
     """One full pass: CSV inbox always, portal if creds set, enrich/inbound-email if enabled."""
     init_db()
@@ -73,6 +107,7 @@ def run_once():
         out.append(run_inbound_email())
     if FOLLOWUP_ENABLED:
         out.append(run_followups())
+    out.append(run_request_reminders())
     return out
 
 
@@ -93,6 +128,10 @@ def main():
         init_db()
         print(run_followups())
         return
+    if "--reminders" in sys.argv:
+        init_db()
+        print(run_request_reminders())
+        return
     if "--once" in sys.argv:
         for r in run_once():
             print(r)
@@ -105,7 +144,7 @@ def main():
                 else "disabled (set ENRICH_INTERVAL)",
                 f"every {IMAP_INTERVAL}s" if (IMAP_ENABLED and IMAP_INTERVAL > 0)
                 else "disabled (set IMAP_*)")
-    last_portal = last_enrich = last_imap = last_followup = 0.0
+    last_portal = last_enrich = last_imap = last_followup = last_reminder = 0.0
     while True:
         try:
             init_db()
@@ -125,6 +164,11 @@ def main():
             if FOLLOWUP_ENABLED and FOLLOWUP_INTERVAL > 0 and now - last_followup >= FOLLOWUP_INTERVAL:
                 logger.info("followups %s", run_followups())
                 last_followup = now
+            if REQUEST_REMINDER_INTERVAL > 0 and now - last_reminder >= REQUEST_REMINDER_INTERVAL:
+                rr = run_request_reminders()
+                if rr.get("reminded"):
+                    logger.info("request reminders %s", rr)
+                last_reminder = now
         except Exception:
             logger.exception("worker pass failed")
         time.sleep(INGEST_INTERVAL)

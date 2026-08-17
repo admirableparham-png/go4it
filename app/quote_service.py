@@ -97,6 +97,7 @@ def create_quote(session, lead: Lead, product: Product, incoterm: str = "DAP") -
     version = len(session.exec(select(Quote).where(Quote.lead_id == lead.id)).all()) + 1
     quote = Quote(
         lead_id=lead.id,
+        owner_id=lead.owner_id,            # tenant scope: a quote belongs to whoever owns the lead
         product_id=product.id,
         quantity=result["quantity"],
         incoterm=result["incoterm"],

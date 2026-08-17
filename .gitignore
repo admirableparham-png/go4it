@@ -47,3 +47,6 @@ docs/customs_inbox/*.csv
 # uploaded trade documents (P3.2)
 deal_docs/
 logs/
+
+# delivered service files (real trade docs) — never commit
+request_files/

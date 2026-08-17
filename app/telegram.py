@@ -13,7 +13,7 @@ import re
 
 import httpx
 
-from .config import BASE_URL, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+from .config import BASE_URL, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, TELEGRAM_NOTIFY_SENDS
 
 logger = logging.getLogger("go4it.telegram")
 
@@ -119,7 +119,11 @@ def _loc(lead) -> str:
 
 
 def notify_outreach_sent(lead, subject, kind="Email") -> bool:
-    """Alert: an outreach email went out (main email or an auto follow-up) — who + where."""
+    """Alert: an outreach email went out (main email or an auto follow-up) — who + where.
+    Muted by default (TELEGRAM_NOTIFY_SENDS): the founder only wants to be pinged on real buyer replies,
+    not on every outgoing email. Flip TELEGRAM_NOTIFY_SENDS=true in .env to watch a batch send live."""
+    if not TELEGRAM_NOTIFY_SENDS:
+        return False
     return send_message(
         f"\U0001F4E4 <b>{_esc(kind)} sent</b> → {_esc(lead.buyer_company) or '-'} ({_loc(lead)})\n"
         f"{_esc(lead.email) or '-'}\n<i>{_esc(subject)}</i>\n{BASE_URL}/leads/{lead.id}")
@@ -148,6 +152,41 @@ def notify_needs_call(lead) -> bool:
         f"\U0001F4DE <b>Time to call</b> — no reply after 2 follow-ups\n"
         f"{_esc(lead.buyer_company) or '-'} ({_loc(lead)})\n"
         f"☎ {_esc(lead.phone) or 'no phone on file'}\n{BASE_URL}/leads/{lead.id}")
+
+
+def notify_service_request(sr, requester) -> bool:
+    """Alert the founder: a trader submitted a concierge request (e.g. a buyer search) to approve.
+    Not gated by TELEGRAM_NOTIFY_SENDS — this is exactly what the founder wants to be pinged about."""
+    who = _esc(getattr(requester, "name", "") or getattr(requester, "email", "") or "a trader")
+    kind = _esc((getattr(sr, "request_type", "") or "request").replace("_", " "))
+    where = _esc(sr.market) or "-"
+    return send_message(
+        f"\U0001F195 <b>New {kind} request</b> from {who}\n"
+        f"Product: {_esc(sr.product) or '-'}  →  {where}\n"
+        f"{('<i>' + _esc(sr.details)[:160] + '</i>') if sr.details else ''}\n"
+        f"Approve → {BASE_URL}/admin/requests")
+
+
+def notify_request_update(sr, requester=None) -> bool:
+    """Alert the requester their request changed state (approved / rejected / delivered). Best-effort:
+    routes to the requester's own Telegram if set, else the default chat."""
+    labels = {"approved": "✅ approved — research starting",
+              "rejected": "❌ not accepted", "done": "\U0001F4E6 delivered"}
+    tail = ""
+    if sr.status == "done" and sr.leads_delivered:
+        tail = f"\n{sr.leads_delivered} buyers delivered — see them under My Buyers"
+    elif sr.status == "rejected" and sr.admin_note:
+        tail = f"\n{_esc(sr.admin_note)[:160]}"
+    text = (f"<b>Your request {_esc(sr.tracking_code)}: {labels.get(sr.status, _esc(sr.status))}</b>\n"
+            f"{_esc(sr.product) or '-'}{tail}\n{BASE_URL}/requests")
+    chat = str(getattr(requester, "telegram_user_id", "") or "").strip()
+    if chat:
+        return _send_one(chat, text)      # the requester's OWN Telegram
+    # Fail closed: with no personal chat, don't broadcast this trader's request to the shared channel —
+    # they see the update in-app. Only fan out to the shared chat if the requester is the admin/founder.
+    if requester is not None and getattr(requester, "role", "") == "admin":
+        return send_message(text)
+    return False
 
 
 def notify_buyer_reply(lead, from_addr, subject, snippet="") -> bool:

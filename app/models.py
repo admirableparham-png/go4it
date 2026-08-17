@@ -265,6 +265,7 @@ class Quote(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     tracking_code: str = Field(default="", index=True)      # G4-YYYYMM-####-Qn
     lead_id: int = Field(foreign_key="lead.id", index=True)
+    owner_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)  # tenant scope (=lead owner)
     product_id: int = Field(foreign_key="product.id")
     quantity: float = 0
     incoterm: str = "DAP"          # EXW | CPT | DAP | DAF
@@ -289,4 +290,30 @@ class Quote(SQLModel, table=True):
     approved_by: str = ""
     accepted_at: Optional[datetime] = None     # buyer accepted this pro-forma on the public link
     buyer_response: str = ""                    # "" | accepted | changes (buyer's action on /p/)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class ServiceRequest(SQLModel, table=True):
+    """A concierge request a trader submits (buyer search first; other services later) that the founder
+    approves + fulfils. Isolated like everything else: owner_id = the requester, so it shows only on their
+    dashboard; delivered buyers are attached to them via result_source_tag."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    tracking_code: str = Field(default="", index=True)      # SR-YYYYMM-####
+    requester_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    owner_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)   # = requester (scope)
+    request_type: str = "buyer_hunt"    # buyer_hunt | remittance | freight | contract | docs | other
+    product: str = ""
+    market: str = ""                    # target country/region, free text
+    details: str = ""                   # the trader's prompt / brief
+    status: str = "submitted"           # submitted | approved | rejected | running | done
+    admin_note: str = ""                # founder note / rejection reason
+    result: str = ""                    # delivery summary
+    result_source_tag: str = ""         # Lead.source tag used to attach delivered buyers (req-<id>)
+    result_file_path: str = ""          # a delivered file (contract PDF, remittance confirmation, ...)
+    result_url: str = ""                # or a delivered link
+    leads_delivered: int = 0
+    approved_by: str = ""
+    approved_at: Optional[datetime] = None
+    started_at: Optional[datetime] = None
+    done_at: Optional[datetime] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)

@@ -1,0 +1,22 @@
+<div id="req-{{ r.id }}" class="rounded-lg border border-slate-800 bg-slate-900/60 p-3"
+     {% if r.status in ('submitted','approved','running') %}hx-get="/requests/{{ r.id }}/status" hx-trigger="load delay:5s" hx-swap="outerHTML"{% endif %}>
+  <div class="flex items-center justify-between gap-2">
+    <div class="text-sm text-slate-200 truncate"><span class="text-slate-500">{{ (r.request_type or 'buyer_hunt')|replace('_',' ') }}:</span> {{ r.product }}{% if r.market %} <span class="text-slate-500">&rarr; {{ r.market }}</span>{% endif %}</div>
+    {% set sm = {'submitted':'queued','approved':'approved','running':'running','done':'ok','rejected':'error'} %}
+    <span class="badge badge-{{ sm.get(r.status,'slate') }} shrink-0 uppercase text-[10px]">
+      {% if r.status in ('approved','running') %}<span class="animate-pulse">{{ r.status }}&hellip;</span>{% else %}{{ r.status }}{% endif %}</span>
+  </div>
+  {% if r.status == 'done' %}
+    <div class="text-[12px] mt-1"><span class="text-emerald-300 font-medium">{{ r.result or 'Delivered' }}</span>
+      {% if r.leads_delivered %} &middot; <a href="/leads?source={{ r.result_source_tag }}" class="text-sky-400 hover:underline">view {{ r.leads_delivered }} buyers &#8599;</a>{% endif %}
+      {% if r.result_file_path %} &middot; <a href="/requests/{{ r.id }}/result/file" class="text-sky-400 hover:underline">open deliverable &#8599;</a>{% endif %}
+      {% if r.result_url %} &middot; <a href="{{ r.result_url }}" target="_blank" rel="noopener" class="text-sky-400 hover:underline">open link &#8599;</a>{% endif %}</div>
+  {% elif r.status == 'rejected' %}
+    <div class="text-[12px] text-rose-300 mt-1">{{ r.admin_note or 'Not accepted.' }}</div>
+  {% elif r.status == 'submitted' %}
+    <div class="text-[12px] text-slate-500 mt-1">Sent to admin &mdash; waiting for approval&hellip;</div>
+  {% else %}
+    <div class="text-[12px] text-sky-300 mt-1">Approved &mdash; finding your buyers&hellip;</div>
+  {% endif %}
+  <div class="text-[10px] text-slate-600 mt-1">{{ r.tracking_code }}{% if r.created_at %} &middot; {{ r.created_at.strftime('%b %d, %H:%M') }}{% endif %}</div>
+</div>

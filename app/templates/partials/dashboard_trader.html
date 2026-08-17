@@ -1,0 +1,81 @@
+<div class="mb-6">
+  <h2 class="text-xl font-bold tracking-tight">Welcome{% if user.name %}, {{ user.name }}{% endif %}</h2>
+  <p class="text-slate-500 text-sm mt-0.5">Your desk. Tell us the product you want to sell &mdash; we find the buyers and deliver them right here.</p>
+</div>
+
+<!-- KPI cards (scoped to you) -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+  <div class="card"><div class="eyebrow">My buyers</div><div class="text-[26px] font-bold leading-tight mt-1 tabular-nums">{{ total }}</div><div class="text-xs text-slate-500 mt-0.5">{{ contactable }} contactable</div></div>
+  <div class="card"><div class="eyebrow">Open pipeline</div><div class="text-[26px] font-bold text-sky-300 leading-tight mt-1 tabular-nums">{{ open_pipeline }}</div><div class="text-xs text-slate-500 mt-0.5">new + quoted + negotiating</div></div>
+  <div class="card"><div class="eyebrow">Quotes</div><div class="text-[26px] font-bold leading-tight mt-1 tabular-nums">{{ quotes_total }}</div><div class="text-xs text-slate-500 mt-0.5">{{ quotes_sent }} sent</div></div>
+  <div class="card"><div class="eyebrow">Deals</div><div class="text-[26px] font-bold text-emerald-300 leading-tight mt-1 tabular-nums">{{ deals_open }}</div><div class="text-xs text-slate-500 mt-0.5">{{ deals_total }} total</div></div>
+</div>
+
+<div class="grid lg:grid-cols-3 gap-6">
+  <!-- request a buyer search -->
+  <div class="card lg:col-span-1 h-fit" style="border-color:rgba(5,150,105,.4)">
+    <div class="eyebrow" style="color:#34d399">Concierge</div>
+    <h3 class="text-base font-semibold mb-1">Request a buyer search</h3>
+    <p class="text-slate-500 text-xs mb-3">Enter your product and we'll find buyers for it. We review it, run the search, and deliver the buyers into your account.</p>
+    <form method="post" action="/requests" class="space-y-3">
+      <input type="hidden" name="request_type" value="buyer_hunt">
+      <div><label class="field-label">Your product</label><input class="input" name="product" required placeholder="e.g. Zinc sulphate, saffron, tiles…"></div>
+      <div><label class="field-label">Target market <span class="text-slate-600">(optional)</span></label><input class="input" name="market" placeholder="e.g. Iraq, GCC, Turkey…"></div>
+      <div><label class="field-label">Details</label><textarea class="input" name="details" rows="2" placeholder="Grade, quantity, who you want to reach, notes…"></textarea></div>
+      <button class="btn btn-primary btn-block" data-busy="Sending">Send to admin</button>
+    </form>
+    <a href="/services" class="link text-xs mt-3 inline-block">or request another service &mdash; remittance, contract, freight, docs &rarr;</a>
+  </div>
+
+  <!-- my requests + my buyers -->
+  <div class="lg:col-span-2 space-y-4">
+    <div class="card-soft">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-sm font-semibold text-slate-200">My requests</h3>
+        <a href="/requests" class="text-xs link">all requests &rarr;</a>
+      </div>
+      {% if my_requests %}
+        <div class="space-y-2">{% for r in my_requests %}{% include 'partials/request_card.html' %}{% endfor %}</div>
+      {% else %}
+        <p class="text-slate-600 text-xs">No requests yet &mdash; submit your first buyer search on the left.</p>
+      {% endif %}
+    </div>
+
+    {% if due_leads %}
+    <div class="rounded-xl border border-amber-700/40 bg-amber-900/10 p-4">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="text-sm font-semibold text-amber-200">&#128276; Follow-ups due <span class="badge badge-amber ml-1">{{ due_leads|length }}</span></h3>
+        <a href="/leads?due=today" class="text-xs link">work the queue &rarr;</a>
+      </div>
+      <div class="divide-y divide-amber-900/30">
+        {% for ld in due_leads %}
+          <a href="/leads/{{ ld.id }}" class="flex items-center justify-between py-1.5 -mx-1.5 px-1.5 rounded-lg hover:bg-amber-900/20 transition-colors">
+            <div class="min-w-0"><div class="text-sm truncate">{{ ld.buyer_company or ld.product }}</div></div>
+            <span class="shrink-0 ml-2 text-[11px] text-amber-300">{{ ld.next_action_at.strftime('%b %d') }}</span>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="card-soft">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-sm font-semibold text-slate-200">My buyers</h3>
+        <a href="/leads" class="text-xs link">view all &rarr;</a>
+      </div>
+      {% if recent_leads %}
+        <div class="divide-y divide-slate-800">
+          {% for ld in recent_leads %}
+            <a href="/leads/{{ ld.id }}" class="flex items-center justify-between py-2 hover:bg-slate-800/40 -mx-1.5 px-1.5 rounded-lg transition-colors">
+              <div class="min-w-0">
+                <div class="text-sm truncate">{{ ld.buyer_company or ld.product }}</div>
+                <div class="text-xs text-slate-500 truncate">{{ ld.product }}{% if ld.dest_country %} &middot; {{ ld.dest_country }}{% endif %}</div>
+              </div>
+              <span class="badge badge-{{ ld.status }} shrink-0 ml-2">{{ ld.status }}</span>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}<p class="text-slate-600 text-xs">No buyers yet. Request a search and we'll deliver them here.</p>{% endif %}
+    </div>
+  </div>
+</div>

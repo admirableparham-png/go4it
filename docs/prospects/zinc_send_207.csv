@@ -1,0 +1,208 @@
+#,country,city,company,email,type,match,phone,website
+1,AF,Kabul,Helal Agricultural and Seeds Company (Helal Group),info@helalgroup.org.af,agri-input,90,+93790555222,https://www.helalgroup.org.af/
+2,AF,Kabul,Amrovet Ltd (Amrovet Afghanistan),info@amrovet.com,agri-input,85,+93777600204,https://amrovet.com/
+3,AF,Kabul,Almas Sabz Afghan Seed,info@almassabz.org.af,agri-input,78,+93799733833,https://almassabz.org.af/
+4,AF,Mazar-e-Sharif,Drukhshan Balkh,info@drukhshanebalkh.com,agri-input,72,0799205180,http://www.drukhshanebalkh.com
+5,AF,Jalalabad,Mashriqi-Wal Feed Mill,info@mashriqiwalfeed.com,feed,65,+93 799 16 7000,https://www.mashriqiwalfeedmill.com/
+6,IQ,Erbil,AH Group Iraq (Rahala Alsahra feed additives),info@ahgroupiraq.com,importer/trader,90,+964 750 137 5025,https://www.ralsahra.com/
+7,IQ,Erbil,Agrimatco (Agricultural Materials Trading Co.),agrimatco.kurdistan@agrimatco-me.com,agri-input,85,+964 772 266 0989,https://www.agrimatco-iraq.com
+8,IQ,Babylon,Rayan For Oil Extraction & Feed Mill (Etihad Group),info@rayan.iq,feed,85,+964 781 942 4082,https://www.rayan.iq/
+9,IQ,Erbil,VetCity,drahmadsusaey@gmail.com,feed,82,+964 750 818 2011,https://www.vetcityiq.com
+10,IQ,Erbil,ARK Company,info@ark.krd,agrochem,80,+964 7704463508,https://ark.krd
+11,IQ,Baghdad,House Agri Company,info@houseagri.net,agri-input,80,+964 790 133 0180,https://houseagri.net
+12,IQ,Erbil,Yara Barz,info@yarabarz.com,feed,80,+964 750 445 9322,https://www.yarabarz.com
+13,IQ,Baghdad,Green Solutions Co. for General Trading and Agricultural Supplies,info@greensolutions-iq.com,agri-input,78,+964 780 174 6938,https://greensolutions-iq.com
+14,IQ,"Al Hilla, Babil",Ghadir Babil,info@ghadirbabil.com,feed,78,,https://ghadirbabil.com
+15,IQ,Erbil,Iraq Feed Company (Barash Feed Company),info@iraqfeed.com,feed,78,009647507741144,https://www.iraqfeed.com
+16,IQ,Erbil,Al Munqeth Group,info@almunqeth.com,feed,78,+964 774 080 8575,https://almunqeth.com/
+17,IQ,Baghdad,Al Sadeq Group (Agriculture & Poultry Division),wael.falah@alsadeq-group.com,feed,78,,https://alsadeq-group.com
+18,IQ,Baghdad,Zain Al Mutaqadima Animal Feed Production Company,info@zaingroup-me.com,feed,76,009647721000080,https://www.zainfeed.com
+19,IQ,Basra,Khayrat Al-Khasib (Fusteka Group),info@alkhasib.com,feed,76,+964 771 999 2312,https://www.khayrat-alkhasib.com/
+20,IQ,Karbala,Al-Waha Feed Mill (AlHachem Company),info@al-hachem.com.iq,feed,74,+9647901943823,https://al-hachem.com.iq
+21,IQ,Sulaymaniyah,Agro Pro,agropro@agropro-iq.com,agri-input,74,+9647702122253,https://agropro-iq.com
+22,IQ,Duhok,Sardar Harki,info@sardarharki.com,agri-input,72,00964(0)7504667717,https://www.sardarharki.com
+23,IQ,Duhok,Kavin Group (Kavin Farm),info@kavin-group.com,feed,72,+964 750 006 6939,https://kavin-group.com/
+24,IQ,Erbil,Guljwan Company,goljwan.company@yahoo.com,agri-input,70,+964 750 458 8826,https://www.guljwan-company.com/
+25,IQ,Sulaymaniyah,Kar Agro Company,info@karagro.com,feed,68,,https://karagro.com
+26,IQ,Basra,"Masat Al-Basra (Masat Al-Basra Co. for General Contracting, Trading and Import of Chemical Materials)",info@masabasra.com,industrial,68,+964 781 838 3504,https://masabasra.com
+27,IQ,Dahuk,Al-Hazim Group,info@alhazimgroup.com,agrochem,65,,https://www.alhazimgroup.com
+28,IQ,Baghdad,Reef Al Khadraa Co. for General Trade and Agricultural Supplies,info@reef-alkhadraa.com,agri-input,58,07713688934,https://www.reef-alkhadraa.com
+29,IQ,Kirkuk,Ruaad Kirkuk Trading Company,info@ruaad-kirkuk.com.iq,importer/trader,35,+964 770 132 1433,https://www.ruaad-kirkuk.com.iq
+30,UZ,Tashkent,ASR Kimyo Agro,info@asragro.uz,agri-input,90,+998 97 044 11 30,https://asragro.uz
+31,UZ,Tashkent,Agro Business MChJ (Agro Business LLC),agrobusiness.uz@gmail.com,agri-input,85,+998 93 502 30 05,https://agro-business.uz
+32,UZ,Tashkent,Petrochem Agro,office@petrochem.uz,agrochem,85,+998 95 515 00 70,https://petrochem.uz
+33,UZ,Tashkent,Alliance Chemical Group,alliance-chemical@acg.uz,industrial,75,+998 94 666 60 06,https://alliancechemical.uz
+34,UZ,Tbilisi,Bestservice,chemicalglobal@mail.ru,importer/trader,72,(598) 38 00 13,
+35,UZ,Tashkent,Tashkent Chemicals,sales@tashkentchemicals.uz,industrial,65,+998 77 339 88 81,https://tashkentchemicals.uz
+36,UZ,Kokand,Indorama Kokand Fertilizers and Chemicals,ikf@uz.indorama.com,agrochem,55,+998 73 543 9000,https://indoramakokandfertilizer.com
+37,UZ,Tashkent,Arsoid Optima Trade LLC,info@arsoid.uz,importer/trader,55,,https://arsoid.uz
+38,UZ,Tashkent,Elektroxim Kompleks Plus LLC,kfi1@mail.ru,importer/trader,55,,https://himproduct.uz
+39,UZ,Tashkent,Merit Chemicals (Merit Kimyo Invest LLC),zohid@meritkimyo.uz,importer/trader,55,,https://meritchemicals.uz
+40,UZ,Tashkent,ETC U-STAN Foreign Enterprise LLC,info-uz@utsrus.com,importer/trader,55,,https://utsrus.com
+41,KZ,Almaty,TOO Kompaniya CEMS (CEMS Company LLP),87714444324@mail.ru,importer/trader,88,+7 727 221 9398,https://cems.kz
+42,KZ,"Karasay district, Almaty region",AO AsiaAgroFood (АзияАгроФуд),aaf@aaf.kz,feed,75,+7 727 321 0022,http://aaf.kz
+43,KZ,Almaty (12 regional warehouses),Agromart LLP (АГРОМАРТ),support@agro-mart.kz,agri-input,74,8-800-080-99-77,https://agro-mart.kz
+44,KZ,Astana,OpenTrade LLP,sales@opentrade.kz,agri-input,73,+7 771 502 5555,https://opentrade.kz
+45,KZ,Almaty,TOO KosAgroCommerce (КосАгроКоммерц),info@kosagro.kz,agrochem,71,+7 747 911 3033,https://kosagro.kz
+46,KZ,Almaty (10 regional warehouses),CEMEX Engineering (cemex.kz),support@cemex.kz,agri-input,70,8-800-080-99-55,https://cemex.kz
+47,KZ,Astana,Eurasian Chemical Group LLP (EC GROUP),info@ecgroup.kz,agrochem,68,+7 700 797 2480,https://ecgroup.kz
+48,KZ,Astana,GK VS KZ / Velund Steel LLP (gkws.kz),info@gkws.kz,industrial,66,+7 771 210 1879,https://gkws.kz
+49,KZ,Almaty,"TOO Khimiya i Tekhnologiya (Chemistry & Technology LLP, cht.kz)",info@cht.kz,industrial,65,+7 727 357 3799,https://www.cht.kz
+50,KZ,Shymkent/Almaty,Zeleniy Dom (Green House / Zeldom) LLP,zeldom2025@gmail.com,agri-input,63,,https://www.zeldom.kz
+51,KZ,Almaty,TOO BHI-Service,info@bhi.kz,industrial,62,+7 702 222 5551,https://bhi.kz
+52,KZ,Uralsk (Oral),ATC Group of Companies (Intertorg.kz),info@intertorg.kz,industrial,58,+7 707 545 0282,https://intertorg.kz
+53,TM,Ashgabat,"""Daýhan Sarpasy"" DH",dayhansarpasydh@gmail.com,feed,85,+99312227491,http://www.dayhansarpasy.com.tm
+54,TM,Ashgabat,Kuwwatly Yurt,kuwwatlyyurt.hj@gmail.com,agri-input,68,+99312480463,
+55,TM,Ashgabat,"Individual Enterprise ""Berk Gerden""",sales@berkmembrane.com,industrial,38,+99365681171,https://berkmembrane.com/
+56,TJ,Guliston,Farovon Holding Group,info@farovon.tj,feed,80,+992 777 17 31 31,https://farovon.tj/
+57,TJ,Khujand (Bobojon Gafurov),LLC Ordi Fatir,info@ordifatir.com,feed,78,,https://fatir.tj/en/opening/
+58,KG,Bishkek,Agro Style,uzagrokg@mail.ru,agri-input,80,+996 779 939 360,https://agrostyle.kg
+59,KG,Bishkek,Агромаркет №1 (Agromarket #1),admin@agro-market.kg,agri-input,78,,https://agro-market.kg
+60,KG,Bishkek,ОсОО «Химия и Технология» (CHT),info@cht.kg,industrial,66,+996 (312) 96 05 05,https://cht.kg
+61,KG,Bishkek,ОЮЛ Кыргызская Ассоциация поставщиков удобрений (Kyrgyz Fertilizer Suppliers Association),info@cci.kg,tender,50,+996 312 576162,
+62,AZ,Baku,AZCHEMCO LLC,office@azchemco.az,agrochem,88,+994 99 369 36 93,https://www.azchemco.az/en
+63,AZ,Baku,AISCO / Gubre.az (Aqrar Innovasiya ve Techizat Sirketi),gubre@gubre.az,agri-input,85,+994 50 828 28 28,https://gubre.az/
+64,AZ,Baku,AGROVET Azerbaijan,info@agrovetazerbaijan.com,feed,82,+994 55 252 43 13,https://agrovetazerbaijan.az/en/
+65,AZ,Xirdalan,VETAGRO MMC,office@vetagro.az,feed,78,+994 10 510 00 60,https://vetagro.az/en/
+66,AZ,Baku,AqroBioCore MMC,info@aqrobiocore.az,agri-input,75,+994 99 310 95 00,https://aqrobiocore.az/en/
+67,AZ,Siyazan,Siyazan Broyler OJSC,info@siyazanbroiler.com,feed,68,+994 12 440 49 99,https://siyazantoyuq.az/
+68,AZ,Ucar,Azerbaijan Poultry Company LLC (Marcan brand),info@apc.az,feed,65,+994 50 261 06 00,https://www.apc.az/
+69,AZ,Baku,Chem Trade LLC,info@chemtrade.az,importer/trader,55,+994 50 261 23 39,https://chemtrade.az/
+70,AZ,Baku,BABA LAB MMC,info@babalab.az,industrial,48,+994 50 385 05 27,https://babalab.az/
+71,AZ,Baku,AZSEEDS LLC,info@azseeds.az,agri-input,42,+994 12 566 00 22,https://www.azseeds.az/en/
+72,AM,Yerevan,Agrimatco Armenia,agrimatco.armenia@agrimatco-eu.com,agri-input,80,,https://agrimatco.am/en/
+73,AM,Yerevan,AgroProf LLC,agroprofarmenia@gmail.com,agri-input,78,+374 94 807555,https://agroprof.am/en/home/
+74,AM,Yerevan,AGROINPUT LLC (agroinput.am),agroinput@mail.ru,agri-input,78,+374 60 545455,https://agroinput.am/en/
+75,AM,Yerevan,Natali Agro LLC,info@nataliagro.am,agri-input,75,+374 77 685060,https://nataliagro.am/
+76,AM,"Jrarbi, Armavir Region",Araks (Araxpf) Poultry Factory,info@araxpf.am,feed,72,+374 60 508888,https://araxpf.am/en/
+77,AM,"Abovyan, Kotayk Region",ORWACO CJSC,info@orwaco.am,agrochem,55,+374 94 644073,https://orwaco.am/en/
+78,GE,Tbilisi,Agrimatco Georgia LLC,agrimatco.georgia@agrimatco-eu.com,agri-input,90,+995 322 222 404,agrimatco.ge
+79,GE,Tbilisi,Nutrimax,info@nutrimax.ge,feed,88,230 53 35,nutrimax.ge
+80,GE,Akhalkalaki,Agrosphere (Noblex LTD),info@noblex.ge,agri-input,82,247 30 05,agrosphere.ge
+81,GE,Gori,Agronovation (Agronova.ge),info@agronova.ge,agri-input,80,(577) 69 04 01,agronova.ge
+82,GE,Kutaisi,Agricula,info@agricula.ge,agri-input,78,591 50 96 77,agricula.ge
+83,GE,Tbilisi,Novofert-Georgia,novofertge@gmail.com,agri-input,78,(557) 63 10 83,novofert.ge
+84,GE,Tbilisi,Agrofert,agrofert.georgia@gmail.com,agri-input,76,(591) 02 29 00,agrofert.ge
+85,GE,Batumi,Agrokartli,agroqartli.georgia@gmail.com,agri-input,75,(568) 23 44 55,agrokartli.ge
+86,GE,Tbilisi,Agro Sakhli (Agrohall),info@agrohall.ge,agri-input,74,(579) 79 74 17,agrohall.ge
+87,GE,Tbilisi,Agronom,info@agronom.com.ge,agri-input,70,(568) 25 10 84,agronom.com.ge
+88,GE,Tbilisi,Agrow (Agrow Agriculture),info@agrow.ge,agri-input,70,+995 558 797 733,agrow.ge
+89,GE,Tbilisi,Agrosima,agrosimallc@gmail.com,agri-input,68,(598) 53 44 00,agrosima.ge
+90,GE,Tbilisi,Agrotrust,info@agrotrust.ge,agri-input,68,032 388 82 58,agrotrust.ge
+91,GE,Tbilisi,Grow Grow,info@growgrow.ge,agri-input,66,2 500 420,growgrow.ge
+92,GE,Tbilisi,Rusagro LLC,info@rusagro.ge,agri-input,66,(599) 92 35 41,rusagro.ge
+93,GE,Tbilisi,Ioto Agro,info@ioto.ge,agri-input,62,211 17 17,
+94,GE,Tbilisi,Baraka,info@baraka.ge,agri-input,62,032 204 44 49,baraka.ge
+95,GE,Tbilisi,Cartlis Management,info@cartlis.ge,agri-input,60,244 55 42,cartlis.ge
+96,GE,Batumi,Dektonnl International LLC,dektonnl@mail.com,importer/trader,58,+995 555624707,dektonnl.com
+97,GE,Tbilisi,Chirina Ltd.,info@chirina.ge,feed,55,2 000 221,chirina.ge
+98,GE,Tbilisi,Smart Feed,smartfeed@yahoo.com,feed,55,(551) 58 07 07,
+99,GE,Tbilisi,Unigrain Georgian Group,contact@unigrain.ge,feed,52,242 46 86,
+100,GE,Tbilisi,Syngenta Agro (Georgia office),nino.makaltia@syngenta.com,agrochem,40,235 33 12,
+101,PK,Lahore,Jullundur (Pvt) Ltd,info@jullundurgroup.com,agri-input,82,042-35175912,https://jullundur.com.pk
+102,PK,Lahore,Total Nutrition (Pvt) Ltd,info@totalnutrition.pk,feed,82,,https://www.totalnutrition.pk
+103,PK,Lahore,NIMPEX Chemicals Pakistan (NIMPEX Group),info@nimpexchemicals.com,feed,80,+92 42 35466426,https://nimpexchemicals.com
+104,PK,Multan,Suncrop Group,info@suncropgroup.com,agrochem,80,+92 61 111 580 580,https://www.suncropgroup.com
+105,PK,Sargodha,Pak Agro Fertilizers & Chemicals (Pvt) Ltd,info@pakagrofertilizers.com,importer/trader,80,+92-48-6681009,https://pakagrofertilizers.com
+106,PK,Lahore,Gunjmandi Chemicals,sales@gunjmandichemicals.com,importer/trader,78,+92-42-35782145,https://gunjmandichemicals.com
+107,PK,Hyderabad,National Fertilizer Marketing Limited (NFML),info@nfml.com.pk,importer/trader,78,(92 22) 3867700,https://www.nfml.com.pk
+108,PK,Multan,Abdullah Haseeb Agro Chemicals (AHAC),info@abdullahhaseeb.com,agrochem,76,+92-64-2471862-962,https://abdullahhaseeb.com
+109,PK,Lahore,Big Feed (Pvt) Ltd (Big Bird Group),bigbird@bigbirdgroup.com.pk,feed,74,042 111 111 220,https://www.bigbirdgroup.com.pk
+110,PK,Karachi,Ahmed Chemical Co.,zubair@ahmadchm.com,industrial,72,+92 21 32424383-5,http://ahmadchm.com
+111,PK,Karachi,Lassani Traders,info@lassani.com,importer/trader,68,9221-2432420,
+112,PK,Multan,The Edge Group,hr@edgegroup.com.pk,agri-input,65,0344-9411111,https://www.edgegroup.com.pk
+113,PK,Sahiwal,Sadiq Feeds (Sadiq Group),mail@sadiqfeeds.com,feed,63,,https://sb.com.pk
+114,TR,İstanbul (Esenler),BRP Kimya,info@brpkimya.com,feed,90,+90 212 438 54 55,https://brpkimya.com
+115,TR,"Aksu, Antalya",Güner İmalat (GNS — Guner Nutri Solutions),info@gunerimalat.com,agri-input,85,0 242 462 16 18,https://gunerimalat.com/
+116,TR,Istanbul,AS Kimya Sanayi ve Dış Ticaret A.Ş.,info@askimya.com,importer/trader,85,+90 212 675 05 39,https://www.askimya.com/
+117,TR,İstanbul (Ataşehir),Ataman Kimya A.Ş.,info@atamankimya.com,importer/trader,82,+90 216 577 10 10,https://www.atamanchemicals.com
+118,TR,"Döşemealtı, Antalya",Doğal Kimyevi Maddeler Zirai İlaçlar San. Tic. A.Ş.,dogal@dogaltrm.com,agri-input,80,(242) 258 16 62,https://www.dogaltrm.com
+119,TR,Bursa (Nilüfer),Silber Kimya,info@silberkimya.com,industrial,78,+90 224 342 05 45,https://www.silberkimya.com
+120,TR,Adana,Köseoğlu Tarım Ticaret ve Sanayi Ltd. Şti.,info@koseoglutarim.com.tr,agri-input,75,+90 322 324 10 00,https://www.koseoglutarim.com.tr/
+121,TR,"Menderes, Izmir",Ünaldı Gübre (Ünaldı Organik Likid Gübre San. ve Tic. A.Ş.),info@unaldi.com.tr,agri-input,75,+90 232 281 14 95,https://www.unaldi.com.tr/
+122,TR,İzmir (Kemalpaşa),Adagro Zirai İlaç ve Tarım Ürünleri,adagro@adagro.com.tr,agri-input,75,+90 232 478 02 45,https://www.adagro.com.tr/
+123,TR,Istanbul,Veskim Kimyevi Madde İthalat İhracat A.Ş.,info@veskim.com,importer/trader,75,+90 212 283 10 17,https://veskim.com/
+124,TR,Konya,Mineraller A.Ş.,bilgi@mineraller.com.tr,feed,70,+90 332 342 55 45,https://www.mineraller.com.tr/
+125,TR,Adana (Sarıçam),Alde Kimya (Aldekimya),satis@aldekimya.com,agrochem,70,0322 329 03 22,https://www.aldekimya.com
+126,TR,Kocaeli,Galva Chemical,info@galvachemical.com,industrial,68,0262 342 20 94,https://galvachemical.com.tr
+127,TR,Adana,Erdoğanlar Gübre,iletisim@erdoganlargubre.com,agri-input,65,+90 322 428 87 45,https://www.erdoganlargubre.com/
+128,TR,Antalya (Muratpaşa),Antalya Kimya,info@antalyakimya.com,importer/trader,65,(0242) 221 0 222,https://www.antalyakimya.com
+129,TR,İzmir,Cesa Kimya,info@cesakimya.com.tr,agrochem,65,(232) 360-1475,https://cesakimya.com.tr
+130,TR,İstanbul (Şişli),Yelken Kimya,info@yelkenkimya.com,agrochem,62,+90 212 343 34 95,https://yelkenkimya.com
+131,TR,"Mustafakemalpaşa, Bursa",Bursa Gıda Yem (BGY Yem),info@bursagidayem.com,feed,60,0546 947 90 80,https://www.bursagidayem.com/
+132,TR,Adana,Beyka Yem,info@beykayem.com,feed,60,0322 256 42 01,https://beykayem.com/
+133,TR,İstanbul,CTF Premix,info@ctfpremix.com,feed,60,+90 543 637 88 69,https://www.ctfpremix.com/tr
+134,TR,"Kartepe, Kocaeli",Atun Kimya,vural@atunkimya.com,industrial,60,0 554 333 42 86,https://atunkimya.com
+135,TR,Konya,OMTAR TARIM,omtartarim@gmail.com,agri-input,55,0332 342 40 11,https://www.omtartarim.com/
+136,TR,Malatya,Karaoğlan Tarım,info@karaoglantarim.com,agri-input,55,0 422 502 14 44,https://karaoglantarim.com
+137,TR,Bursa (Osmangazi),Matlı Yem Sanayi ve Ticaret A.Ş.,matli@matli.com.tr,feed,55,0224 999 12 00,https://matli.com.tr
+138,TR,Konya,Agrotar (Agrotar Tarımsal),info@agrotartarimsal.com,agri-input,50,(0332) 342 42 07,https://agrotartarimsal.com/
+139,TR,Adana,Narova Tarım,info@narovatarim.com.tr,agri-input,50,+90 322 277 05 55,https://www.narovatarim.com.tr/
+140,TR,Gaziantep (Şehitkamil),Evokem Kimya Sanayi,info@evokem.com.tr,industrial,50,+90 543 364 74 84,https://evokem.com.tr
+141,TR,Gaziantep (Şehitkamil),Ayıntap Teknik Kimya (ATK),info@atkchem.com,industrial,50,+90 342 235 40 70,https://atkchem.com
+142,TR,İstanbul (Tuzla),Cation Kimya,info@cationkimya.com,industrial,50,+90 544 626 77 84,https://cationkimya.com
+143,TR,Konya,Bezirciler Tohumculuk,info@bezirciler.com,agri-input,45,+90 540 413 48 39,https://bezirciler.com
+144,TR,İstanbul (Ümraniye),Chema Kimya,info@chemakimya.com,industrial,45,0 (216) 594 57 10,https://www.chemakimya.com
+145,TR,Konya (Karatay),Ova Kimya,info@ovakimya.com,industrial,45,0553 120 06 72,https://www.ovakimya.com
+146,TR,"Kahramankazan, Ankara",Teknoklas A.Ş.,info@teknoklasas.com.tr,industrial,42,+90 312 273 7 273,https://teknoklasas.com
+147,AE,Dubai,Agro National Chemical Fertilizer Trading Co. LLC,info@agronational.ae,agri-input,95,+971-507-264-928,https://agronational.ae/
+148,AE,Dubai (JAFZA South),Hazchem Chemicals LLC,admin@hazchem.ae,agrochem,92,04-3316422,https://www.hazchem.ae/
+149,AE,Fujairah,Dubi Chem Marine International,dubichemical@gmail.com,importer/trader,90,+971 9 2242524,https://www.dubichem.com
+150,AE,Dubai,U Distribution Company FZCO (UDC DMCC),info@udc-dmcc.com,importer/trader,68,+971 45605220,https://udc-dmcc.com/
+151,AE,Al Ain,Al Ain Fodder Factory (AAFF),info@alainfodder.com,feed,68,+971 3 762 5777,https://www.alainfodderfactory.com/
+152,AE,Dubai (Margham),Zabeel Feed (Zabeel Feedmill LLC),info@zabeelfeed.ae,feed,65,+971 4 282 7491,https://zabeelfeed.com/
+153,AE,Ajman,Al Taher Chemicals Trading LLC (ATC),contact@altaherglobal.com,industrial,65,+971-565-151930,https://altaherchemicals.com/
+154,AE,Sharjah,Gulf Feed Line Industry (Gulf Line Feed IND LLC),sales@gulffeed.com,feed,62,+971 52 455 2913,https://gulffeeds.com/
+155,AE,Dubai / Sharjah,Chemway Chemicals,sales@chemwaychemicals.com,agrochem,60,+971 54 994 9584,https://chemwaychemicals.com/
+156,AE,Dubai,Buoyancy General Trading LLC,sales@buoyancy.ae,agri-input,58,+971 50207 4451,https://buoyancy.ae/
+157,AE,Dubai (JLT),Agrifields DMCC,info@agrifields.com,agri-input,55,,https://www.agrifields.com/
+158,AE,Abu Dhabi (Kizad),OCET Gulf (Orginate Chemicals and Equipment Trading Ltd),info@ocetgulf.com,industrial,50,+971 2 491 7352,https://ocetgulf.com/
+159,AE,Dubai (Jebel Ali Free Zone),Anglo Gulf FZCO,subramanian@anglogulf.ae,agrochem,50,+971552242938,https://anglogulf.ae/
+160,AE,Fujairah,Fujairah Chemical LLC (RXSOL),fujairahchemical@gmail.com,industrial,48,+971 56 108 1115,https://fujairahchemical.com/
+161,AE,Sharjah,Qamar Al Jazeera Marine Equipment Trading LLC,qamarajtrading@hotmail.com,industrial,48,+971 54 218 3786,https://qajtrading.com/
+162,AE,Umm Al Quwain / Dubai / Abu Dhabi,Chemstock LLC,orders@chemstock.ae,industrial,45,+971 4 5787667,https://chemstock.ae/
+163,AE,Dubai,Metito Utilities,info@metito.com,industrial,45,,https://www.metito.com/
+164,AE,Sharjah (SAIF Zone),Palvi Power Tech Sales FZE,info@palvifze.com,importer/trader,45,+9715 6253 0840,https://www.palvifze.com/
+165,SA,Dammam,Saudi Feed Premixes Co. (Saudi Mix),info@saudimix.com,feed,93,+966 13 8354970,https://www.saudimix.com
+166,SA,Dammam,Alahmari Group,info@alahmari.com.sa,agri-input,92,+966 13 805 0039,https://www.alahmari.com.sa
+167,SA,Jeddah,Agriculture Machinery & Materials Company (AMMC / Agrimatco),ammc.sa@agrimatco-me.com,agri-input,90,+966 12 4325652,https://www.ammc.com.sa
+168,SA,Riyadh,Al Khumasia Company for Feed and Animal Products,info@khumasia.sa,feed,88,+966 11 419 1414,https://www.khumasia.sa/home_en.html
+169,SA,Al-Kharj,AlWadi Poultry,info@alwadi-sa.com,feed,85,+966 55 5022465,https://alwadi-sa.com
+170,SA,Al-Ahsa (Hofuf),Alyaseen Agricultural Company,info@alyaseenagri.com,agri-input,85,+966 13 5815588,https://www.alyaseenagri.com/en/home
+171,SA,Riyadh,Al Masa Agriculture,info@almasaagri.com,agri-input,82,+966 55 5082665,https://almasaagri.com
+172,SA,Riyadh (plant in Yanbu),Green Valley Fertilizer Company,info@greenvalley-sa.com,agri-input,78,+966 11 4192137,https://www.greenvalley-sa.com
+173,SA,Riyadh,Trans Industrial Trading Company,sales@trans-industrial.com,importer/trader,68,+966 55 0252058,https://www.trans-industrial.com
+174,SA,Jeddah,Chemtrade (The Saudi Company of Chemical Trading Ltd.),info@chemtrade.com,importer/trader,65,+966 12 6520000,https://chemtrade.com
+175,SA,Dammam,Al-Jazira Water Treatment Chemicals,info@aljazira.com,industrial,62,+966 13 8034509,http://www.al-jazirachemicals.com
+176,OM,Barka,Muscat and Barka Business Trading Chemical Co. (MBBT / Oman Chemical),omanchem.com@gmail.com,importer/trader,92,+968 9948 9269,https://omanchem.com
+177,OM,Salalah (Raysut),Dhofar Cattle Feed Co. SAOG,info@dhofarcattlefeed.om,feed,85,+968 23219074,https://www.dhofarcattlefeed.om
+178,OM,Barka,Sohar Poultry Company SAOC,info@soharpoultry.com,feed,80,+968 26987777,https://www.soharpoultry.com
+179,OM,Muscat,Muscat Overseas Agriculture Company (MOAC),mog@muscatoverseas.com,agri-input,78,+968 21165700,https://muscatoverseas.com
+180,OM,Al Khaboura,Oman Agri-Fertilizer Co LLC,sales@omanagrifertilizer.com,agri-input,75,+968 26802253,http://www.omanagrifertilizer.com
+181,OM,Muscat (Al Mawelah South),UV Water Systems (Uniqueness View Trading & Contracting Co),info@waterfilteroman.com,industrial,48,+968 9763 7786,https://uvwater.biz
+182,QA,Doha,Arab Qatari For Poultry Production,info@aqpoultry.com.qa,feed,88,+974 4472 9043,https://aqpoultry.com.qa/
+183,QA,Doha,Orraj Trading and Services,sales@orraj.com,feed,85,+974 3393 3301,https://www.orraj.com/
+184,QA,Doha (West Bay),Eco Agro Science for Trading,info@ecoagroscienceqatar.com,agri-input,82,+974 5510 8891,https://ecoagroscienceqatar.com/
+185,QA,Doha,QADCO (Qatar Agricultural Development Company),info@qadco.com.qa,agri-input,80,+974 4499 5777,https://www.qadco.com.qa/
+186,QA,Doha,Aalaf Qatar (Hassad Food subsidiary),info@aalafqatar.com.qa,feed,80,+974 7722 5502,https://aalafqatar.com.qa/
+187,QA,Doha,Al Rayyan Agricultural,info@alrayyanagri.com,agri-input,76,+974 4468 6125,https://alrayyanagri.com/
+188,QA,Umm Salal Mohammad,Mitras Trading Co. W.L.L. (Agri Qatar),info@mitraswll.com,agri-input,62,+974 4483 1482,https://www.mitraswll.com/
+189,QA,Doha,Deluxe Trading Services WLL (Deluxe Chemicals),dlx-trading@dlxgroup.com,industrial,55,+974 4432 4925,https://deluxechemical.com/
+190,QA,Doha,Behzad Trading Enterprises W.L.L.,info@behzadgroup.com,importer/trader,55,+974 4443 3236,https://behzadgroup.com/
+191,QA,Doha,Oriental Trading Co. WLL (OTC Qatar),info@otcqatar.com,importer/trader,52,+974 4446 6333,https://otcqatar.com/
+192,QA,Doha,Al Mukhtar Contracting & Trading Co. WLL,info@almukhtarqatar.com,industrial,50,+974 4455 2583,https://www.almukhtarqatar.com/
+193,QA,Doha,Keeton Trading / KTC Chemicals,info@ktcchemicals.com,industrial,50,+974 5585 1485,https://ktcchemicals.com/
+194,QA,Doha,GreenWTS (Green Water Treatment Solutions) Qatar,admin@greenwts.com,industrial,48,+974 7799 3009,https://www.greenwtsqatar.com/
+195,QA,Al Wakra,Scarlet International Trading WLL,sales@scarletintl.com,industrial,45,+974 7763 8144,https://scarletintl.com/
+196,QA,Al Khor,Agricompost,info@agricompost.qa,agri-input,45,+974 4431 7759,https://agricompost.qa/
+197,KW,Jahra,Al-Maha Agricultural Co.,info@almahakw.net,feed,92,+965 500 00737,https://almahakw.net/en/
+198,KW,Al Wafrah,"Feeds Kuwait (Feeds for Import, Export & Trading Co.)",info@feedskw.com,feed,82,+965 65057722,https://www.feedskw.com/
+199,KW,Kuwait City,Ataa Al-Kuwait Company for Agricultural Supplies & Services,info@ataalkuwait.com,agri-input,80,+965 510 28672,https://ataalkuwait.com/en/
+200,KW,Farwaniya,Kuwait United Poultry Company (KUPCO),info@kupco.net,feed,80,+965 2208-3901,https://kupco.net/
+201,KW,Hawalli,Hasad Vet Trading Company W.L.L.,kw@hasad-vet.com,feed,76,+965 22 627 066,https://hasad-vet.com/
+202,KW,Kuwait City,CISCO Trading Company W.L.L.,contact@ciscotrading.com,importer/trader,66,+965 22960125,https://ciscotrading.com/
+203,KW,Ahmadi,Kuwaiti Distributor Company for Chemicals (KDC),info@kdckwt.com,industrial,52,+965 239 81598,https://www.kdccompany.com/
+204,BH,Askar,Al Khalidia General Trading W.L.L. (AlKhalidia Holding Group),info@alkhalidiagroup.com,industrial,65,+973-17832244,https://alkhalidiagroup.com/
+205,BH,Sitra,Bahrain Livestock Company B.S.C. (BLC),info@blscbh.com,feed,55,+973 17224662,
+206,BH,Manama (Al Hoora),Chemfinity Corporation,info@chemfinitybh.com,industrial,50,+973 32002817,https://chemfinitybh.com/
+207,BH,Manama,Safety Chemical Trading W.L.L.,info@safetychemical.com,importer/trader,42,+973 3318 8311,https://www.safetychemical.com/

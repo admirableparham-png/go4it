@@ -101,6 +101,13 @@
 </head>
 <body class="h-full bg-slate-950 text-slate-100 antialiased">
 
+  {% if flashes %}
+  <div class="fixed top-4 right-4 z-50 space-y-2 w-80 max-w-[90vw]" id="g4-toasts">
+    {% for f in flashes %}<div class="alert-{{ f.level }} g4-in" role="status">{{ f.msg }}</div>{% endfor %}
+  </div>
+  <script>setTimeout(function(){var t=document.getElementById('g4-toasts');if(t){t.style.transition='opacity .5s';t.style.opacity='0';setTimeout(function(){t.remove();},600);}},4500);</script>
+  {% endif %}
+
   <header class="sticky top-0 z-30 border-b border-slate-800 bg-slate-950/85 backdrop-blur supports-[backdrop-filter]:bg-slate-950/70">
     <div class="max-w-6xl mx-auto px-6">
       <div class="flex items-center justify-between py-3">
@@ -120,11 +127,18 @@
         {% endif %}
       </div>
       <nav class="flex flex-wrap items-center gap-0.5 text-[13px] pb-2.5">
+        {% if user and user.role == 'admin' %}
         {% set groups = [
              [('/', 'dashboard', 'Dashboard'), ('/leads','leads','Leads'), ('/campaign','campaign','Campaign'), ('/quotes','quotes','Quotes'), ('/deals','deals','Deals'), ('/catalog','catalog','Catalog')],
              [('/research','research','Research'), ('/command','command','Command'), ('/suppliers','suppliers','Suppliers'), ('/intel','intel','Intel'), ('/georgia','georgia','Georgia'), ('/lines/cd-dvd','lines','Lines'), ('/uae','uae','UAE')],
-             [('/rates','rates','Rates'), ('/ingest','ingest','Ingest')]
+             [('/rates','rates','Rates'), ('/ingest','ingest','Ingest')],
+             [('/admin/requests','admin_requests','Requests'), ('/admin/users','users','Users'), ('/admin/activity','admin_activity','Oversight')]
            ] %}
+        {% else %}
+        {% set groups = [
+             [('/', 'dashboard', 'Dashboard'), ('/services','services','Services'), ('/requests','requests','My Requests'), ('/leads','leads','My Buyers'), ('/quotes','quotes','Quotes'), ('/deals','deals','Deals')]
+           ] %}
+        {% endif %}
         {% for group in groups %}
           {% if not loop.first %}<span class="nav-divider"></span>{% endif %}
           {% for href, key, label in group %}

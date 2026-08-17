@@ -25,7 +25,9 @@ _SIGNATURE_TEXT = ("Best regards,\n\n"
 
 COUNTRY = {"IQ": "Iraq", "AE": "the UAE", "QA": "Qatar", "PK": "Pakistan", "GE": "Georgia",
            "AM": "Armenia", "AF": "Afghanistan", "KZ": "Kazakhstan", "RU": "Russia",
-           "OM": "Oman", "SA": "Saudi Arabia", "KW": "Kuwait", "BH": "Bahrain"}
+           "OM": "Oman", "SA": "Saudi Arabia", "KW": "Kuwait", "BH": "Bahrain",
+           "TM": "Turkmenistan", "UZ": "Uzbekistan", "TJ": "Tajikistan", "KG": "Kyrgyzstan",
+           "AZ": "Azerbaijan", "TR": "Turkey"}
 
 # Founder-supplied honey offer (delivered CPT, budgetary; subject to written freight confirmation).
 HONEY_VARIETIES = [
@@ -35,6 +37,10 @@ HONEY_VARIETIES = [
     ("Mountain Javashir honey", "13.25"),
 ]
 
+# Zinc sulphate offer (Iran-sourced, lab-tested). Single product; delivered CPT price is quoted per
+# destination via the quote engine, so the cold email sells on quality + logistics, not a headline price.
+ZINC_PRODUCT = "Zinc Sulphate Monohydrate, min 33% Zn (agricultural / feed grade)"
+
 # The formal KIMIEL quotation product table (matches the branded PDF).
 QUOTATION_PRODUCTS = [
     ("Raw 40-Flower Honey", "Iran", 10.25),
@@ -43,10 +49,13 @@ QUOTATION_PRODUCTS = [
     ("Mountain Javashir Honey", "Iran", 13.25),
 ]
 _CC3 = {"IQ": "IRQ", "AE": "UAE", "QA": "QAT", "PK": "PAK", "GE": "GEO", "AM": "ARM", "AF": "AFG",
-        "KZ": "KAZ", "RU": "RUS", "OM": "OMN", "SA": "SAU", "KW": "KWT", "BH": "BHR"}
+        "KZ": "KAZ", "RU": "RUS", "OM": "OMN", "SA": "SAU", "KW": "KWT", "BH": "BHR",
+        "TM": "TKM", "UZ": "UZB", "TJ": "TJK", "KG": "KGZ", "AZ": "AZE", "TR": "TUR"}
 _COUNTRY_FULL = {"IQ": "Iraq", "AE": "United Arab Emirates", "QA": "Qatar", "PK": "Pakistan",
                  "GE": "Georgia", "AM": "Armenia", "AF": "Afghanistan", "KZ": "Kazakhstan",
-                 "RU": "Russia", "OM": "Oman", "SA": "Saudi Arabia", "KW": "Kuwait", "BH": "Bahrain"}
+                 "RU": "Russia", "OM": "Oman", "SA": "Saudi Arabia", "KW": "Kuwait", "BH": "Bahrain",
+                 "TM": "Turkmenistan", "UZ": "Uzbekistan", "TJ": "Tajikistan", "KG": "Kyrgyzstan",
+                 "AZ": "Azerbaijan", "TR": "Turkey"}
 
 
 def quotation_data(lead, today=None):
@@ -130,6 +139,46 @@ def honey_message(lead, valid_until=""):
     return subject, "\n".join(lines)
 
 
+def zinc_message(lead, valid_until=""):
+    """(subject, body) for a ZINC SULPHATE buyer - KIMIEL regional-supply first-touch. Body has NO
+    signature (appended at send). Iran is NOT the cheapest source (China/India dominate on price), so this
+    sells on lab-tested quality, fast regional delivery and flexible lot sizes - the firm delivered CPT
+    price is quoted per destination via the quote engine, not hardcoded here."""
+    greet = "Dear Sir/Madam,"                             # generic, no company/personal name (founder pref)
+    country = COUNTRY.get(lead.dest_country, "")
+    market = country or "your market"
+    city = (lead.dest_city or "").strip()
+    if "(" in city or len(city) > 24:                     # drop messy/overlong city fields
+        city = ""
+    place = city or country.replace("the ", "") or "your destination"
+    country_tag = country.replace("the ", "")
+    vu = valid_until or _valid_until()
+    subject = "KIMIEL - zinc sulphate monohydrate supply offer" + (f" ({country_tag})" if country else "")
+    lines = [
+        greet, "",
+        "I am contacting you on behalf of KIMIEL, a Dubai-based supplier of laboratory-tested Iranian "
+        "zinc sulphate monohydrate for agricultural, animal-feed and industrial use.", "",
+        f"Given your activity in {market}, we would be glad to become a reliable regular supplier. Our "
+        "offer:", "",
+        "- Product: Zinc Sulphate Monohydrate, min 33% Zn (agricultural / feed grade)",
+        "- Quality: an independent ISO-17025 laboratory Certificate of Analysis with every batch "
+        "(low heavy metals; full specification sheet on request)",
+        "- Packaging: 25 kg bags; any order size, from a one-pallet trial to full containers",
+        "- Origin: Iran; documents: Certificate of Origin, CoA, commercial invoice and packing list",
+        "- Logistics: fast, dependable regional delivery with flexible lot sizes", "",
+        f"We will quote a firm delivered price (CPT {place}) as soon as we know your destination and "
+        "monthly volume. To prepare it, please share:",
+        "- Your application (crop micronutrient / animal feed / industrial)",
+        "- Exact delivery address and legal consignee details",
+        "- Target monthly quantity and preferred packaging",
+        "- Any product or import documentation you require", "",
+        f"This enquiry reference is valid through {vu}. A 25 kg trial quantity is available so you can "
+        "verify the quality before committing to a larger order.", "",
+        "We look forward to the opportunity to work with you.",
+    ]
+    return subject, "\n".join(lines)
+
+
 def add_business_days(start, n):
     """start + n business days (skip Sat/Sun). Works on datetime or date; returns the same kind."""
     d = start
@@ -148,13 +197,20 @@ def followup_message(lead, step=1, orig_subject=""):
     base = (orig_subject or "").strip()
     while base.lower().startswith("re:"):
         base = base[3:].strip()
-    subject = "Re: " + (base or "KIMIEL - honey supply & private-label offer")
+    is_zinc = (lead.source or "").startswith("iran-export-zinc-sulfate") or "zinc" in (lead.category or "").lower()
+    if is_zinc:
+        product_phrase = "KIMIEL zinc sulphate supply from Dubai"
+        default_subject = "KIMIEL - zinc sulphate monohydrate supply offer"
+    else:
+        product_phrase = "KIMIEL honey supply from Dubai"
+        default_subject = "KIMIEL - honey supply & private-label offer"
+    subject = "Re: " + (base or default_subject)
     lines = [
         "Dear Sir/Madam,", "",
-        "I am following up on my previous email regarding KIMIEL honey supply from Dubai - I wanted to "
+        f"I am following up on my previous email regarding {product_phrase} - I wanted to "
         "make sure it reached you.", "",
         "If you are not interested at this time, a brief note is appreciated. If you would prefer a "
-        "different variety, price or packaging, please tell me and we will gladly tailor the offer. "
+        "different price, packaging or specification, please tell me and we will gladly tailor the offer. "
         "We would be glad to work with you.",
     ]
     if step >= 2:

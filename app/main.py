@@ -20,7 +20,7 @@ from sqlalchemy import func
 from sqlmodel import Session, select
 from starlette.middleware.sessions import SessionMiddleware
 
-from .auth import current_user, role_at_least, verify_password
+from .auth import current_user, hash_password, role_at_least, verify_password
 from .command_service import parse_command, run_command_job
 from .config import (BASE_URL, CORS_ORIGINS, DEBUG_DIR, FOLLOWUP_DAYS_1, FOLLOWUP_ENABLED, INBOX_DIR,
                      INGEST_API_KEY, IS_LOCAL, SECRET_KEY, SMTP_ENABLED, insecure_default_secrets)
@@ -34,15 +34,16 @@ from .lead_service import create_lead, run_matching
 from .line_spec import all_specs
 from .models import (Activity, CommandJob, ComplianceDoc, CostParam, Deal,
                      FxRate, IngestionRun, Lead, Match, Outreach, Product,
-                     Quote, RateCard, Supplier, User)
-from .outreach import build_parts, default_message, honey_message, quotation_data, send_email
+                     Quote, RateCard, ServiceRequest, Supplier, User)
+from .outreach import build_parts, default_message, honey_message, quotation_data, send_email, zinc_message
 from .quote_service import create_quote
 from .research_engine import (PARTNERS, country_options, market_report,
                               product_options, rank_opportunities, recommend_destinations,
                               resolve_query)
 from .sources.go4world_csv import Go4WorldCsvSource
-from .telegram import (notify_outreach_sent, notify_quote_ready, notify_send_failed,
-                       notify_status_change, send_message)
+from .telegram import (notify_outreach_sent, notify_quote_ready, notify_request_update,
+                       notify_send_failed, notify_service_request, notify_status_change, send_message)
+from .tenant import is_admin, owns, scoped
 
 logger = logging.getLogger("go4it")
 BASE_DIR = Path(__file__).parent
@@ -82,7 +83,8 @@ async def auth_gate(request: Request, call_next):
 
 # SessionMiddleware is added before CORS/PNA below, so it stays OUTSIDE auth_gate
 # (request.session is ready) but INSIDE the CORS layer.
-app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY, same_site="lax")
+app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY, same_site="lax",
+                   https_only=not IS_LOCAL)   # secure cookie once deployed (public BASE_URL)
 
 # --- Reachability for the in-browser capture helper --------------------------
 # The Tampermonkey helper runs on https://www.go4worldbusiness.com and POSTs to
@@ -132,6 +134,29 @@ def on_startup() -> None:
 
 def _forbidden():
     return HTMLResponse("Forbidden", status_code=403)
+
+
+def _not_found():
+    # Cross-tenant reads return 404 (not 403) so a trader can't even confirm another tenant's row exists.
+    return HTMLResponse("Not found", status_code=404)
+
+
+def _require_admin(user):
+    """Return None if the user is the admin/founder, else a 403 — for gatekeeper-only routes
+    (shared config, buyer search, user management, cross-tenant assignment)."""
+    return None if is_admin(user) else _forbidden()
+
+
+def _cascade_owner(session, lead):
+    """Keep the tenant invariant: a lead's Quotes and Deals ALWAYS share its owner_id. Call after an
+    admin reassigns lead ownership, so children don't stay with the former owner (which would let the
+    old owner still reach them and lock the new owner out). Caller commits."""
+    for q in session.exec(select(Quote).where(Quote.lead_id == lead.id)).all():
+        q.owner_id = lead.owner_id
+        session.add(q)
+    for d in session.exec(select(Deal).where(Deal.lead_id == lead.id)).all():
+        d.owner_id = lead.owner_id
+        session.add(d)
 
 
 def _log(session, lead: Lead, user, kind: str, body: str = ""):
@@ -195,13 +220,47 @@ def login_page(request: Request, error: str = ""):
     return templates.TemplateResponse("login.html", {"request": request, "error": error})
 
 
+_LOGIN_FAILS: dict = {}          # key -> (fail_count, first_fail_epoch); simple in-memory brute-force brake
+_LOGIN_MAX = 8                   # allowed fails per window before lock
+_LOGIN_WINDOW = 300              # seconds
+
+
+def _login_key(request, email):
+    ip = (request.client.host if request.client else "") or "?"
+    return f"{ip}|{(email or '').strip().lower()}"
+
+
+def _login_locked(key) -> bool:
+    rec = _LOGIN_FAILS.get(key)
+    if not rec:
+        return False
+    fails, first = rec
+    if (datetime.utcnow().timestamp() - first) > _LOGIN_WINDOW:
+        _LOGIN_FAILS.pop(key, None)     # window elapsed -> reset
+        return False
+    return fails >= _LOGIN_MAX
+
+
+def _login_fail(key):
+    now = datetime.utcnow().timestamp()
+    fails, first = _LOGIN_FAILS.get(key, (0, now))
+    if (now - first) > _LOGIN_WINDOW:
+        fails, first = 0, now
+    _LOGIN_FAILS[key] = (fails + 1, first)
+
+
 @app.post("/login")
 def login(request: Request, email: str = Form(...), password: str = Form(...)):
+    key = _login_key(request, email)
+    if _login_locked(key):
+        return RedirectResponse("/login?error=locked", status_code=303)
     with Session(engine) as session:
         user = session.exec(select(User).where(User.email == email.strip().lower())).first()
         if user and user.active and verify_password(password, user.password_hash):
+            _LOGIN_FAILS.pop(key, None)
             request.session["user_id"] = user.id
             return RedirectResponse("/", status_code=303)
+    _login_fail(key)
     return RedirectResponse("/login?error=1", status_code=303)
 
 
@@ -221,7 +280,8 @@ def dashboard(request: Request):
         user = current_user(request, session)
 
         def group(col):
-            return {k: v for k, v in session.exec(select(col, func.count(Lead.id)).group_by(col)).all()}
+            stmt = scoped(select(col, func.count(Lead.id)), Lead.owner_id, user).group_by(col)
+            return {k: v for k, v in session.exec(stmt).all()}
 
         by_stage = group(Lead.status)
         by_source = group(Lead.source)
@@ -233,22 +293,23 @@ def dashboard(request: Request):
         win_rate = round(won / (won + lost) * 100) if (won + lost) else None
         open_pipeline = (by_stage.get("new", 0) + by_stage.get("quoted", 0)
                          + by_stage.get("negotiating", 0))
-        needs_enrichment = session.exec(
+        needs_enrichment = session.exec(scoped(
             select(func.count(Lead.id)).where(
                 ((Lead.email == None) | (Lead.email == "")) &        # noqa: E711
-                ((Lead.phone == None) | (Lead.phone == "")))         # noqa: E711
-        ).one()
+                ((Lead.phone == None) | (Lead.phone == ""))),        # noqa: E711
+            Lead.owner_id, user)).one()
 
-        qcounts = {k: v for k, v in session.exec(
-            select(Quote.status, func.count(Quote.id)).group_by(Quote.status)).all()}
-        deals_total = session.exec(select(func.count(Deal.id))).one()
-        deals_open = session.exec(
-            select(func.count(Deal.id)).where(Deal.closed_at == None)).one()   # noqa: E711
-        products_total = session.exec(select(func.count(Product.id))).one()
+        qcounts = {k: v for k, v in session.exec(scoped(
+            select(Quote.status, func.count(Quote.id)), Quote.owner_id, user)
+            .group_by(Quote.status)).all()}
+        deals_total = session.exec(scoped(select(func.count(Deal.id)), Deal.owner_id, user)).one()
+        deals_open = session.exec(scoped(
+            select(func.count(Deal.id)).where(Deal.closed_at == None), Deal.owner_id, user)).one()  # noqa: E711
+        products_total = session.exec(select(func.count(Product.id))).one()   # shared catalog (global)
 
-        # Pipeline value: best quote per lead still in play (quoted/negotiating).
-        active_ids = session.exec(
-            select(Lead.id).where(Lead.status.in_(["quoted", "negotiating"]))).all()
+        # Pipeline value: best quote per lead still in play (quoted/negotiating) — scoped to the viewer.
+        active_ids = session.exec(scoped(
+            select(Lead.id).where(Lead.status.in_(["quoted", "negotiating"])), Lead.owner_id, user)).all()
         pipeline_value = 0.0
         if active_ids:
             rows = session.exec(
@@ -256,20 +317,35 @@ def dashboard(request: Request):
                     Quote.lead_id.in_(active_ids)).group_by(Quote.lead_id)).all()
             pipeline_value = sum((r or 0) for r in rows)
 
-        acts = session.exec(select(Activity).order_by(Activity.id.desc()).limit(10)).all()
-        lead_map = {ld.id: ld for ld in session.exec(
-            select(Lead).where(Lead.id.in_([a.lead_id for a in acts] or [0]))).all()}
-        user_map = {u.id: u for u in session.exec(select(User)).all()}
-        recent_leads = session.exec(select(Lead).order_by(Lead.id.desc()).limit(8)).all()
+        recent_leads = session.exec(scoped(
+            select(Lead), Lead.owner_id, user).order_by(Lead.id.desc()).limit(8)).all()
         due_cut = datetime.utcnow().replace(hour=23, minute=59, second=59, microsecond=0)
-        due_leads = session.exec(
+        due_leads = session.exec(scoped(
             select(Lead).where(Lead.next_action_at != None,             # noqa: E711
                                Lead.next_action_at <= due_cut,
-                               Lead.status.notin_(["won", "lost"]))
-            .order_by(Lead.next_action_at.asc()).limit(10)).all()
+                               Lead.status.notin_(["won", "lost"])),
+            Lead.owner_id, user).order_by(Lead.next_action_at.asc()).limit(10)).all()
+
+        # Recent activity — admin sees all; a trader sees only actions on the leads they own.
+        if is_admin(user):
+            acts = session.exec(select(Activity).order_by(Activity.id.desc()).limit(10)).all()
+            user_map = {u.id: u for u in session.exec(select(User)).all()}
+        else:
+            own_ids = session.exec(select(Lead.id).where(Lead.owner_id == user.id)).all() if user else []
+            acts = session.exec(select(Activity).where(Activity.lead_id.in_(own_ids or [0]))
+                                .order_by(Activity.id.desc()).limit(10)).all()
+            user_map = {user.id: user} if user else {}
+        lead_map = {ld.id: ld for ld in session.exec(
+            select(Lead).where(Lead.id.in_([a.lead_id for a in acts] or [0]))).all()}
+
+        # a trader's own concierge requests (for the trader dashboard card); admin doesn't need it here
+        my_requests = [] if is_admin(user) else session.exec(
+            scoped(select(ServiceRequest), ServiceRequest.owner_id, user)
+            .order_by(ServiceRequest.id.desc()).limit(6)).all()
 
         ctx = {
-            "request": request, "user": user, "active": "dashboard",
+            "request": request, "user": user, "active": "dashboard", "is_admin": is_admin(user),
+            "my_requests": my_requests, "request_types": REQUEST_TYPES,
             "total": total, "contactable": total - needs_enrichment,
             "needs_enrichment": needs_enrichment,
             "open_pipeline": open_pipeline, "won": won, "lost": lost, "win_rate": win_rate,
@@ -339,7 +415,7 @@ def leads_list(request: Request, q: str = "", stage: str = "", source: str = "",
     per = 50
     with Session(engine) as session:
         user = current_user(request, session)
-        stmt = select(Lead)
+        stmt = scoped(select(Lead), Lead.owner_id, user)     # traders see ONLY their own leads
         if q:
             like = f"%{q.strip()}%"
             stmt = stmt.where(Lead.product.ilike(like) | Lead.buyer_company.ilike(like)
@@ -352,10 +428,13 @@ def leads_list(request: Request, q: str = "", stage: str = "", source: str = "",
             stmt = stmt.where(Lead.category == category)
         if dest:
             stmt = stmt.where(Lead.dest_country == dest)
-        if owner == "me" and user:
-            stmt = stmt.where(Lead.owner_id == user.id)
-        elif owner == "none":
-            stmt = stmt.where(Lead.owner_id == None)                    # noqa: E711
+        if is_admin(user):        # only the admin can slice across owners; traders are already hard-scoped
+            if owner == "me":
+                stmt = stmt.where(Lead.owner_id == user.id)
+            elif owner == "none":
+                stmt = stmt.where(Lead.owner_id == None)                # noqa: E711
+            elif owner.isdigit():
+                stmt = stmt.where(Lead.owner_id == int(owner))
         if contact == "yes":
             stmt = stmt.where((Lead.email != "") | (Lead.phone != ""))
         elif contact == "no":
@@ -379,19 +458,23 @@ def leads_list(request: Request, q: str = "", stage: str = "", source: str = "",
         mcounts = {lid: c for lid, c in session.exec(
             select(Match.lead_id, func.count(Match.id)).where(
                 Match.lead_id.in_(ids)).group_by(Match.lead_id)).all()}
-        user_map = {u.id: u for u in session.exec(select(User)).all()}
-        sources = sorted({s for s in session.exec(select(Lead.source).distinct()).all() if s})
-        categories = sorted({c for c in session.exec(select(Lead.category).distinct()).all() if c})
-        dests = sorted({d for d in session.exec(select(Lead.dest_country).distinct()).all() if d})
+        user_map = ({u.id: u for u in session.exec(select(User)).all()} if is_admin(user)
+                    else ({user.id: user} if user else {}))     # traders never see other users
+        sources = sorted({s for s in session.exec(
+            scoped(select(Lead.source), Lead.owner_id, user).distinct()).all() if s})
+        categories = sorted({c for c in session.exec(
+            scoped(select(Lead.category), Lead.owner_id, user).distinct()).all() if c})
+        dests = sorted({d for d in session.exec(
+            scoped(select(Lead.dest_country), Lead.owner_id, user).distinct()).all() if d})
         product_count = session.exec(select(func.count(Product.id))).one()
 
         ctx = {
-            "request": request, "user": user, "active": "leads",
+            "request": request, "user": user, "active": "leads", "is_admin": is_admin(user),
             "leads": leads, "mcounts": mcounts, "user_map": user_map,
             "total": total, "page": page, "pages": pages,
             "sources": sources, "categories": categories, "dests": dests,
             "stages": STAGES, "product_count": product_count,
-            "users": [u for u in user_map.values() if u.active],
+            "users": [u for u in user_map.values() if u.active] if is_admin(user) else [],
             "f": {"q": q, "stage": stage, "source": source, "category": category,
                   "dest": dest, "owner": owner, "contact": contact, "due": due, "sort": sort},
         }
@@ -406,12 +489,17 @@ def leads_bulk(request: Request, action: str = Form(""), owner_id: str = Form(""
         user = current_user(request, session)
         if not role_at_least(user, "agent"):
             return _forbidden()
-        leads = session.exec(select(Lead).where(Lead.id.in_(ids or [0]))).all()
+        # scoped: a trader can only bulk-act on leads they OWN (can't touch another tenant's rows by id)
+        leads = session.exec(scoped(select(Lead), Lead.owner_id, user).where(Lead.id.in_(ids or [0]))).all()
         for lead in leads:
+            if action in ("assign", "assign_me") and not is_admin(user):
+                continue                            # reassigning ownership is the admin's tool only
             if action == "assign_me" and user:
                 lead.owner_id = user.id
+                _cascade_owner(session, lead)       # quotes + deals follow the lead's new owner
             elif action == "assign":
                 lead.owner_id = int(owner_id) if owner_id else None
+                _cascade_owner(session, lead)
             elif action == "stage" and stage in STAGES and stage != "lost":
                 lead.status = stage
             elif action == "followup_today":
@@ -432,11 +520,13 @@ def suppliers_list(request: Request):
     """Simple view of the Supplier catalog (auto-created today with no page)."""
     with Session(engine) as session:
         user = current_user(request, session)
+        if not is_admin(user):          # sourcing (supplier contacts/terms) is founder-internal
+            return _forbidden()
         suppliers = session.exec(select(Supplier).order_by(Supplier.country, Supplier.name)).all()
         pcounts = {sid: c for sid, c in session.exec(
             select(Product.supplier_id, func.count(Product.id)).group_by(Product.supplier_id)).all()}
         ctx = {"request": request, "user": user, "active": "suppliers",
-               "suppliers": suppliers, "pcounts": pcounts, "can_edit": role_at_least(user, "agent")}
+               "suppliers": suppliers, "pcounts": pcounts, "can_edit": True}
     return templates.TemplateResponse("suppliers.html", ctx)
 
 
@@ -455,7 +545,7 @@ def supplier_create(request: Request, name: str = Form(...), country: str = Form
     """Add a supplier (the sourcing side). Dedups on normalized name — re-adding an existing name
     updates its details instead of creating a duplicate."""
     with Session(engine) as session:
-        if not role_at_least(current_user(request, session), "agent"):
+        if not is_admin(current_user(request, session)):     # shared catalog/suppliers = admin-write only
             return _forbidden()
         name = (name or "").strip()
         if not name:
@@ -483,7 +573,7 @@ def supplier_edit(request: Request, supplier_id: int, name: str = Form(...),
                   payment_terms: str = Form("")):
     """Update a supplier's details in place."""
     with Session(engine) as session:
-        if not role_at_least(current_user(request, session), "agent"):
+        if not is_admin(current_user(request, session)):     # shared catalog/suppliers = admin-write only
             return _forbidden()
         sup = session.get(Supplier, supplier_id)
         if not sup:
@@ -513,7 +603,7 @@ def supplier_edit(request: Request, supplier_id: int, name: str = Form(...),
 def supplier_toggle(request: Request, supplier_id: int):
     """Deactivate / reactivate a supplier (kept for history; hidden from active sourcing)."""
     with Session(engine) as session:
-        if not role_at_least(current_user(request, session), "agent"):
+        if not is_admin(current_user(request, session)):     # shared catalog/suppliers = admin-write only
             return _forbidden()
         sup = session.get(Supplier, supplier_id)
         if not sup:
@@ -580,6 +670,8 @@ def intel(request: Request):
     live Georgian tenders, gym/venue demand, UAE supply) — read-only, no fetching."""
     with Session(engine) as session:
         user = current_user(request, session)
+        if not is_admin(user):          # market-intel research is founder-internal
+            return _forbidden()
 
     tenders = _load_research("ge_tenders.json")
     businesses = _load_research("ge_businesses.json")
@@ -604,6 +696,8 @@ def georgia(request: Request):
     procurement RFQs + customs), read from the committed harvest JSONs."""
     with Session(engine) as session:
         user = current_user(request, session)
+        if not is_admin(user):          # research surface — admin only
+            return _forbidden()
     buyers = _load_research("ge_chem_buyers.json").get("buyers", [])
     tenders = _load_research("ge_chem_rfqs.json").get("tenders", [])
     customs = _load_research("ge_customs.json").get("records", [])
@@ -703,6 +797,8 @@ def lines_hub(request: Request, slug: str):
     """Generic product-line buyers hub — ANY line defined by a spec in docs/research/lines/."""
     with Session(engine) as session:
         user = current_user(request, session)
+        if not is_admin(user):          # product-line research hub — admin only
+            return _forbidden()
     return _render_line_hub(request, user, "lines", "/lines", slug, all_specs())
 
 
@@ -711,6 +807,8 @@ def uae(request: Request, line: str = "cd-dvd"):
     """UAE buyers hub (alias) — the UAE-destination product lines (CD & DVD, Decoration, ...)."""
     with Session(engine) as session:
         user = current_user(request, session)
+        if not is_admin(user):          # product-line research hub — admin only
+            return _forbidden()
     ae = [s for s in all_specs() if s.get("dest", {}).get("iso") == "AE"]
     return _render_line_hub(request, user, "uae", "/uae", line, ae)
 
@@ -745,6 +843,8 @@ def research(request: Request):
     customs data (no LLM), and rank a country's best import opportunities for Iran/UAE supply."""
     with Session(engine) as session:
         user = current_user(request, session)
+        if not is_admin(user):          # the research console is the founder's moat — admin only
+            return _forbidden()
     ctx = {"request": request, "user": user, "active": "research",
            "countries": country_options(), "products": product_options(),
            "default_reporter": 268}
@@ -755,6 +855,9 @@ def research(request: Request):
 def research_run(request: Request, reporter: str = Form(...), product: str = Form(""),
                  hs: str = Form(""), sources: str = Form("both"), refresh: str = Form("")):
     """Directional report for one product into one country (HTMX fragment)."""
+    with Session(engine) as session:
+        if not is_admin(current_user(request, session)):
+            return _forbidden()
     label, hs_codes, _ = resolve_query(product, hs)
     if not hs_codes:
         return templates.TemplateResponse("partials/research_result.html",
@@ -781,6 +884,9 @@ def research_run(request: Request, reporter: str = Form(...), product: str = For
 def research_recommend(request: Request, product: str = Form(""), hs: str = Form(""),
                        sources: str = Form("both"), refresh: str = Form("")):
     """Where should I SELL product X? Rank the best destination countries (HTMX fragment)."""
+    with Session(engine) as session:
+        if not is_admin(current_user(request, session)):
+            return _forbidden()
     label, hs_codes, _ = resolve_query(product, hs)
     if not hs_codes:
         return templates.TemplateResponse("partials/research_result.html",
@@ -796,6 +902,9 @@ def research_recommend(request: Request, product: str = Form(""), hs: str = Form
 def research_scan(request: Request, reporter: str = Form(...), sources: str = Form("both"),
                   refresh: str = Form("")):
     """Rank a country's best import opportunities for Iran/UAE supply (HTMX fragment)."""
+    with Session(engine) as session:
+        if not is_admin(current_user(request, session)):
+            return _forbidden()
     try:
         code = int(reporter)
     except ValueError:
@@ -820,9 +929,10 @@ def command_page(request: Request):
     """The dashboard command box: type what to find, it harvests real buyers into leads."""
     with Session(engine) as session:
         user = current_user(request, session)
+        if not is_admin(user):          # buyer search is the founder's moat — admin only
+            return _forbidden()
         jobs = session.exec(select(CommandJob).order_by(CommandJob.id.desc()).limit(25)).all()
-    ctx = {"request": request, "user": user, "active": "command", "jobs": jobs,
-           "can_run": role_at_least(user, "agent")}
+    ctx = {"request": request, "user": user, "active": "command", "jobs": jobs, "can_run": True}
     return templates.TemplateResponse("command.html", ctx)
 
 
@@ -832,8 +942,8 @@ def command_run(request: Request, background: BackgroundTasks, prompt: str = For
     and return the job card (which self-polls until done)."""
     with Session(engine) as session:
         user = current_user(request, session)
-        if not role_at_least(user, "agent"):
-            return HTMLResponse('<div class="text-rose-300 text-sm p-2">Agent role required to run commands.</div>',
+        if not is_admin(user):
+            return HTMLResponse('<div class="text-rose-300 text-sm p-2">Buyer search is admin-only.</div>',
                                 status_code=403)
         prompt = (prompt or "").strip()
         if not prompt:
@@ -856,7 +966,8 @@ def command_run(request: Request, background: BackgroundTasks, prompt: str = For
 def command_status(request: Request, job_id: int):
     """HTMX poll target: re-render the job card (it stops polling once terminal)."""
     with Session(engine) as session:
-        current_user(request, session)
+        if not is_admin(current_user(request, session)):
+            return HTMLResponse("", status_code=403)
         job = session.get(CommandJob, job_id)
         if not job:
             return HTMLResponse("", status_code=404)
@@ -870,10 +981,11 @@ def lead_detail(request: Request, lead_id: int):
     with Session(engine) as session:
         user = current_user(request, session)
         lead = session.get(Lead, lead_id)
-        if not lead:
-            return HTMLResponse("Not found", status_code=404)
+        if not lead or not owns(lead.owner_id, user):     # IDOR guard: no cross-tenant lead access
+            return _not_found()
         products = {p.id: p for p in session.exec(select(Product)).all()}
-        users = session.exec(select(User).where(User.active == True)).all()  # noqa: E712
+        users = (session.exec(select(User).where(User.active == True)).all()  # noqa: E712
+                 if is_admin(user) else [])
         matches = session.exec(
             select(Match).where(Match.lead_id == lead_id).order_by(Match.score.desc())
         ).all()
@@ -883,7 +995,8 @@ def lead_detail(request: Request, lead_id: int):
         acts = session.exec(
             select(Activity).where(Activity.lead_id == lead_id).order_by(Activity.id.desc())
         ).all()
-        umap = {u.id: u for u in session.exec(select(User)).all()}
+        umap = ({u.id: u for u in session.exec(select(User)).all()} if is_admin(user)
+                else ({user.id: user} if user else {}))
         owner = umap.get(lead.owner_id)
         # Full audit timeline — EXCLUDE 'outreach' (those messages now live in the Conversation panel)
         timeline = [{"a": a, "user": umap.get(a.user_id)} for a in acts if a.kind != "outreach"]
@@ -896,14 +1009,20 @@ def lead_detail(request: Request, lead_id: int):
                   + [{"kind": "event", "at": a.created_at, "a": a}
                      for a in acts if a.kind in ("status_change", "quote_sent")])
         thread.sort(key=lambda x: x["at"] or datetime.min)
+        # Only the founder builds quotes (fully-gated) — and the quote picker exposes EXW cost.
         quotable = sorted(
             (p for p in products.values() if _quotable(p)),
-            key=lambda p: p.name)
+            key=lambda p: p.name) if is_admin(user) else []
         latest_q = quotes[0] if quotes else None
         latest_p = products.get(latest_q.product_id) if latest_q else None
-        # Honey leads get the KIMIEL wholesale / private-label first-touch (founder's template).
-        is_honey = (lead.source or "").startswith("iran-export-honey") or "honey" in (lead.category or "").lower()
-        if is_honey and not latest_q:
+        # Product lines get a branded KIMIEL first-touch; everything else the generic template.
+        src = (lead.source or "")
+        cat = (lead.category or "").lower()
+        is_honey = src.startswith("iran-export-honey") or "honey" in cat
+        is_zinc = src.startswith("iran-export-zinc-sulfate") or "zinc" in cat
+        if is_zinc and not latest_q:
+            default_subject, default_body = zinc_message(lead)
+        elif is_honey and not latest_q:
             default_subject, default_body = honey_message(lead)
         else:
             default_subject, default_body = default_message(lead, latest_q, latest_p)
@@ -912,7 +1031,7 @@ def lead_detail(request: Request, lead_id: int):
         latest_share_url = f"{BASE_URL}/p/{share_q.share_token}" if share_q else ""
     return templates.TemplateResponse(
         "lead_detail.html",
-        {"request": request, "user": user, "lead": lead, "owner": owner,
+        {"request": request, "user": user, "is_admin": is_admin(user), "lead": lead, "owner": owner,
          "users": users, "products": products, "quotable": quotable,
          "matches": [{"m": m, "product": products.get(m.product_id)} for m in matches],
          "quotes": quotes, "timeline": timeline, "outreach": outreach, "thread": thread,
@@ -927,13 +1046,14 @@ def lead_detail(request: Request, lead_id: int):
 def assign_lead(request: Request, lead_id: int, owner_id: int = Form(...)):
     with Session(engine) as session:
         user = current_user(request, session)
-        if not role_at_least(user, "agent"):
+        if not is_admin(user):          # only the founder reassigns lead ownership (delivery tool)
             return _forbidden()
         lead = session.get(Lead, lead_id)
         new_owner = session.get(User, owner_id)
         if lead and new_owner:
             lead.owner_id = new_owner.id
             session.add(lead)
+            _cascade_owner(session, lead)       # move this lead's quotes + deals to the new owner too
             _log(session, lead, user, "assignment", f"assigned to {new_owner.name or new_owner.email}")
             session.commit()
     return RedirectResponse(f"/leads/{lead_id}", status_code=303)
@@ -946,8 +1066,8 @@ def change_stage(request: Request, lead_id: int, status: str = Form(...), reason
         if not role_at_least(user, "agent"):
             return _forbidden()
         lead = session.get(Lead, lead_id)
-        if not lead:
-            return HTMLResponse("Not found", status_code=404)
+        if not lead or not owns(lead.owner_id, user):
+            return _not_found()
         old = lead.status
         if status not in TRANSITIONS.get(old, set()):
             return RedirectResponse(f"/leads/{lead_id}?error=transition", status_code=303)
@@ -985,6 +1105,8 @@ def add_note(request: Request, lead_id: int, body: str = Form(...)):
         if not role_at_least(user, "agent"):
             return _forbidden()
         lead = session.get(Lead, lead_id)
+        if lead and not owns(lead.owner_id, user):
+            return _not_found()
         if lead and body.strip():
             _log(session, lead, user, "note", body.strip())
             session.commit()
@@ -997,6 +1119,8 @@ def add_note(request: Request, lead_id: int, body: str = Form(...)):
 def catalog(request: Request, imported: int = 0, updated: int = 0, errors: int = 0):
     with Session(engine) as session:
         user = current_user(request, session)
+        if not is_admin(user):          # catalog exposes EXW buy-cost (founder margin) — admin only
+            return _forbidden()
         products = session.exec(select(Product).order_by(Product.id.desc())).all()
         suppliers = {s.id: s for s in session.exec(select(Supplier)).all()}
     return templates.TemplateResponse(
@@ -1024,7 +1148,7 @@ def add_product(
     supplier: str = Form(""),
 ):
     with Session(engine) as session:
-        if not role_at_least(current_user(request, session), "agent"):
+        if not is_admin(current_user(request, session)):     # shared catalog/suppliers = admin-write only
             return _forbidden()
         sup = _get_or_create_supplier(session, supplier)
         session.add(Product(
@@ -1041,7 +1165,7 @@ def add_product(
 @app.post("/catalog/import")
 def import_catalog(request: Request, file: UploadFile = File(...)):
     with Session(engine) as session:
-        if not role_at_least(current_user(request, session), "agent"):
+        if not is_admin(current_user(request, session)):     # shared catalog/suppliers = admin-write only
             return _forbidden()
         text = file.file.read().decode("utf-8-sig", errors="replace")
         rows, errors = parse_products(text)
@@ -1084,12 +1208,15 @@ def _quotable(product):
 @app.post("/leads/{lead_id}/quote/{product_id}")
 def quote_match(request: Request, lead_id: int, product_id: int):
     with Session(engine) as session:
-        if not role_at_least(current_user(request, session), "agent"):
+        user = current_user(request, session)
+        if not role_at_least(user, "agent"):
             return _forbidden()
         lead = session.get(Lead, lead_id)
         product = session.get(Product, product_id)
         if not lead or not product:
             return HTMLResponse("Not found", status_code=404)
+        if not owns(lead.owner_id, user):
+            return _not_found()
         if not _quotable(product):
             return RedirectResponse(f"/leads/{lead_id}?error=unpriced", status_code=303)
         quote = create_quote(session, lead, product)
@@ -1102,12 +1229,15 @@ def quote_match(request: Request, lead_id: int, product_id: int):
 def quote_manual(request: Request, lead_id: int, product_id: int = Form(...)):
     """Quote a lead against ANY chosen catalog product (for the ~2551 leads with no auto-match)."""
     with Session(engine) as session:
-        if not role_at_least(current_user(request, session), "agent"):
+        user = current_user(request, session)
+        if not role_at_least(user, "agent"):
             return _forbidden()
         lead = session.get(Lead, lead_id)
         product = session.get(Product, product_id)
         if not lead or not product:
             return HTMLResponse("Not found", status_code=404)
+        if not owns(lead.owner_id, user):
+            return _not_found()
         if not _quotable(product):
             return RedirectResponse(f"/leads/{lead_id}?error=unpriced", status_code=303)
         quote = create_quote(session, lead, product)
@@ -1120,11 +1250,12 @@ def quote_manual(request: Request, lead_id: int, product_id: int = Form(...)):
 def lead_rematch(request: Request, lead_id: int):
     """Re-run catalog matching for one lead (matches only, no auto-quote/alert)."""
     with Session(engine) as session:
-        if not role_at_least(current_user(request, session), "agent"):
+        user = current_user(request, session)
+        if not role_at_least(user, "agent"):
             return _forbidden()
         lead = session.get(Lead, lead_id)
-        if not lead:
-            return HTMLResponse("Not found", status_code=404)
+        if not lead or not owns(lead.owner_id, user):
+            return _not_found()
         run_matching(session, lead, auto_quote=False)
     return RedirectResponse(f"/leads/{lead_id}", status_code=303)
 
@@ -1140,8 +1271,8 @@ def lead_outreach(request: Request, lead_id: int, channel: str = Form("email"),
         if not role_at_least(user, "agent"):
             return _forbidden()
         lead = session.get(Lead, lead_id)
-        if not lead:
-            return HTMLResponse("Not found", status_code=404)
+        if not lead or not owns(lead.owner_id, user):
+            return _not_found()
         # first email to this lead? (used to arm the follow-up sequence + label the alert)
         prior_sent = session.exec(select(func.count()).where(
             Outreach.lead_id == lead.id, Outreach.direction == "out",
@@ -1191,7 +1322,8 @@ def campaign_dashboard(request: Request, source: str = "iran-export-honey-royalj
     from collections import Counter, defaultdict
     with Session(engine) as session:
         user = current_user(request, session)
-        leads = session.exec(select(Lead).where(Lead.source == source)).all()
+        leads = session.exec(scoped(select(Lead).where(Lead.source == source),
+                                    Lead.owner_id, user)).all()      # traders see only their own campaign
         ids = [L.id for L in leads]
         outs = session.exec(select(Outreach).where(Outreach.lead_id.in_(ids))).all() if ids else []
         by = defaultdict(list)
@@ -1242,8 +1374,8 @@ def kimiel_quotation_view(request: Request, lead_id: int):
     with Session(engine) as session:
         user = current_user(request, session)
         lead = session.get(Lead, lead_id)
-        if not lead:
-            return HTMLResponse("Not found", status_code=404)
+        if not lead or not owns(lead.owner_id, user):
+            return _not_found()
         q = quotation_data(lead)
     return templates.TemplateResponse("kimiel_quotation.html", {"request": request, "q": q, "user": user})
 
@@ -1257,8 +1389,8 @@ def lead_enrich(request: Request, lead_id: int):
         if not role_at_least(user, "agent"):
             return _forbidden()
         lead = session.get(Lead, lead_id)
-        if not lead:
-            return HTMLResponse("Not found", status_code=404)
+        if not lead or not owns(lead.owner_id, user):
+            return _not_found()
         enrich_lead(session, lead, apply=True)
         session.commit()
     return RedirectResponse(f"/leads/{lead_id}", status_code=303)
@@ -1273,8 +1405,8 @@ def lead_followup(request: Request, lead_id: int, next_action_at: str = Form("")
         if not role_at_least(user, "agent"):
             return _forbidden()
         lead = session.get(Lead, lead_id)
-        if not lead:
-            return HTMLResponse("Not found", status_code=404)
+        if not lead or not owns(lead.owner_id, user):
+            return _not_found()
         if clear:
             lead.next_action_at, lead.next_action_note = None, ""
             _log(session, lead, user, "note", "follow-up cleared")
@@ -1298,8 +1430,9 @@ def lead_followup(request: Request, lead_id: int, next_action_at: str = Form("")
 def quotes_list(request: Request):
     with Session(engine) as session:
         user = current_user(request, session)
-        quotes = session.exec(select(Quote).order_by(Quote.id.desc())).all()
-        leads = {l.id: l for l in session.exec(select(Lead)).all()}
+        quotes = session.exec(scoped(select(Quote), Quote.owner_id, user).order_by(Quote.id.desc())).all()
+        lead_ids = {q.lead_id for q in quotes} or {0}
+        leads = {l.id: l for l in session.exec(select(Lead).where(Lead.id.in_(lead_ids))).all()}
         products = {p.id: p for p in session.exec(select(Product)).all()}
         rows = [{"q": q, "lead": leads.get(q.lead_id), "product": products.get(q.product_id)}
                 for q in quotes]
@@ -1320,8 +1453,8 @@ def quote_detail(request: Request, quote_id: int):
     with Session(engine) as session:
         user = current_user(request, session)
         q = session.get(Quote, quote_id)
-        if not q:
-            return HTMLResponse("Not found", status_code=404)
+        if not q or not owns(q.owner_id, user):     # IDOR guard: no cross-tenant quote access
+            return _not_found()
         lead = session.get(Lead, q.lead_id)
         product = session.get(Product, q.product_id)
         breakdown = json.loads(q.breakdown or "[]")
@@ -1422,6 +1555,8 @@ def approve_quote(request: Request, quote_id: int):
         if not role_at_least(user, "agent"):    # agent+ can approve (solo-operator friendly)
             return _forbidden()
         q = session.get(Quote, quote_id)
+        if q and not owns(q.owner_id, user):
+            return _not_found()
         if q and q.status == "draft":
             q.status = "approved"
             q.approved_by = user.email
@@ -1438,6 +1573,8 @@ def send_quote(request: Request, quote_id: int):
         if not role_at_least(user, "agent"):     # agent+ can send (solo-operator friendly)
             return _forbidden()
         q = session.get(Quote, quote_id)
+        if q and not owns(q.owner_id, user):
+            return _not_found()
         if q and q.status == "approved":
             q.status = "sent"
             _ensure_share_token(session, q)
@@ -1466,8 +1603,9 @@ def send_quote(request: Request, quote_id: int):
 def deals_list(request: Request):
     with Session(engine) as session:
         user = current_user(request, session)
-        deals = session.exec(select(Deal).order_by(Deal.id.desc())).all()
-        leads = {l.id: l for l in session.exec(select(Lead)).all()}
+        deals = session.exec(scoped(select(Deal), Deal.owner_id, user).order_by(Deal.id.desc())).all()
+        lead_ids = {d.lead_id for d in deals} or {0}
+        leads = {l.id: l for l in session.exec(select(Lead).where(Lead.id.in_(lead_ids))).all()}
         rows = [{"d": d, "lead": leads.get(d.lead_id)} for d in deals]
     return templates.TemplateResponse("deals_list.html", {"request": request, "user": user, "rows": rows})
 
@@ -1477,8 +1615,8 @@ def deal_detail(request: Request, deal_id: int):
     with Session(engine) as session:
         user = current_user(request, session)
         deal = session.get(Deal, deal_id)
-        if not deal:
-            return HTMLResponse("Not found", status_code=404)
+        if not deal or not owns(deal.owner_id, user):     # IDOR guard: no cross-tenant deal access
+            return _not_found()
         lead = session.get(Lead, deal.lead_id)
         docs = session.exec(
             select(ComplianceDoc).where(ComplianceDoc.deal_id == deal_id).order_by(ComplianceDoc.id.desc())
@@ -1497,11 +1635,12 @@ def deal_detail(request: Request, deal_id: int):
 @app.post("/deals/{deal_id}/advance")
 def advance_deal(request: Request, deal_id: int):
     with Session(engine) as session:
-        if not role_at_least(current_user(request, session), "agent"):
+        user = current_user(request, session)
+        if not role_at_least(user, "agent"):
             return _forbidden()
         deal = session.get(Deal, deal_id)
-        if not deal:
-            return HTMLResponse("Not found", status_code=404)
+        if not deal or not owns(deal.owner_id, user):
+            return _not_found()
         nxt = next_stage(deal.stage)
         if not nxt:
             return RedirectResponse(f"/deals/{deal_id}", status_code=303)
@@ -1514,7 +1653,6 @@ def advance_deal(request: Request, deal_id: int):
             deal.closed_at = datetime.utcnow()
         session.add(deal)
         lead = session.get(Lead, deal.lead_id)
-        user = current_user(request, session)
         if lead:
             _log(session, lead, user, "status_change", f"deal -> {nxt}")
         session.commit()
@@ -1551,10 +1689,12 @@ def add_doc(request: Request, deal_id: int, doc_type: str = Form(...),
             reference_no: str = Form(""), issued_by: str = Form(""), expires_at: str = Form(""),
             file: UploadFile = File(None)):
     with Session(engine) as session:
-        if not role_at_least(current_user(request, session), "agent"):
+        user = current_user(request, session)
+        if not role_at_least(user, "agent"):
             return _forbidden()
-        if not session.get(Deal, deal_id):
-            return HTMLResponse("Not found", status_code=404)
+        deal = session.get(Deal, deal_id)
+        if not deal or not owns(deal.owner_id, user):
+            return _not_found()
         exp = None
         if expires_at.strip():
             try:
@@ -1580,8 +1720,12 @@ def download_doc(request: Request, deal_id: int, doc_id: int):
     """Download a trade document's attached file — agent+ only, never public. Path is built by us
     (deal_docs/<deal>/<doc>_<name>), and re-validated to stay inside DEAL_DOCS_DIR (no traversal)."""
     with Session(engine) as session:
-        if not role_at_least(current_user(request, session), "agent"):
+        user = current_user(request, session)
+        if not role_at_least(user, "agent"):
             return _forbidden()
+        deal = session.get(Deal, deal_id)
+        if not deal or not owns(deal.owner_id, user):     # check the PARENT deal's owner, not just the FK
+            return _not_found()
         doc = session.get(ComplianceDoc, doc_id)
         if not doc or doc.deal_id != deal_id or not doc.file_path:
             return HTMLResponse("Not found", status_code=404)
@@ -1595,8 +1739,12 @@ def download_doc(request: Request, deal_id: int, doc_id: int):
 @app.post("/deals/{deal_id}/docs/{doc_id}/verify")
 def verify_doc(request: Request, deal_id: int, doc_id: int):
     with Session(engine) as session:
-        if not role_at_least(current_user(request, session), "agent"):
+        user = current_user(request, session)
+        if not role_at_least(user, "agent"):
             return _forbidden()
+        deal = session.get(Deal, deal_id)
+        if not deal or not owns(deal.owner_id, user):
+            return _not_found()
         doc = session.get(ComplianceDoc, doc_id)
         if doc and doc.deal_id == deal_id:
             doc.status = "verified"
@@ -1609,9 +1757,12 @@ def verify_doc(request: Request, deal_id: int, doc_id: int):
 def settle_deal(request: Request, deal_id: int,
                 actual_revenue: float = Form(0, ge=0), actual_cost: float = Form(0, ge=0)):
     with Session(engine) as session:
-        if not role_at_least(current_user(request, session), "manager"):
+        user = current_user(request, session)
+        if not role_at_least(user, "manager"):
             return _forbidden()
         deal = session.get(Deal, deal_id)
+        if deal and not owns(deal.owner_id, user):
+            return _not_found()
         if deal:
             deal.actual_revenue = actual_revenue
             deal.actual_cost = actual_cost
@@ -1630,6 +1781,8 @@ def settle_deal(request: Request, deal_id: int,
 def ingest_page(request: Request):
     with Session(engine) as session:
         user = current_user(request, session)
+        if not is_admin(user):          # data ingestion is an admin operation
+            return _forbidden()
         runs = session.exec(
             select(IngestionRun).order_by(IngestionRun.id.desc()).limit(20)
         ).all()
@@ -1642,7 +1795,7 @@ def ingest_page(request: Request):
 @app.post("/ingest/run")
 def ingest_run(request: Request, background: BackgroundTasks):
     with Session(engine) as session:
-        if not role_at_least(current_user(request, session), "manager"):
+        if not is_admin(current_user(request, session)):     # rates / FX / ingest = admin only
             return _forbidden()
     background.add_task(ingest_source, Go4WorldCsvSource(INBOX_DIR))   # non-blocking
     return RedirectResponse("/ingest", status_code=303)
@@ -1652,7 +1805,7 @@ def ingest_run(request: Request, background: BackgroundTasks):
 async def ingest_upload(request: Request, background: BackgroundTasks, file: UploadFile = File(...)):
     """Browser CSV upload: save into the inbox then kick off ingestion in the background."""
     with Session(engine) as session:
-        if not role_at_least(current_user(request, session), "manager"):
+        if not is_admin(current_user(request, session)):     # rates / FX / ingest = admin only
             return _forbidden()
     if file.filename and file.filename.lower().endswith(".csv"):
         Path(INBOX_DIR).mkdir(parents=True, exist_ok=True)
@@ -1667,6 +1820,8 @@ async def ingest_upload(request: Request, background: BackgroundTasks, file: Upl
 def rates_page(request: Request):
     with Session(engine) as session:
         user = current_user(request, session)
+        if not is_admin(user):          # pricing params / margins / FX are founder-internal
+            return _forbidden()
         pvals = {cp.key: cp.value for cp in session.exec(select(CostParam)).all()}
         inland = session.exec(
             select(RateCard).where(RateCard.leg == "inland", RateCard.active == True)).first()  # noqa: E712
@@ -1689,7 +1844,7 @@ def update_params(
     margin_floor_pct: float = Form(0, ge=0),
 ):
     with Session(engine) as session:
-        if not role_at_least(current_user(request, session), "manager"):
+        if not is_admin(current_user(request, session)):     # rates / FX / ingest = admin only
             return _forbidden()
         _set_param(session, "export_clearance", export_clearance, "USD/shipment")
         _set_param(session, "coo_fee", coo_fee, "USD/shipment")
@@ -1710,7 +1865,7 @@ def update_cards(
     dest_border: str = Form(""),
 ):
     with Session(engine) as session:
-        if not role_at_least(current_user(request, session), "manager"):
+        if not is_admin(current_user(request, session)):     # rates / FX / ingest = admin only
             return _forbidden()
         _set_card(session, "inland", inland_per_truck, capacity=truck_capacity)
         _set_card(session, "international", intl_per_truck, lane_to=dest_border, capacity=truck_capacity)
@@ -1721,7 +1876,7 @@ def update_cards(
 @app.post("/rates/fx")
 def update_fx(request: Request, base: str = Form(...), rate: float = Form(..., gt=0)):
     with Session(engine) as session:
-        if not role_at_least(current_user(request, session), "manager"):
+        if not is_admin(current_user(request, session)):     # rates / FX / ingest = admin only
             return _forbidden()
         base = base.strip().upper()
         fx = session.exec(select(FxRate).where(FxRate.base == base, FxRate.quote == "USD")).first()
@@ -1731,6 +1886,309 @@ def update_fx(request: Request, base: str = Form(...), rate: float = Form(..., g
         session.add(fx)
         session.commit()
     return RedirectResponse("/rates", status_code=303)
+
+
+# ----------------------------------------------------------------------------- concierge requests
+# A trader submits a request (buyer search first); the founder is pinged, approves, fulfils, and the
+# result (delivered buyers) lands in the trader's OWN account (owner_id = requester). Fully isolated.
+
+# The concierge service catalog. buyer_hunt delivers leads (via scripts/deliver_request.py); the other
+# services deliver a file/summary the founder uploads. All share the one request lifecycle.
+SERVICES = [
+    {"key": "buyer_hunt", "icon": "\U0001F3AF", "label": "Find buyers",
+     "blurb": "We research and deliver real, contactable buyers for your product."},
+    {"key": "remittance", "icon": "\U0001F4B1", "label": "Remittance / Sarafi",
+     "blurb": "Get paid across borders the safe way — crypto, hawala, LC or third-country settlement."},
+    {"key": "contract", "icon": "\U0001F4DD", "label": "Contract drafting",
+     "blurb": "A professional sales contract / agreement, drafted and delivered as a PDF."},
+    {"key": "freight", "icon": "\U0001F69A", "label": "Freight & shipping",
+     "blurb": "A lane quote and booking to move your goods to the buyer."},
+    {"key": "docs", "icon": "\U0001F4C4", "label": "Documentation",
+     "blurb": "Certificate of Origin, commercial invoice, packing list and other trade documents."},
+]
+REQUEST_TYPES = {s["key"]: s["label"] for s in SERVICES}
+
+# Delivered service files (contract PDFs, remittance confirmations, ...) live outside the repo tree
+# (request_files/ is gitignored) and are served only to the owning trader via the guarded route below.
+REQUEST_FILES_DIR = BASE_DIR.parent / "request_files"
+
+
+def _save_request_file(req_id, upload):
+    """Persist a delivered file under request_files/<req_id>/<name>. Returns the stored relative path,
+    or '' when empty/too large. Reuses the deal-doc size cap + safe-name sanitizer."""
+    data = upload.file.read(MAX_DOC_BYTES + 1)
+    if not data or len(data) > MAX_DOC_BYTES:
+        return ""
+    dest_dir = REQUEST_FILES_DIR / str(req_id)
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    fname = _safe_name(upload.filename)
+    (dest_dir / fname).write_bytes(data)
+    return f"{req_id}/{fname}"
+
+
+def _flash(request, msg, level="emerald"):
+    request.session.setdefault("_flash", []).append({"msg": msg, "level": level})
+
+
+@app.post("/requests")
+def submit_request(request: Request, product: str = Form(""), market: str = Form(""),
+                   details: str = Form(""), request_type: str = Form("buyer_hunt")):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not role_at_least(user, "agent"):
+            return _forbidden()
+        product = (product or "").strip()
+        if not product:
+            _flash(request, "Please enter the product you want buyers for.", "rose")
+            return RedirectResponse("/requests", status_code=303)
+        rtype = request_type if request_type in REQUEST_TYPES else "buyer_hunt"
+        sr = ServiceRequest(request_type=rtype, product=product[:200], market=(market or "").strip()[:120],
+                            details=(details or "").strip()[:2000], status="submitted",
+                            requester_id=user.id, owner_id=user.id)
+        session.add(sr); session.commit(); session.refresh(sr)
+        sr.tracking_code = f"SR-{datetime.utcnow():%Y%m}-{sr.id:04d}"
+        sr.result_source_tag = f"req-{sr.id}"
+        session.add(sr); session.commit(); session.refresh(sr)
+        try:
+            notify_service_request(sr, user)
+        except Exception:  # noqa: BLE001
+            pass
+        _flash(request, f"Request {sr.tracking_code} sent to admin. Your buyers will appear here once it's done.")
+    return RedirectResponse("/requests", status_code=303)
+
+
+@app.get("/requests", response_class=HTMLResponse)
+def my_requests(request: Request):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        reqs = session.exec(scoped(select(ServiceRequest), ServiceRequest.owner_id, user)
+                            .order_by(ServiceRequest.id.desc())).all()
+    flashes = request.session.pop("_flash", [])
+    return templates.TemplateResponse("requests.html", {
+        "request": request, "user": user, "active": "requests", "reqs": reqs,
+        "types": REQUEST_TYPES, "flashes": flashes})
+
+
+@app.get("/requests/{req_id}/status", response_class=HTMLResponse)
+def request_status(request: Request, req_id: int):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        sr = session.get(ServiceRequest, req_id)
+        if not sr or not owns(sr.owner_id, user):
+            return HTMLResponse("", status_code=404)
+        return templates.TemplateResponse("partials/request_card.html", {"request": request, "r": sr})
+
+
+@app.get("/services", response_class=HTMLResponse)
+def services_page(request: Request):
+    """The concierge menu: a card per service, each opening a request form. Any logged-in user."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+    flashes = request.session.pop("_flash", [])
+    return templates.TemplateResponse("services.html", {
+        "request": request, "user": user, "active": "services", "services": SERVICES, "flashes": flashes})
+
+
+@app.get("/requests/{req_id}/result/file")
+def request_result_file(request: Request, req_id: int):
+    """Download a delivered service file — the owning trader (or admin) only, never public. Path is
+    built by us and re-validated to stay inside REQUEST_FILES_DIR (no traversal)."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        sr = session.get(ServiceRequest, req_id)
+        if not sr or not owns(sr.owner_id, user) or not sr.result_file_path:
+            return _not_found()
+        path = (REQUEST_FILES_DIR / sr.result_file_path).resolve()
+        if not str(path).startswith(str(REQUEST_FILES_DIR.resolve()) + os.sep) or not path.exists():
+            return _not_found()
+        fname = os.path.basename(sr.result_file_path)
+    return FileResponse(str(path), filename=fname)
+
+
+@app.get("/admin/requests", response_class=HTMLResponse)
+def admin_requests(request: Request):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        reqs = session.exec(select(ServiceRequest).order_by(ServiceRequest.id.desc())).all()
+        umap = {u.id: u for u in session.exec(select(User)).all()}
+        order = {"submitted": 0, "approved": 1, "running": 2, "done": 3, "rejected": 4}
+        reqs.sort(key=lambda r: (order.get(r.status, 9), -(r.id or 0)))
+    return templates.TemplateResponse("admin_requests.html", {
+        "request": request, "user": user, "active": "admin_requests", "reqs": reqs, "umap": umap})
+
+
+def _notify_requester(session, sr):
+    try:
+        notify_request_update(sr, session.get(User, sr.requester_id))
+    except Exception:  # noqa: BLE001
+        pass
+
+
+@app.post("/admin/requests/{req_id}/approve")
+def admin_request_approve(request: Request, req_id: int):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        sr = session.get(ServiceRequest, req_id)
+        if sr and sr.status == "submitted":
+            sr.status, sr.approved_by, sr.approved_at = "approved", user.email, datetime.utcnow()
+            session.add(sr); session.commit(); session.refresh(sr)
+            _notify_requester(session, sr)
+    return RedirectResponse("/admin/requests", status_code=303)
+
+
+@app.post("/admin/requests/{req_id}/reject")
+def admin_request_reject(request: Request, req_id: int, reason: str = Form("")):
+    with Session(engine) as session:
+        if not is_admin(current_user(request, session)):
+            return _forbidden()
+        sr = session.get(ServiceRequest, req_id)
+        if sr and sr.status in ("submitted", "approved"):
+            sr.status, sr.admin_note, sr.done_at = "rejected", (reason or "").strip()[:500], datetime.utcnow()
+            session.add(sr); session.commit(); session.refresh(sr)
+            _notify_requester(session, sr)
+    return RedirectResponse("/admin/requests", status_code=303)
+
+
+@app.post("/admin/requests/{req_id}/start")
+def admin_request_start(request: Request, req_id: int):
+    with Session(engine) as session:
+        if not is_admin(current_user(request, session)):
+            return _forbidden()
+        sr = session.get(ServiceRequest, req_id)
+        if sr and sr.status == "approved":
+            sr.status, sr.started_at = "running", datetime.utcnow()
+            session.add(sr); session.commit()
+    return RedirectResponse("/admin/requests", status_code=303)
+
+
+@app.post("/admin/requests/{req_id}/done")
+def admin_request_done(request: Request, req_id: int, result: str = Form(""),
+                       file: UploadFile = File(None)):
+    """Deliver / close a request as done, with a result note + optional file (contract PDF, remittance
+    confirmation, freight quote). buyer_hunt normally closes via scripts/deliver_request.py instead."""
+    with Session(engine) as session:
+        if not is_admin(current_user(request, session)):
+            return _forbidden()
+        sr = session.get(ServiceRequest, req_id)
+        if sr and sr.status in ("approved", "running"):
+            sr.status, sr.done_at = "done", datetime.utcnow()
+            sr.result = (result or "").strip()[:1000] or sr.result
+            session.add(sr); session.commit(); session.refresh(sr)
+            if file is not None and (file.filename or "").strip():
+                rel = _save_request_file(sr.id, file)
+                if rel:
+                    sr.result_file_path = rel
+                    session.add(sr); session.commit(); session.refresh(sr)
+            _notify_requester(session, sr)
+    return RedirectResponse("/admin/requests", status_code=303)
+
+
+# ----------------------------------------------------------------------------- admin: users + oversight
+# Founder-only. Accounts are created HERE (no public sign-up); every trader is isolated to their own
+# data, and the oversight page shows what each is doing, broken down per user.
+
+ASSIGNABLE_ROLES = ("agent", "admin")   # this model has just two: trader (agent) + founder (admin)
+
+
+@app.get("/admin/users", response_class=HTMLResponse)
+def admin_users(request: Request, error: str = "", ok: str = ""):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        users = session.exec(select(User).order_by(User.id.asc())).all()
+        lead_counts = dict(session.exec(
+            select(Lead.owner_id, func.count(Lead.id)).group_by(Lead.owner_id)).all())
+        deal_counts = dict(session.exec(
+            select(Deal.owner_id, func.count(Deal.id)).group_by(Deal.owner_id)).all())
+        rows = [{"u": u, "leads": lead_counts.get(u.id, 0), "deals": deal_counts.get(u.id, 0)}
+                for u in users]
+    return templates.TemplateResponse("admin_users.html", {
+        "request": request, "user": user, "active": "users", "rows": rows,
+        "roles": ASSIGNABLE_ROLES, "error": error, "ok": ok})
+
+
+@app.post("/admin/users")
+def admin_user_create(request: Request, email: str = Form(...), name: str = Form(""),
+                      role: str = Form("agent"), password: str = Form(...)):
+    with Session(engine) as session:
+        if not is_admin(current_user(request, session)):
+            return _forbidden()
+        email = (email or "").strip().lower()
+        role = role if role in ASSIGNABLE_ROLES else "agent"
+        if not email or len(password) < 6:
+            return RedirectResponse("/admin/users?error=input", status_code=303)
+        if session.exec(select(User).where(User.email == email)).first():
+            return RedirectResponse("/admin/users?error=exists", status_code=303)
+        session.add(User(email=email, name=name.strip(), role=role,
+                         password_hash=hash_password(password)))
+        session.commit()
+    return RedirectResponse("/admin/users?ok=created", status_code=303)
+
+
+@app.post("/admin/users/{user_id}/password")
+def admin_user_password(request: Request, user_id: int, password: str = Form(...)):
+    with Session(engine) as session:
+        if not is_admin(current_user(request, session)):
+            return _forbidden()
+        u = session.get(User, user_id)
+        if not u or len(password) < 6:
+            return RedirectResponse("/admin/users?error=input", status_code=303)
+        u.password_hash = hash_password(password)
+        session.add(u)
+        session.commit()
+    return RedirectResponse("/admin/users?ok=password", status_code=303)
+
+
+@app.post("/admin/users/{user_id}/toggle")
+def admin_user_toggle(request: Request, user_id: int):
+    with Session(engine) as session:
+        admin = current_user(request, session)
+        if not is_admin(admin):
+            return _forbidden()
+        u = session.get(User, user_id)
+        if u and u.id != admin.id:          # never lock yourself out
+            u.active = not u.active
+            session.add(u)
+            session.commit()
+    return RedirectResponse("/admin/users?ok=toggled", status_code=303)
+
+
+@app.get("/admin/activity", response_class=HTMLResponse)
+def admin_activity(request: Request):
+    """Per-user oversight — what each trader is doing, SEGREGATED by user, so the founder can watch for
+    mistakes or improper activity. Admin only. This is the admin's own 'tafkik shode' breakdown."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        users = session.exec(select(User).order_by(User.id.asc())).all()
+
+        def by_owner(model, owner_col, extra=None):
+            stmt = select(owner_col, func.count(model.id))
+            if extra is not None:
+                stmt = stmt.where(extra)
+            return dict(session.exec(stmt.group_by(owner_col)).all())
+
+        leads_by = by_owner(Lead, Lead.owner_id)
+        won_by = by_owner(Lead, Lead.owner_id, Lead.status == "won")
+        quotes_by = by_owner(Quote, Quote.owner_id)
+        deals_by = by_owner(Deal, Deal.owner_id)
+        last_act = {}
+        for a in session.exec(select(Activity).order_by(Activity.id.desc()).limit(1000)).all():
+            if a.user_id and a.user_id not in last_act:
+                last_act[a.user_id] = a
+        rows = [{"u": u, "leads": leads_by.get(u.id, 0), "won": won_by.get(u.id, 0),
+                 "quotes": quotes_by.get(u.id, 0), "deals": deals_by.get(u.id, 0),
+                 "last": last_act.get(u.id)} for u in users]
+        rows.sort(key=lambda r: -r["leads"])
+        pool = leads_by.get(None, 0)        # unowned leads = the admin pool awaiting assignment
+    return templates.TemplateResponse("admin_activity.html", {
+        "request": request, "user": user, "active": "admin_activity", "rows": rows, "pool": pool})
 
 
 # ----------------------------------------------------------------------------- browser-helper API

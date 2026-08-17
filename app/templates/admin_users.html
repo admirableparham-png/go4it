@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-6">
+  <div class="eyebrow">Admin</div>
+  <h1 class="text-xl font-bold tracking-tight">Users</h1>
+  <p class="text-slate-500 text-sm mt-0.5">You create every account &mdash; there is no public sign-up. Each trader sees only their own data.</p>
+</div>
+
+{% if ok %}<div class="alert-emerald mb-4">Done: {{ ok }}.</div>{% endif %}
+{% if error %}<div class="alert-rose mb-4">Could not complete ({{ error }}). Email must be unique and passwords at least 6 characters.</div>{% endif %}
+
+<div class="grid md:grid-cols-3 gap-4">
+  <div class="card md:col-span-1 h-fit">
+    <h3 class="text-sm font-semibold mb-3">Create a user</h3>
+    <form method="post" action="/admin/users" class="space-y-3">
+      <div><label class="field-label">Name</label><input class="input" name="name" placeholder="Full name"></div>
+      <div><label class="field-label">Email (their login)</label><input class="input" name="email" type="email" required placeholder="person@email.com"></div>
+      <div><label class="field-label">Role</label>
+        <select class="select" name="role">
+          {% for r in roles %}<option value="{{ r }}">{{ 'Founder (full admin)' if r == 'admin' else 'Trader (isolated)' }}</option>{% endfor %}
+        </select></div>
+      <div><label class="field-label">Password</label><input class="input" name="password" type="text" required minlength="6" placeholder="min 6 characters"></div>
+      <button class="btn btn-primary btn-block" data-busy="Creating">Create user</button>
+      <p class="text-slate-500 text-xs">You set the password and share it with them. They can't create or change their own account.</p>
+    </form>
+  </div>
+
+  <div class="md:col-span-2">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>User</th><th>Role</th><th>Buyers</th><th>Deals</th><th>Status</th><th class="text-right">Manage</th></tr></thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td><div class="font-medium">{{ r.u.name or '—' }}</div><div class="text-xs text-slate-500">{{ r.u.email }}</div></td>
+            <td><span class="badge {{ 'badge-emerald' if r.u.role == 'admin' else 'badge-slate' }}">{{ 'founder' if r.u.role == 'admin' else 'trader' }}</span></td>
+            <td class="tabular-nums">{{ r.leads }}</td>
+            <td class="tabular-nums">{{ r.deals }}</td>
+            <td>{% if r.u.active %}<span class="badge badge-emerald">active</span>{% else %}<span class="badge badge-rose">disabled</span>{% endif %}</td>
+            <td>
+              <div class="flex gap-1 justify-end items-center flex-wrap">
+                <form method="post" action="/admin/users/{{ r.u.id }}/password" class="flex gap-1 items-center">
+                  <input class="input" name="password" placeholder="new password" minlength="6" style="width:9rem;padding:.3rem .5rem;font-size:.75rem">
+                  <button class="btn btn-neutral btn-sm" data-busy="…">Set</button>
+                </form>
+                {% if r.u.id != user.id %}
+                <form method="post" action="/admin/users/{{ r.u.id }}/toggle">
+                  <button class="btn btn-sm {{ 'btn-ghost-emerald' if not r.u.active else 'btn-neutral' }}">{{ 'Enable' if not r.u.active else 'Disable' }}</button>
+                </form>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="text-slate-500 text-xs mt-3"><a class="link" href="/admin/activity">See what each user is doing &rarr;</a></p>
+  </div>
+</div>
+{% endblock %}
