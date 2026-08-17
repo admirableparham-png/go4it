@@ -1476,6 +1476,16 @@ def quotes_list(request: Request):
     return templates.TemplateResponse("quotes_list.html", {"request": request, "user": user, "rows": rows})
 
 
+@app.get("/quotes/sample", response_class=HTMLResponse)
+def quote_sample(request: Request):
+    """A print-ready SAMPLE pro-forma so a trader sees exactly what a buyer receives. Static, no data.
+    Declared BEFORE /quotes/{quote_id} so 'sample' isn't matched as an int id."""
+    today = datetime.utcnow().date()
+    return templates.TemplateResponse("quote_sample.html", {
+        "request": request, "issued": today.strftime("%d %b %Y"),
+        "valid_until": (today + timedelta(days=14)).strftime("%d %b %Y")})
+
+
 def _ensure_share_token(session, q) -> str:
     """Give the quote an unguessable public-link token if it doesn't have one yet."""
     if not (q.share_token or "").strip():
