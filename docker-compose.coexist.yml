@@ -1,0 +1,49 @@
+# go4it — CO-EXIST deploy: run go4it on a server that ALREADY has a reverse proxy owning ports 80/443
+# (e.g. tradesitter's Caddy). This starts ONLY the app + worker — NO Caddy, NO published host ports — on
+# a named network `go4it-net`. The existing proxy is attached to that network and routes your subdomain
+# to `go4it-app:8400`. Wire it up with scripts/coexist.sh (does the Caddy route safely).
+services:
+  app:
+    build: .
+    image: go4it:latest
+    container_name: go4it-app
+    env_file: .env
+    environment:
+      WEB_CONCURRENCY: "${WEB_CONCURRENCY:-2}"
+      DATABASE_URL: "sqlite:////app/var/go4it.db"
+      INBOX_DIR: "/app/var/inbox"
+      BASE_URL: "${BASE_URL:?set BASE_URL=https://your-domain in .env}"
+    volumes:
+      - go4it-data:/app/var
+      - go4it-docs:/app/deal_docs
+      - go4it-files:/app/request_files
+      - ./backups:/app/backups
+    networks: [go4it-net]
+    restart: unless-stopped
+
+  worker:
+    build: .
+    image: go4it:latest
+    container_name: go4it-worker
+    env_file: .env
+    environment:
+      DATABASE_URL: "sqlite:////app/var/go4it.db"
+      INBOX_DIR: "/app/var/inbox"
+      BASE_URL: "${BASE_URL}"
+    command: ["python", "-m", "app.worker"]
+    volumes:
+      - go4it-data:/app/var
+      - go4it-docs:/app/deal_docs
+      - go4it-files:/app/request_files
+    networks: [go4it-net]
+    depends_on: [app]
+    restart: unless-stopped
+
+networks:
+  go4it-net:
+    name: go4it-net
+
+volumes:
+  go4it-data:
+  go4it-docs:
+  go4it-files:
