@@ -26,8 +26,13 @@ HOSTCF=$(docker inspect "$CADDY" --format "{{range .Mounts}}{{if eq .Destination
 [ -n "$HOSTCF" ] && [ -f "$HOSTCF" ] || { echo "!! Could not find the Caddyfile on the host (expected mount at $CFG)."; exit 1; }
 echo "   Caddyfile on host: $HOSTCF"
 
-echo "==> Fetching go4it into $DIR…"
-if [ -d "$DIR/.git" ]; then git -C "$DIR" pull --ff-only; else git clone "$REPO" "$DIR"; fi
+if [ -f "$DIR/docker-compose.coexist.yml" ]; then
+  echo "==> Using go4it code already in $DIR (transferred/cloned)."
+elif [ -d "$DIR/.git" ]; then
+  echo "==> Updating go4it in $DIR…"; git -C "$DIR" pull --ff-only
+else
+  echo "==> Cloning go4it into $DIR…"; git clone "$REPO" "$DIR"
+fi
 cd "$DIR"
 
 if [ ! -f .env ]; then
