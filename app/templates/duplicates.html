@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% set active = 'duplicates' %}
+{% block content %}
+{% set hdr = {"section":"Trade Network","title":"Duplicate Review","count":rows|length,
+   "desc":"Conservative, tenant-scoped candidates — never auto-merged. Review side by side; a merge preserves everything and is reversible."} %}
+{% include "partials/admin_page_header.html" %}
+
+<div class="flex flex-wrap gap-2 mb-4 items-center">
+  {% for s in ['open','confirmed','not_duplicate','deferred','merged'] %}
+    <a class="btn btn-sm {{ 'btn-primary' if status==s else 'btn-neutral' }}" href="/duplicates?status={{ s }}">{{ s|replace('_',' ') }}</a>
+  {% endfor %}
+  <form method="post" action="/duplicates/rescan" class="inline ml-auto"><button class="btn btn-ghost-sky btn-sm">Rescan</button></form>
+</div>
+
+{% for r in rows %}
+<div class="card mb-3">
+  <div class="flex items-center justify-between mb-2">
+    <div class="flex gap-2 items-center">
+      <span class="badge {{ 'badge-rose' if r.dc.match_type=='strong' else 'badge-amber' }} text-[10px]">{{ r.dc.match_type }}</span>
+      <span class="text-xs text-slate-400">strength {{ r.dc.strength }} · {{ r.signals|join(', ') }}</span>
+    </div>
+    <form method="post" action="/duplicates/{{ r.dc.id }}/dispose" class="flex gap-1" data-no-spin>
+      <button class="btn btn-ghost-emerald btn-sm" name="action" value="merge" data-busy="Merging">Merge →</button>
+      <button class="btn btn-neutral btn-sm" name="action" value="not_duplicate">Not a dup</button>
+      <button class="btn btn-neutral btn-sm" name="action" value="linked">Link only</button>
+      <button class="btn btn-neutral btn-sm" name="action" value="deferred">Defer</button>
+    </form>
+  </div>
+  <div class="grid sm:grid-cols-2 gap-3">
+    {% for side in [r.a, r.b] %}
+    {% set contacts = r.a_contacts if loop.first else r.b_contacts %}
+    <div class="card-soft" style="padding:.8rem">
+      <div class="font-semibold"><a class="link" href="/companies/{{ side.id }}">{{ side.name }}</a> {% if loop.first %}<span class="text-[10px] text-slate-500">(canonical on merge)</span>{% endif %}</div>
+      <div class="text-xs text-slate-500 mt-0.5">{{ side.country or '—' }}{% if side.city %} · {{ side.city }}{% endif %}{% if side.domain %} · {{ side.domain }}{% endif %}</div>
+      <div class="text-xs mt-1">Verification: {{ side.verification_status }} · Roles from candidate</div>
+      {% for c in contacts %}<div class="text-[11px] text-slate-400 mt-1">{{ c.name or '—' }} · {{ c.email or c.phone or '—' }} <span class="text-slate-600">[{{ c.email_health }}]</span></div>{% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% else %}
+  <div class="empty">No {{ status }} duplicate candidates. Every organization appears once.</div>
+{% endfor %}
+{% endblock %}

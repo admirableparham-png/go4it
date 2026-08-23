@@ -3,7 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>go4it</title>
+  <title>Go4it</title>
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <link rel="apple-touch-icon" href="/static/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -137,7 +139,38 @@
     .nav-tab:hover { color:var(--ink); background:rgba(255,255,255,.06); }
     .nav-tab-active { color:#eaf0ff; background:linear-gradient(120deg, rgba(34,211,238,.18), rgba(168,85,247,.18));
                       box-shadow:inset 0 0 0 1px rgba(255,255,255,.12), 0 0 22px -6px rgba(129,140,248,.6); }
+    .nav-tab:focus-visible { outline:none; box-shadow:0 0 0 2px rgba(129,140,248,.7); }
     .nav-divider { width:1px; height:1.1rem; background:var(--border); margin:0 .35rem; flex-shrink:0; }
+
+    /* two-level admin header */
+    .admin-primary { display:flex; flex-wrap:nowrap; align-items:center; gap:.15rem; overflow:hidden; padding-bottom:.5rem; }
+    .admin-secondary { display:flex; flex-wrap:wrap; align-items:center; gap:.15rem; padding:.4rem 0 .6rem;
+                       border-top:1px solid var(--border); }
+    .nav-subtab { padding:.32rem .7rem; border-radius:.5rem; color:var(--muted); text-decoration:none; white-space:nowrap;
+                  font-weight:500; transition:color .15s, background .15s; }
+    .nav-subtab:hover { color:var(--ink); background:rgba(255,255,255,.06); }
+    .nav-subtab:focus-visible { outline:none; box-shadow:0 0 0 2px rgba(129,140,248,.7); }
+    .nav-subtab-active { color:#eaf0ff; background:rgba(129,140,248,.18); box-shadow:inset 0 0 0 1px rgba(255,255,255,.12); }
+
+    /* "More" overflow dropdown (native <details> — keyboard + touch accessible) */
+    .more-menu { position:relative; flex-shrink:0; }
+    .more-menu > summary { list-style:none; cursor:pointer; }
+    .more-menu > summary::-webkit-details-marker { display:none; }
+    .more-menu > summary:focus-visible { outline:none; box-shadow:0 0 0 2px rgba(129,140,248,.7); }
+    .more-panel { position:absolute; right:0; top:calc(100% + .3rem); min-width:12.5rem; z-index:50;
+                  background:rgba(12,14,26,.98); border:1px solid var(--border-2); border-radius:.7rem; padding:.35rem;
+                  box-shadow:0 22px 55px -18px rgba(0,0,0,.92); display:flex; flex-direction:column; gap:.1rem; }
+    .more-menu:not([open]) .more-panel { display:none; }
+    .more-panel a { width:100%; }
+
+    /* mobile menu panel */
+    .mobile-panel { padding:.4rem 0 .8rem; border-top:1px solid var(--border); }
+    .mobile-group { padding:.25rem 0; }
+    .mobile-group-label { font-family:'JetBrains Mono',ui-monospace,monospace; font-size:10px; text-transform:uppercase;
+                          letter-spacing:.14em; color:var(--dim); padding:.35rem .55rem .15rem; }
+    .mobile-link { display:block; padding:.6rem .7rem; border-radius:.55rem; color:var(--ink); text-decoration:none; font-weight:500; }
+    .mobile-link:hover, .mobile-link:focus-visible { background:rgba(255,255,255,.06); outline:none; box-shadow:0 0 0 2px rgba(129,140,248,.5); }
+    .mobile-link-active { background:rgba(129,140,248,.18); box-shadow:inset 0 0 0 1px rgba(255,255,255,.12); }
   </style>
 </head>
 <body class="h-full antialiased">
@@ -149,50 +182,139 @@
   <script>setTimeout(function(){var t=document.getElementById('g4-toasts');if(t){t.style.transition='opacity .5s';t.style.opacity='0';setTimeout(function(){t.remove();},600);}},4500);</script>
   {% endif %}
 
+  {% set nav = admin_nav(request, user) if user else None %}
   <header class="sticky top-0 z-30" style="background:rgba(8,10,20,.72); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-bottom:1px solid var(--border);">
     <div class="max-w-6xl mx-auto px-6">
-      <div class="flex items-center justify-between py-3">
-        <a href="/" class="flex items-center gap-2.5">
-          <span class="grid place-items-center w-9 h-9 rounded-xl font-extrabold text-[15px]" style="background:var(--aurora); color:#0a0f1e; box-shadow:inset 0 0 0 1px rgba(255,255,255,.18), 0 6px 20px -6px rgba(129,140,248,.7);">g4</span>
+      <div class="flex items-center justify-between py-3 gap-3">
+        <a href="/" class="flex items-center gap-2.5 flex-shrink-0">
+          <img src="/static/logo-light.png" alt="go4it" class="w-9 h-9 object-contain" style="filter:drop-shadow(0 4px 14px rgba(129,140,248,.35));">
           <span class="leading-none">
-            <span class="block text-[16px] font-bold tracking-tight font-display">go4it</span>
+            <span class="block text-[16px] font-bold tracking-tight font-display">Go4it</span>
             <span class="eyebrow block mt-1">trade command</span>
           </span>
         </a>
-        {% if user %}
-        <div class="flex items-center gap-2.5 text-sm">
-          <span class="hidden sm:block" style="color:var(--muted)">{{ user.name or user.email }}</span>
-          <span class="badge {{ 'badge-approved' if user.role == 'admin' else 'badge-slate' }} uppercase text-[10px]">{{ user.role }}</span>
-          <a href="/logout" class="link text-xs">Logout</a>
+        {% if nav %}
+        <span class="md:hidden text-[13px] font-semibold truncate flex-1 text-center px-2" style="color:var(--muted)">{{ nav.active_label or 'Menu' }}</span>
+        {% endif %}
+        <div class="flex items-center gap-2.5 text-sm flex-shrink-0">
+          {% if user %}
+          <span class="hidden md:block" style="color:var(--muted)">{{ user.name or user.email }}</span>
+          <span class="badge {{ 'badge-approved' if user.role == 'admin' else 'badge-slate' }} uppercase text-[10px] hidden sm:inline-flex">{{ user.role }}</span>
+          <a href="/logout" class="link text-xs hidden md:inline">Logout</a>
+          {% endif %}
+          {% if nav %}
+          <button type="button" id="g4-mobile-toggle" class="md:hidden nav-tab" aria-expanded="false"
+                  aria-controls="g4-mobile-panel" aria-label="Open navigation menu" onclick="g4ToggleMobile()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          {% endif %}
         </div>
-        {% endif %}
       </div>
-      <nav class="flex flex-wrap items-center gap-0.5 text-[13px] pb-2.5">
-        {% if user and user.role == 'admin' %}
-        {% set groups = [
-             [('/', 'dashboard', 'Dashboard'), ('/leads','leads','Leads'), ('/campaign','campaign','Campaign'), ('/quotes','quotes','Quotes'), ('/deals','deals','Deals'), ('/catalog','catalog','Catalog')],
-             [('/research','research','Research'), ('/command','command','Command'), ('/suppliers','suppliers','Suppliers'), ('/intel','intel','Intel'), ('/georgia','georgia','Georgia'), ('/lines/cd-dvd','lines','Lines'), ('/uae','uae','UAE')],
-             [('/rates','rates','Rates'), ('/ingest','ingest','Ingest')],
-             [('/admin/requests','admin_requests','Requests'), ('/admin/users','users','Users'), ('/admin/activity','admin_activity','Oversight')]
-           ] %}
+
+      {% if user %}
+        {% if nav %}
+        {# ADMIN — two-level contextual header (tablet + desktop). Primary workspaces, then only the active
+           workspace's children. Both levels are generated from app/adminnav.py — no duplicated markup. #}
+        <div class="hidden md:block">
+          <nav aria-label="Primary" class="admin-primary text-[13px]" id="g4-primary">
+            {% for item in nav.primary %}
+            <a href="{{ item.href }}" data-nav="primary" class="nav-tab {% if item.active %}nav-tab-active{% endif %}"{% if item.active %} aria-current="page"{% endif %}>{{ item.label }}{% if item.badge_href %}<span hx-get="{{ item.badge_href }}" hx-trigger="load, every 60s" hx-swap="innerHTML"></span>{% endif %}</a>
+            {% endfor %}
+            <details class="more-menu" id="g4-more" hidden>
+              <summary class="nav-tab" aria-haspopup="menu" aria-label="More workspaces">More <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true" style="display:inline;vertical-align:-1px"><polyline points="6 9 12 15 18 9"/></svg></summary>
+              <div class="more-panel" role="menu"></div>
+            </details>
+          </nav>
+          {% if nav.secondary %}
+          <nav aria-label="{{ nav.active_workspace|capitalize }} pages" class="admin-secondary text-[13px]" id="g4-secondary">
+            {% for item in nav.secondary %}
+            <a href="{{ item.href }}" class="nav-subtab {% if item.active %}nav-subtab-active{% endif %}"{% if item.active %} aria-current="page"{% endif %}>{{ item.label }}</a>
+            {% endfor %}
+          </nav>
+          {% endif %}
+        </div>
+        {# ADMIN — mobile panel: full-width, children grouped under their workspace. #}
+        <div id="g4-mobile-panel" class="md:hidden mobile-panel" hidden>
+          <nav aria-label="All sections">
+            {% for item in nav.primary %}
+              {% if item.direct %}
+              <a href="{{ item.href }}" class="mobile-link {% if item.active %}mobile-link-active{% endif %}"{% if item.active %} aria-current="page"{% endif %} onclick="g4CloseMobile()">{{ item.label }}</a>
+              {% else %}
+              <div class="mobile-group">
+                <div class="mobile-group-label">{{ item.label }}</div>
+                {% for k in item.children %}
+                <a href="{{ k.href }}" class="mobile-link {% if k.active %}mobile-link-active{% endif %}"{% if k.active %} aria-current="page"{% endif %} onclick="g4CloseMobile()">{{ k.label }}</a>
+                {% endfor %}
+              </div>
+              {% endif %}
+            {% endfor %}
+            <a href="/logout" class="mobile-link" style="color:var(--muted)">Logout</a>
+          </nav>
+        </div>
         {% else %}
-        {% set groups = [
-             [('/', 'dashboard', 'Dashboard'), ('/services','services','Services'), ('/requests','requests','My Requests'), ('/leads','leads','My Buyers'), ('/quotes','quotes','Quotes'), ('/deals','deals','Deals')]
-           ] %}
-        {% endif %}
-        {% for group in groups %}
-          {% if not loop.first %}<span class="nav-divider"></span>{% endif %}
-          {% for href, key, label in group %}
-            <a href="{{ href }}" class="nav-tab {% if active == key %}nav-tab-active{% endif %}">{{ label }}{% if key == 'admin_requests' %}<span hx-get="/admin/requests/count" hx-trigger="load, every 60s" hx-swap="innerHTML"></span>{% endif %}</a>
+        {# SELLER — unchanged navigation. #}
+        <nav class="flex flex-wrap items-center gap-0.5 text-[13px] pb-2.5" aria-label="Primary">
+          {% set groups = [
+               [('/', 'dashboard', 'Dashboard'), ('/services','services','Services'), ('/requests','requests','My Requests'), ('/quotes','quotes','Quotes'), ('/deals','deals','Deals')]
+             ] %}
+          {% for group in groups %}
+            {% if not loop.first %}<span class="nav-divider"></span>{% endif %}
+            {% for href, key, label in group %}
+              <a href="{{ href }}" class="nav-tab {% if active == key %}nav-tab-active{% endif %}">{{ label }}</a>
+            {% endfor %}
           {% endfor %}
-        {% endfor %}
-      </nav>
+        </nav>
+        {% endif %}
+      {% endif %}
     </div>
   </header>
 
   <main class="max-w-6xl mx-auto px-6 py-8 g4-in">
     {% block content %}{% endblock %}
   </main>
+
+  <script>
+    // --- Admin header: mobile menu + "More" overflow -------------------------------------------------
+    function g4ToggleMobile() {
+      var p = document.getElementById('g4-mobile-panel'), b = document.getElementById('g4-mobile-toggle');
+      if (!p || !b) return;
+      var open = p.hidden;
+      p.hidden = !open;
+      b.setAttribute('aria-expanded', open ? 'true' : 'false');
+      b.setAttribute('aria-label', open ? 'Close navigation menu' : 'Open navigation menu');
+    }
+    function g4CloseMobile() {
+      var p = document.getElementById('g4-mobile-panel'), b = document.getElementById('g4-mobile-toggle');
+      if (p && !p.hidden) { p.hidden = true; if (b) { b.setAttribute('aria-expanded', 'false'); b.setAttribute('aria-label', 'Open navigation menu'); } }
+    }
+    // Reflow the primary row: move workspaces that don't fit into the "More" dropdown, never the active one.
+    function g4Overflow() {
+      var nav = document.getElementById('g4-primary'); if (!nav) return;
+      var more = document.getElementById('g4-more'); if (!more) return;
+      var panel = more.querySelector('.more-panel');
+      Array.prototype.forEach.call(panel.querySelectorAll('[data-nav="primary"]'), function (a) { nav.insertBefore(a, more); });
+      more.hidden = true;
+      var guard = 0;
+      while (nav.scrollWidth > nav.clientWidth + 1 && guard < 40) {
+        guard++;
+        var items = nav.querySelectorAll(':scope > [data-nav="primary"]'), moved = null;
+        for (var i = items.length - 1; i >= 0; i--) { if (!items[i].classList.contains('nav-tab-active')) { moved = items[i]; break; } }
+        if (!moved) break;
+        more.hidden = false;
+        panel.insertBefore(moved, panel.firstChild);
+      }
+    }
+    var g4rt;
+    window.addEventListener('resize', function () { clearTimeout(g4rt); g4rt = setTimeout(g4Overflow, 120); });
+    document.addEventListener('DOMContentLoaded', function () { g4Overflow(); setTimeout(g4Overflow, 300); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { g4CloseMobile(); var m = document.getElementById('g4-more'); if (m) m.removeAttribute('open'); }
+    });
+    document.addEventListener('click', function (e) {           // close "More" when clicking outside it
+      var m = document.getElementById('g4-more');
+      if (m && m.hasAttribute('open') && !m.contains(e.target)) m.removeAttribute('open');
+    });
+  </script>
 
   <script>
     // Progressive enhancement: show a spinner + disable the clicked button on full-reload

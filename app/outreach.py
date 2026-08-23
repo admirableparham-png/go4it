@@ -6,6 +6,8 @@ The KIMIEL brand signature (app/outreach_signature.html) is appended at SEND tim
 message body stays clean and the signature is always attached. HTML email carries the styled
 signature; a plain-text alternative is always included for deliverability.
 """
+import base64
+import hashlib
 import os
 import smtplib
 import ssl
@@ -13,7 +15,7 @@ from datetime import date, timedelta
 from email.message import EmailMessage
 from email.utils import make_msgid
 
-from .config import (BASE_URL, OUTREACH_SIGNATURE, SMTP_ENABLED, SMTP_FROM, SMTP_HOST,
+from .config import (BASE_URL, OUTREACH_SIGNATURE, SECRET_KEY, SMTP_ENABLED, SMTP_FROM, SMTP_HOST,
                      SMTP_PASSWORD, SMTP_PORT, SMTP_USER)
 
 _SIG_PATH = os.path.join(os.path.dirname(__file__), "outreach_signature.html")
@@ -299,3 +301,136 @@ def send_email(to_addr, subject, body, html=None, in_reply_to="", references="")
         return True, "", mid
     except Exception as e:  # noqa: BLE001
         return False, str(e)[:300], ""
+
+
+# --------------------------------------------------------------------------- per-user connected mailboxes
+
+def _fernet():
+    """A Fernet cipher keyed off SECRET_KEY — used to encrypt mailbox app-passwords at rest."""
+    from cryptography.fernet import Fernet
+    key = base64.urlsafe_b64encode(hashlib.sha256((SECRET_KEY or "go4it").encode()).digest())
+    return Fernet(key)
+
+
+def mail_encrypt(secret):
+    """Encrypt a mailbox app-password for storage. Returns "" for empty input."""
+    if not secret:
+        return ""
+    try:
+        return _fernet().encrypt(secret.encode()).decode()
+    except Exception:  # noqa: BLE001
+        return ""
+
+
+def mail_decrypt(token):
+    """Decrypt a stored app-password. Returns "" if missing/undecryptable."""
+    if not token:
+        return ""
+    try:
+        return _fernet().decrypt(token.encode()).decode()
+    except Exception:  # noqa: BLE001
+        return ""
+
+
+def verify_smtp(host, port, user, password):
+    """Try an SMTP STARTTLS login with the given creds. Returns (ok, error) — never raises.
+    Used by the 'connect your email' flow to validate an App Password before saving."""
+    if not (host and user and password):
+        return False, "need host, email and app password"
+    try:
+        with smtplib.SMTP(host, int(port or 587), timeout=20) as s:
+            s.starttls(context=ssl.create_default_context())
+            s.login(user, password)
+        return True, ""
+    except Exception as e:  # noqa: BLE001
+        return False, str(e)[:300]
+
+
+def plain_parts(body):
+    """(text, html) for a trader's OWN custom message — plain body + simple HTML, NO KIMIEL signature."""
+    html = f'<html><body style="margin:0;padding:0;background:#ffffff;">{body_to_html(body)}</body></html>'
+    return (body or ""), html
+
+
+def send_via_account(account, to_addr, subject, body, html=None, reply_to="", in_reply_to="", references=""):
+    """Send an email from a trader's OWN connected MailAccount (its SMTP creds + From = its address).
+    Independent of the shared SMTP_* env. Returns (ok, error, message_id) — never raises."""
+    if not account:
+        return False, "no sending account chosen", ""
+    if not (to_addr or "").strip():
+        return False, "no recipient email", ""
+    pw = mail_decrypt(getattr(account, "smtp_password_enc", ""))
+    if not pw:
+        return False, "mailbox not connected (no stored password)", ""
+    try:
+        addr = (account.email or "").strip()
+        domain = addr.split("@")[-1] if "@" in addr else "go4it.local"
+        mid = make_msgid(domain=domain)
+        msg = EmailMessage()
+        msg["Message-ID"] = mid
+        msg["From"] = f"{account.from_name} <{addr}>" if account.from_name else addr
+        msg["To"] = to_addr
+        msg["Subject"] = subject or "(no subject)"
+        if reply_to:
+            msg["Reply-To"] = reply_to
+        if in_reply_to:
+            msg["In-Reply-To"] = in_reply_to
+            msg["References"] = references or in_reply_to
+        msg.set_content(body or "")
+        if html:
+            msg.add_alternative(html, subtype="html")
+        with smtplib.SMTP(account.smtp_host or "smtp.gmail.com", int(account.smtp_port or 587), timeout=20) as s:
+            s.starttls(context=ssl.create_default_context())
+            s.login(addr, pw)
+            s.send_message(msg)
+        return True, "", mid
+    except Exception as e:  # noqa: BLE001
+        return False, str(e)[:300], ""
+
+
+def send_bulk_via_account(account, items, reply_to=""):
+    """Send many emails over ONE SMTP connection (fast). `items` = [(to_addr, subject, text, html)].
+    Returns [(to_addr, ok, error, message_id)] in order — never raises; a login failure fails the whole
+    batch cleanly, a per-message error only fails that one."""
+    if not account:
+        return [(it[0], False, "no sending account", "") for it in items]
+    pw = mail_decrypt(getattr(account, "smtp_password_enc", ""))
+    if not pw:
+        return [(it[0], False, "mailbox not connected (no stored password)", "") for it in items]
+    addr = (account.email or "").strip()
+    from_hdr = f"{account.from_name} <{addr}>" if account.from_name else addr
+    domain = addr.split("@")[-1] if "@" in addr else "go4it.local"
+    try:
+        server = smtplib.SMTP(account.smtp_host or "smtp.gmail.com", int(account.smtp_port or 587), timeout=30)
+        server.starttls(context=ssl.create_default_context())
+        server.login(addr, pw)
+    except Exception as e:  # noqa: BLE001
+        return [(it[0], False, str(e)[:200], "") for it in items]
+    out = []
+    try:
+        for to_addr, subject, text, html in items:
+            if not (to_addr or "").strip():
+                out.append((to_addr, False, "no recipient email", ""))
+                continue
+            try:
+                mid = make_msgid(domain=domain)
+                msg = EmailMessage()
+                msg["Message-ID"] = mid
+                msg["From"] = from_hdr
+                msg["To"] = to_addr
+                msg["Subject"] = subject or "(no subject)"
+                if reply_to:
+                    msg["Reply-To"] = reply_to
+                msg.set_content(text or "")
+                if html:
+                    msg.add_alternative(html, subtype="html")
+                server.send_message(msg)
+                out.append((to_addr, True, "", mid))
+            except Exception as e:  # noqa: BLE001
+                out.append((to_addr, False, str(e)[:200], ""))
+    finally:
+        try:
+            server.quit()
+        except Exception:  # noqa: BLE001
+            pass
+    return out

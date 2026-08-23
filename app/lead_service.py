@@ -104,6 +104,15 @@ def create_lead(session: Session, lead: Lead, run: bool = True):
         session.add(lead)
         session.commit()
         session.refresh(lead)
+    # Trade Network (Phase 2): non-blocking link to the canonical Company layer. The lead is ALREADY
+    # committed above; this runs for both live and run=False bulk paths and can NEVER break lead creation
+    # (a failure is swallowed + logged to the dq_ audit queue). Protected creation semantics are unchanged.
+    try:
+        from .company_service import link_lead_company_safe
+        if link_lead_company_safe(session, lead):
+            session.commit()
+    except Exception:  # noqa: BLE001 — belt-and-suspenders; the link is best-effort only
+        pass
     if run:
         run_matching(session, lead)
     return lead

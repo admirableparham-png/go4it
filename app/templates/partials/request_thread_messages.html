@@ -1,0 +1,10 @@
+{% for m in msgs %}
+  {% set mine = (me is defined and me and m.sender_id == me.id) %}
+  <div class="max-w-[85%] {{ 'self-end' if mine else 'self-start' }}">
+    <div class="rounded-lg px-2.5 py-1.5 text-[13px] leading-snug break-words"
+         style="background:{{ '#22d3ee1f' if mine else 'rgba(255,255,255,.06)' }}; border:1px solid {{ '#22d3ee44' if mine else 'rgba(255,255,255,.08)' }}; color:#e2e8f0;">{{ m.body }}</div>
+    <div class="text-[10px] text-slate-500 mt-0.5 {{ 'text-right' if mine else '' }}">{{ 'You' if mine else ((m.sender_role or 'user')|title) }} &middot; {{ m.created_at.strftime('%b %d, %H:%M') }}</div>
+  </div>
+{% else %}
+  <div class="text-[12px] text-slate-500">No messages yet.</div>
+{% endfor %}

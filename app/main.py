@@ -16,7 +16,7 @@ from fastapi.responses import (FileResponse, HTMLResponse, JSONResponse,
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from sqlmodel import Session, select
 from starlette.middleware.sessions import SessionMiddleware
 
@@ -32,16 +32,24 @@ from .deal_service import (DEAL_STAGES, DOC_TYPES, REQUIRED_DOCS, create_deal,
 from .ingest import ingest_source
 from .lead_service import create_lead, run_matching
 from .line_spec import all_specs
-from .models import (Activity, CommandJob, ComplianceDoc, CostParam, Deal,
-                     FxRate, IngestionRun, Lead, Match, Outreach, Product,
-                     Quote, RateCard, ServiceRequest, Supplier, User)
-from .outreach import build_parts, default_message, honey_message, quotation_data, send_email, zinc_message
+from . import pipeline
+from .models import (Activity, AuditLog, CommandJob, Company, CompanyRole, ComplianceDoc, Contact,
+                     CostParam, Deal, DuplicateCandidate, FxRate, IngestionRun, Lead, MailAccount, Match,
+                     Outreach, Product, Provenance, Quote, RateCard, RequestDeliverable, RequestMessage,
+                     RequestStatusEvent, SellerUpdate, ServiceRequest, StageEvent, Supplier, User, WorkItem)
+from . import company_service as CS
+from . import tradenet as TN
+from . import work_queue as WQ
+from . import request_service as RS
+from .outreach import (build_parts, default_message, honey_message, mail_decrypt, mail_encrypt,
+                       plain_parts, quotation_data, send_bulk_via_account, send_email, send_via_account,
+                       verify_smtp, zinc_message)
 from .quote_service import create_quote
 from .research_engine import (PARTNERS, country_options, market_report,
                               product_options, rank_opportunities, recommend_destinations,
                               resolve_query)
 from .sources.go4world_csv import Go4WorldCsvSource
-from .telegram import (notify_outreach_sent, notify_quote_ready, notify_request_update,
+from .telegram import (notify_outreach_sent, notify_quote_ready, notify_request_message, notify_request_update,
                        notify_send_failed, notify_service_request, notify_status_change, send_message)
 from .tenant import is_admin, owns, scoped
 
@@ -50,6 +58,11 @@ BASE_DIR = Path(__file__).parent
 app = FastAPI(title="go4it")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
+
+# Central admin navigation (display-only, generated from one config). Exposed to every template so the shared
+# header renders both levels without duplicating markup; returns None for non-admins (they keep their nav).
+from . import adminnav  # noqa: E402
+templates.env.globals["admin_nav"] = adminnav.build_nav
 
 PUBLIC_PREFIXES = ("/login", "/logout", "/static", "/api", "/go4it-capture.user.js", "/p/")
 
@@ -187,6 +200,16 @@ def _log(session, lead: Lead, user, kind: str, body: str = ""):
         session.add(lead)
 
 
+def _link_supplier_tn(session, supplier):
+    """Non-blocking Trade Network link for a supplier — a failure never affects the supplier write."""
+    try:
+        from .company_service import link_supplier_company_safe
+        if link_supplier_company_safe(session, supplier):
+            session.commit()
+    except Exception:  # noqa: BLE001
+        pass
+
+
 def _get_or_create_supplier(session, name: str):
     name = (name or "").strip()
     if not name:
@@ -198,6 +221,7 @@ def _get_or_create_supplier(session, name: str):
         session.add(supplier)
         session.commit()
         session.refresh(supplier)
+        _link_supplier_tn(session, supplier)
     return supplier
 
 
@@ -425,16 +449,35 @@ LEAD_SORTS = {
 }
 
 
+SAVED_VIEWS = {  # (label, engagement_class filter | special)
+    "prospects": ("All buyer prospects", ("prospect", "")),
+    "engaged": ("Engaged buyers (incl. negative)", ("engaged", "qualified", "customer")),
+    "qualified": ("Qualified buyers", ("qualified", "customer")),
+    "rejected": ("Replied but rejected", "_rejected"),
+    "customers": ("Customers", ("customer",)),
+    "invalid": ("Invalid contact", ("invalid",)),
+    "never": ("Never contacted", "_never"),
+    "enrich": ("Needs enrichment", "_enrich"),
+    "archived": ("Archived", "_archived"),
+}
+
+
 @app.get("/leads", response_class=HTMLResponse)
 def leads_list(request: Request, q: str = "", stage: str = "", source: str = "",
                category: str = "", dest: str = "", owner: str = "", contact: str = "",
-               due: str = "", sort: str = "new", page: int = 1):
+               due: str = "", listed: str = "yes", sort: str = "new", page: int = 1,
+               view: str = "", engagement: str = "", replied: str = "", outcome: str = "",
+               source_type: str = ""):
     """The dedicated, filterable, paginated lead workspace (the dashboard no longer
-    lists every lead)."""
+    lists every lead) — now the admin Buyers & Prospects database (Trade Network)."""
     per = 50
     with Session(engine) as session:
         user = current_user(request, session)
         stmt = scoped(select(Lead), Lead.owner_id, user)     # traders see ONLY their own leads
+        if listed == "no":
+            stmt = stmt.where(Lead.active == False)           # noqa: E712  (only unlisted / hidden)
+        elif listed != "all":
+            stmt = stmt.where(Lead.active == True)            # noqa: E712  (default: only active buyers)
         if q:
             like = f"%{q.strip()}%"
             stmt = stmt.where(Lead.product.ilike(like) | Lead.buyer_company.ilike(like)
@@ -467,6 +510,33 @@ def leads_list(request: Request, q: str = "", stage: str = "", source: str = "",
             elif due == "today":
                 stmt = stmt.where(Lead.next_action_at <= _now.replace(hour=23, minute=59, second=59, microsecond=0))
 
+        # --- Trade Network filters (engagement class, reply, source type, saved views) ---
+        if engagement:
+            stmt = stmt.where(Lead.engagement_class == engagement)
+        if replied == "yes":
+            stmt = stmt.where(Lead.buyer_replied_at != None)                   # noqa: E711
+        elif replied == "no":
+            stmt = stmt.where(Lead.buyer_replied_at == None)                   # noqa: E711
+        if outcome:
+            stmt = stmt.where(Lead.reply_outcome == outcome)
+        if source_type:      # map_source is Python — resolve to the matching raw source slugs, then filter in SQL
+            matching = [s for s in session.exec(scoped(select(Lead.source), Lead.owner_id, user).distinct()).all()
+                        if s and CS.map_source(s, "")[0] == source_type]
+            stmt = stmt.where(Lead.source.in_(matching or ["__none__"]))
+        if view and view in SAVED_VIEWS:
+            spec = SAVED_VIEWS[view][1]
+            if spec == "_rejected":
+                stmt = stmt.where(Lead.reply_outcome == "negative")
+            elif spec == "_never":
+                stmt = stmt.where(Lead.engagement_class.in_(("prospect", "")), Lead.first_response_at == None)  # noqa: E711
+            elif spec == "_enrich":
+                stmt = stmt.where(((Lead.email == None) | (Lead.email == "")) &                                 # noqa: E711
+                                  ((Lead.phone == None) | (Lead.phone == "")))                                  # noqa: E711
+            elif spec == "_archived":
+                stmt = stmt.where((Lead.engagement_class == "archived") | (Lead.active == False))               # noqa: E712
+            elif isinstance(spec, tuple):
+                stmt = stmt.where(Lead.engagement_class.in_(spec))
+
         total = session.exec(select(func.count()).select_from(stmt.subquery())).one()
         pages = max(1, (total + per - 1) // per)
         page = min(max(1, page), pages)
@@ -487,6 +557,21 @@ def leads_list(request: Request, q: str = "", stage: str = "", source: str = "",
             scoped(select(Lead.dest_country), Lead.owner_id, user).distinct()).all() if d})
         product_count = session.exec(select(func.count(Product.id))).one()
 
+        # --- Trade Network enrichment (admin buyers database) ---
+        source_map = {ld.id: TN.source_label(ld.source)[0] for ld in leads}
+        page_company_ids = [ld.company_id for ld in leads if ld.company_id]
+        verif_map = {c.id: c.verification_status for c in session.exec(
+            select(Company).where(Company.id.in_(page_company_ids))).all()} if page_company_ids else {}
+        dupe_ids = set()
+        if page_company_ids:
+            for dc in session.exec(select(DuplicateCandidate).where(
+                    DuplicateCandidate.status == "open",
+                    (DuplicateCandidate.left_id.in_(page_company_ids)) |
+                    (DuplicateCandidate.right_id.in_(page_company_ids)))).all():
+                dupe_ids.update((dc.left_id, dc.right_id))
+        # response-rate stats over the FULL filtered set (not just this page)
+        stats = TN.response_stats(session, session.exec(stmt).all()) if is_admin(user) else None
+
         ctx = {
             "request": request, "user": user, "active": "leads", "is_admin": is_admin(user),
             "leads": leads, "mcounts": mcounts, "user_map": user_map,
@@ -494,8 +579,12 @@ def leads_list(request: Request, q: str = "", stage: str = "", source: str = "",
             "sources": sources, "categories": categories, "dests": dests,
             "stages": STAGES, "product_count": product_count,
             "users": [u for u in user_map.values() if u.active] if is_admin(user) else [],
+            "source_map": source_map, "verif_map": verif_map, "dupe_ids": dupe_ids,
+            "stats": stats, "saved_views": SAVED_VIEWS,
             "f": {"q": q, "stage": stage, "source": source, "category": category,
-                  "dest": dest, "owner": owner, "contact": contact, "due": due, "sort": sort},
+                  "dest": dest, "owner": owner, "contact": contact, "due": due,
+                  "listed": listed, "sort": sort, "view": view, "engagement": engagement,
+                  "replied": replied, "outcome": outcome, "source_type": source_type},
         }
     return templates.TemplateResponse("leads.html", ctx)
 
@@ -510,13 +599,28 @@ def leads_bulk(request: Request, action: str = Form(""), owner_id: str = Form(""
             return _forbidden()
         # scoped: a trader can only bulk-act on leads they OWN (can't touch another tenant's rows by id)
         leads = session.exec(scoped(select(Lead), Lead.owner_id, user).where(Lead.id.in_(ids or [0]))).all()
+        if action == "email":
+            if not is_admin(user):          # buyer outreach is admin-mediated only (confidential model)
+                return _forbidden()
+            # Don't mutate — hand off to the compose screen with the selected buyers + the sender's mailboxes.
+            accounts = session.exec(select(MailAccount).where(MailAccount.user_id == user.id,
+                                                              MailAccount.active == True)  # noqa: E712
+                                    .order_by(MailAccount.is_default.desc(), MailAccount.id)).all()
+            with_email = [ld for ld in leads if (ld.email or "").strip()]
+            return templates.TemplateResponse("mail_compose.html", {
+                "request": request, "user": user, "active": "leads",
+                "leads": leads, "with_email": with_email, "accounts": accounts})
         for lead in leads:
             if action == "delete":
                 _delete_lead(session, lead)         # scoped select above => only own leads deletable
                 continue
-            if action in ("assign", "assign_me") and not is_admin(user):
+            if action == "unlist":
+                lead.active = False                 # reversible hide from the buyer list
+            elif action == "relist":
+                lead.active = True
+            elif action in ("assign", "assign_me") and not is_admin(user):
                 continue                            # reassigning ownership is the admin's tool only
-            if action == "assign_me" and user:
+            elif action == "assign_me" and user:
                 lead.owner_id = user.id
                 _cascade_owner(session, lead)       # quotes + deals follow the lead's new owner
             elif action == "assign":
@@ -535,20 +639,168 @@ def leads_bulk(request: Request, action: str = Form(""), owner_id: str = Form(""
     return RedirectResponse(request.headers.get("referer") or "/leads", status_code=303)
 
 
+@app.post("/leads/{lead_id}/unlist")
+def unlist_lead(request: Request, lead_id: int, relist: str = ""):
+    """Per-row reversible unlist: hide a buyer from the list (?relist=1 brings it back). Owner/admin only."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        lead = session.get(Lead, lead_id)
+        if not lead or not role_at_least(user, "agent") or not owns(lead.owner_id, user):
+            return _not_found()
+        lead.active = (relist == "1")
+        session.add(lead); session.commit()
+    return RedirectResponse(request.headers.get("referer") or "/leads", status_code=303)
+
+
+@app.post("/leads/bulk/email")
+def leads_bulk_email(request: Request, account_id: int = Form(0), subject: str = Form(""),
+                     body: str = Form(""), ids: List[int] = Form(default=[])):
+    """Admin-only buyer outreach: send from a Go4it-controlled mailbox to the selected buyers."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):              # confidential model: only the admin contacts buyers
+            return _forbidden()
+        acct = session.get(MailAccount, account_id)
+        if not acct or acct.user_id != user.id or not acct.active:
+            _flash(request, "Pick one of your connected email accounts to send from.", "rose")
+            return RedirectResponse("/mail", status_code=303)
+        subject = (subject or "").strip()[:200]
+        if not subject or not (body or "").strip():
+            _flash(request, "Add a subject and a message before sending.", "rose")
+            return RedirectResponse("/leads", status_code=303)
+        leads = session.exec(scoped(select(Lead), Lead.owner_id, user).where(Lead.id.in_(ids or [0]))).all()
+        targets = [ld for ld in leads if (ld.email or "").strip()][:60]   # cap the synchronous batch
+        text, html = plain_parts(body)
+        items = [(ld.email.strip(), subject, text, html) for ld in targets]
+        results = {r[0]: r for r in send_bulk_via_account(acct, items, reply_to=acct.email)}
+        sent = fail = 0
+        for ld in targets:
+            r = results.get(ld.email.strip())
+            ok = bool(r and r[1])
+            sent, fail = (sent + 1, fail) if ok else (sent, fail + 1)
+            session.add(Outreach(lead_id=ld.id, direction="out", channel="email",
+                                 recipient=ld.email.strip()[:200], from_addr=acct.email[:200],
+                                 subject=subject[:200], body=(body or "")[:4000],
+                                 status="sent" if ok else "failed", error=(r[2] if r else "no result"),
+                                 message_id=(r[3] if r else ""), user_id=user.id))
+            if ok and ld.first_response_at is None:
+                ld.first_response_at = datetime.utcnow(); session.add(ld)
+        session.commit()
+        skipped = len(leads) - len(targets)
+        note = f"Sent {sent} email(s) from {acct.email}."
+        if fail:
+            note += f" {fail} failed."
+        if skipped:
+            note += f" {skipped} skipped (no email address, or over the 60-per-send cap)."
+        _flash(request, note, "emerald" if sent else "rose")
+    return RedirectResponse("/leads", status_code=303)
+
+
+# ------------------------------------------------------------ admin: Go4it-controlled outreach mailboxes
+# Confidential model: only the admin contacts buyers, from Go4it-controlled mailboxes. Sellers never email
+# buyers directly, so this whole surface is admin-only.
+
+@app.get("/mail", response_class=HTMLResponse)
+def mail_accounts(request: Request):
+    """The Go4it-controlled sending mailboxes the admin uses for buyer outreach."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        accounts = session.exec(select(MailAccount).where(MailAccount.user_id == user.id)
+                                .order_by(MailAccount.is_default.desc(), MailAccount.id)).all()
+    flashes = request.session.pop("_flash", [])
+    return templates.TemplateResponse("mail_accounts.html", {
+        "request": request, "user": user, "active": "mail", "accounts": accounts, "flashes": flashes})
+
+
+@app.post("/mail")
+def mail_add(request: Request, email: str = Form(""), from_name: str = Form(""),
+             app_password: str = Form(""), provider: str = Form("gmail"),
+             smtp_host: str = Form(""), smtp_port: str = Form("587")):
+    """Connect a Go4it mailbox — verifies the SMTP login (App Password) before saving it encrypted."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        email = (email or "").strip()
+        pw = (app_password or "").strip()
+        host = "smtp.gmail.com" if provider == "gmail" else ((smtp_host or "").strip() or "smtp.gmail.com")
+        try:
+            port = int(smtp_port or 587)
+        except (TypeError, ValueError):
+            port = 587
+        if not email or not pw:
+            _flash(request, "Enter your email and its app password.", "rose")
+            return RedirectResponse("/mail", status_code=303)
+        ok, err = verify_smtp(host, port, email, pw)
+        if not ok:
+            _flash(request, f"Couldn't connect: {err}  —  Gmail needs an App Password (not your login), "
+                            "with 2-Step Verification on.", "rose")
+            return RedirectResponse("/mail", status_code=303)
+        first = session.exec(select(func.count(MailAccount.id))
+                             .where(MailAccount.user_id == user.id)).one() == 0
+        session.add(MailAccount(
+            user_id=user.id, email=email, from_name=(from_name or "").strip()[:120],
+            provider=provider if provider in ("gmail", "custom") else "custom",
+            smtp_host=host, smtp_port=port, smtp_password_enc=mail_encrypt(pw),
+            is_default=first, active=True, last_verified_at=datetime.utcnow()))
+        session.commit()
+        _flash(request, f"Connected {email} ✓")
+    return RedirectResponse("/mail", status_code=303)
+
+
+@app.post("/mail/{acct_id}/default")
+def mail_default(request: Request, acct_id: int):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        acct = session.get(MailAccount, acct_id)
+        if not user or not acct or acct.user_id != user.id:
+            return _not_found()
+        for a in session.exec(select(MailAccount).where(MailAccount.user_id == user.id)).all():
+            a.is_default = (a.id == acct.id); session.add(a)
+        session.commit()
+    return RedirectResponse("/mail", status_code=303)
+
+
+@app.post("/mail/{acct_id}/delete")
+def mail_delete(request: Request, acct_id: int):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        acct = session.get(MailAccount, acct_id)
+        if not user or not acct or acct.user_id != user.id:
+            return _not_found()
+        session.delete(acct); session.commit()
+    return RedirectResponse("/mail", status_code=303)
+
+
 # ----------------------------------------------------------------------------- suppliers + intel
 
 @app.get("/suppliers", response_class=HTMLResponse)
-def suppliers_list(request: Request):
-    """Simple view of the Supplier catalog (auto-created today with no page)."""
+def suppliers_list(request: Request, q: str = "", country: str = "", listed: str = "active"):
+    """The supplier catalog — now searchable/filterable, with Trade Network company links."""
     with Session(engine) as session:
         user = current_user(request, session)
         if not is_admin(user):          # sourcing (supplier contacts/terms) is founder-internal
             return _forbidden()
-        suppliers = session.exec(select(Supplier).order_by(Supplier.country, Supplier.name)).all()
+        stmt = select(Supplier)
+        if q:
+            like = f"%{q.strip()}%"
+            stmt = stmt.where(Supplier.name.ilike(like) | Supplier.contact.ilike(like)
+                              | Supplier.email.ilike(like))
+        if country:
+            stmt = stmt.where(Supplier.country == country.upper())
+        if listed == "active":
+            stmt = stmt.where(Supplier.active == True)                        # noqa: E712
+        elif listed == "archived":
+            stmt = stmt.where(Supplier.active == False)                       # noqa: E712
+        suppliers = session.exec(stmt.order_by(Supplier.country, Supplier.name)).all()
         pcounts = {sid: c for sid, c in session.exec(
             select(Product.supplier_id, func.count(Product.id)).group_by(Product.supplier_id)).all()}
+        countries = sorted({s.country for s in session.exec(select(Supplier)).all() if s.country})
         ctx = {"request": request, "user": user, "active": "suppliers",
-               "suppliers": suppliers, "pcounts": pcounts, "can_edit": True}
+               "suppliers": suppliers, "pcounts": pcounts, "can_edit": True,
+               "q": q, "country": country, "listed": listed, "countries": countries}
     return templates.TemplateResponse("suppliers.html", ctx)
 
 
@@ -585,6 +837,8 @@ def supplier_create(request: Request, name: str = Form(...), country: str = Form
         sup.payment_terms = (payment_terms or "").strip()
         session.add(sup)
         session.commit()
+        session.refresh(sup)
+        _link_supplier_tn(session, sup)          # non-blocking Trade Network link
     return RedirectResponse("/suppliers", status_code=303)
 
 
@@ -618,6 +872,8 @@ def supplier_edit(request: Request, supplier_id: int, name: str = Form(...),
         sup.payment_terms = (payment_terms or "").strip()
         session.add(sup)
         session.commit()
+        session.refresh(sup)
+        _link_supplier_tn(session, sup)          # non-blocking Trade Network link
     return RedirectResponse("/suppliers", status_code=303)
 
 
@@ -634,6 +890,311 @@ def supplier_toggle(request: Request, supplier_id: int):
         session.add(sup)
         session.commit()
     return RedirectResponse("/suppliers", status_code=303)
+
+
+# ============================================================================
+# Trade Network (Phase 2) — ADMIN-ONLY. Sellers DB, Company detail, Data Quality,
+# Duplicate Review, and audited/CSV-safe exports. Never reachable by sellers.
+# ============================================================================
+
+def _csv_safe(v):
+    """Neutralize CSV formula injection: prefix a cell that starts with a formula trigger with an apostrophe."""
+    s = "" if v is None else str(v)
+    if s[:1] in ("=", "+", "-", "@", "\t", "\r"):
+        s = "'" + s
+    return s
+
+
+def _export_csv(session, user, kind, cols, rows):
+    """Audited, formula-injection-safe CSV. `rows` = list of value-lists aligned to `cols`."""
+    import csv
+    import io
+    buf = io.StringIO()
+    w = csv.writer(buf)
+    stamp = datetime.utcnow().isoformat(timespec="seconds")
+    w.writerow(list(cols) + ["exported_at", "exported_by"])
+    for r in rows:
+        w.writerow([_csv_safe(x) for x in r] + [stamp, _csv_safe(user.email)])
+    pipeline.audit(session, user, kind, None, "pii_export", {"kind": kind, "rows": len(rows)})
+    session.commit()
+    fname = f"go4it-{kind}-{stamp[:10]}.csv"
+    return PlainTextResponse(buf.getvalue(), media_type="text/csv",
+                             headers={"Content-Disposition": f'attachment; filename="{fname}"'})
+
+
+@app.get("/sellers", response_class=HTMLResponse)
+def sellers_list(request: Request, q: str = "", country: str = "", status: str = "active"):
+    """Admin seller database (canonical Company, role=seller). Sellers may have a platform account or be
+    login-less/external."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        seller_ids = {r.company_id for r in session.exec(
+            select(CompanyRole).where(CompanyRole.role == "seller")).all()}
+        stmt = select(Company).where(Company.id.in_(seller_ids)) if seller_ids else select(Company).where(Company.id == -1)
+        if status in ("active", "archived"):
+            stmt = stmt.where(Company.status == status)
+        if q:
+            stmt = stmt.where(Company.name.ilike(f"%{q}%"))
+        if country:
+            stmt = stmt.where(Company.country == country.upper())
+        sellers = session.exec(stmt.order_by(Company.name)).all()
+        umap = {u.id: u for u in session.exec(select(User)).all()}
+        # per-seller request/quote/deal counts via seller_id on managed leads / requester on requests
+        rows = []
+        for c in sellers:
+            reqs = 0
+            if c.account_user_id:
+                reqs = session.exec(select(func.count(ServiceRequest.id)).where(
+                    ServiceRequest.requester_id == c.account_user_id)).one()
+            rows.append({"c": c, "account": umap.get(c.account_user_id),
+                         "contacts": session.exec(select(func.count(Contact.id)).where(
+                             Contact.company_id == c.id)).one(), "requests": reqs})
+        flashes = request.session.pop("_flash", [])
+    return templates.TemplateResponse("sellers.html", {
+        "request": request, "user": user, "active": "sellers", "rows": rows, "q": q,
+        "country": country, "status": status, "flashes": flashes})
+
+
+@app.post("/sellers")
+def seller_create(request: Request, name: str = Form(...), country: str = Form(""), city: str = Form(""),
+                  website: str = Form(""), contact_name: str = Form(""), email: str = Form(""),
+                  phone: str = Form(""), account_user_id: str = Form(""), notes: str = Form("")):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        if not (name or "").strip():
+            return RedirectResponse("/sellers?error=name", status_code=303)
+        co = CS.get_or_create_company(session, None, name, country, website, role="seller",
+                                      email=email, phone=phone)
+        co.primary_role = "seller"
+        co.city = (city or "").strip()
+        co.notes = (notes or "").strip()
+        if account_user_id.isdigit():
+            co.account_user_id = int(account_user_id)
+        session.add(co)
+        session.flush()
+        if contact_name or email or phone:
+            CS.get_or_create_contact(session, co, name=contact_name, email=email, phone=phone, is_primary=True)
+        CS.add_provenance(session, "company", co.id, None, "manual", "Manual entry",
+                          source_ref=f"seller:{co.id}")
+        pipeline.audit(session, user, "company", co.id, "seller_create", {"name": name})
+        session.commit()
+        _flash(request, "Seller added ✓")
+    return RedirectResponse("/sellers", status_code=303)
+
+
+@app.post("/sellers/{company_id}/archive")
+def seller_archive(request: Request, company_id: int, restore: str = Form("")):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        co = session.get(Company, company_id)
+        if not co:
+            return _not_found()
+        co.status = "active" if restore == "1" else "archived"   # never hard-delete (history preserved)
+        session.add(co)
+        pipeline.audit(session, user, "company", co.id, "seller_archive", {"status": co.status})
+        session.commit()
+    return RedirectResponse("/sellers", status_code=303)
+
+
+@app.get("/companies/{company_id}", response_class=HTMLResponse)
+def company_detail(request: Request, company_id: int):
+    """Admin-only canonical company view. Never shows seller-facing anon refs as an identifier."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        co = session.get(Company, company_id)
+        if not co:
+            return _not_found()
+        ctx = TN.company_detail(session, co)
+        umap = {u.id: u for u in session.exec(select(User)).all()}
+        flashes = request.session.pop("_flash", [])
+        ctx.update({"request": request, "user": user, "active": "leads", "umap": umap, "flashes": flashes})
+        resp = templates.TemplateResponse("company_detail.html", ctx)   # render while the session is open
+        pipeline.audit(session, user, "company", co.id, "pii_view", {"via": "company_detail"},
+                       tenant_id=co.tenant_id)
+        session.commit()
+        return resp
+
+
+@app.post("/companies/{company_id}/verify")
+def company_verify(request: Request, company_id: int, verification_status: str = Form("verified"),
+                   verification_method: str = Form(""), verification_confidence: str = Form("0"),
+                   verification_notes: str = Form("")):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        co = session.get(Company, company_id)
+        if not co:
+            return _not_found()
+        frm = co.verification_status
+        co.verification_status = verification_status if verification_status in (
+            "unverified", "partial", "verified", "rejected") else "unverified"
+        co.verification_method = (verification_method or "").strip()[:40]
+        try:
+            co.verification_confidence = max(0, min(100, int(verification_confidence or 0)))
+        except ValueError:
+            co.verification_confidence = 0
+        co.verification_notes = (verification_notes or "").strip()[:500]
+        co.verified_at = datetime.utcnow()
+        co.verified_by = user.email
+        session.add(co)
+        pipeline.audit(session, user, "company", co.id, "verification_change",
+                       {"from": frm, "to": co.verification_status, "method": co.verification_method,
+                        "confidence": co.verification_confidence}, tenant_id=co.tenant_id)
+        session.commit()
+        _flash(request, "Verification updated ✓")
+    return RedirectResponse(f"/companies/{company_id}", status_code=303)
+
+
+@app.get("/data-quality", response_class=HTMLResponse)
+def data_quality(request: Request, queue: str = ""):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        metrics = TN.data_quality_metrics(session)
+        sources = TN.source_quality(session)
+        flashes = request.session.pop("_flash", [])
+    return templates.TemplateResponse("data_quality.html", {
+        "request": request, "user": user, "active": "dataquality", "m": metrics, "sources": sources,
+        "queue": queue, "flashes": flashes})
+
+
+@app.get("/duplicates", response_class=HTMLResponse)
+def duplicates_list(request: Request, status: str = "open"):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        stmt = select(DuplicateCandidate)
+        if status:
+            stmt = stmt.where(DuplicateCandidate.status == status)
+        cands = session.exec(stmt.order_by(DuplicateCandidate.strength.desc(), DuplicateCandidate.id.desc())
+                             .limit(200)).all()
+        rows = []
+        for dc in cands:
+            a, b = session.get(Company, dc.left_id), session.get(Company, dc.right_id)
+            if not a or not b:
+                continue
+            rows.append({"dc": dc, "a": a, "b": b, "signals": json.loads(dc.signals or "[]"),
+                         "a_contacts": session.exec(select(Contact).where(Contact.company_id == a.id)).all(),
+                         "b_contacts": session.exec(select(Contact).where(Contact.company_id == b.id)).all()})
+        flashes = request.session.pop("_flash", [])
+    return templates.TemplateResponse("duplicates.html", {
+        "request": request, "user": user, "active": "duplicates", "rows": rows, "status": status,
+        "flashes": flashes})
+
+
+@app.post("/duplicates/{cand_id}/dispose")
+def duplicate_dispose(request: Request, cand_id: int, action: str = Form(...)):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        dc = session.get(DuplicateCandidate, cand_id)
+        if not dc:
+            return _not_found()
+        if action == "merge":
+            ok, err = CS.merge_companies(session, dc.left_id, dc.right_id, user)
+            _flash(request, "Merged ✓" if ok else f"Merge blocked — {err}", "emerald" if ok else "rose")
+        elif action in ("not_duplicate", "confirmed", "deferred", "linked"):
+            dc.status = {"not_duplicate": "not_duplicate", "confirmed": "confirmed",
+                         "deferred": "deferred", "linked": "linked"}[action]
+            dc.reviewer = user.email
+            dc.reviewed_at = datetime.utcnow()
+            session.add(dc)
+            pipeline.audit(session, user, "company", dc.left_id, "dup_dispose",
+                           {"cand": cand_id, "action": action}, tenant_id=dc.tenant_id)
+        session.commit()
+    return RedirectResponse("/duplicates", status_code=303)
+
+
+@app.post("/companies/{company_id}/unmerge")
+def company_unmerge(request: Request, company_id: int):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        ok, err = CS.unmerge_companies(session, company_id, user)
+        session.commit()
+        _flash(request, "Unmerged ✓" if ok else f"Unmerge failed — {err}", "emerald" if ok else "rose")
+    return RedirectResponse(f"/companies/{company_id}", status_code=303)
+
+
+@app.post("/duplicates/rescan")
+def duplicates_rescan(request: Request):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        n = CS.scan_duplicates(session)
+        session.commit()
+        _flash(request, f"Rescan complete — {n} new candidate(s).")
+    return RedirectResponse("/duplicates", status_code=303)
+
+
+_ENGAGEMENT_CLASSES = ("prospect", "contacted", "engaged", "qualified", "customer", "invalid", "archived")
+_REPLY_OUTCOMES = ("none", "positive", "negative", "neutral", "bounced", "auto_reply")
+
+
+@app.post("/leads/{lead_id}/classify")
+def lead_classify(request: Request, lead_id: int, engagement_class: str = Form(""),
+                  reply_outcome: str = Form("")):
+    """Admin correction of a buyer's engagement / reply outcome. Never deletes reply history (Outreach rows
+    stay); just overrides the derived label + audits it."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        lead = session.get(Lead, lead_id)
+        if not lead:
+            return _not_found()
+        frm = lead.engagement_class
+        if engagement_class in _ENGAGEMENT_CLASSES:
+            lead.engagement_class = engagement_class
+        if reply_outcome in _REPLY_OUTCOMES:
+            lead.reply_outcome = reply_outcome
+        session.add(lead)
+        pipeline.audit(session, user, "lead", lead.id, "classify_override",
+                       {"from": frm, "to": lead.engagement_class, "outcome": lead.reply_outcome},
+                       tenant_id=lead.seller_id)
+        session.commit()
+        _flash(request, "Classification updated ✓")
+    return RedirectResponse(request.headers.get("referer") or f"/leads/{lead_id}", status_code=303)
+
+
+@app.get("/export/{kind}.csv")
+def export_csv(request: Request, kind: str):
+    """Audited, admin-only, CSV-injection-safe export of a Trade Network slice. NEVER seller-reachable."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        if kind == "buyers":
+            leads = session.exec(select(Lead).where(Lead.buyer_company != "").order_by(Lead.id)).all()
+            cols = ["company", "contact", "email", "phone", "country", "product", "engagement",
+                    "reply_outcome", "source", "created_at"]
+            rows = [[l.buyer_company, l.contact_name, l.email, l.phone, l.dest_country, l.product,
+                     l.engagement_class, l.reply_outcome, TN.source_label(l.source)[0],
+                     (l.created_at or "")] for l in leads]
+        elif kind in ("sellers", "suppliers"):
+            role = "seller" if kind == "sellers" else "supplier"
+            ids = {r.company_id for r in session.exec(select(CompanyRole).where(CompanyRole.role == role)).all()}
+            comps = session.exec(select(Company).where(Company.id.in_(ids))).all() if ids else []
+            cols = ["name", "country", "city", "website", "verification", "confidence", "status"]
+            rows = [[c.name, c.country, c.city, c.website, c.verification_status,
+                     c.verification_confidence, c.status] for c in comps]
+        else:
+            return _not_found()
+        return _export_csv(session, user, kind, cols, rows)
 
 
 RESEARCH_DIR = BASE_DIR.parent / "docs" / "research"
@@ -734,6 +1295,22 @@ def georgia(request: Request):
         "has_data": bool(buyers or tenders or customs),
     }
     return templates.TemplateResponse("georgia.html", ctx)
+
+
+@app.get("/markets", response_class=HTMLResponse)
+def markets(request: Request):
+    """Read-only Markets landing page — the single entry point under Intelligence that ORGANIZES access to
+    the existing country pages (Georgia, UAE, future). It never combines, moves or rewrites the underlying
+    market datasets; it only lists them with links resolved from their existing named routes. Country pages
+    and bookmarks keep working exactly as before."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):          # market intelligence surface — admin only (same gate as the pages)
+            return _forbidden()
+    cards = [{"name": m["name"], "iso": m["iso"], "summary": m["summary"],
+              "href": request.url_for(m["endpoint"]).path} for m in adminnav.MARKETS]
+    return templates.TemplateResponse("markets.html", {
+        "request": request, "user": user, "active": "markets", "cards": cards})
 
 
 # ---------------------------------------------------------------------- product-line hub (generic)
@@ -1005,6 +1582,9 @@ def lead_detail(request: Request, lead_id: int):
         lead = session.get(Lead, lead_id)
         if not lead or not owns(lead.owner_id, user):     # IDOR guard: no cross-tenant lead access
             return _not_found()
+        if lead.managed and is_admin(user):               # audit any view of confidential buyer PII
+            pipeline.audit(session, user, "lead", lead.id, "pii_view", {"via": "lead_detail"},
+                           tenant_id=lead.seller_id); session.commit()
         products = {p.id: p for p in session.exec(select(Product)).all()}
         users = (session.exec(select(User).where(User.active == True)).all()  # noqa: E712
                  if is_admin(user) else [])
@@ -1081,6 +1661,20 @@ def assign_lead(request: Request, lead_id: int, owner_id: int = Form(...)):
     return RedirectResponse(f"/leads/{lead_id}", status_code=303)
 
 
+def _open_deal_if_won(session, lead, user):
+    """A won lead becomes a Deal (once), seeded from its accepted/sent quote. Shared by the CRM stage route
+    and the managed-pipeline 'won' transition so the two paths behave identically."""
+    if session.exec(select(Deal).where(Deal.lead_id == lead.id)).first():
+        return None
+    quote = (session.exec(select(Quote).where(Quote.lead_id == lead.id, Quote.status == "sent")
+                          .order_by(Quote.id.desc())).first()
+             or session.exec(select(Quote).where(Quote.lead_id == lead.id)
+                             .order_by(Quote.id.desc())).first())
+    deal = create_deal(session, lead, quote)
+    _log(session, lead, user, "note", f"deal {deal.tracking_code} opened")
+    return deal
+
+
 @app.post("/leads/{lead_id}/stage")
 def change_stage(request: Request, lead_id: int, status: str = Form(...), reason: str = Form("")):
     with Session(engine) as session:
@@ -1090,6 +1684,8 @@ def change_stage(request: Request, lead_id: int, status: str = Form(...), reason
         lead = session.get(Lead, lead_id)
         if not lead or not owns(lead.owner_id, user):
             return _not_found()
+        if lead.managed:            # managed buyers move only through the 13-stage pipeline board (no drift)
+            return RedirectResponse(f"/admin/requests/{lead.request_id}/pipeline", status_code=303)
         old = lead.status
         if status not in TRANSITIONS.get(old, set()):
             return RedirectResponse(f"/leads/{lead_id}?error=transition", status_code=303)
@@ -1105,17 +1701,9 @@ def change_stage(request: Request, lead_id: int, status: str = Form(...), reason
         session.add(lead)
         _log(session, lead, user, "status_change",
              f"{old} -> {status}" + (f" ({reason.strip()})" if reason.strip() else ""))
-        session.commit()
-        session.refresh(lead)
-        # A won lead becomes a Deal (once), seeded from its accepted quote.
-        if status == "won" and not session.exec(select(Deal).where(Deal.lead_id == lead.id)).first():
-            quote = (session.exec(select(Quote).where(Quote.lead_id == lead.id, Quote.status == "sent")
-                                  .order_by(Quote.id.desc())).first()
-                     or session.exec(select(Quote).where(Quote.lead_id == lead.id)
-                                     .order_by(Quote.id.desc())).first())
-            deal = create_deal(session, lead, quote)
-            _log(session, lead, user, "note", f"deal {deal.tracking_code} opened")
-            session.commit()
+        session.commit(); session.refresh(lead)
+        if status == "won":
+            _open_deal_if_won(session, lead, user); session.commit()
         notify_status_change(lead, old, status, user.name or user.email)
     return RedirectResponse(f"/leads/{lead_id}", status_code=303)
 
@@ -1355,12 +1943,14 @@ _CAMPAIGN_RANK = {"replied": 0, "to-call": 1, "fu2": 2, "fu1": 3, "sent": 4, "bo
 
 @app.get("/campaign", response_class=HTMLResponse)
 def campaign_dashboard(request: Request, source: str = "iran-export-honey-royaljelly"):
-    """Live outreach-campaign board: every buyer's status (emailed / follow-up 1-2 / replied / call)."""
+    """Live outreach-campaign board: every buyer's status (emailed / follow-up 1-2 / replied / call).
+    Admin-only — it renders buyer emails/contacts, so sellers must never reach it."""
     from collections import Counter, defaultdict
     with Session(engine) as session:
         user = current_user(request, session)
-        leads = session.exec(scoped(select(Lead).where(Lead.source == source),
-                                    Lead.owner_id, user)).all()      # traders see only their own campaign
+        if not is_admin(user):
+            return _forbidden()
+        leads = session.exec(select(Lead).where(Lead.source == source)).all()
         ids = [L.id for L in leads]
         outs = session.exec(select(Outreach).where(Outreach.lead_id.in_(ids))).all() if ids else []
         by = defaultdict(list)
@@ -1967,6 +2557,23 @@ SERVICES = [
      "p_label": "Shipment / product", "p_ph": "e.g. Zinc sulphate shipment to Iraq",
      "m_label": "Destination", "m_ph": "e.g. Iraq",
      "d_ph": "Which documents you need (CoO, invoice, packing list…), the consignee, values, and HS code…"},
+    # Phase 3: additive request types (backend keys are new; existing values are untouched). find_supplier is
+    # the buy-side counterpart of buyer_hunt; market_research + other round out the concierge menu.
+    {"key": "find_supplier", "icon": "\U0001F50E", "label": "Find a product or supplier",
+     "blurb": "We source real, vetted suppliers/manufacturers for a product you want to buy.",
+     "p_label": "Product you want", "p_ph": "e.g. Copper cathode, urea, ceramic tiles…",
+     "m_label": "Preferred origin", "m_ph": "e.g. Turkey, China, GCC, any…",
+     "d_ph": "Grade/spec, quantity, target price, delivery terms, and the kind of supplier you want…"},
+    {"key": "market_research", "icon": "\U0001F4CA", "label": "Market research",
+     "blurb": "A focused market/opportunity brief for a product and destination.",
+     "p_label": "Product / sector", "p_ph": "e.g. Saffron in the GCC",
+     "m_label": "Target market", "m_ph": "e.g. UAE, Iraq, EU…",
+     "d_ph": "What decision this informs, the market(s), and any competitors or price points to check…"},
+    {"key": "other", "icon": "\U0001F91D", "label": "Other concierge service",
+     "blurb": "Any other operational trade service — tell us what you need.",
+     "p_label": "What do you need", "p_ph": "e.g. Inspection, warehousing, introductions…",
+     "m_label": "Where / route", "m_ph": "e.g. Bandar Abbas, Iraq…",
+     "d_ph": "Describe the service, the parties involved, and your deadline…"},
 ]
 REQUEST_TYPES = {s["key"]: s["label"] for s in SERVICES}
 
@@ -1988,6 +2595,40 @@ def _save_request_file(req_id, upload):
     return f"{req_id}/{fname}"
 
 
+def _save_deliverable_file(req_id, deliverable_id, upload):
+    """Persist a re-deliverable file named <deliverable_id>_<name> so repeated deliveries never collide."""
+    data = upload.file.read(MAX_DOC_BYTES + 1)
+    if not data or len(data) > MAX_DOC_BYTES:
+        return ""
+    dest_dir = REQUEST_FILES_DIR / str(req_id)
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    fname = f"{deliverable_id}_{_safe_name(upload.filename)}"
+    (dest_dir / fname).write_bytes(data)
+    return f"{req_id}/{fname}"
+
+
+def _deliverables_for(session, req_ids):
+    """{request_id: [RequestDeliverable…]} oldest-first, for rendering the deliverables list on a card."""
+    out = {}
+    if not req_ids:
+        return out
+    for d in session.exec(select(RequestDeliverable).where(RequestDeliverable.request_id.in_(req_ids))
+                          .order_by(RequestDeliverable.id)).all():
+        out.setdefault(d.request_id, []).append(d)
+    return out
+
+
+def _messages_for(session, req_ids):
+    """{request_id: [RequestMessage…]} oldest-first, for the per-request chat thread."""
+    out = {}
+    if not req_ids:
+        return out
+    for m in session.exec(select(RequestMessage).where(RequestMessage.request_id.in_(req_ids))
+                          .order_by(RequestMessage.id)).all():
+        out.setdefault(m.request_id, []).append(m)
+    return out
+
+
 def _flash(request, msg, level="emerald"):
     request.session.setdefault("_flash", []).append({"msg": msg, "level": level})
 
@@ -2006,11 +2647,20 @@ def submit_request(request: Request, product: str = Form(""), market: str = Form
         rtype = request_type if request_type in REQUEST_TYPES else "buyer_hunt"
         sr = ServiceRequest(request_type=rtype, product=product[:200], market=(market or "").strip()[:120],
                             details=(details or "").strip()[:2000], status="submitted",
-                            requester_id=user.id, owner_id=user.id)
+                            direction=RS.direction_for_type(rtype), workflow_status="submitted",
+                            last_activity_at=datetime.utcnow(), requester_id=user.id, owner_id=user.id)
         session.add(sr); session.commit(); session.refresh(sr)
         sr.tracking_code = f"SR-{datetime.utcnow():%Y%m}-{sr.id:04d}"
         sr.result_source_tag = f"req-{sr.id}"
         session.add(sr); session.commit(); session.refresh(sr)
+        # Phase 3: non-blocking Work Queue item — the request is already committed; task creation can NEVER
+        # break submission (mirrors the Trade Network link hook).
+        WQ.create_work_item_safe(session, actor=None, type="review_new_request",
+                                 title=f"Review new request {sr.tracking_code}",
+                                 description="A new concierge request is awaiting review.",
+                                 tenant_id=sr.owner_id, related_request_id=sr.id,
+                                 idempotency_key=f"review_new_request:req:{sr.id}", condition_version="submitted")
+        session.commit()
         try:
             notify_service_request(sr, user)
         except Exception:  # noqa: BLE001
@@ -2025,10 +2675,27 @@ def my_requests(request: Request):
         user = current_user(request, session)
         reqs = session.exec(scoped(select(ServiceRequest), ServiceRequest.owner_id, user)
                             .order_by(ServiceRequest.id.desc())).all()
+        ids = [r.id for r in reqs]
+        deliv_map, msg_map = _deliverables_for(session, ids), _messages_for(session, ids)
+        if not is_admin(user):      # sellers only ever see files the admin marked PII-free
+            deliv_map = {rid: [d for d in dvs if d.seller_safe] for rid, dvs in deliv_map.items()}
+        # anonymized pipeline view (never raw Leads): funnel + anon prospects + published updates
+        funnel_map, prospects_map, updates_map = {}, {}, {}
+        for r in reqs:
+            funnel_map[r.id] = pipeline.request_funnel(session, r)
+            mleads = session.exec(select(Lead).where(
+                Lead.request_id == r.id, Lead.managed == True,               # noqa: E712
+                Lead.seller_id == r.owner_id).order_by(Lead.pipeline_stage, Lead.id)).all()
+            prospects_map[r.id] = [pipeline.anon_prospect(m) for m in mleads]
+            updates_map[r.id] = session.exec(select(SellerUpdate).where(
+                SellerUpdate.request_id == r.id, SellerUpdate.published == True)  # noqa: E712
+                .order_by(SellerUpdate.id.desc())).all()
     flashes = request.session.pop("_flash", [])
     return templates.TemplateResponse("requests.html", {
         "request": request, "user": user, "active": "requests", "reqs": reqs,
-        "types": REQUEST_TYPES, "flashes": flashes})
+        "types": REQUEST_TYPES, "flashes": flashes,
+        "deliv_map": deliv_map, "msg_map": msg_map, "me": user,
+        "funnel_map": funnel_map, "prospects_map": prospects_map, "updates_map": updates_map})
 
 
 @app.get("/requests/{req_id}/status", response_class=HTMLResponse)
@@ -2038,7 +2705,22 @@ def request_status(request: Request, req_id: int):
         sr = session.get(ServiceRequest, req_id)
         if not sr or not owns(sr.owner_id, user):
             return HTMLResponse("", status_code=404)
-        return templates.TemplateResponse("partials/request_card.html", {"request": request, "r": sr})
+        deliv_map, msg_map = _deliverables_for(session, [sr.id]), _messages_for(session, [sr.id])
+        return templates.TemplateResponse("partials/request_card.html", {
+            "request": request, "r": sr, "deliv_map": deliv_map, "msg_map": msg_map, "me": user})
+
+
+@app.get("/requests/{req_id}/thread", response_class=HTMLResponse)
+def request_thread(request: Request, req_id: int):
+    """Just the chat message bubbles for a request — the 5s poll target (owning trader or admin)."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        sr = session.get(ServiceRequest, req_id)
+        if not sr or not owns(sr.owner_id, user):
+            return HTMLResponse("", status_code=404)
+        msgs = _messages_for(session, [sr.id]).get(sr.id, [])
+        return templates.TemplateResponse("partials/request_thread_messages.html", {
+            "request": request, "msgs": msgs, "me": user})
 
 
 @app.get("/services", response_class=HTMLResponse)
@@ -2058,27 +2740,121 @@ def request_result_file(request: Request, req_id: int):
     with Session(engine) as session:
         user = current_user(request, session)
         sr = session.get(ServiceRequest, req_id)
-        if not sr or not owns(sr.owner_id, user) or not sr.result_file_path:
+        if not sr or not owns(sr.owner_id, user):
             return _not_found()
-        path = (REQUEST_FILES_DIR / sr.result_file_path).resolve()
+        rel = sr.result_file_path
+        if not is_admin(user):     # sellers only ever get the latest deliverable the admin marked PII-free
+            dv = session.exec(select(RequestDeliverable).where(
+                RequestDeliverable.request_id == sr.id, RequestDeliverable.seller_safe == True,  # noqa: E712
+                RequestDeliverable.file_path != "").order_by(RequestDeliverable.id.desc())).first()
+            rel = dv.file_path if dv else ""
+        if not rel:
+            return _not_found()
+        path = (REQUEST_FILES_DIR / rel).resolve()
         if not str(path).startswith(str(REQUEST_FILES_DIR.resolve()) + os.sep) or not path.exists():
             return _not_found()
-        fname = os.path.basename(sr.result_file_path)
+        fname = os.path.basename(rel)
     return FileResponse(str(path), filename=fname)
 
 
+REQUEST_VIEWS = {"new": "New", "needs_review": "Needs review", "my_active": "My active",
+                 "unassigned": "Unassigned", "waiting_requester": "Waiting requester",
+                 "waiting_external": "Waiting external", "ready": "Ready to deliver", "overdue": "Overdue",
+                 "completed": "Completed", "closed": "Rejected/cancelled"}
+
+
 @app.get("/admin/requests", response_class=HTMLResponse)
-def admin_requests(request: Request):
+def admin_requests(request: Request, view: str = "", q: str = "", direction: str = "", rtype: str = "",
+                   status: str = "", priority: str = "", assignee: str = "", action: str = "",
+                   overdue: str = "", page: int = 1):
     with Session(engine) as session:
         user = current_user(request, session)
         if not is_admin(user):
             return _forbidden()
-        reqs = session.exec(select(ServiceRequest).order_by(ServiceRequest.id.desc())).all()
+        now = datetime.utcnow()
+        stmt = select(ServiceRequest)
+        q = (q or "").strip()
+        if q:
+            like = f"%{q}%"
+            stmt = stmt.where(or_(ServiceRequest.product.ilike(like), ServiceRequest.market.ilike(like),
+                                  ServiceRequest.details.ilike(like), ServiceRequest.tracking_code.ilike(like)))
+        if direction in ("sell", "buy", "service"):
+            stmt = stmt.where(ServiceRequest.direction == direction)
+        if rtype in REQUEST_TYPES:
+            stmt = stmt.where(ServiceRequest.request_type == rtype)
+        if status in ("submitted", "approved", "running", "done", "rejected"):
+            stmt = stmt.where(ServiceRequest.status == status)
+        if priority in ("low", "normal", "high", "urgent"):
+            stmt = stmt.where(ServiceRequest.priority == priority)
+        if assignee == "me":
+            stmt = stmt.where(ServiceRequest.assigned_admin_id == user.id)
+        elif assignee == "none":
+            stmt = stmt.where(ServiceRequest.assigned_admin_id.is_(None))
+        elif assignee.isdigit():
+            stmt = stmt.where(ServiceRequest.assigned_admin_id == int(assignee))
+        if action == "admin":
+            stmt = stmt.where(ServiceRequest.action_required_admin == True)   # noqa: E712
+        elif action == "requester":
+            stmt = stmt.where(ServiceRequest.action_required_requester == True)   # noqa: E712
+        if overdue == "1":
+            stmt = stmt.where(ServiceRequest.due_at.is_not(None), ServiceRequest.due_at < now,
+                              ServiceRequest.status.not_in(("done", "rejected")))
+        # saved views (built on reliably-populated columns)
+        if view in ("new", "needs_review"):
+            stmt = stmt.where(ServiceRequest.status == "submitted")
+        elif view == "my_active":
+            stmt = stmt.where(ServiceRequest.assigned_admin_id == user.id,
+                              ServiceRequest.status.in_(("approved", "running")))
+        elif view == "unassigned":
+            stmt = stmt.where(ServiceRequest.assigned_admin_id.is_(None),
+                              ServiceRequest.status.in_(("submitted", "approved", "running")))
+        elif view == "waiting_requester":
+            stmt = stmt.where(ServiceRequest.action_required_requester == True)   # noqa: E712
+        elif view == "waiting_external":
+            stmt = stmt.where(ServiceRequest.workflow_status == "waiting_external")
+        elif view == "ready":
+            stmt = stmt.where(ServiceRequest.workflow_status == "ready_for_delivery")
+        elif view == "overdue":
+            stmt = stmt.where(ServiceRequest.due_at.is_not(None), ServiceRequest.due_at < now,
+                              ServiceRequest.status.not_in(("done", "rejected")))
+        elif view == "completed":
+            stmt = stmt.where(ServiceRequest.status == "done")
+        elif view == "closed":
+            stmt = stmt.where(ServiceRequest.status == "rejected")
+        per = 40
+        total = session.exec(select(func.count()).select_from(stmt.subquery())).one()
+        pages = max(1, (total + per - 1) // per)
+        page = max(1, min(page, pages))
+        reqs = session.exec(stmt.order_by(ServiceRequest.id.desc()).offset((page - 1) * per).limit(per)).all()
         umap = {u.id: u for u in session.exec(select(User)).all()}
-        order = {"submitted": 0, "approved": 1, "running": 2, "done": 3, "rejected": 4}
-        reqs.sort(key=lambda r: (order.get(r.status, 9), -(r.id or 0)))
-    return templates.TemplateResponse("admin_requests.html", {
-        "request": request, "user": user, "active": "admin_requests", "reqs": reqs, "umap": umap})
+        ids = [r.id for r in reqs]
+        deliv_map, msg_map = _deliverables_for(session, ids), _messages_for(session, ids)
+        wq_counts = (dict(session.exec(select(WorkItem.related_request_id, func.count()).where(
+            WorkItem.related_request_id.in_(ids), WorkItem.status.in_(WQ.NONTERMINAL))
+            .group_by(WorkItem.related_request_id)).all()) if ids else {})
+        unread_ids = set()
+        if ids:
+            by_id = {r.id: r for r in reqs}
+            last_req = dict(session.exec(select(RequestMessage.request_id, func.max(RequestMessage.created_at))
+                            .where(RequestMessage.request_id.in_(ids), RequestMessage.sender_role != "admin")
+                            .group_by(RequestMessage.request_id)).all())
+            for rid, ts in last_req.items():
+                r = by_id.get(rid)
+                if r and ts and (r.admin_last_read_at is None or ts > r.admin_last_read_at):
+                    unread_ids.add(rid)
+        eff_of = {r.id: RS.effective_workflow(r) for r in reqs}
+        f = {"view": view, "q": q, "direction": direction, "rtype": rtype, "status": status,
+             "priority": priority, "assignee": assignee, "action": action, "overdue": overdue}
+        hdr = {"section": "Concierge", "title": "Requests",
+               "desc": "Buyer-search, buy-side and service requests — the operational source of truth.",
+               "count": total}
+        return templates.TemplateResponse("admin_requests.html", {
+            "request": request, "user": user, "active": "requests", "reqs": reqs, "umap": umap,
+            "deliv_map": deliv_map, "msg_map": msg_map, "me": user, "wq_counts": wq_counts,
+            "unread_ids": unread_ids, "now": now, "f": f, "total": total, "page": page, "pages": pages,
+            "hdr": hdr, "REQUEST_VIEWS": REQUEST_VIEWS, "REQUEST_TYPES": REQUEST_TYPES,
+            "staff": _staff(session), "wf_label": RS.WORKFLOW_LABELS, "wf_badge": RS.WORKFLOW_BADGE,
+            "eff_of": eff_of, "PRIORITY_BADGE": WQ.PRIORITY_BADGE})
 
 
 @app.get("/admin/requests/count", response_class=HTMLResponse)
@@ -2090,6 +2866,128 @@ def admin_requests_count(request: Request):
         n = session.exec(select(func.count(ServiceRequest.id))
                          .where(ServiceRequest.status == "submitted")).one()
     return HTMLResponse(f'<span class="badge badge-amber ml-1">{n}</span>' if n else "")
+
+
+@app.get("/admin/requests/{req_id}", response_class=HTMLResponse)
+def admin_request_detail(request: Request, req_id: int, tab: str = "summary"):
+    """The tabbed admin request workspace (Summary · Pipeline & research · Communication · Work items ·
+    Files · Related). Admin-only. Presents existing results — it never rewrites Research/pipeline logic."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        sr = session.get(ServiceRequest, req_id)
+        if not sr:
+            return _not_found()
+        requester = session.get(User, sr.requester_id) if sr.requester_id else None
+        assignee = session.get(User, sr.assigned_admin_id) if sr.assigned_admin_id else None
+        company = session.get(Company, sr.on_behalf_company_id) if sr.on_behalf_company_id else None
+        history = RS.status_history(session, req_id)
+        actor_map = {u.id: u for u in session.exec(select(User)).all()}
+        deliverables = session.exec(select(RequestDeliverable).where(RequestDeliverable.request_id == req_id)
+                                    .order_by(RequestDeliverable.id)).all()
+        messages = session.exec(select(RequestMessage).where(RequestMessage.request_id == req_id)
+                                .order_by(RequestMessage.id)).all()
+        updates = session.exec(select(SellerUpdate).where(SellerUpdate.request_id == req_id)
+                               .order_by(SellerUpdate.id)).all()
+        witems = session.exec(select(WorkItem).where(WorkItem.related_request_id == req_id)
+                              .order_by(WorkItem.id.desc())).all()
+        funnel = pipeline.request_funnel(session, sr)
+        hdr = {"section": "Request", "title": sr.tracking_code or f"Request {sr.id}",
+               "desc": (f"{sr.product} → {sr.market}" if sr.market else sr.product),
+               "breadcrumb": [{"label": "Requests", "href": "/admin/requests"}]}
+        return templates.TemplateResponse("admin_request_detail.html", {
+            "request": request, "user": user, "active": "requests", "sr": sr,
+            "tab": tab if tab in ("summary", "pipeline", "comms", "work", "files", "related") else "summary",
+            "requester": requester, "assignee": assignee, "company": company, "history": history,
+            "actor_map": actor_map, "deliverables": deliverables, "messages": messages, "updates": updates,
+            "witems": witems, "funnel": funnel, "now": datetime.utcnow(), "hdr": hdr, "staff": _staff(session),
+            "wf_states": RS.WORKFLOW_STATES, "wf_label": RS.WORKFLOW_LABELS, "wf_badge": RS.WORKFLOW_BADGE,
+            "eff_wf": RS.effective_workflow(sr), "PRIORITY_BADGE": WQ.PRIORITY_BADGE,
+            "STATUS_BADGE": WQ.STATUS_BADGE, "TYPE_LABELS": WQ.TYPE_LABELS, "REQUEST_TYPES": REQUEST_TYPES})
+
+
+@app.post("/admin/requests/{req_id}/assign")
+def admin_request_assign(request: Request, req_id: int, assignee: str = Form(""), priority: str = Form(""),
+                         due: str = Form(""), next_action: str = Form("")):
+    """Set assignee / priority / due / next-action on a request (all additive; legacy status untouched)."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        sr = session.get(ServiceRequest, req_id)
+        if not sr:
+            return _not_found()
+        if assignee == "me":
+            sr.assigned_admin_id = user.id
+        elif assignee == "none":
+            sr.assigned_admin_id = None
+        elif assignee.isdigit():
+            sr.assigned_admin_id = int(assignee)
+        if priority in ("low", "normal", "high", "urgent"):
+            sr.priority = priority
+        if due:
+            try:
+                sr.due_at = datetime.fromisoformat(due)
+            except ValueError:
+                pass
+        sr.next_action_note = (next_action or "").strip()[:500]
+        RS.touch_activity(sr)
+        session.add(sr)
+        pipeline.audit(session, user, "request", sr.id, "request_assigned",
+                       {"assignee": sr.assigned_admin_id, "priority": sr.priority}, tenant_id=sr.owner_id)
+        session.commit()
+        _flash(request, "Request updated ✓")
+    return RedirectResponse(f"/admin/requests/{req_id}", status_code=303)
+
+
+@app.post("/admin/requests/{req_id}/workflow")
+def admin_request_workflow(request: Request, req_id: int, to: str = Form(""), reason: str = Form("")):
+    """Advance the additive workflow_status (under_review / waiting_* / ready_for_delivery / completed /
+    cancelled). Records history + audits; manages the deliver_result task. Legacy status is left alone."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        sr = session.get(ServiceRequest, req_id)
+        if not sr:
+            return _not_found()
+        ok, err = RS.advance_workflow(session, sr, to, user, reason)
+        if ok:
+            RS.reconcile_legacy(sr, to)   # keep the seller-visible legacy status consistent (never contradict)
+            session.add(sr)
+            if to == "ready_for_delivery":
+                WQ.create_work_item_safe(session, actor=user, type="deliver_result",
+                                         title=f"Deliver result for {sr.tracking_code or sr.id}",
+                                         description="This request is ready for delivery.",
+                                         tenant_id=sr.owner_id, related_request_id=sr.id,
+                                         idempotency_key=f"deliver_result:req:{sr.id}")
+            elif to in ("delivered", "completed", "rejected", "cancelled"):
+                for k in (f"deliver_result:req:{sr.id}", f"overdue:req:{sr.id}",
+                          f"review_new_request:req:{sr.id}"):
+                    WQ.resolve_by_key(session, k, user, f"request {to}")
+            session.commit()
+            _flash(request, f"Status → {RS.WORKFLOW_LABELS.get(to, to)} ✓")
+        else:
+            _flash(request, err, "rose")
+    return RedirectResponse(f"/admin/requests/{req_id}", status_code=303)
+
+
+@app.post("/admin/requests/{req_id}/mark-read")
+def admin_request_mark_read(request: Request, req_id: int):
+    """Mark a request's chat as read by the admin (POST only — never mutate on the GET thread poll)."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        sr = session.get(ServiceRequest, req_id)
+        if not sr:
+            return _not_found()
+        sr.admin_last_read_at = datetime.utcnow()
+        sr.action_required_admin = False
+        session.add(sr)
+        session.commit()
+    return RedirectResponse(f"/admin/requests/{req_id}", status_code=303)
 
 
 def _notify_requester(session, sr):
@@ -2108,6 +3006,8 @@ def admin_request_approve(request: Request, req_id: int):
         sr = session.get(ServiceRequest, req_id)
         if sr and sr.status == "submitted":
             sr.status, sr.approved_by, sr.approved_at = "approved", user.email, datetime.utcnow()
+            RS.advance_workflow(session, sr, "approved", user)           # keep additive workflow in sync
+            WQ.resolve_by_key(session, f"review_new_request:req:{sr.id}", user, "request reviewed")
             session.add(sr); session.commit(); session.refresh(sr)
             _notify_requester(session, sr)
     return RedirectResponse("/admin/requests", status_code=303)
@@ -2116,11 +3016,15 @@ def admin_request_approve(request: Request, req_id: int):
 @app.post("/admin/requests/{req_id}/reject")
 def admin_request_reject(request: Request, req_id: int, reason: str = Form("")):
     with Session(engine) as session:
-        if not is_admin(current_user(request, session)):
+        user = current_user(request, session)
+        if not is_admin(user):
             return _forbidden()
         sr = session.get(ServiceRequest, req_id)
         if sr and sr.status in ("submitted", "approved"):
             sr.status, sr.admin_note, sr.done_at = "rejected", (reason or "").strip()[:500], datetime.utcnow()
+            RS.advance_workflow(session, sr, "rejected", user, reason=(reason or "").strip())
+            for k in (f"review_new_request:req:{sr.id}", f"deliver_result:req:{sr.id}", f"overdue:req:{sr.id}"):
+                WQ.resolve_by_key(session, k, user, "request rejected")
             session.add(sr); session.commit(); session.refresh(sr)
             _notify_requester(session, sr)
     return RedirectResponse("/admin/requests", status_code=303)
@@ -2129,35 +3033,551 @@ def admin_request_reject(request: Request, req_id: int, reason: str = Form("")):
 @app.post("/admin/requests/{req_id}/start")
 def admin_request_start(request: Request, req_id: int):
     with Session(engine) as session:
-        if not is_admin(current_user(request, session)):
+        user = current_user(request, session)
+        if not is_admin(user):
             return _forbidden()
         sr = session.get(ServiceRequest, req_id)
         if sr and sr.status == "approved":
             sr.status, sr.started_at = "running", datetime.utcnow()
+            RS.advance_workflow(session, sr, "in_progress", user)
             session.add(sr); session.commit()
     return RedirectResponse("/admin/requests", status_code=303)
 
 
 @app.post("/admin/requests/{req_id}/done")
 def admin_request_done(request: Request, req_id: int, result: str = Form(""),
-                       file: UploadFile = File(None)):
-    """Deliver / close a request as done, with a result note + optional file (contract PDF, remittance
-    confirmation, freight quote). buyer_hunt normally closes via scripts/deliver_request.py instead."""
+                       url: str = Form(""), seller_safe: str = Form(""), file: UploadFile = File(None)):
+    """Deliver a request, with a result note + optional file/link. Can be called REPEATEDLY (even after
+    'done') — each delivery APPENDS a RequestDeliverable, so re-sends stack instead of overwriting. Tick
+    seller_safe ONLY when the file carries no buyer PII (else sellers can't download it)."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        sr = session.get(ServiceRequest, req_id)
+        if sr and sr.status in ("approved", "running", "done"):
+            note = (result or "").strip()[:1000]
+            link = (url or "").strip()[:500]
+            has_file = file is not None and (file.filename or "").strip()
+            if has_file or link or note:
+                dv = RequestDeliverable(request_id=sr.id, note=note, url=link, delivered_by=user.email,
+                                        seller_safe=(seller_safe == "1"))
+                session.add(dv); session.commit(); session.refresh(dv)
+                if has_file:
+                    rel = _save_deliverable_file(sr.id, dv.id, file)
+                    if rel:
+                        dv.file_path, sr.result_file_path = rel, rel
+                if link:
+                    sr.result_url = link
+                session.add(dv)
+            sr.status, sr.done_at = "done", datetime.utcnow()
+            if note:
+                sr.result = note
+            RS.advance_workflow(session, sr, "delivered", user)
+            for k in (f"deliver_result:req:{sr.id}", f"overdue:req:{sr.id}"):
+                WQ.resolve_by_key(session, k, user, "request delivered")
+            session.add(sr); session.commit(); session.refresh(sr)
+            _notify_requester(session, sr)
+    return RedirectResponse("/admin/requests", status_code=303)
+
+
+# ---------------------------------------------------------------- admin: confidential pipeline + updates
+
+def _managed_leads(session, req_id):
+    return session.exec(select(Lead).where(Lead.request_id == req_id, Lead.managed == True)  # noqa: E712
+                        .order_by(Lead.pipeline_stage, Lead.id)).all()
+
+
+@app.get("/admin/requests/{req_id}/pipeline", response_class=HTMLResponse)
+def admin_pipeline(request: Request, req_id: int):
+    """Admin-only board of the managed (confidential) buyers for a request — FULL PII + stage controls."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        sr = session.get(ServiceRequest, req_id)
+        if not sr:
+            return _not_found()
+        leads = _managed_leads(session, req_id)
+        pipeline.audit(session, user, "request", req_id, "pii_view", {"n": len(leads)},
+                       tenant_id=sr.owner_id); session.commit()
+        admins = session.exec(select(User).where(User.role == "admin")).all()
+        funnel = pipeline.request_funnel(session, sr)
+        updates = session.exec(select(SellerUpdate).where(SellerUpdate.request_id == req_id)
+                               .order_by(SellerUpdate.id.desc())).all()
+        umap = {u.id: u for u in session.exec(select(User)).all()}
+    flashes = request.session.pop("_flash", [])
+    return templates.TemplateResponse("admin_pipeline.html", {
+        "request": request, "user": user, "active": "admin_requests", "sr": sr, "leads": leads,
+        "stages": pipeline.PIPELINE_STAGES, "labels": pipeline.PUBLIC_STAGE_LABEL,
+        "loss_reasons": pipeline.STANDARD_LOSS_REASONS, "size_bands": pipeline.SIZE_BANDS,
+        "tmpls": pipeline.UPDATE_TEMPLATES, "admins": admins, "funnel": funnel,
+        "updates": updates, "umap": umap, "flashes": flashes})
+
+
+@app.post("/admin/requests/{req_id}/pipeline/{lead_id}/stage")
+def admin_pipeline_stage(request: Request, req_id: int, lead_id: int,
+                         to_stage: str = Form(...), note: str = Form("")):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        lead = session.get(Lead, lead_id)
+        if not lead or not lead.managed or lead.request_id != req_id:      # never trust the posted ids
+            return _not_found()
+        ok, err = pipeline.set_pipeline_stage(session, lead, to_stage, user, note)
+        if ok:
+            session.commit(); session.refresh(lead)
+            if to_stage == "won":
+                _open_deal_if_won(session, lead, user); session.commit()
+        else:
+            _flash(request, err, "rose")
+    return RedirectResponse(f"/admin/requests/{req_id}/pipeline", status_code=303)
+
+
+@app.post("/admin/requests/{req_id}/pipeline/{lead_id}/fields")
+def admin_pipeline_fields(request: Request, req_id: int, lead_id: int,
+                          buyer_category: str = Form(""), company_size_band: str = Form(""),
+                          fit_score: str = Form(""), assigned_admin_id: str = Form(""),
+                          next_action_note: str = Form(""), next_action_at: str = Form(""),
+                          seller_action_required: str = Form("")):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        lead = session.get(Lead, lead_id)
+        if not lead or not lead.managed or lead.request_id != req_id:
+            return _not_found()
+        lead.buyer_category = buyer_category.strip()[:80]
+        lead.company_size_band = company_size_band.strip()[:20]
+        if fit_score:
+            try:
+                lead.fit_score = max(0.0, min(100.0, float(fit_score)))
+            except ValueError:
+                pass
+        if assigned_admin_id.isdigit():
+            lead.assigned_admin_id = int(assigned_admin_id)
+        lead.next_action_note = next_action_note.strip()[:200]
+        if next_action_at:
+            try:
+                lead.next_action_at = datetime.fromisoformat(next_action_at)
+            except ValueError:
+                pass
+        lead.seller_action_required = (seller_action_required == "1")
+        session.add(lead)
+        pipeline.audit(session, user, "lead", lead.id, "fields_update", {}, tenant_id=lead.seller_id)
+        session.commit()
+    return RedirectResponse(f"/admin/requests/{req_id}/pipeline", status_code=303)
+
+
+@app.post("/admin/requests/{req_id}/publish/preview", response_class=HTMLResponse)
+def admin_publish_preview(request: Request, req_id: int, anon_ref: str = Form(""),
+                          public_status: str = Form(""), summary: str = Form(""),
+                          next_action: str = Form(""), seller_question: str = Form(""),
+                          deadline: str = Form("")):
+    """Show EXACTLY what the seller will see + any contact/PII the admin must remove before publishing."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        sr = session.get(ServiceRequest, req_id)
+        if not sr:
+            return _not_found()
+    hits = pipeline.sanitize_scan(" ".join([summary, next_action, seller_question, public_status]))
+    u = {"anon_ref": anon_ref.strip(), "public_status": public_status.strip(), "summary": summary.strip(),
+         "next_action": next_action.strip(), "seller_question": seller_question.strip(),
+         "deadline": deadline.strip()}
+    return templates.TemplateResponse("publish_update_preview.html", {
+        "request": request, "user": user, "sr": sr, "u": u, "hits": hits})
+
+
+@app.post("/admin/requests/{req_id}/publish")
+def admin_publish(request: Request, req_id: int, anon_ref: str = Form(""), public_status: str = Form(""),
+                  summary: str = Form(""), next_action: str = Form(""), seller_question: str = Form(""),
+                  deadline: str = Form("")):
+    """Publish a SANITIZED seller-visible update. Refuses if any contact/PII slips through."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        sr = session.get(ServiceRequest, req_id)
+        if not sr:
+            return _not_found()
+        if pipeline.sanitize_scan(" ".join([summary, next_action, seller_question, public_status])):
+            _flash(request, "Blocked — the update still contains contact details / PII. Remove them and preview again.", "rose")
+            return RedirectResponse(f"/admin/requests/{req_id}/pipeline", status_code=303)
+        dl = None
+        if deadline:
+            try:
+                dl = datetime.fromisoformat(deadline)
+            except ValueError:
+                dl = None
+        q = seller_question.strip()[:300]
+        su = SellerUpdate(request_id=req_id, seller_id=sr.owner_id, anon_ref=anon_ref.strip()[:40],
+                          public_status=public_status.strip()[:80], summary=summary.strip()[:2000],
+                          next_action=next_action.strip()[:300], seller_question=q,
+                          status="open" if q else "resolved",   # only a question is an outstanding action
+                          deadline=dl, published=True, published_by=user.email)
+        session.add(su); session.commit(); session.refresh(su)
+        pipeline.audit(session, user, "seller_update", su.id, "publish_update", {"req": req_id},
+                       tenant_id=sr.owner_id)
+        session.commit()
+        if q:   # a published QUESTION is an outstanding requester action — track it as an INTERNAL task
+                # linked to (never merged with) the sanitized SellerUpdate the seller actually sees.
+            sr.action_required_requester = True
+            RS.touch_activity(sr); session.add(sr)
+            WQ.create_work_item_safe(session, actor=user, type="requester_action_required",
+                                     title="Requester action required",
+                                     description="A published question is awaiting the requester's reply.",
+                                     tenant_id=sr.owner_id, related_request_id=req_id,
+                                     related_seller_update_id=su.id, visibility="requester_visible",
+                                     waiting_on="requester", idempotency_key=f"requester_action:su:{su.id}",
+                                     condition_version="open")
+            session.commit()
+        try:
+            notify_request_message(sr, type("_M", (), {"body": (su.summary or su.public_status)})(),
+                                   session.get(User, sr.requester_id), from_name="Go4it admin")
+        except Exception:  # noqa: BLE001
+            pass
+        _flash(request, "Update published to the seller ✓")
+    return RedirectResponse(f"/admin/requests/{req_id}/pipeline", status_code=303)
+
+
+@app.get("/requests/{req_id}/deliverable/{dv_id}")
+def request_deliverable_file(request: Request, req_id: int, dv_id: int):
+    """Download one delivered file from a request's deliverables history — owning trader or admin only."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        sr = session.get(ServiceRequest, req_id)
+        dv = session.get(RequestDeliverable, dv_id)
+        if not sr or not dv or dv.request_id != sr.id or not owns(sr.owner_id, user) or not dv.file_path:
+            return _not_found()
+        if not is_admin(user) and not dv.seller_safe:   # sellers get ONLY files the admin marked PII-free
+            return _not_found()
+        path = (REQUEST_FILES_DIR / dv.file_path).resolve()
+        if not str(path).startswith(str(REQUEST_FILES_DIR.resolve()) + os.sep) or not path.exists():
+            return _not_found()
+        fname = os.path.basename(dv.file_path)
+    return FileResponse(str(path), filename=fname)
+
+
+@app.post("/requests/{req_id}/messages")
+def request_message(request: Request, req_id: int, body: str = Form("")):
+    """Post a message to a request's chat. Works for BOTH the owning trader and the admin (owns() admits
+    both), and pings the OTHER side on Telegram."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        sr = session.get(ServiceRequest, req_id)
+        if not sr or not role_at_least(user, "agent") or not owns(sr.owner_id, user):
+            return _not_found()
+        text = (body or "").strip()[:4000]
+        if text and is_admin(user):        # admin -> seller: block buyer contact details/PII before it's saved
+            hits = pipeline.sanitize_scan(text)
+            if hits:
+                kinds = ", ".join(sorted({h["kind"] for h in hits}))
+                _flash(request, f"Message blocked - it contains buyer contact details / PII ({kinds}). "
+                                "Remove them before sending.", "rose")
+                return RedirectResponse(request.headers.get("referer") or "/requests", status_code=303)
+        if text:
+            m = RequestMessage(request_id=sr.id, sender_id=user.id, sender_role=user.role, body=text)
+            session.add(m); session.commit(); session.refresh(m)
+            # Phase 3: a REQUESTER message needs admin review (one open task per request, idempotent); an
+            # ADMIN message clears the request's pending-review flag + closes that task. Non-blocking.
+            if not is_admin(user):
+                sr.action_required_admin = True; RS.touch_activity(sr); session.add(sr)
+                WQ.create_work_item_safe(session, actor=user, type="review_reply",
+                                         title=f"Review reply on {sr.tracking_code or sr.id}",
+                                         description="The requester sent a new message — review and respond.",
+                                         tenant_id=sr.owner_id, related_request_id=sr.id,
+                                         idempotency_key=f"review_reply:req:{sr.id}")
+            else:
+                sr.action_required_admin = False; RS.touch_activity(sr); session.add(sr)
+                WQ.resolve_by_key(session, f"review_reply:req:{sr.id}", user, "admin replied")
+            session.commit()
+            try:
+                if is_admin(user):
+                    notify_request_message(sr, m, session.get(User, sr.requester_id), from_name="Go4it admin")
+                else:
+                    admin = session.exec(select(User).where(User.role == "admin")).first()
+                    notify_request_message(sr, m, admin, from_name=(user.name or user.email))
+            except Exception:  # noqa: BLE001
+                pass
+    return RedirectResponse(request.headers.get("referer") or "/requests", status_code=303)
+
+
+@app.post("/requests/{req_id}/updates/{update_id}/resolve")
+def resolve_seller_update(request: Request, req_id: int, update_id: int, answer: str = Form("")):
+    """Resolve an open seller-question so 'Action required' can never go stale. The owning seller (or admin)
+    marks it answered; an optional answer is posted into the request chat so the admin sees it. Every id is
+    re-validated from the DB — a posted update_id from another request/seller is rejected (404)."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        sr = session.get(ServiceRequest, req_id)
+        if not sr or not role_at_least(user, "agent") or not owns(sr.owner_id, user):
+            return _not_found()
+        su = session.get(SellerUpdate, update_id)
+        if not su or su.request_id != req_id or su.seller_id != sr.owner_id:   # never trust the posted id
+            return _not_found()
+        answer_text = (answer or "").strip()[:4000]
+        if answer_text and is_admin(user):   # if an admin authors the reply, scan it (admin -> seller)
+            if pipeline.sanitize_scan(answer_text):
+                _flash(request, "Answer blocked - it contains buyer contact details / PII. Remove them first.", "rose")
+                return RedirectResponse(request.headers.get("referer") or "/requests", status_code=303)
+        if su.status != "resolved":
+            su.status = "resolved"
+            su.resolved_at = datetime.utcnow()
+            su.resolved_by = user.email
+            session.add(su)
+            if su.lead_id:            # clear the buyer's action flag so it can't linger
+                lead = session.get(Lead, su.lead_id)
+                if lead and lead.request_id == req_id:
+                    lead.seller_action_required = False
+                    session.add(lead)
+            pipeline.audit(session, user, "seller_update", su.id, "resolve_update", {"req": req_id},
+                           tenant_id=sr.owner_id)
+            # Phase 3: the requester answered → close the linked requester-visible task; if the SELLER
+            # answered (not the admin), queue an admin reply-review. Non-blocking, idempotent.
+            WQ.resolve_by_key(session, f"requester_action:su:{su.id}", user, "requester responded")
+            sr.action_required_requester = False
+            RS.touch_activity(sr); session.add(sr)
+            if not is_admin(user):
+                sr.action_required_admin = True; session.add(sr)
+                WQ.create_work_item_safe(session, actor=user, type="review_reply",
+                                         title="Review requester reply",
+                                         description="The requester answered a published question — review the reply.",
+                                         tenant_id=sr.owner_id, related_request_id=req_id,
+                                         idempotency_key=f"review_reply:su:{su.id}")
+            text = answer_text
+            if text:                  # the seller's answer goes into the mediated chat, not to the buyer
+                m = RequestMessage(request_id=sr.id, sender_id=user.id, sender_role=user.role,
+                                   body=f"[Answer to: {su.seller_question[:120]}] {text}")
+                session.add(m); session.commit(); session.refresh(m)
+                try:
+                    if is_admin(user):
+                        notify_request_message(sr, m, session.get(User, sr.requester_id), from_name="Go4it admin")
+                    else:
+                        admin = session.exec(select(User).where(User.role == "admin")).first()
+                        notify_request_message(sr, m, admin, from_name=(user.name or user.email))
+                except Exception:  # noqa: BLE001
+                    pass
+            else:
+                session.commit()
+        _flash(request, "Answer sent — Go4it will take it from here ✓")
+    return RedirectResponse(request.headers.get("referer") or "/requests", status_code=303)
+
+
+# ----------------------------------------------------------------------------- Work Queue (Phase 3)
+# The central admin queue: every open task — reviews, follow-ups, replies, enrichment, failed jobs, bounces,
+# quotes-to-approve, deliveries, overdue work. Admin-only. Internal tasks NEVER reach a seller; a
+# requester-visible action is published only through the sanitized SellerUpdate path (linked, not merged).
+
+def _staff(session):
+    """Assignable staff (admins/managers) for the Work Queue assignee pickers."""
+    return session.exec(select(User).where(User.role.in_(("admin", "manager"))).order_by(User.email)).all()
+
+
+@app.get("/admin/work-queue/count", response_class=HTMLResponse)
+def work_queue_count(request: Request):
     with Session(engine) as session:
         if not is_admin(current_user(request, session)):
             return _forbidden()
-        sr = session.get(ServiceRequest, req_id)
-        if sr and sr.status in ("approved", "running"):
-            sr.status, sr.done_at = "done", datetime.utcnow()
-            sr.result = (result or "").strip()[:1000] or sr.result
-            session.add(sr); session.commit(); session.refresh(sr)
-            if file is not None and (file.filename or "").strip():
-                rel = _save_request_file(sr.id, file)
-                if rel:
-                    sr.result_file_path = rel
-                    session.add(sr); session.commit(); session.refresh(sr)
-            _notify_requester(session, sr)
-    return RedirectResponse("/admin/requests", status_code=303)
+        n = WQ.nav_open_count(session)
+    return HTMLResponse(str(n) if n else "")
+
+
+@app.get("/admin/work-queue", response_class=HTMLResponse)
+def work_queue(request: Request, view: str = "all_open", q: str = "", assignee: str = "",
+               status: str = "", priority: str = "", type: str = "", party: str = "",
+               source: str = "", overdue: str = "", page: int = 1):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        view = view if view in WQ.VIEWS else "all_open"
+        stmt = WQ.apply_view(select(WorkItem), view, user)
+        q = (q or "").strip()
+        if q:
+            like = f"%{q}%"
+            stmt = stmt.where(or_(WorkItem.title.ilike(like), WorkItem.description.ilike(like)))
+        if assignee == "me":
+            stmt = stmt.where(WorkItem.assigned_admin_id == user.id)
+        elif assignee == "none":
+            stmt = stmt.where(WorkItem.assigned_admin_id.is_(None))
+        elif assignee.isdigit():
+            stmt = stmt.where(WorkItem.assigned_admin_id == int(assignee))
+        if status in WQ.STATUSES:
+            stmt = stmt.where(WorkItem.status == status)
+        if priority in WQ.PRIORITIES:
+            stmt = stmt.where(WorkItem.priority == priority)
+        if type in WQ.TYPES:
+            stmt = stmt.where(WorkItem.type == type)
+        if party in WQ.WAITING_PARTIES:
+            stmt = stmt.where(WorkItem.waiting_on == party)
+        if source in ("manual", "automatic"):
+            stmt = stmt.where(WorkItem.source == source)
+        if overdue == "1":
+            stmt = stmt.where(WorkItem.due_at.is_not(None), WorkItem.due_at < datetime.utcnow(),
+                              WorkItem.status.in_(WQ.NONTERMINAL))
+        per = 50
+        total = session.exec(select(func.count()).select_from(stmt.subquery())).one()
+        pages = max(1, (total + per - 1) // per)
+        page = max(1, min(page, pages))
+        items = session.exec(stmt.order_by(WorkItem.due_at.is_(None), WorkItem.due_at, WorkItem.id.desc())
+                             .offset((page - 1) * per).limit(per)).all()
+        req_ids = {i.related_request_id for i in items if i.related_request_id}
+        req_map = ({r.id: r for r in session.exec(select(ServiceRequest)
+                    .where(ServiceRequest.id.in_(req_ids))).all()} if req_ids else {})
+        co_ids = {i.related_company_id for i in items if i.related_company_id}
+        co_map = ({c.id: c for c in session.exec(select(Company).where(Company.id.in_(co_ids))).all()}
+                  if co_ids else {})
+        user_map = {u.id: u for u in session.exec(select(User)).all()}
+        counts = WQ.queue_counts(session, user)
+        f = {"view": view, "q": q, "assignee": assignee, "status": status, "priority": priority,
+             "type": type, "party": party, "source": source, "overdue": overdue}
+        hdr = {"section": "Work Queue", "title": "Work Queue",
+               "desc": "Everything that needs admin attention, in one place.", "count": counts["actionable"]}
+        return templates.TemplateResponse("work_queue.html", {
+            "request": request, "user": user, "is_admin": True, "items": items, "counts": counts,
+            "req_map": req_map, "co_map": co_map, "user_map": user_map, "staff": _staff(session),
+            "f": f, "total": total, "page": page, "pages": pages, "hdr": hdr, "now": datetime.utcnow(),
+            "VIEWS": WQ.VIEWS, "VIEW_LABELS": WQ.VIEW_LABELS, "TYPE_LABELS": WQ.TYPE_LABELS,
+            "TYPES": WQ.TYPES, "STATUSES": WQ.STATUSES, "PRIORITIES": WQ.PRIORITIES,
+            "WAITING_PARTIES": WQ.WAITING_PARTIES, "STATUS_BADGE": WQ.STATUS_BADGE,
+            "PRIORITY_BADGE": WQ.PRIORITY_BADGE, "party_category": WQ.party_category})
+
+
+@app.post("/admin/work-queue/create")
+def work_item_create(request: Request, title: str = Form(""), type: str = Form("other"),
+                     priority: str = Form("normal"), assignee: str = Form(""), due: str = Form(""),
+                     description: str = Form(""), related_request_id: str = Form(""),
+                     related_lead_id: str = Form(""), related_company_id: str = Form(""),
+                     related_quote_id: str = Form("")):
+    """Create a manual work item. The tenant is derived from the LINKED record (never user-supplied) so a
+    work item can never cross a tenant boundary. Requires a related record unless it's a general 'other' task."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        title = (title or "").strip()
+        if not title:
+            _flash(request, "A task needs a title.", "rose")
+            return RedirectResponse("/admin/work-queue", status_code=303)
+        rr = int(related_request_id) if related_request_id.isdigit() else None
+        rl = int(related_lead_id) if related_lead_id.isdigit() else None
+        rc = int(related_company_id) if related_company_id.isdigit() else None
+        rq = int(related_quote_id) if related_quote_id.isdigit() else None
+        wtype = type if type in WQ.TYPES else "other"
+        if not any([rr, rl, rc, rq]) and wtype != "other":
+            _flash(request, "Link the task to a request, company, lead or quote.", "rose")
+            return RedirectResponse("/admin/work-queue", status_code=303)
+        tenant, err = WQ.related_tenant(session, related_request_id=rr, related_lead_id=rl,
+                                        related_quote_id=rq, related_company_id=rc)
+        if err:
+            _flash(request, f"Cannot create task — {err}.", "rose")
+            return RedirectResponse("/admin/work-queue", status_code=303)
+        due_at = None
+        if due:
+            try:
+                due_at = datetime.fromisoformat(due)
+            except ValueError:
+                due_at = None
+        assigned = int(assignee) if assignee.isdigit() else (user.id if assignee == "me" else None)
+        try:
+            wi = WQ.create_work_item(session, type=wtype, title=title, description=(description or "").strip(),
+                                     tenant_id=tenant, priority=priority, assigned_admin_id=assigned,
+                                     created_by=user.id, source="manual", related_request_id=rr,
+                                     related_lead_id=rl, related_company_id=rc, related_quote_id=rq, due_at=due_at)
+            pipeline.audit(session, user, "work_item", wi.id, "work_item_created",
+                           {"type": wi.type, "manual": True}, tenant_id=tenant)
+            session.commit()
+            _flash(request, "Task created ✓")
+        except Exception:  # noqa: BLE001
+            session.rollback()
+            _flash(request, "Could not create the task.", "rose")
+    return RedirectResponse("/admin/work-queue", status_code=303)
+
+
+@app.post("/admin/work-queue/{item_id}/action")
+def work_item_action(request: Request, item_id: int, action: str = Form(""), assignee: str = Form(""),
+                     priority: str = Form(""), party: str = Form(""), due: str = Form(""),
+                     reason: str = Form("")):
+    """Quick actions on one work item. Cross-tenant is a non-issue (admin-only); a missing id fails closed."""
+    back = request.headers.get("referer") or "/admin/work-queue"
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        wi = session.get(WorkItem, item_id)
+        if not wi:
+            return _not_found()
+        if action == "assign_me":
+            WQ.assign_item(session, wi, user.id, user)
+        elif action == "reassign":
+            WQ.assign_item(session, wi, int(assignee) if assignee.isdigit() else None, user)
+        elif action == "start":
+            WQ.start_item(session, wi, user)
+        elif action == "complete":
+            WQ.complete_item(session, wi, user, reason)
+        elif action == "waiting":
+            WQ.mark_waiting(session, wi, party, user)
+        elif action == "priority":
+            WQ.set_priority(session, wi, priority, user)
+        elif action == "due":
+            d = None
+            if due:
+                try:
+                    d = datetime.fromisoformat(due)
+                except ValueError:
+                    d = None
+            WQ.set_due(session, wi, d, user)
+        elif action == "dismiss":
+            if not (reason or "").strip():
+                _flash(request, "Dismissing a task needs a reason.", "rose")
+                return RedirectResponse(back, status_code=303)
+            WQ.dismiss_item(session, wi, reason, user)
+        session.commit()
+    return RedirectResponse(back, status_code=303)
+
+
+@app.post("/admin/work-queue/bulk")
+def work_item_bulk(request: Request, action: str = Form(""), ids: list = Form([]), assignee: str = Form(""),
+                   priority: str = Form(""), due: str = Form(""), reason: str = Form("")):
+    """Bulk actions on selected work items (assign / priority / due / complete / dismiss). No destructive
+    bulk delete — completed/dismissed items are retained for history."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        if action == "dismiss" and not (reason or "").strip():
+            _flash(request, "Dismissing tasks needs a reason.", "rose")
+            return RedirectResponse("/admin/work-queue", status_code=303)
+        d = None
+        if due:
+            try:
+                d = datetime.fromisoformat(due)
+            except ValueError:
+                d = None
+        n = 0
+        for raw in ids:
+            wid = int(raw) if str(raw).isdigit() else None
+            wi = session.get(WorkItem, wid) if wid else None
+            if not wi:
+                continue
+            if action == "assign":
+                who = int(assignee) if assignee.isdigit() else (user.id if assignee == "me" else None)
+                WQ.assign_item(session, wi, who, user)
+            elif action == "priority":
+                WQ.set_priority(session, wi, priority, user)
+            elif action == "due":
+                WQ.set_due(session, wi, d, user)
+            elif action == "complete":
+                WQ.complete_item(session, wi, user)
+            elif action == "dismiss":
+                WQ.dismiss_item(session, wi, reason, user)
+            n += 1
+        session.commit()
+        _flash(request, f"Updated {n} task(s) ✓")
+    return RedirectResponse("/admin/work-queue", status_code=303)
 
 
 # ----------------------------------------------------------------------------- admin: users + oversight

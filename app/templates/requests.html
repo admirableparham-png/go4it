@@ -15,13 +15,13 @@
       <div><label class="field-label">Target market <span class="text-slate-600">(optional)</span></label><input class="input" name="market" placeholder="e.g. Iraq, GCC, Turkey…"></div>
       <div><label class="field-label">Details</label><textarea class="input" name="details" rows="3" placeholder="Grade, quantity, who you want to reach, any notes…"></textarea></div>
       <button class="btn btn-primary btn-block" data-busy="Sending">Send to admin</button>
-      <p class="text-slate-500 text-xs">We'll review it and start the search. Your buyers will appear here when it's done.</p>
+      <p class="text-slate-500 text-xs">We'll review it and run the outreach. You'll see anonymized progress + updates here — Go4it handles all buyer contact for you.</p>
     </form>
   </div>
 
-  <div class="md:col-span-2 space-y-2">
+  <div class="md:col-span-2 space-y-3">
     {% if reqs %}
-      {% for r in reqs %}{% include 'partials/request_card.html' %}{% endfor %}
+      {% for r in reqs %}<div>{% include 'partials/request_card.html' %}{% include 'partials/seller_pipeline.html' %}</div>{% endfor %}
     {% else %}
       <div class="empty">No requests yet &mdash; submit your first buyer search on the left.</div>
     {% endif %}

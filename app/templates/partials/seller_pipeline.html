@@ -1,0 +1,65 @@
+{# Seller-facing ANONYMIZED progress for one request. Renders only anon_prospect() + published SellerUpdates
+   + funnel numbers — never a raw Lead. Needs r, funnel_map, prospects_map, updates_map. #}
+{% set funnel = (funnel_map.get(r.id) if funnel_map is defined else None) %}
+{% set prospects = (prospects_map.get(r.id, []) if prospects_map is defined else []) %}
+{% set updates = (updates_map.get(r.id, []) if updates_map is defined else []) %}
+{% if funnel and funnel.total_prospects %}
+<details class="mt-2 rounded-xl p-3" style="border:1px solid var(--border); background:rgba(255,255,255,.02)"
+         {% if updates or funnel.outstanding_seller_actions %}open{% endif %}>
+  <summary class="cursor-pointer select-none text-[13px] font-semibold text-slate-200">
+    &#128269; Progress &mdash; {{ funnel.total_prospects }} buyers across {{ funnel.countries_covered }} countries
+    {% if funnel.outstanding_seller_actions %}<span class="badge badge-amber text-[10px] ml-1">{{ funnel.outstanding_seller_actions }} need you</span>{% endif %}
+  </summary>
+
+  <div class="flex flex-wrap gap-1.5 mt-2 text-[11px]">
+    {% for key, label in [('contacted','Contacted'),('responded','Responded'),('interested','Interested'),('qualified','Qualified'),('quote_sent','Quotes sent'),('negotiating','Negotiating'),('won','Won'),('lost','Lost')] %}
+      <span class="badge badge-slate">{{ label }}: <b>{{ funnel.reached[key] }}</b></span>
+    {% endfor %}
+  </div>
+  <div class="text-[11px] text-slate-500 mt-1">Response rate {{ funnel.response_rate }}% &middot; Interest rate {{ funnel.interest_rate }}%{% if funnel.current_bottleneck %} &middot; currently mostly at: {{ funnel.current_bottleneck }}{% endif %}</div>
+  {% if funnel.migrated_prospects %}<div class="text-[10px] text-slate-600 mt-1">{{ funnel.migrated_prospects }} buyer{{ 's' if funnel.migrated_prospects != 1 }} carried over from earlier work &mdash; their pre-migration step history isn't tracked, so cumulative counts start from now.</div>{% endif %}
+
+  {% if updates %}
+  <div class="mt-3">
+    <div class="text-[10px] uppercase tracking-wide text-slate-500 mb-1">Updates from Go4it</div>
+    {% for u in updates %}
+    <div class="rounded-lg px-2.5 py-1.5 mb-1.5 text-[12.5px]" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07)">
+      {% if u.anon_ref %}<span class="badge badge-slate text-[10px]">{{ u.anon_ref }}</span> {% endif %}{% if u.public_status %}<b>{{ u.public_status }}</b> &mdash; {% endif %}{{ u.summary }}
+      {% if u.next_action %}<div class="text-[11px] text-slate-400 mt-0.5">Next: {{ u.next_action }}</div>{% endif %}
+      {% if u.seller_question %}
+        {% if u.status == 'resolved' %}
+          <div class="text-emerald-300 text-[11px] mt-1">&#10004; Answered{% if u.resolved_at %} on {{ u.resolved_at.strftime('%b %d') }}{% endif %} &mdash; Go4it is handling it.</div>
+        {% else %}
+          <div class="text-amber-300 text-[11px] mt-1">&#10067; {{ u.seller_question }}{% if u.deadline %} (by {{ u.deadline.strftime('%b %d') }}){% endif %}</div>
+          <form method="post" action="/requests/{{ r.id }}/updates/{{ u.id }}/resolve" class="mt-1 flex gap-1.5 items-center">
+            <input name="answer" maxlength="4000" class="input text-[12px] flex-1 py-1" placeholder="Type your answer for Go4it…">
+            <button class="btn btn-primary btn-sm" data-busy="Sending">Send answer</button>
+          </form>
+        {% endif %}
+      {% endif %}
+      <div class="text-[10px] text-slate-600 mt-0.5">{{ u.created_at.strftime('%b %d, %H:%M') }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="mt-3">
+    <div class="text-[10px] uppercase tracking-wide text-slate-500 mb-1">Prospects ({{ prospects|length }})</div>
+    <div class="table-wrap">
+      <table class="data-table text-[12px]">
+        <thead><tr><th>Ref</th><th>Stage</th><th>Country</th><th>Category</th><th>Size</th><th class="text-right">Fit</th></tr></thead>
+        <tbody>
+        {% for p in prospects %}
+          <tr {% if p.action_required %}style="background:rgba(251,191,36,.08)"{% endif %}>
+            <td class="font-mono text-[11px]">{{ p.anon_ref }}{% if p.action_required %} <span class="badge badge-amber text-[9px]">action</span>{% endif %}</td>
+            <td>{{ p.stage }}</td><td>{{ p.country }}</td><td class="text-slate-400">{{ p.category or '—' }}</td>
+            <td class="text-slate-400">{{ p.size_band or '—' }}</td><td class="text-right">{{ p.fit_score or '—' }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="text-[10px] text-slate-600 mt-1">Buyer identities are managed confidentially by Go4it. Ask us anything in the chat above.</div>
+  </div>
+</details>
+{% endif %}

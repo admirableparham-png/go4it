@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% set active = 'work_queue' %}
+{% block content %}
+{% include "partials/admin_page_header.html" %}
+
+{% macro purl(v) %}/admin/work-queue?view={{ v }}{% if f.q %}&q={{ f.q|urlencode }}{% endif %}{% endmacro %}
+
+<!-- summary counts -->
+<div class="card-soft mb-4 flex flex-wrap gap-x-6 gap-y-1 text-[12px]" style="padding:.7rem .9rem">
+  <span class="eyebrow">Queue</span>
+  <span>Open: <b class="tabular-nums">{{ counts.open }}</b></span>
+  <span>Due today: <b class="tabular-nums">{{ counts.due_today }}</b></span>
+  <span>Overdue: <b class="tabular-nums text-rose-400">{{ counts.overdue }}</b></span>
+  <span>Waiting: <b class="tabular-nums">{{ counts.waiting }}</b></span>
+  <span>Unassigned: <b class="tabular-nums">{{ counts.unassigned }}</b></span>
+  <span>Failed: <b class="tabular-nums">{{ counts.failed }}</b></span>
+</div>
+
+<!-- saved views -->
+<div class="flex flex-wrap gap-1.5 mb-3">
+  {% for v in VIEWS %}
+    <a href="{{ purl(v) }}" class="btn btn-sm {{ 'btn-primary' if f.view==v else 'btn-neutral' }}">{{ VIEW_LABELS[v] }}</a>
+  {% endfor %}
+</div>
+
+<!-- New task (collapsible) -->
+<details class="mb-4 card !p-0">
+  <summary class="cursor-pointer select-none px-4 py-2.5 text-sm text-emerald-400 font-medium">➕ New task</summary>
+  <form method="post" action="/admin/work-queue/create" class="space-y-2 p-4 pt-0">
+    <input name="title" required placeholder="Task title" class="input">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+      <select name="type" class="select">{% for t in TYPES %}<option value="{{ t }}">{{ TYPE_LABELS[t] }}</option>{% endfor %}</select>
+      <select name="priority" class="select">{% for p in PRIORITIES %}<option value="{{ p }}" {% if p=='normal' %}selected{% endif %}>{{ p }}</option>{% endfor %}</select>
+      <select name="assignee" class="select"><option value="">Unassigned</option><option value="me">Me</option>{% for u in staff %}<option value="{{ u.id }}">{{ u.name or u.email }}</option>{% endfor %}</select>
+      <input type="datetime-local" name="due" class="input">
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+      <input name="related_request_id" placeholder="Request # (optional)" class="input">
+      <input name="related_lead_id" placeholder="Lead # (optional)" class="input">
+      <input name="related_company_id" placeholder="Company # (optional)" class="input">
+      <input name="related_quote_id" placeholder="Quote # (optional)" class="input">
+    </div>
+    <textarea name="description" rows="2" placeholder="Notes (internal only)" class="input"></textarea>
+    <button class="btn btn-primary btn-block" data-busy="Creating">Create task</button>
+  </form>
+</details>
+
+<!-- Filters -->
+<form method="get" action="/admin/work-queue" class="card-soft mb-4 space-y-2">
+  <input type="hidden" name="view" value="{{ f.view }}">
+  <input name="q" value="{{ f.q }}" placeholder="Search task title / notes" class="input">
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+    <select name="assignee" class="select"><option value="">Any assignee</option>
+      <option value="me" {% if f.assignee=='me' %}selected{% endif %}>Mine</option>
+      <option value="none" {% if f.assignee=='none' %}selected{% endif %}>Unassigned</option>
+      {% for u in staff %}<option value="{{ u.id }}" {% if f.assignee==u.id|string %}selected{% endif %}>{{ u.name or u.email }}</option>{% endfor %}</select>
+    <select name="status" class="select"><option value="">Any status</option>{% for s in STATUSES %}<option value="{{ s }}" {% if f.status==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
+    <select name="priority" class="select"><option value="">Any priority</option>{% for p in PRIORITIES %}<option value="{{ p }}" {% if f.priority==p %}selected{% endif %}>{{ p }}</option>{% endfor %}</select>
+    <select name="type" class="select"><option value="">Any type</option>{% for t in TYPES %}<option value="{{ t }}" {% if f.type==t %}selected{% endif %}>{{ TYPE_LABELS[t] }}</option>{% endfor %}</select>
+    <select name="party" class="select"><option value="">Any party</option>{% for w in WAITING_PARTIES %}<option value="{{ w }}" {% if f.party==w %}selected{% endif %}>{{ w }}</option>{% endfor %}</select>
+    <select name="source" class="select"><option value="">Any source</option>
+      <option value="manual" {% if f.source=='manual' %}selected{% endif %}>Manual</option>
+      <option value="automatic" {% if f.source=='automatic' %}selected{% endif %}>Automatic</option></select>
+    <select name="overdue" class="select"><option value="">Any due</option>
+      <option value="1" {% if f.overdue=='1' %}selected{% endif %}>Overdue only</option></select>
+  </div>
+  <div class="flex gap-2">
+    <button class="btn btn-secondary">Filter</button>
+    <a href="/admin/work-queue?view={{ f.view }}" class="btn btn-neutral">Clear</a>
+  </div>
+</form>
+
+{% if items %}
+<!-- bulk bar (form lives OUTSIDE the table; row checkboxes reference it by id) -->
+<form id="bulkform" method="post" action="/admin/work-queue/bulk" class="flex flex-wrap items-center gap-2 mb-3 text-xs">
+  <span class="text-slate-500">Bulk on selected:</span>
+  <select name="action" class="select" style="width:auto">
+    <option value="assign">Assign to…</option>
+    <option value="priority">Set priority…</option>
+    <option value="due">Set due…</option>
+    <option value="complete">Mark completed</option>
+    <option value="dismiss">Dismiss (reason)…</option>
+  </select>
+  <select name="assignee" class="select" style="width:auto"><option value="">(assignee)</option><option value="me">Me</option>{% for u in staff %}<option value="{{ u.id }}">{{ u.name or u.email }}</option>{% endfor %}</select>
+  <select name="priority" class="select" style="width:auto"><option value="">(priority)</option>{% for p in PRIORITIES %}<option value="{{ p }}">{{ p }}</option>{% endfor %}</select>
+  <input type="datetime-local" name="due" class="input" style="width:auto">
+  <input name="reason" placeholder="reason (dismiss)" class="input" style="width:auto">
+  <button class="btn btn-neutral btn-sm">Apply</button>
+</form>
+
+<div class="table-wrap">
+  <table class="data-table">
+    <thead><tr>
+      <th class="w-8"><input type="checkbox" form="bulkform" onclick="for(const c of document.querySelectorAll('input[name=ids]'))c.checked=this.checked"></th>
+      <th>Task</th><th>Type</th><th>Related</th><th>Party</th><th>Assignee</th>
+      <th>Priority</th><th>Status</th><th>Due</th><th>Age</th><th>Src</th><th class="text-right">Actions</th>
+    </tr></thead>
+    <tbody>
+      {% for wi in items %}
+        {% set rq = req_map.get(wi.related_request_id) %}
+        {% set asg = user_map.get(wi.assigned_admin_id) %}
+        {% set pc = party_category(wi) %}
+        <tr {% if wi.status in ('completed','dismissed') %}class="opacity-60"{% endif %}>
+          <td><input type="checkbox" form="bulkform" name="ids" value="{{ wi.id }}"></td>
+          <td><div class="text-slate-100 font-medium">{{ wi.title }}</div>
+            {% if wi.description %}<div class="text-[11px] text-slate-500 mt-0.5">{{ wi.description[:90] }}</div>{% endif %}
+            {% if wi.visibility=='requester_visible' %}<span class="badge badge-amber text-[9px]">requester-visible</span>{% endif %}</td>
+          <td><span class="badge badge-slate text-[10px]">{{ TYPE_LABELS[wi.type] }}</span></td>
+          <td class="text-xs">
+            {% if rq %}<a href="/admin/requests/{{ rq.id }}" class="link font-mono">{{ rq.tracking_code or rq.id }}</a>{% endif %}
+            {% if wi.related_company_id %}{% if rq %}<br>{% endif %}<a href="/companies/{{ wi.related_company_id }}" class="link">{{ (co_map.get(wi.related_company_id).name if co_map.get(wi.related_company_id) else 'company') }}↗</a>{% endif %}
+            {% if not rq and not wi.related_company_id %}<span class="text-slate-600">—</span>{% endif %}</td>
+          <td>{% if pc and pc not in ('internal','system') %}<span class="badge badge-sky text-[10px]">{{ pc }}</span>{% else %}<span class="text-slate-600 text-xs">{{ pc }}</span>{% endif %}</td>
+          <td class="text-xs text-slate-400">{{ (asg.name or asg.email) if asg else '—' }}</td>
+          <td><span class="badge badge-{{ PRIORITY_BADGE[wi.priority] }} text-[10px] uppercase">{{ wi.priority }}</span></td>
+          <td><span class="badge badge-{{ STATUS_BADGE[wi.status] }} text-[10px]">{{ wi.status }}{% if wi.waiting_on %} · {{ wi.waiting_on }}{% endif %}</span></td>
+          <td class="text-xs {% if wi.due_at and wi.due_at < now %}text-rose-400 font-semibold{% else %}text-slate-400{% endif %}">{{ wi.due_at.strftime('%b %d') if wi.due_at else '—' }}</td>
+          <td class="text-xs text-slate-500">{{ (now - wi.created_at).days }}d</td>
+          <td class="text-[10px] text-slate-500">{{ 'auto' if wi.source=='automatic' else 'man' }}</td>
+          <td class="text-right whitespace-nowrap">
+            {% if wi.status not in ('completed','dismissed') %}
+              <form method="post" action="/admin/work-queue/{{ wi.id }}/action" style="display:inline">
+                <input type="hidden" name="action" value="assign_me">
+                <button class="text-slate-500 hover:text-sky-400 px-1 text-sm leading-none" title="Assign to me">👤</button></form>
+              <form method="post" action="/admin/work-queue/{{ wi.id }}/action" style="display:inline">
+                <input type="hidden" name="action" value="start">
+                <button class="text-slate-500 hover:text-emerald-400 px-1 text-sm leading-none" title="Start">▶</button></form>
+              <form method="post" action="/admin/work-queue/{{ wi.id }}/action" style="display:inline">
+                <input type="hidden" name="action" value="complete">
+                <button class="text-slate-500 hover:text-emerald-400 px-1 text-base leading-none" title="Complete">✓</button></form>
+              <details style="display:inline-block;position:relative">
+                <summary class="text-slate-500 hover:text-slate-200 px-1 cursor-pointer" style="list-style:none">⋯</summary>
+                <div class="card" style="position:absolute;right:0;z-index:20;min-width:200px;text-align:left">
+                  {% if rq %}<a href="/admin/requests/{{ rq.id }}" class="block px-2 py-1 link text-xs">Open related request</a>{% endif %}
+                  <form method="post" action="/admin/work-queue/{{ wi.id }}/action" class="flex gap-1 items-center p-1">
+                    <input type="hidden" name="action" value="waiting">
+                    <select name="party" class="select text-xs" style="width:auto">{% for w in WAITING_PARTIES %}<option value="{{ w }}">{{ w }}</option>{% endfor %}</select>
+                    <button class="btn btn-neutral btn-sm">Wait</button></form>
+                  <form method="post" action="/admin/work-queue/{{ wi.id }}/action" class="flex gap-1 items-center p-1">
+                    <input type="hidden" name="action" value="priority">
+                    <select name="priority" class="select text-xs" style="width:auto">{% for p in PRIORITIES %}<option value="{{ p }}" {% if p==wi.priority %}selected{% endif %}>{{ p }}</option>{% endfor %}</select>
+                    <button class="btn btn-neutral btn-sm">Priority</button></form>
+                  <form method="post" action="/admin/work-queue/{{ wi.id }}/action" class="flex gap-1 items-center p-1">
+                    <input type="hidden" name="action" value="due">
+                    <input type="datetime-local" name="due" class="input text-xs" style="width:auto">
+                    <button class="btn btn-neutral btn-sm">Due</button></form>
+                  <form method="post" action="/admin/work-queue/{{ wi.id }}/action" class="flex gap-1 items-center p-1">
+                    <input type="hidden" name="action" value="dismiss">
+                    <input name="reason" required placeholder="reason" class="input text-xs" style="width:auto">
+                    <button class="btn btn-neutral btn-sm">Dismiss</button></form>
+                </div>
+              </details>
+            {% else %}
+              <span class="text-slate-600 text-xs">{{ 'dismissed: ' ~ wi.dismissed_reason[:40] if wi.status=='dismissed' and wi.dismissed_reason else 'done' }}</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="flex items-center justify-between mt-4 text-sm text-slate-400">
+  <div>Page {{ page }} of {{ pages }} · {{ total }} task(s)</div>
+  <div class="flex gap-2">
+    {% if page > 1 %}<a href="{{ purl(f.view) }}&page={{ page-1 }}" class="btn btn-neutral btn-sm">&larr; Prev</a>{% endif %}
+    {% if page < pages %}<a href="{{ purl(f.view) }}&page={{ page+1 }}" class="btn btn-neutral btn-sm">Next &rarr;</a>{% endif %}
+  </div>
+</div>
+{% else %}
+  <div class="empty">No tasks match. <a href="/admin/work-queue" class="link">Reset</a>.</div>
+{% endif %}
+{% endblock %}

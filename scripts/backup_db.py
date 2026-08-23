@@ -47,11 +47,23 @@ def run():
     dst = sqlite3.connect(dest)
     try:
         with dst:
-            src.backup(dst)            # online-consistent snapshot
+            src.backup(dst)            # online-consistent snapshot (SQLite backup API — WAL-safe, no raw copy)
     finally:
         src.close()
         dst.close()
-    print(f"backup -> {dest} ({os.path.getsize(dest):,} bytes)")
+    print(f"backup -> {dest} ({os.path.getsize(dest):,} bytes) via SQLite online backup API")
+    # prove the snapshot is a valid, restorable database (not a torn copy): open it and integrity-check.
+    chk = sqlite3.connect(dest)
+    try:
+        integrity = chk.execute("PRAGMA integrity_check").fetchone()[0]
+        ntables = chk.execute("SELECT count(*) FROM sqlite_master WHERE type='table'").fetchone()[0]
+        has_lead = chk.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='lead'").fetchone()
+        nleads = chk.execute("SELECT count(*) FROM lead").fetchone()[0] if has_lead else "n/a"
+    finally:
+        chk.close()
+    print(f"restore-check: integrity_check={integrity}, tables={ntables}, lead_rows={nleads}")
+    if integrity != "ok":
+        raise SystemExit(f"BACKUP INTEGRITY FAILED: {integrity} - do NOT proceed with the migration")
     for old in sorted(glob.glob(os.path.join(OUT, "data-*.db")))[:-KEEP]:
         os.remove(old)
         print(f"pruned {old}")

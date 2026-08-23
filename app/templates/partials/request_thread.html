@@ -1,0 +1,17 @@
+{# Per-request chat (trader <-> admin). Reused on the trader card AND the admin queue. Needs r, me, msg_map.
+   The messages list polls itself every 5s (innerHTML swap) so the compose box below is never wiped. #}
+{% set msgs = (msg_map.get(r.id, []) if msg_map is defined and msg_map else []) %}
+<details class="mt-2.5" {% if msgs %}open{% endif %}>
+  <summary class="text-[11px] uppercase tracking-wide text-slate-400 cursor-pointer select-none py-1">
+    &#128172; Chat with {{ 'the trader' if (me is defined and me and me.role == 'admin') else 'admin' }}{% if msgs %} ({{ msgs|length }}){% endif %}
+  </summary>
+  <div id="thread-{{ r.id }}" class="flex flex-col gap-1.5 mt-1.5 max-h-56 overflow-y-auto pr-1"
+       hx-get="/requests/{{ r.id }}/thread" hx-trigger="every 5s" hx-swap="innerHTML">
+    {% include 'partials/request_thread_messages.html' %}
+  </div>
+  <form method="post" action="/requests/{{ r.id }}/messages" class="flex gap-1.5 mt-2">
+    <input name="body" maxlength="1000" required autocomplete="off" placeholder="Write a message&hellip;"
+           class="input flex-1 text-[13px]" style="padding:6px 10px;">
+    <button class="btn btn-primary btn-sm" style="padding:6px 12px;">Send</button>
+  </form>
+</details>

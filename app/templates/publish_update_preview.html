@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-4">
+  <div class="eyebrow">Admin · Publish update</div>
+  <h1 class="text-xl font-bold tracking-tight">Preview — this is exactly what the seller will see</h1>
+  <p class="text-slate-500 text-sm mt-0.5">{{ sr.tracking_code }} · {{ sr.product }}</p>
+</div>
+
+{% if hits %}
+<div class="alert-rose mb-4">
+  <b>Blocked — remove these before publishing.</b> The update still contains contact details / buyer-identifying data:
+  <ul class="mt-1 list-disc pl-5">
+    {% for h in hits %}<li><span class="badge badge-slate text-[10px]">{{ h.kind }}</span> <code>{{ h.match }}</code></li>{% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+<!-- seller-facing preview card -->
+<div class="card mb-4" style="max-width:40rem">
+  <div class="flex items-center gap-2 mb-1">
+    {% if u.anon_ref %}<span class="badge badge-slate">{{ u.anon_ref }}</span>{% endif %}
+    {% if u.public_status %}<span class="badge badge-approved">{{ u.public_status }}</span>{% endif %}
+  </div>
+  {% if u.summary %}<p class="text-slate-200 text-sm">{{ u.summary }}</p>{% endif %}
+  {% if u.next_action %}<p class="text-xs text-slate-400 mt-2"><b>Next:</b> {{ u.next_action }}</p>{% endif %}
+  {% if u.seller_question %}<div class="alert-amber mt-2 text-sm"><b>We need your input:</b> {{ u.seller_question }}{% if u.deadline %} <span class="text-xs">(by {{ u.deadline }})</span>{% endif %}</div>{% endif %}
+</div>
+
+<form method="post" action="/admin/requests/{{ sr.id }}/publish" class="flex gap-2 items-center">
+  <input type="hidden" name="anon_ref" value="{{ u.anon_ref }}">
+  <input type="hidden" name="public_status" value="{{ u.public_status }}">
+  <input type="hidden" name="summary" value="{{ u.summary }}">
+  <input type="hidden" name="next_action" value="{{ u.next_action }}">
+  <input type="hidden" name="seller_question" value="{{ u.seller_question }}">
+  <input type="hidden" name="deadline" value="{{ u.deadline }}">
+  <button class="btn btn-primary" {% if hits %}disabled title="Remove the flagged PII first"{% endif %}>Publish to seller</button>
+  <a href="/admin/requests/{{ sr.id }}/pipeline" class="btn btn-neutral">Back to edit</a>
+</form>
+{% endblock %}

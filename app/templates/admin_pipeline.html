@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-4">
+  <div class="eyebrow">Admin · Confidential pipeline</div>
+  <div class="flex items-center justify-between gap-3 flex-wrap">
+    <h1 class="text-xl font-bold tracking-tight">{{ sr.product }}{% if sr.market %} <span class="text-slate-500 font-normal">&rarr; {{ sr.market }}</span>{% endif %}
+      <span class="badge badge-slate">{{ sr.tracking_code }}</span></h1>
+    <a href="/admin/requests" class="btn btn-neutral btn-sm">&larr; Requests</a>
+  </div>
+  <p class="text-rose-300 text-xs mt-1">⚠ This page shows real buyer identities &amp; contacts. It is admin-only and audited. Never paste any of it into a seller update.</p>
+</div>
+
+{% for fl in flashes %}<div class="alert-{{ 'rose' if fl.level=='rose' else 'emerald' }} mb-3">{{ fl.msg }}</div>{% endfor %}
+
+<!-- Funnel -->
+<div class="card mb-4">
+  <div class="text-sm font-semibold mb-2">Progress ({{ funnel.total_prospects }} prospects · {{ funnel.countries_covered }} countries)</div>
+  <div class="flex flex-wrap gap-2 text-xs">
+    {% for s in stages %}
+      <span class="badge badge-slate">{{ labels[s] }}: <b>{{ funnel.at[s] }}</b> now / {{ funnel.reached[s] }} reached</span>
+    {% endfor %}
+  </div>
+  <div class="text-xs text-slate-400 mt-2">Response rate {{ funnel.response_rate }}% · Interest rate {{ funnel.interest_rate }}% · Bottleneck: {{ funnel.current_bottleneck or '—' }} · Outstanding seller actions: {{ funnel.outstanding_seller_actions }}</div>
+</div>
+
+<!-- Publish a sanitized seller update -->
+<details class="card mb-4">
+  <summary class="cursor-pointer select-none text-sm font-semibold text-emerald-400">📣 Publish an update to the seller</summary>
+  <form method="post" action="/admin/requests/{{ sr.id }}/publish/preview" class="space-y-2 mt-3">
+    <div class="grid sm:grid-cols-2 gap-2">
+      <select name="anon_ref" class="select"><option value="">(request-level / aggregate)</option>
+        {% for l in leads %}<option value="{{ l.anon_ref }}">{{ l.anon_ref }}</option>{% endfor %}</select>
+      <input name="public_status" class="input" placeholder="Public status (e.g. Negotiating)">
+    </div>
+    <textarea name="summary" id="upd-summary" rows="3" class="input" placeholder="Sanitized summary the seller will see (NO names / emails / phones / links)"></textarea>
+    <div class="flex flex-wrap gap-1">
+      {% for t in tmpls %}<button type="button" class="badge badge-slate text-[11px]" onclick="document.getElementById('upd-summary').value=this.dataset.t" data-t="{{ t }}">{{ t }}</button>{% endfor %}
+    </div>
+    <div class="grid sm:grid-cols-2 gap-2">
+      <input name="next_action" class="input" placeholder="Next action (optional)">
+      <input name="seller_question" class="input" placeholder="Question for the seller (optional)">
+    </div>
+    <input name="deadline" type="datetime-local" class="input" style="max-width:16rem">
+    <div class="text-[11px] text-slate-500">Private notes are never included. The next screen shows exactly what the seller sees and blocks any contact details.</div>
+    <button class="btn btn-primary btn-sm">Preview →</button>
+  </form>
+  {% if updates %}
+  <div class="mt-4 border-t border-white/10 pt-3">
+    <div class="text-xs font-semibold text-slate-400 mb-1">Published updates</div>
+    {% for u in updates %}<div class="text-xs text-slate-300 py-1 border-b border-white/5">{% if u.anon_ref %}<span class="badge badge-slate text-[10px]">{{ u.anon_ref }}</span> {% endif %}{% if u.public_status %}<b>{{ u.public_status }}</b> — {% endif %}{{ u.summary }} <span class="text-slate-600">· {{ u.created_at.strftime('%b %d') }}</span></div>{% endfor %}
+  </div>
+  {% endif %}
+</details>
+
+<!-- Managed buyers (full PII) -->
+<div class="space-y-2">
+  {% for l in leads %}
+  <div class="card !p-3">
+    <div class="flex items-start justify-between gap-3 flex-wrap">
+      <div class="min-w-0">
+        <div class="font-semibold text-slate-100">{{ l.buyer_company or '—' }}
+          <span class="badge badge-slate text-[10px]">{{ l.anon_ref or 'no ref' }}</span>
+          {% if l.seller_action_required %}<span class="badge badge-amber text-[10px]">seller action</span>{% endif %}</div>
+        <div class="text-[11px] text-slate-400 mt-0.5">
+          {{ l.contact_name }}{% if l.email %} · <a href="mailto:{{ l.email }}" class="link">{{ l.email }}</a>{% endif %}{% if l.phone %} · {{ l.phone }}{% endif %}{% if l.website %} · <a href="{{ l.website if '://' in l.website else 'https://'+l.website }}" target="_blank" rel="noopener" class="link">site↗</a>{% endif %}
+          · {{ l.dest_country }}{% if l.dest_city %}, {{ l.dest_city }}{% endif %}
+        </div>
+      </div>
+      <form method="post" action="/admin/requests/{{ sr.id }}/pipeline/{{ l.id }}/stage" class="flex gap-1 items-center shrink-0">
+        <select name="to_stage" class="select" style="width:auto;font-size:.72rem">
+          {% for s in stages %}<option value="{{ s }}" {% if s==l.pipeline_stage %}selected disabled{% endif %}>{{ labels[s] }}</option>{% endfor %}</select>
+        <input name="note" class="input" placeholder="note/reason" style="width:8rem;font-size:.72rem">
+        <button class="btn btn-neutral btn-sm">Set</button>
+      </form>
+    </div>
+    <details class="mt-2">
+      <summary class="text-[11px] uppercase text-slate-500 cursor-pointer">details (category · size · fit · assign · next action)</summary>
+      <form method="post" action="/admin/requests/{{ sr.id }}/pipeline/{{ l.id }}/fields" class="grid sm:grid-cols-3 gap-2 mt-2 text-xs">
+        <input name="buyer_category" value="{{ l.buyer_category }}" placeholder="Buyer category" class="input">
+        <select name="company_size_band" class="select"><option value="">Size band</option>{% for b in size_bands %}<option value="{{ b }}" {% if b==l.company_size_band %}selected{% endif %}>{{ b }}</option>{% endfor %}</select>
+        <input name="fit_score" type="number" min="0" max="100" value="{{ l.fit_score|int }}" placeholder="Fit 0-100" class="input">
+        <select name="assigned_admin_id" class="select"><option value="">Assign admin</option>{% for a in admins %}<option value="{{ a.id }}" {% if a.id==l.assigned_admin_id %}selected{% endif %}>{{ a.name or a.email }}</option>{% endfor %}</select>
+        <input name="next_action_note" value="{{ l.next_action_note }}" placeholder="Next action" class="input">
+        <input name="next_action_at" type="datetime-local" class="input" value="{{ l.next_action_at.strftime('%Y-%m-%dT%H:%M') if l.next_action_at else '' }}">
+        <label class="flex items-center gap-1 text-slate-400"><input type="checkbox" name="seller_action_required" value="1" {% if l.seller_action_required %}checked{% endif %}> seller action required</label>
+        <button class="btn btn-neutral btn-sm">Save</button>
+      </form>
+    </details>
+  </div>
+  {% else %}
+  <div class="empty">No managed buyers on this request yet — deliver buyers to populate the pipeline.</div>
+  {% endfor %}
+</div>
+{% endblock %}

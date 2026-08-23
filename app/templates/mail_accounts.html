@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-5">
+  <div class="eyebrow">Settings</div>
+  <h1 class="text-2xl font-extrabold tracking-tight font-display">Email Accounts</h1>
+  <p class="text-slate-400 text-sm mt-1">Connect your own mailbox(es) so outreach sends from <b>your</b> address.
+    Add as many as you like and pick which one to send from each time.</p>
+</div>
+
+{% for fl in flashes %}<div class="alert-{{ 'rose' if fl.level=='rose' else 'emerald' }} mb-3">{{ fl.msg }}</div>{% endfor %}
+
+<div class="grid md:grid-cols-2 gap-4">
+  <div class="card">
+    <div class="text-sm font-semibold mb-3">Connected mailboxes</div>
+    {% if accounts %}
+      <div class="space-y-2">
+        {% for a in accounts %}
+        <div class="flex items-center justify-between gap-2 rounded-lg px-3 py-2" style="border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03)">
+          <div class="min-w-0">
+            <div class="text-slate-100 font-medium truncate">{{ a.email }} {% if a.is_default %}<span class="badge badge-emerald text-[10px]">default</span>{% endif %}</div>
+            <div class="text-[11px] text-slate-500 truncate">{{ a.from_name or '—' }} &middot; {{ a.provider }} &middot; {{ a.smtp_host }}:{{ a.smtp_port }}{% if a.last_verified_at %} &middot; verified{% endif %}</div>
+          </div>
+          <div class="flex gap-1 shrink-0">
+            {% if not a.is_default %}<form method="post" action="/mail/{{ a.id }}/default"><button class="btn btn-neutral btn-sm">Make default</button></form>{% endif %}
+            <form method="post" action="/mail/{{ a.id }}/delete" onsubmit="return confirm('Remove {{ a.email }}?')"><button class="btn btn-neutral btn-sm">Remove</button></form>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty">No mailbox connected yet &mdash; add one on the right.</div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="text-sm font-semibold mb-3">Connect a mailbox</div>
+    <form method="post" action="/mail" class="space-y-2">
+      <select name="provider" class="select" onchange="document.getElementById('custom-smtp').style.display = this.value==='custom' ? 'grid' : 'none'">
+        <option value="gmail">Gmail</option>
+        <option value="custom">Other (custom SMTP)</option>
+      </select>
+      <input name="email" type="email" required placeholder="you@gmail.com" class="input">
+      <input name="from_name" placeholder="Display name (optional, e.g. Kimiel Trading)" class="input">
+      <input name="app_password" required placeholder="App password" class="input" autocomplete="off">
+      <div id="custom-smtp" class="grid grid-cols-2 gap-2" style="display:none">
+        <input name="smtp_host" placeholder="smtp host" class="input">
+        <input name="smtp_port" placeholder="587" class="input">
+      </div>
+      <button class="btn btn-primary btn-block" data-busy="Verifying&hellip;">Test &amp; connect</button>
+    </form>
+    <div class="text-[11px] text-slate-500 mt-3 leading-relaxed">
+      <b>Gmail:</b> turn on 2-Step Verification, then create an <b>App Password</b>
+      (Google Account &rarr; Security &rarr; App passwords) and paste it above &mdash; not your normal password.
+      We verify the login before saving, and store it <b>encrypted</b>.
+    </div>
+  </div>
+</div>
+{% endblock %}

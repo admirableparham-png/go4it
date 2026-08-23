@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-5">
+  <div class="eyebrow">Outreach</div>
+  <h1 class="text-2xl font-extrabold tracking-tight font-display">Email selected buyers</h1>
+  <p class="text-slate-400 text-sm mt-1">Write your own message and send it from your connected email &mdash;
+    <b>{{ with_email|length }}</b> of {{ leads|length }} selected have an email address.</p>
+</div>
+
+{% if not accounts %}
+  <div class="alert-amber mb-4">You haven't connected an email account yet.
+    <a href="/mail" class="underline">Connect your email</a> first, then come back and send.</div>
+{% endif %}
+
+<form method="post" action="/leads/bulk/email" class="card space-y-3" style="max-width:44rem">
+  {% for ld in with_email %}<input type="hidden" name="ids" value="{{ ld.id }}">{% endfor %}
+  <div>
+    <label class="field-label">Send from</label>
+    <select name="account_id" class="select" required {% if not accounts %}disabled{% endif %}>
+      {% for a in accounts %}<option value="{{ a.id }}" {% if a.is_default %}selected{% endif %}>{{ a.email }}{% if a.from_name %} ({{ a.from_name }}){% endif %}</option>{% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="field-label">Subject</label>
+    <input name="subject" required class="input" placeholder="e.g. Premium Iranian black tea &mdash; bulk offer">
+  </div>
+  <div>
+    <label class="field-label">Message</label>
+    <textarea name="body" rows="11" required class="input" placeholder="Write your email to these buyers&hellip;"></textarea>
+    <p class="text-[11px] text-slate-500 mt-1">Sent individually to each buyer (they never see each other). Replies come back to your own inbox.</p>
+  </div>
+  <div class="flex items-center gap-2">
+    <button class="btn btn-primary" {% if not accounts %}disabled{% endif %} data-busy="Sending&hellip;">Send to {{ with_email|length }} buyer(s)</button>
+    <a href="/leads" class="btn btn-neutral">Cancel</a>
+  </div>
+</form>
+
+<div class="card-soft mt-4" style="max-width:44rem">
+  <div class="text-sm font-semibold mb-2">Recipients ({{ with_email|length }})</div>
+  <div class="flex flex-wrap gap-1.5">
+    {% for ld in with_email %}<span class="badge badge-slate text-[11px]">{{ ld.buyer_company or ld.email }}</span>{% endfor %}
+  </div>
+  {% set no_email = leads|length - with_email|length %}
+  {% if no_email %}<div class="text-[12px] text-amber-400 mt-2">{{ no_email }} selected buyer(s) have no email on file and will be skipped.</div>{% endif %}
+</div>
+{% endblock %}

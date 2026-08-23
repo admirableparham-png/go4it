@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% set active = 'dataquality' %}
+{% block content %}
+{% set hdr = {"section":"Trade Network","title":"Data Quality",
+   "desc":"Health of the canonical network. Every metric links to its filtered records; every queue is actionable. Confidence is evidence-backed, never presented as fact."} %}
+{% include "partials/admin_page_header.html" %}
+
+<div class="grid sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
+  {% for label, val, link in [
+      ('Companies', m.total_companies, '/leads'),
+      ('Contactable', m.contactable, '/data-quality?queue=contactable'),
+      ('Missing contact', m.missing_contact, '/data-quality?queue=no_contact'),
+      ('Invalid emails', m.invalid_emails, '/data-quality?queue=bad_email'),
+      ('Bounced', m.bounces, '/data-quality?queue=bad_email'),
+      ('Unknown source', m.unknown_sources, '/data-quality?queue=unknown_source'),
+      ('Stale (>180d)', m.stale, '/data-quality?queue=stale'),
+      ('Unverified', m.unverified, '/data-quality?queue=unverified'),
+      ('Potential duplicates', m.potential_duplicates, '/duplicates'),
+      ('Unlinked records', m.unlinked, '/data-quality?queue=unlinked')] %}
+    <a href="{{ link }}" class="card card-hover" style="text-decoration:none;color:inherit">
+      <div class="eyebrow">{{ label }}</div>
+      <div class="text-2xl font-bold tabular-nums mt-1">{{ val }}</div>
+    </a>
+  {% endfor %}
+</div>
+
+<h2 class="text-base font-bold mb-2">Action queues</h2>
+<div class="grid sm:grid-cols-2 gap-2 mb-6">
+  {% for label, count, link in m.queues %}
+    <a href="{{ link }}" class="flex items-center justify-between card-soft" style="text-decoration:none;color:inherit;padding:.7rem .9rem">
+      <span class="text-sm">{{ label }}</span>
+      <span class="badge {{ 'badge-amber' if count else 'badge-slate' }} tabular-nums">{{ count }}</span>
+    </a>
+  {% endfor %}
+</div>
+
+<h2 class="text-base font-bold mb-2">Source quality</h2>
+<p class="text-xs text-slate-500 mb-2">Judged by contactability, human-response and qualification rates — never by record volume. Raw source ids shown for investigation.</p>
+<div class="table-wrap">
+  <table class="data-table text-[12.5px]">
+    <thead><tr><th>Source</th><th class="text-right">Records</th><th class="text-right">Contactable</th><th class="text-right">Attempts</th><th class="text-right">Human replies</th><th class="text-right">Positive</th><th class="text-right">Qualified</th><th class="text-right">Bounces</th><th class="text-right">Deals</th><th>Last collected</th></tr></thead>
+    <tbody>
+    {% for s in sources %}
+      <tr>
+        <td><b>{{ s.label }}</b><div class="text-[10px] text-slate-500 font-mono">{{ s.raw_examples }}</div></td>
+        <td class="text-right tabular-nums">{{ s.records }}</td>
+        <td class="text-right tabular-nums">{{ s.contactable }} <span class="text-slate-500">({{ s.contactable_pct }}%)</span></td>
+        <td class="text-right tabular-nums">{{ s.attempts }}</td>
+        <td class="text-right tabular-nums">{{ s.human_replies }} <span class="text-slate-500">({{ s.reply_rate }}%)</span></td>
+        <td class="text-right tabular-nums">{{ s.positive }}</td>
+        <td class="text-right tabular-nums">{{ s.qualified }} <span class="text-slate-500">({{ s.qual_rate }}%)</span></td>
+        <td class="text-right tabular-nums">{{ s.bounces }}</td>
+        <td class="text-right tabular-nums">{{ s.deals_won }}</td>
+        <td class="text-[11px] text-slate-500">{{ s.last_collected.strftime('%Y-%m-%d') if s.last_collected else '—' }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

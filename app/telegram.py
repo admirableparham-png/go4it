@@ -189,6 +189,21 @@ def notify_request_update(sr, requester=None) -> bool:
     return False
 
 
+def notify_request_message(sr, msg, to_user=None, from_name="") -> bool:
+    """Ping the other side of a per-request chat that a new message arrived. Routes to the recipient's
+    own Telegram if set; falls back to the shared founder channel only for the admin/founder."""
+    who = _esc(from_name or "someone")
+    body = _esc(getattr(msg, "body", "") or "")[:200]
+    text = (f"\U0001F4AC <b>Message on request {_esc(getattr(sr, 'tracking_code', ''))}</b> from {who}\n"
+            f"<i>{body}</i>\n{BASE_URL}/requests")
+    chat = str(getattr(to_user, "telegram_user_id", "") or "").strip()
+    if chat:
+        return _send_one(chat, text)
+    if to_user is not None and getattr(to_user, "role", "") == "admin":
+        return send_message(text)
+    return False
+
+
 def notify_buyer_reply(lead, from_addr, subject, snippet="") -> bool:
     """Alert: a buyer replied — the founder should answer personally. Leads with a row of money emojis
     so a hot reply jumps out in the chat."""

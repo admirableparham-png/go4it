@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% set active = 'leads' %}
+{% block content %}
+{% set hdr = {"section":"Trade Network","title":company.name or ('Company #' ~ company.id),
+   "desc":(company.country ~ (' · ' ~ company.city if company.city else '') ~ (' · ' ~ company.domain if company.domain else '')),
+   "breadcrumb":[{"label":"Network"},{"label":"Companies"},{"label":company.name or ('#'~company.id)}]} %}
+{% include "partials/admin_page_header.html" %}
+
+<div class="flex flex-wrap gap-2 mb-4">
+  {% for role in roles %}<span class="badge badge-sky">{{ role }}</span>{% endfor %}
+  <span class="badge {{ 'badge-emerald' if company.status=='active' else 'badge-slate' }}">{{ company.status }}</span>
+  {% if company.merged_into_id %}<span class="badge badge-amber">merged → #{{ company.merged_into_id }}</span>{% endif %}
+  {% if company.account_user_id %}<span class="badge badge-slate">account: {{ (umap.get(company.account_user_id).email) if umap.get(company.account_user_id) else company.account_user_id }}</span>{% endif %}
+</div>
+
+<div class="grid lg:grid-cols-3 gap-4">
+  <div class="lg:col-span-2 space-y-4">
+    <div class="card">
+      <div class="eyebrow mb-2">Contacts ({{ contacts|length }})</div>
+      {% for c in contacts %}
+        <div class="flex items-center justify-between py-1.5" style="border-top:1px solid var(--border)">
+          <div><b>{{ c.name or '—' }}</b> {% if c.title %}<span class="text-slate-500 text-xs">{{ c.title }}</span>{% endif %}
+            <div class="text-xs text-slate-400">{{ c.email or '—' }}{% if c.phone %} · {{ c.phone }}{% endif %}</div></div>
+          <div class="text-right"><span class="badge badge-slate text-[10px]">{{ c.email_health }}</span>
+            {% if c.is_primary %}<span class="badge badge-emerald text-[10px]">primary</span>{% endif %}
+            <div class="text-[10px] text-slate-500 mt-0.5">contactability {{ c.contactability }}</div></div>
+        </div>
+      {% else %}<div class="text-slate-500 text-sm">No contacts.</div>{% endfor %}
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb-2">Buyer opportunities / leads ({{ leads|length }})</div>
+      <div class="table-wrap"><table class="data-table text-[12px]">
+        <thead><tr><th>Product</th><th>Engagement</th><th>Reply</th><th>Status</th><th>Source</th></tr></thead>
+        <tbody>{% for l in leads %}<tr>
+          <td><a class="link" href="/leads/{{ l.id }}">{{ l.product or '—' }}</a></td>
+          <td><span class="badge badge-slate text-[10px]">{{ l.engagement_class or '—' }}</span></td>
+          <td class="text-slate-400">{{ l.reply_outcome or '—' }}</td>
+          <td>{{ l.status }}</td>
+          <td class="text-[11px] text-slate-500">{{ source_labels.get((l.source or 'unknown').split('-')[0], l.source) }}</td>
+        </tr>{% endfor %}</tbody>
+      </table></div>
+    </div>
+
+    {% if quotes or deals %}
+    <div class="card">
+      <div class="eyebrow mb-2">Commercial</div>
+      <div class="text-sm">Quotes: {{ quotes|length }} · Deals: {{ deals|length }}</div>
+    </div>{% endif %}
+
+    <div class="card">
+      <div class="eyebrow mb-2">Outreach & replies ({{ outreach|length }})</div>
+      {% for o in outreach[:12] %}
+        <div class="text-[12px] py-1" style="border-top:1px solid var(--border)">
+          <span class="badge {{ 'badge-sky' if o.direction=='out' else 'badge-emerald' }} text-[9px]">{{ o.direction }}</span>
+          <span class="text-slate-300">{{ o.subject or o.channel }}</span>
+          <span class="text-slate-600 text-[10px]">{{ o.created_at.strftime('%Y-%m-%d') if o.created_at }}</span>
+        </div>
+      {% else %}<div class="text-slate-500 text-sm">No outreach recorded.</div>{% endfor %}
+    </div>
+  </div>
+
+  <div class="space-y-4">
+    <div class="card">
+      <div class="eyebrow mb-2">Verification</div>
+      <form method="post" action="/companies/{{ company.id }}/verify" class="space-y-2">
+        <select class="select" name="verification_status">
+          {% for s in ['unverified','partial','verified','rejected'] %}<option value="{{ s }}" {{ 'selected' if company.verification_status==s }}>{{ s }}</option>{% endfor %}
+        </select>
+        <input class="input" name="verification_method" placeholder="method (email_reply, website…)" value="{{ company.verification_method }}">
+        <input class="input" name="verification_confidence" type="number" min="0" max="100" placeholder="confidence 0-100" value="{{ company.verification_confidence }}">
+        <textarea class="input" name="verification_notes" rows="2" placeholder="evidence notes">{{ company.verification_notes }}</textarea>
+        <button class="btn btn-primary btn-block btn-sm">Save verification</button>
+      </form>
+      {% if company.verified_by %}<div class="text-[10px] text-slate-500 mt-1">last: {{ company.verified_by }} {{ company.verified_at.strftime('%Y-%m-%d') if company.verified_at }}</div>{% endif %}
+    </div>
+
+    <div class="card">
+      <div class="eyebrow mb-2">Sources ({{ provenance|length }})</div>
+      {% for p in provenance %}
+        <div class="text-[11.5px] py-1" style="border-top:1px solid var(--border)">
+          <b>{{ source_labels.get(p.source_type, p.source_type) }}</b>{% if p.inferred %} <span class="badge badge-slate text-[9px]">inferred</span>{% endif %}
+          <div class="text-slate-500">{{ p.source_name }}{% if p.source_ref %} · {{ p.source_ref }}{% endif %}</div>
+          {% if p.source_url %}<a class="link text-[10px]" href="{{ p.source_url }}" target="_blank" rel="noopener">source ↗</a>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if duplicates %}
+    <div class="card">
+      <div class="eyebrow mb-2">Duplicate relationships</div>
+      {% for d in duplicates %}<div class="text-[11px]">#{{ d.left_id }} ~ #{{ d.right_id }} · {{ d.match_type }} · {{ d.status }}</div>{% endfor %}
+    </div>{% endif %}
+
+    {% if company.status == 'archived' and company.merged_into_id %}
+    <form method="post" action="/companies/{{ company.id }}/unmerge"><button class="btn btn-neutral btn-block btn-sm">Reverse merge (unmerge)</button></form>
+    {% endif %}
+
+    <div class="card">
+      <div class="eyebrow mb-2">Audit ({{ audit|length }})</div>
+      {% for a in audit[:10] %}<div class="text-[10.5px] text-slate-500">{{ a.created_at.strftime('%m-%d %H:%M') if a.created_at }} · {{ a.action }}</div>{% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

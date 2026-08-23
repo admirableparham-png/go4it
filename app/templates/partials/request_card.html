@@ -22,13 +22,24 @@
     </span>
   </div>
 
-  {% if r.status == 'done' %}
-    <div class="text-[12px] mt-1.5 flex flex-wrap gap-x-3 gap-y-1">
+  {% set deliverables = (deliv_map.get(r.id, []) if deliv_map is defined and deliv_map else []) %}
+  {% if r.status == 'done' or deliverables %}
+    <div class="text-[12px] mt-1.5 flex flex-col gap-1">
       {% if r.leads_delivered %}<a href="/leads?source={{ r.result_source_tag }}" class="link font-medium">view {{ r.leads_delivered }} buyers &#8599;</a>{% endif %}
-      {% if r.result_file_path %}<a href="/requests/{{ r.id }}/result/file" class="link font-medium">open deliverable &#8599;</a>{% endif %}
-      {% if r.result_url %}<a href="{{ r.result_url }}" target="_blank" rel="noopener" class="link font-medium">open link &#8599;</a>{% endif %}
+      {% for d in deliverables %}
+        <div class="flex items-center gap-2 flex-wrap">
+          {% if d.file_path %}<a href="/requests/{{ r.id }}/deliverable/{{ d.id }}" class="link font-medium">open deliverable &#8599;</a>{% endif %}
+          {% if d.url %}<a href="{{ d.url }}" target="_blank" rel="noopener" class="link font-medium">open link &#8599;</a>{% endif %}
+          {% if d.note %}<span class="text-slate-400 text-[11px]">{{ d.note }}</span>{% endif %}
+          <span class="text-[10px] text-slate-500">{{ d.created_at.strftime('%b %d') }}</span>
+        </div>
+      {% endfor %}
+      {% if not deliverables and r.result_file_path %}<a href="/requests/{{ r.id }}/result/file" class="link font-medium">open deliverable &#8599;</a>{% endif %}
+      {% if not deliverables and r.result_url %}<a href="{{ r.result_url }}" target="_blank" rel="noopener" class="link font-medium">open link &#8599;</a>{% endif %}
     </div>
   {% endif %}
+
+  {% if me is defined and me and r.status != 'rejected' %}{% include 'partials/request_thread.html' %}{% endif %}
 
   <div class="text-[10px] text-slate-500 mt-2 tabular-nums">{{ r.tracking_code }}{% if r.created_at %} &middot; {{ r.created_at.strftime('%b %d, %H:%M') }}{% endif %}</div>
 </div>

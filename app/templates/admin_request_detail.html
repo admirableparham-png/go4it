@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% set active = 'requests' %}
+{% block content %}
+{% include "partials/admin_page_header.html" %}
+
+{% set tabs = [('summary','Summary'),('pipeline','Pipeline & research'),('comms','Communication'),('work','Work items'),('files','Files'),('related','Related')] %}
+<div class="flex flex-wrap gap-1.5 mb-4 border-b border-slate-800 pb-2">
+  {% for key,label in tabs %}
+    <a href="/admin/requests/{{ sr.id }}?tab={{ key }}" class="btn btn-sm {{ 'btn-primary' if tab==key else 'btn-neutral' }}">{{ label }}{% if key=='work' and witems %} <span class="badge badge-slate ml-1">{{ witems|selectattr('status','in',['open','in_progress','waiting'])|list|length }}</span>{% endif %}</a>
+  {% endfor %}
+</div>
+
+{% macro badge(token, text) %}<span class="badge badge-{{ token }}">{{ text }}</span>{% endmacro %}
+
+{% if tab == 'summary' %}
+  <div class="grid lg:grid-cols-3 gap-4">
+    <div class="card lg:col-span-2 space-y-2">
+      <div class="grid sm:grid-cols-2 gap-x-6 gap-y-1.5 text-sm">
+        <div><span class="text-slate-500">Reference</span><div class="font-mono">{{ sr.tracking_code or sr.id }}</div></div>
+        <div><span class="text-slate-500">Requester</span><div>{{ (requester.name or requester.email) if requester else '—' }}{% if company %} · on behalf of <a href="/companies/{{ company.id }}" class="link">{{ company.name }}</a>{% endif %}</div></div>
+        <div><span class="text-slate-500">Direction</span><div>{{ badge('sky', sr.direction) }}</div></div>
+        <div><span class="text-slate-500">Type</span><div>{{ REQUEST_TYPES.get(sr.request_type, sr.request_type) }}</div></div>
+        <div><span class="text-slate-500">Product / service</span><div>{{ sr.product or '—' }}</div></div>
+        <div><span class="text-slate-500">Target market / route</span><div>{{ sr.market or '—' }}</div></div>
+        <div><span class="text-slate-500">Legacy status</span><div>{{ badge(('queued' if sr.status=='submitted' else 'approved' if sr.status=='approved' else 'running' if sr.status=='running' else 'ok' if sr.status=='done' else 'error'), sr.status) }}</div></div>
+        <div><span class="text-slate-500">Workflow</span><div>{{ badge(wf_badge.get(eff_wf,'slate'), wf_label.get(eff_wf, eff_wf)) }}</div></div>
+        <div><span class="text-slate-500">Priority</span><div>{{ badge(PRIORITY_BADGE.get(sr.priority,'slate'), sr.priority) }}</div></div>
+        <div><span class="text-slate-500">Assignee</span><div>{{ (assignee.name or assignee.email) if assignee else 'Unassigned' }}</div></div>
+        <div><span class="text-slate-500">Due</span><div class="{{ 'text-rose-400' if sr.due_at and sr.due_at < now else '' }}">{{ sr.due_at.strftime('%b %d, %Y %H:%M') if sr.due_at else '—' }}</div></div>
+        <div><span class="text-slate-500">Last activity</span><div>{{ sr.last_activity_at.strftime('%b %d, %H:%M') if sr.last_activity_at else '—' }}</div></div>
+      </div>
+      {% if sr.details %}<div class="pt-2 border-t border-slate-800"><span class="text-slate-500 text-sm">Brief</span><p class="text-sm text-slate-300 mt-1">{{ sr.details }}</p></div>{% endif %}
+      {% if sr.next_action_note %}<div class="text-sm"><span class="text-slate-500">Next action:</span> {{ sr.next_action_note }}</div>{% endif %}
+    </div>
+
+    <div class="card space-y-3">
+      <div class="eyebrow">Manage</div>
+      <form method="post" action="/admin/requests/{{ sr.id }}/workflow" class="space-y-2">
+        <label class="text-xs text-slate-500">Workflow status</label>
+        <select name="to" class="select">{% for w in wf_states %}<option value="{{ w }}" {% if w==eff_wf %}selected{% endif %}>{{ wf_label[w] }}</option>{% endfor %}</select>
+        <input name="reason" placeholder="reason (optional)" class="input">
+        <button class="btn btn-secondary btn-block btn-sm">Set status</button>
+      </form>
+      <form method="post" action="/admin/requests/{{ sr.id }}/assign" class="space-y-2 pt-2 border-t border-slate-800">
+        <label class="text-xs text-slate-500">Assignee</label>
+        <select name="assignee" class="select"><option value="none">Unassigned</option><option value="me">Me</option>{% for u in staff %}<option value="{{ u.id }}" {% if sr.assigned_admin_id==u.id %}selected{% endif %}>{{ u.name or u.email }}</option>{% endfor %}</select>
+        <div class="grid grid-cols-2 gap-2">
+          <select name="priority" class="select">{% for p in ['low','normal','high','urgent'] %}<option value="{{ p }}" {% if sr.priority==p %}selected{% endif %}>{{ p }}</option>{% endfor %}</select>
+          <input type="datetime-local" name="due" class="input" {% if sr.due_at %}value="{{ sr.due_at.strftime('%Y-%m-%dT%H:%M') }}"{% endif %}>
+        </div>
+        <input name="next_action" value="{{ sr.next_action_note }}" placeholder="Next planned action" class="input">
+        <button class="btn btn-neutral btn-block btn-sm">Save</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card mt-4">
+    <div class="eyebrow mb-2">Status history</div>
+    {% if history %}
+      <ol class="space-y-1.5 text-sm">
+        {% for e in history %}
+          {% set who = actor_map.get(e.actor_id) %}
+          <li class="flex flex-wrap gap-2 items-baseline">
+            <span class="text-slate-400 text-xs tabular-nums">{{ e.created_at.strftime('%b %d, %H:%M') }}</span>
+            {{ badge(wf_badge.get(e.to_status,'slate'), wf_label.get(e.to_status, e.to_status)) }}
+            <span class="text-slate-500 text-xs">{% if e.from_status %}from {{ wf_label.get(e.from_status, e.from_status) }} · {% endif %}{{ (who.name or who.email) if who else 'system' }}{% if e.inferred %} · migrated{% endif %}{% if e.reason %} · {{ e.reason }}{% endif %}</span>
+          </li>
+        {% endfor %}
+      </ol>
+    {% else %}<div class="text-slate-500 text-sm">No status changes recorded yet.</div>{% endif %}
+  </div>
+
+{% elif tab == 'pipeline' %}
+  <div class="card">
+    <div class="flex items-center justify-between mb-3">
+      <div class="eyebrow">Confidential buyer pipeline &amp; research</div>
+      <a href="/admin/requests/{{ sr.id }}/pipeline" class="btn btn-ghost-sky btn-sm">Open pipeline board ↗</a>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+      <div><div class="text-2xl font-bold tabular-nums">{{ sr.leads_delivered }}</div><div class="text-slate-500 text-xs">buyers delivered</div></div>
+      <div><div class="text-2xl font-bold tabular-nums">{{ funnel.get('at_contacted', 0) + funnel.get('at_responded', 0) if funnel else 0 }}</div><div class="text-slate-500 text-xs">contacted / replied</div></div>
+      <div><div class="text-2xl font-bold tabular-nums">{{ funnel.get('at_qualified', 0) if funnel else 0 }}</div><div class="text-slate-500 text-xs">qualified</div></div>
+      <div><div class="text-2xl font-bold tabular-nums">{{ funnel.get('at_won', 0) if funnel else 0 }}</div><div class="text-slate-500 text-xs">won</div></div>
+    </div>
+    <p class="text-slate-500 text-xs mt-3">Research results and per-buyer stages are managed on the confidential pipeline board — this view links to it, it does not duplicate it.</p>
+  </div>
+
+{% elif tab == 'comms' %}
+  <div class="card mb-4">
+    <div class="flex items-center justify-between mb-2">
+      <div class="eyebrow">Requester conversation</div>
+      <form method="post" action="/admin/requests/{{ sr.id }}/mark-read"><button class="btn btn-neutral btn-sm">Mark read</button></form>
+    </div>
+    {% if messages %}
+      <div class="space-y-2 max-h-96 overflow-y-auto">
+        {% for m in messages %}
+          <div class="text-sm {{ 'text-right' if m.sender_role=='admin' else '' }}">
+            <span class="text-[10px] text-slate-500">{{ m.sender_role|title }} · {{ m.created_at.strftime('%b %d, %H:%M') }}</span>
+            <div class="inline-block px-3 py-1.5 rounded-lg {{ 'bg-sky-900/40' if m.sender_role=='admin' else 'bg-slate-800' }}">{{ m.body }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}<div class="text-slate-500 text-sm">No messages yet.</div>{% endif %}
+    <form method="post" action="/requests/{{ sr.id }}/messages" class="flex gap-2 mt-3">
+      <input name="body" placeholder="Reply to the requester (buyer PII is blocked)" class="input flex-1">
+      <button class="btn btn-primary btn-sm">Send</button>
+    </form>
+  </div>
+  <div class="card">
+    <div class="eyebrow mb-2">Published updates (seller-visible, sanitized)</div>
+    {% if updates %}
+      <ul class="space-y-1.5 text-sm">
+        {% for u in updates %}
+          <li class="flex flex-wrap gap-2 items-baseline">
+            <span class="text-slate-400 text-xs">{{ u.created_at.strftime('%b %d') }}</span>
+            {{ badge('emerald' if u.status=='resolved' else 'amber', u.status) }}
+            <span class="text-slate-300">{{ u.public_status }}{% if u.seller_question %} — Q: {{ u.seller_question }}{% endif %}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}<div class="text-slate-500 text-sm">Nothing published to the seller yet. Publish from the pipeline board.</div>{% endif %}
+  </div>
+
+{% elif tab == 'work' %}
+  <div class="card">
+    <div class="flex items-center justify-between mb-3">
+      <div class="eyebrow">Work items for this request</div>
+      <a href="/admin/work-queue?view=all_open" class="btn btn-neutral btn-sm">Open Work Queue ↗</a>
+    </div>
+    {% if witems %}
+      <div class="table-wrap"><table class="data-table">
+        <thead><tr><th>Task</th><th>Type</th><th>Party</th><th>Assignee</th><th>Priority</th><th>Status</th><th>Due</th></tr></thead>
+        <tbody>{% for wi in witems %}<tr {% if wi.status in ('completed','dismissed') %}class="opacity-60"{% endif %}>
+          <td class="text-slate-100">{{ wi.title }}</td>
+          <td class="text-xs">{{ TYPE_LABELS.get(wi.type, wi.type) }}</td>
+          <td class="text-xs">{{ wi.waiting_on or '—' }}</td>
+          <td class="text-xs text-slate-400">{{ (actor_map.get(wi.assigned_admin_id).email if actor_map.get(wi.assigned_admin_id) else '—') }}</td>
+          <td>{{ badge(PRIORITY_BADGE.get(wi.priority,'slate'), wi.priority) }}</td>
+          <td>{{ badge(STATUS_BADGE.get(wi.status,'slate'), wi.status) }}</td>
+          <td class="text-xs">{{ wi.due_at.strftime('%b %d') if wi.due_at else '—' }}</td>
+        </tr>{% endfor %}</tbody>
+      </table></div>
+    {% else %}<div class="text-slate-500 text-sm">No work items linked to this request.</div>{% endif %}
+  </div>
+
+{% elif tab == 'files' %}
+  <div class="card">
+    <div class="eyebrow mb-3">Deliverables &amp; files</div>
+    {% if deliverables %}
+      <ul class="space-y-2 text-sm">
+        {% for d in deliverables %}
+          <li class="flex flex-wrap items-center gap-2">
+            <span class="text-slate-400 text-xs">{{ d.created_at.strftime('%b %d, %H:%M') }}</span>
+            {% if d.file_path %}<a href="/requests/{{ sr.id }}/deliverable/{{ d.id }}" class="link">{{ d.file_path.split('/')[-1] }}</a>{% elif d.url %}<a href="{{ d.url }}" target="_blank" rel="noopener" class="link">{{ d.url[:50] }}↗</a>{% else %}<span class="text-slate-300">{{ d.note or 'note' }}</span>{% endif %}
+            {% if d.seller_safe %}{{ badge('emerald','seller-safe') }}{% else %}{{ badge('rose','internal only') }}{% endif %}
+            <span class="text-xs text-slate-500">by {{ d.delivered_by }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}<div class="text-slate-500 text-sm">No files delivered yet.</div>{% endif %}
+    <p class="text-slate-500 text-xs mt-3">Unsafe internal files are never downloadable by the requester — only files explicitly marked seller-safe.</p>
+  </div>
+
+{% elif tab == 'related' %}
+  <div class="card space-y-2 text-sm">
+    <div class="eyebrow mb-1">Related records</div>
+    <div><a href="/admin/requests/{{ sr.id }}/pipeline" class="link">Confidential buyer pipeline ({{ sr.leads_delivered }} buyers) ↗</a></div>
+    {% if company %}<div><a href="/companies/{{ company.id }}" class="link">Company: {{ company.name }} ↗</a></div>{% endif %}
+    <div><a href="/admin/work-queue?view=all_open" class="link">Work items ↗</a></div>
+    <div class="text-slate-500 text-xs">Quotes, deals and campaigns linked to delivered buyers appear on those buyers' records in the pipeline board.</div>
+  </div>
+{% endif %}
+{% endblock %}

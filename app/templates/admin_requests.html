@@ -1,43 +1,83 @@
 {% extends "base.html" %}
+{% set active = 'requests' %}
 {% block content %}
-<div class="mb-6">
-  <div class="eyebrow">Admin &middot; Concierge</div>
-  <h1 class="text-xl font-bold tracking-tight">Requests</h1>
-  <p class="text-slate-500 text-sm mt-0.5">Buyer-search and service requests from your traders. Approve to start; the trader is notified on approve / reject / delivery.</p>
+{% include "partials/admin_page_header.html" %}
+
+{% macro qs() %}{% if f.q %}&q={{ f.q|urlencode }}{% endif %}{% if f.direction %}&direction={{ f.direction }}{% endif %}{% if f.rtype %}&rtype={{ f.rtype }}{% endif %}{% if f.status %}&status={{ f.status }}{% endif %}{% if f.priority %}&priority={{ f.priority }}{% endif %}{% if f.assignee %}&assignee={{ f.assignee }}{% endif %}{% if f.action %}&action={{ f.action }}{% endif %}{% if f.overdue %}&overdue={{ f.overdue }}{% endif %}{% endmacro %}
+
+<!-- saved views -->
+<div class="flex flex-wrap gap-1.5 mb-3">
+  <a href="/admin/requests" class="btn btn-sm {{ 'btn-primary' if not f.view else 'btn-neutral' }}">All</a>
+  {% for key, label in REQUEST_VIEWS.items() %}
+    <a href="/admin/requests?view={{ key }}" class="btn btn-sm {{ 'btn-primary' if f.view==key else 'btn-neutral' }}">{{ label }}</a>
+  {% endfor %}
 </div>
+
+<!-- filters -->
+<form method="get" action="/admin/requests" class="card-soft mb-4 space-y-2">
+  {% if f.view %}<input type="hidden" name="view" value="{{ f.view }}">{% endif %}
+  <input name="q" value="{{ f.q }}" placeholder="Search product / market / brief / code" class="input">
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+    <select name="direction" class="select"><option value="">Any direction</option>
+      {% for d in ['sell','buy','service'] %}<option value="{{ d }}" {% if f.direction==d %}selected{% endif %}>{{ d }}</option>{% endfor %}</select>
+    <select name="rtype" class="select"><option value="">Any type</option>
+      {% for k,label in REQUEST_TYPES.items() %}<option value="{{ k }}" {% if f.rtype==k %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+    <select name="status" class="select"><option value="">Any status</option>
+      {% for s in ['submitted','approved','running','done','rejected'] %}<option value="{{ s }}" {% if f.status==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
+    <select name="priority" class="select"><option value="">Any priority</option>
+      {% for p in ['low','normal','high','urgent'] %}<option value="{{ p }}" {% if f.priority==p %}selected{% endif %}>{{ p }}</option>{% endfor %}</select>
+    <select name="assignee" class="select"><option value="">Any assignee</option>
+      <option value="me" {% if f.assignee=='me' %}selected{% endif %}>Mine</option>
+      <option value="none" {% if f.assignee=='none' %}selected{% endif %}>Unassigned</option>
+      {% for u in staff %}<option value="{{ u.id }}" {% if f.assignee==u.id|string %}selected{% endif %}>{{ u.name or u.email }}</option>{% endfor %}</select>
+    <select name="action" class="select"><option value="">Any action</option>
+      <option value="admin" {% if f.action=='admin' %}selected{% endif %}>Admin action</option>
+      <option value="requester" {% if f.action=='requester' %}selected{% endif %}>Requester action</option></select>
+    <select name="overdue" class="select"><option value="">Any due</option>
+      <option value="1" {% if f.overdue=='1' %}selected{% endif %}>Overdue only</option></select>
+  </div>
+  <div class="flex gap-2"><button class="btn btn-secondary">Filter</button><a href="/admin/requests" class="btn btn-neutral">Clear</a></div>
+</form>
 
 {% if reqs %}
 <div class="table-wrap">
   <table class="data-table">
-    <thead><tr><th>Request</th><th>Trader</th><th>Type</th><th>Status</th><th>When</th><th class="text-right">Action</th></tr></thead>
+    <thead><tr><th>Request</th><th>Requester</th><th>Dir</th><th>Type</th><th>Workflow</th><th>Priority</th><th>Assignee</th><th>Work</th><th>Last activity</th><th>Due</th><th class="text-right">Actions</th></tr></thead>
     <tbody>
       {% for r in reqs %}
       {% set who = umap.get(r.requester_id) %}
+      {% set asg = umap.get(r.assigned_admin_id) %}
       {% set sm = {'submitted':'queued','approved':'approved','running':'running','done':'ok','rejected':'error'} %}
+      {% set dvs = (deliv_map.get(r.id, []) if deliv_map else []) %}
+      {% set ewf = eff_of.get(r.id, r.status) %}
       <tr>
         <td>
-          <div class="font-medium">{{ r.product }}{% if r.market %} <span class="text-slate-500 font-normal">&rarr; {{ r.market }}</span>{% endif %}</div>
-          {% if r.details %}<div class="text-xs text-slate-500 max-w-md truncate">{{ r.details }}</div>{% endif %}
-          <div class="text-[10px] text-slate-600">{{ r.tracking_code }}{% if r.leads_delivered %} &middot; {{ r.leads_delivered }} delivered{% endif %}</div>
+          <div class="font-medium"><a href="/admin/requests/{{ r.id }}" class="text-slate-100 hover:text-sky-300">{{ r.product }}</a>{% if r.market %} <span class="text-slate-500 font-normal">&rarr; {{ r.market }}</span>{% endif %}</div>
+          <div class="text-[10px] text-slate-600">{{ r.tracking_code }}{% if r.leads_delivered %} &middot; {{ r.leads_delivered }} buyers{% endif %}{% if dvs %} &middot; {{ dvs|length }} file(s){% endif %}</div>
+          <div class="mt-0.5 flex gap-1 flex-wrap">
+            {% if r.id in unread_ids %}<span class="badge badge-amber text-[9px]">unread</span>{% endif %}
+            {% if r.action_required_admin %}<span class="badge badge-rose text-[9px]">needs you</span>{% endif %}
+            {% if r.action_required_requester %}<span class="badge badge-sky text-[9px]">waiting requester</span>{% endif %}
+            {% if r.due_at and r.due_at < now and r.status not in ('done','rejected') %}<span class="badge badge-rose text-[9px]">overdue</span>{% endif %}
+          </div>
         </td>
         <td class="text-sm">{{ (who.name or who.email) if who else '—' }}</td>
-        <td class="text-xs text-slate-400">{{ (r.request_type or '')|replace('_',' ') }}</td>
-        <td><span class="badge badge-{{ sm.get(r.status,'slate') }}">{{ r.status }}</span></td>
-        <td class="text-xs text-slate-400">{{ r.created_at.strftime('%b %d, %H:%M') if r.created_at else '' }}</td>
+        <td><span class="badge badge-slate text-[10px]">{{ r.direction }}</span></td>
+        <td class="text-xs text-slate-400">{{ REQUEST_TYPES.get(r.request_type, r.request_type)|replace('_',' ') }}</td>
+        <td><span class="badge badge-{{ wf_badge.get(ewf,'slate') }} text-[10px]">{{ wf_label.get(ewf, ewf) }}</span></td>
+        <td><span class="badge badge-{{ PRIORITY_BADGE.get(r.priority,'slate') }} text-[10px] uppercase">{{ r.priority }}</span></td>
+        <td class="text-xs text-slate-400">{{ (asg.name or asg.email) if asg else '—' }}</td>
+        <td class="text-center">{% set wc = wq_counts.get(r.id, 0) %}{% if wc %}<a href="/admin/requests/{{ r.id }}?tab=work" class="badge badge-sky text-[10px]">{{ wc }}</a>{% else %}<span class="text-slate-600">—</span>{% endif %}</td>
+        <td class="text-xs text-slate-400">{{ r.last_activity_at.strftime('%b %d, %H:%M') if r.last_activity_at else (r.created_at.strftime('%b %d') if r.created_at else '') }}</td>
+        <td class="text-xs {{ 'text-rose-400' if r.due_at and r.due_at < now and r.status not in ('done','rejected') else 'text-slate-400' }}">{{ r.due_at.strftime('%b %d') if r.due_at else '—' }}</td>
         <td>
           <div class="flex gap-1 justify-end flex-wrap items-center">
+            <a href="/admin/requests/{{ r.id }}" class="btn btn-ghost-sky btn-sm">Open</a>
             {% if r.status == 'submitted' %}
               <form method="post" action="/admin/requests/{{ r.id }}/approve"><button class="btn btn-primary btn-sm" data-busy="…">Approve</button></form>
               <form method="post" action="/admin/requests/{{ r.id }}/reject" onsubmit="return confirm('Reject this request?')"><button class="btn btn-neutral btn-sm">Reject</button></form>
-            {% elif r.status in ('approved','running') %}
-              {% if r.status == 'approved' %}<form method="post" action="/admin/requests/{{ r.id }}/start"><button class="btn btn-ghost-sky btn-sm" data-busy="…">Mark researching</button></form>{% endif %}
-              <form method="post" action="/admin/requests/{{ r.id }}/done" enctype="multipart/form-data" class="flex gap-1 items-center flex-wrap">
-                <input class="input" name="result" placeholder="result note" style="width:7rem;padding:.3rem .5rem;font-size:.72rem">
-                <input type="file" name="file" class="text-[10px] text-slate-400" style="max-width:8.5rem">
-                <button class="btn btn-neutral btn-sm">Deliver</button>
-              </form>
-            {% else %}
-              <span class="text-xs text-slate-600">&mdash;</span>
+            {% elif r.status == 'approved' %}
+              <form method="post" action="/admin/requests/{{ r.id }}/start"><button class="btn btn-ghost-sky btn-sm" data-busy="…">Start</button></form>
             {% endif %}
           </div>
         </td>
@@ -46,8 +86,15 @@
     </tbody>
   </table>
 </div>
+<div class="flex items-center justify-between mt-4 text-sm text-slate-400">
+  <div>Page {{ page }} of {{ pages }} · {{ total }} request(s)</div>
+  <div class="flex gap-2">
+    {% if page > 1 %}<a href="/admin/requests?view={{ f.view }}{{ qs() }}&page={{ page-1 }}" class="btn btn-neutral btn-sm">&larr; Prev</a>{% endif %}
+    {% if page < pages %}<a href="/admin/requests?view={{ f.view }}{{ qs() }}&page={{ page+1 }}" class="btn btn-neutral btn-sm">Next &rarr;</a>{% endif %}
+  </div>
+</div>
 {% else %}
-<div class="empty">No requests yet.</div>
+<div class="empty">No requests match these filters. <a href="/admin/requests" class="link">Clear</a>.</div>
 {% endif %}
-<p class="text-slate-500 text-xs mt-3">To deliver buyers for a request: run the research, then <span class="text-slate-400" style="font-family:monospace">scripts/deliver_request.py &lt;id&gt; buyers.json</span> &mdash; the buyers land in that trader's account and the request closes as <b>done</b>.</p>
+<p class="text-slate-500 text-xs mt-3">Deliver buyers for a request by running the research, then <span class="text-slate-400" style="font-family:monospace">scripts/deliver_request.py &lt;id&gt; buyers.json</span> — buyers land in that trader's account and the request closes as <b>done</b>. Full delivery + status controls are on each request's <b>Open</b> workspace.</p>
 {% endblock %}

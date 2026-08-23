@@ -1,0 +1,31 @@
+{# Shared admin page-header. Presentational only — it renders a header, never any action behavior.
+   Pass a `hdr` dict:
+     section    optional eyebrow / section label
+     title      page title (required)
+     desc       optional short description
+     count      optional count badge (shown when not none)
+     breadcrumb optional list of {label, href} (href optional on the last / current crumb)
+     action     optional pre-rendered HTML for the primary page action (kept exactly as the page defines it)
+#}
+<header class="mb-6">
+  {% if hdr.breadcrumb %}
+  <nav class="flex items-center gap-1.5 mb-2 eyebrow" aria-label="Breadcrumb">
+    {% for c in hdr.breadcrumb %}
+      {% if not loop.first %}<span aria-hidden="true" style="color:var(--dim)">/</span>{% endif %}
+      {% if c.href and not loop.last %}<a href="{{ c.href }}" class="link" style="text-transform:uppercase">{{ c.label }}</a>
+      {% else %}<span aria-current="page">{{ c.label }}</span>{% endif %}
+    {% endfor %}
+  </nav>
+  {% endif %}
+  <div class="flex items-start justify-between gap-4 flex-wrap">
+    <div class="min-w-0">
+      {% if hdr.section %}<div class="eyebrow mb-1">{{ hdr.section }}</div>{% endif %}
+      <h1 class="text-2xl font-bold font-display flex items-center gap-2.5">
+        {{ hdr.title }}
+        {% if hdr.count is defined and hdr.count is not none %}<span class="badge badge-slate tabular-nums">{{ hdr.count }}</span>{% endif %}
+      </h1>
+      {% if hdr.desc %}<p class="text-sm mt-1" style="color:var(--muted); max-width:60ch">{{ hdr.desc }}</p>{% endif %}
+    </div>
+    {% if hdr.action %}<div class="flex items-center gap-2 flex-shrink-0">{{ hdr.action|safe }}</div>{% endif %}
+  </div>
+</header>

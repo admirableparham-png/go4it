@@ -11,6 +11,7 @@ every job). Idempotent dedup means a crash-and-restart never double-imports; the
 leads it already attempted, so it works down NEW harvested leads instead of re-scraping dead sites.
 """
 import logging
+import os
 import sys
 import time
 
@@ -28,6 +29,13 @@ from .enrich_service import run_web_enrichment
 from .followups import process_followups
 from .inbound_email import poll_inbox
 from .ingest import ingest_source
+
+# How often the loop runs the idempotent Work Queue repair pass (0 disables the loop cadence; the app still
+# creates work items live at each event, and cron can call `--sync-workitems`). Default 15 min.
+WORKITEM_SYNC_INTERVAL = int(os.getenv("WORKITEM_SYNC_INTERVAL", "900"))
+# Max NEW work items one sync pass may create, so a large backlog can't make a single pass run unbounded
+# (the remainder is idempotently picked up on the next pass). Bounds "slow synchronization".
+WORKITEM_SYNC_MAX_PER_RUN = int(os.getenv("WORKITEM_SYNC_MAX_PER_RUN", "200"))
 from .models import ServiceRequest, User
 from .telegram import send_message
 from .sources.go4world_csv import Go4WorldCsvSource
@@ -95,6 +103,23 @@ def run_request_reminders() -> dict:
     return {"reminded": sent}
 
 
+def run_work_item_sync():
+    """Idempotent Work Queue repair pass, ISOLATED from the rest of the worker. It (a) never propagates an
+    exception — any failure is caught and returned so research/ingestion/email cycles keep running, and
+    (b) caps creations per run (WORKITEM_SYNC_MAX_PER_RUN) so a huge backlog can't make one pass run
+    unbounded. Never creates a duplicate open task, and never recreates a dispositioned one (durable via
+    condition_version). Mirrors scripts/sync_work_items.py so cron and the loop agree."""
+    from . import work_queue as WQ
+    try:
+        with Session(engine) as s:
+            summary = WQ.run_all_sync(s, None, limit=WORKITEM_SYNC_MAX_PER_RUN)
+            s.commit()
+            return summary
+    except Exception as e:  # noqa: BLE001 — sync must never stop the other worker jobs
+        logger.exception("work-item sync failed (isolated; other worker jobs continue)")
+        return {"error": str(e), "total": 0}
+
+
 def run_once():
     """One full pass: CSV inbox always, portal if creds set, enrich/inbound-email if enabled."""
     init_db()
@@ -108,6 +133,7 @@ def run_once():
     if FOLLOWUP_ENABLED:
         out.append(run_followups())
     out.append(run_request_reminders())
+    out.append(run_work_item_sync())
     return out
 
 
@@ -132,6 +158,10 @@ def main():
         init_db()
         print(run_request_reminders())
         return
+    if "--sync-workitems" in sys.argv:
+        init_db()
+        print(run_work_item_sync())
+        return
     if "--once" in sys.argv:
         for r in run_once():
             print(r)
@@ -144,7 +174,7 @@ def main():
                 else "disabled (set ENRICH_INTERVAL)",
                 f"every {IMAP_INTERVAL}s" if (IMAP_ENABLED and IMAP_INTERVAL > 0)
                 else "disabled (set IMAP_*)")
-    last_portal = last_enrich = last_imap = last_followup = last_reminder = 0.0
+    last_portal = last_enrich = last_imap = last_followup = last_reminder = last_worksync = 0.0
     while True:
         try:
             init_db()
@@ -169,6 +199,11 @@ def main():
                 if rr.get("reminded"):
                     logger.info("request reminders %s", rr)
                 last_reminder = now
+            if WORKITEM_SYNC_INTERVAL > 0 and now - last_worksync >= WORKITEM_SYNC_INTERVAL:
+                ws = run_work_item_sync()
+                if ws.get("total"):
+                    logger.info("work-item sync %s", ws)
+                last_worksync = now
         except Exception:
             logger.exception("worker pass failed")
         time.sleep(INGEST_INTERVAL)

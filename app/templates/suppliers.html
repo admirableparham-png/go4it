@@ -57,6 +57,20 @@
   </div>
 </div>
 
+{% if q is defined %}
+<form method="get" action="/suppliers" class="flex flex-wrap gap-2 mb-4 items-end">
+  <div><label class="field-label">Search</label><input class="input" name="q" value="{{ q }}" placeholder="name / contact / email"></div>
+  <div><label class="field-label">Country</label>
+    <select class="select" name="country"><option value="">All</option>
+      {% for cc in countries %}<option value="{{ cc }}" {{ 'selected' if country==cc }}>{{ cc }}</option>{% endfor %}</select></div>
+  <div><label class="field-label">Status</label>
+    <select class="select" name="listed">
+      {% for s in ['active','archived','all'] %}<option value="{{ s }}" {{ 'selected' if listed==s }}>{{ s }}</option>{% endfor %}</select></div>
+  <button class="btn btn-neutral btn-sm">Filter</button>
+  <a class="btn btn-ghost-sky btn-sm" href="/export/suppliers.csv">Export CSV</a>
+</form>
+{% endif %}
+
 {% if request.query_params.get('error') == 'name' %}
   <div class="alert-rose mb-4">A supplier needs a name.</div>
 {% elif request.query_params.get('error') == 'dupe' %}
@@ -103,6 +117,7 @@
           {% if can_edit %}
           <div class="px-3 pb-4 pt-1">
             {% if s.payment_terms %}<div class="text-xs text-slate-500 mb-3">Terms: <span class="text-slate-300">{{ s.payment_terms }}</span></div>{% endif %}
+            {% if s.company_id %}<div class="text-xs mb-3"><a href="/companies/{{ s.company_id }}" class="link">View in Trade Network &rarr;</a></div>{% endif %}
             {{ sup_form('/suppliers/' ~ s.id ~ '/edit', s=s, submit='Save changes', busy='Saving') }}
             <form method="post" action="/suppliers/{{ s.id }}/toggle" class="mt-2">
               {% if s.active %}

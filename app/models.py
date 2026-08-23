@@ -29,6 +29,7 @@ class Supplier(SQLModel, table=True):
     reliability: int = 3           # 1-5, team's own rating
     payment_terms: str = ""
     active: bool = True
+    company_id: Optional[int] = Field(default=None, foreign_key="company.id", index=True)  # Trade Network link (additive)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
@@ -82,6 +83,7 @@ class Lead(SQLModel, table=True):
 
     # workflow — the 5-stage CRM pipeline
     status: str = "new"            # new | quoted | negotiating | won | lost
+    active: bool = True            # False = "unlisted" by the trader (hidden from their list, reversible)
     owner_id: Optional[int] = Field(default=None, foreign_key="user.id")
     lost_reason: str = ""
     first_response_at: Optional[datetime] = None   # OUR first touch (outreach/note/call)
@@ -89,9 +91,26 @@ class Lead(SQLModel, table=True):
     accepted_at: Optional[datetime] = None         # buyer accepted a quote on the public pro-forma
     next_action_at: Optional[datetime] = None      # follow-up date (the "contact today" queue)
     next_action_note: str = ""
-    notes: str = ""
+    notes: str = ""                # PRIVATE admin notes — never sent to a seller
     posted_at: Optional[datetime] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    # --- confidential managed-outreach pipeline (buyer PII is admin-only) ---
+    managed: bool = False                                    # in the confidential pipeline (admin-owned)
+    seller_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)  # the seller this buyer is FOR
+    request_id: Optional[int] = Field(default=None, foreign_key="servicerequest.id", index=True)
+    pipeline_stage: str = "identified"                       # 13-stage (see app/pipeline.PIPELINE_STAGES)
+    anon_ref: str = Field(default="", index=True)            # Buyer-<ISO>-<NNN>, unique within a request, not the DB id
+    assigned_admin_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    buyer_category: str = ""                                 # buyer's business category (distinct from product `category`)
+    company_size_band: str = ""                              # e.g. "1-10" | "11-50" | "51-200" | "200+"
+    fit_score: float = 0                                     # 0-100 admin fit rating
+    seller_action_required: bool = False                     # a seller action is outstanding on this buyer
+
+    # --- Trade Network (Phase 2, additive; admin-only canonical layer) ---
+    company_id: Optional[int] = Field(default=None, foreign_key="company.id", index=True)
+    engagement_class: str = ""     # prospect|contacted|engaged|qualified|customer|invalid|archived (derived, admin-correctable)
+    reply_outcome: str = ""        # none|positive|negative|neutral|bounced|auto_reply (structured, never invented)
 
 
 class Match(SQLModel, table=True):
@@ -316,4 +335,285 @@ class ServiceRequest(SQLModel, table=True):
     approved_at: Optional[datetime] = None
     started_at: Optional[datetime] = None
     done_at: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    # --- Phase 3 (Requests + Work Queue) additive columns. Legacy status/request_type above are UNCHANGED
+    #     and remain the operational drivers; these enrich the admin surface only. ---
+    direction: str = "sell"        # sell (seller wants buyers) | buy (buyer wants suppliers) | service
+    workflow_status: str = ""      # submitted|under_review|approved|in_progress|waiting_requester|
+    # waiting_external|ready_for_delivery|delivered|completed|rejected|cancelled ("" until migrated/derived)
+    priority: str = "normal"       # low | normal | high | urgent
+    assigned_admin_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    due_at: Optional[datetime] = None
+    last_activity_at: Optional[datetime] = None
+    next_action_note: str = ""
+    action_required_admin: bool = False
+    action_required_requester: bool = False
+    on_behalf_company_id: Optional[int] = Field(default=None, foreign_key="company.id")  # admin buy-side on behalf of a buyer
+    admin_last_read_at: Optional[datetime] = None       # for unread-message indicators (updated via POST only)
+    requester_last_read_at: Optional[datetime] = None
+
+
+class RequestDeliverable(SQLModel, table=True):
+    """One delivered artifact on a ServiceRequest. A request can be delivered MORE THAN ONCE — each
+    delivery appends a row here (files named <id>_<name> so they never collide), while
+    ServiceRequest.result_file_path/result keep pointing at the latest for back-compat."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    request_id: int = Field(foreign_key="servicerequest.id", index=True)
+    file_path: str = ""            # relative path under REQUEST_FILES_DIR (<req_id>/<deliverable_id>_<name>)
+    url: str = ""                  # or an external link
+    note: str = ""                 # short delivery note
+    delivered_by: str = ""         # admin email
+    seller_safe: bool = False      # True = the admin confirmed this file carries NO buyer PII → seller may download
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class RequestMessage(SQLModel, table=True):
+    """One message in the per-request chat between the requesting trader and the admin."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    request_id: int = Field(foreign_key="servicerequest.id", index=True)
+    sender_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    sender_role: str = ""          # "admin" | "agent" | ... (from user.role at send time)
+    body: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class MailAccount(SQLModel, table=True):
+    """A trader's OWN connected sending mailbox (e.g. a Gmail via App Password). A user may connect
+    several and choose which one to send from at send time. The SMTP password is stored ENCRYPTED at
+    rest (Fernet keyed off SECRET_KEY — see app/outreach.py)."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="user.id", index=True)
+    email: str = ""                # the From / login address
+    from_name: str = ""            # display name on the From header
+    provider: str = "gmail"        # gmail | custom
+    smtp_host: str = "smtp.gmail.com"
+    smtp_port: int = 587
+    smtp_password_enc: str = ""     # Fernet-encrypted app password
+    is_default: bool = False
+    active: bool = True
+    last_verified_at: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    admin_owned: bool = False       # True = a Go4it-controlled mailbox used for confidential buyer outreach
+
+
+class StageEvent(SQLModel, table=True):
+    """Authoritative history of a managed buyer's pipeline stage changes. The seller funnel is computed
+    from THIS (the stages a buyer actually visited), never inferred from the current stage — so a Lost or
+    Disqualified buyer is never counted as having reached Won."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    lead_id: int = Field(foreign_key="lead.id", index=True)
+    request_id: Optional[int] = Field(default=None, foreign_key="servicerequest.id", index=True)
+    from_stage: str = ""
+    to_stage: str = ""
+    actor_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    note: str = ""
+    inferred: bool = False         # True = a migration-seeded event, NOT observed activity (funnel marks it)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class SellerUpdate(SQLModel, table=True):
+    """A SANITIZED, seller-visible progress update the admin publishes. Kept strictly separate from the
+    private Lead.notes; scoped to the seller via seller_id. Buyer PII must never reach these fields."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    request_id: int = Field(foreign_key="servicerequest.id", index=True)
+    lead_id: Optional[int] = Field(default=None, foreign_key="lead.id")   # None = request-level (aggregate) update
+    seller_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)  # tenant scope
+    anon_ref: str = ""             # the buyer's anonymized reference (or "" for aggregate)
+    public_status: str = ""        # sanitized public stage label
+    summary: str = ""              # sanitized summary (PII-scanned before publish)
+    next_action: str = ""
+    seller_question: str = ""      # optional question the seller must answer
+    deadline: Optional[datetime] = None
+    status: str = "open"           # open | resolved — so an "action required" can never go stale
+    resolved_at: Optional[datetime] = None
+    resolved_by: str = ""          # who resolved it (seller email or "admin")
+    published: bool = True
+    published_by: str = ""         # admin email
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class AuditLog(SQLModel, table=True):
+    """Admin-only audit trail: stage changes, seller-update publishes, buyer-PII views/exports, and any
+    explicit identity disclosure. Not tenant-scoped (admin pool)."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    actor_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)  # the seller the action relates to
+    entity_type: str = ""          # lead | request | seller_update | quote | deal | company | contact | export
+    entity_id: Optional[int] = None
+    action: str = ""               # stage_change | publish_update | pii_view | pii_export | disclosure | ...
+    meta: str = ""                 # JSON blob (before/after, fields, etc.)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+# ============================================================================
+# Trade Network (Phase 2) — an ADMIN-ONLY canonical layer over the existing
+# denormalized Lead/Supplier records. Strictly additive: existing tables keep
+# their PKs and remain the source of truth for their workflows; these tables
+# only ORGANIZE the network around them. Buyer identities stay admin-only.
+# ============================================================================
+
+class Company(SQLModel, table=True):
+    """One real organization, represented once even when it holds multiple roles (buyer/seller/supplier).
+
+    tenant_id is the ISOLATION scope for dedup + confidentiality: for a MANAGED buyer it is the seller the
+    buyer is FOR (Lead.seller_id) — NOT the NULL owner_id — so seller A can never learn seller B got the same
+    buyer; for a non-managed lead it is Lead.owner_id; for global suppliers/sellers it is NULL. Dedup runs
+    only WITHIN a tenant partition, so cross-tenant matches/merges are structurally impossible."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    name: str = ""
+    name_normalized: str = Field(default="", index=True)
+    primary_role: str = "buyer"    # buyer|seller|supplier (convenience; authoritative roles in CompanyRole)
+    country: str = ""
+    city: str = ""
+    website: str = ""
+    domain: str = Field(default="", index=True)   # normalized registrable domain; "" if generic/none
+    account_user_id: Optional[int] = Field(default=None, foreign_key="user.id")  # the agent-User that IS this seller; NULL=external
+    external_ref: str = ""
+    verification_status: str = "unverified"        # unverified|partial|verified|rejected
+    verification_method: str = ""                  # email_reply|phone_call|website|registry|customs|manual
+    verification_confidence: int = 0               # 0-100 (evidence-backed, not presented as factual accuracy)
+    verified_at: Optional[datetime] = None
+    verified_by: str = ""
+    verification_notes: str = ""
+    status: str = "active"         # active|archived (archived when merged away)
+    merged_into_id: Optional[int] = Field(default=None, foreign_key="company.id")  # canonical survivor (reversible)
+    notes: str = ""                # internal admin notes
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class CompanyRole(SQLModel, table=True):
+    """A role a company plays. One company → many roles (a trading house is buyer + supplier)."""
+    __table_args__ = (UniqueConstraint("company_id", "role", name="uq_companyrole_company_role"),)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    company_id: int = Field(foreign_key="company.id", index=True)
+    role: str = ""                 # buyer|seller|supplier
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class Contact(SQLModel, table=True):
+    """A person/mailbox at a Company. tenant_id is denormalized from the company for scope without a join."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    company_id: int = Field(foreign_key="company.id", index=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    name: str = ""
+    title: str = ""
+    email: str = ""
+    email_normalized: str = Field(default="", index=True)
+    phone: str = ""
+    phone_normalized: str = Field(default="", index=True)   # last-9-digit tail (reuses find_lead_by_contact rule)
+    website: str = ""
+    email_health: str = "unknown"  # unknown|valid|role|generic|bounced|invalid
+    contactability: int = 0        # 0-100
+    is_primary: bool = False
+    last_verified_at: Optional[datetime] = None
+    source_ref: str = ""
+    active: bool = True            # False = archived
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class Provenance(SQLModel, table=True):
+    """How a Company or Contact entered Go4it. Polymorphic (entity_type company|contact). Never invented —
+    an undeterminable origin is recorded as source_type='unknown' with the raw slug kept for reclassification."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    entity_type: str = Field(default="company", index=True)   # company|contact
+    entity_id: int = Field(default=0, index=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    source_type: str = Field(default="unknown", index=True)
+    # research_agent|command|seller_request|manual|csv_import|directory|marketplace|customs|tender_rfq|referral|existing_supplier|unknown
+    source_name: str = ""          # readable ("OpenStreetMap Georgia", "Concierge request 12")
+    source_ref: str = ""           # external_id / row id at the source
+    source_url: str = ""
+    run_ref: str = ""              # "command:464" | "req-12" | "ingest:osm-ge" | backfill run tag
+    inferred: bool = False         # True = migration-seeded, not observed
+    collected_at: Optional[datetime] = None
+    last_seen_at: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class DuplicateCandidate(SQLModel, table=True):
+    """A conservative, tenant-scoped duplicate pair for admin review. NEVER auto-merged."""
+    __table_args__ = (UniqueConstraint("left_id", "right_id", name="uq_dupcand_pair"),)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    entity_type: str = "company"
+    left_id: int = Field(foreign_key="company.id", index=True)    # lower id (canonical ordering)
+    right_id: int = Field(foreign_key="company.id", index=True)   # higher id
+    signals: str = ""              # JSON list, e.g. ["email_exact","domain_exact"]
+    match_type: str = "potential"  # strong|potential
+    strength: int = 0              # 0-100 composite
+    status: str = "open"           # open|confirmed|not_duplicate|merged|linked|deferred
+    reviewer: str = ""
+    reviewed_at: Optional[datetime] = None
+    merged_into_id: Optional[int] = Field(default=None, foreign_key="company.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+# ============================================================================
+# Requests + Work Queue (Phase 3) — an ADMIN-ONLY coordination layer that makes
+# ServiceRequest the operational source of truth and gathers everything needing
+# admin attention into one queue. Strictly additive: existing request columns,
+# statuses, routes and the confidential buyer pipeline are unchanged. WorkItems
+# are internal admin tasks; a requester-visible action is published ONLY through
+# the existing sanitized SellerUpdate path and linked to (never merged with) it.
+# ============================================================================
+
+
+class WorkItem(SQLModel, table=True):
+    """One unit of admin work. tenant_id = the seller/requester the item relates to (NULL = pure-internal /
+    system, e.g. a failed job) so it never crosses a tenant boundary. Automatic items carry an
+    idempotency_key guarded by a PARTIAL-unique index over OPEN statuses (see db._ensure_workitem_indexes),
+    so re-running synchronization never duplicates an open task. Completed/dismissed items are retained."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)  # seller/requester scope; NULL=system
+    title: str = ""
+    description: str = ""          # internal only — NEVER shown to a requester
+    type: str = "other"            # review_new_request | follow_up_buyer | follow_up_seller | follow_up_supplier |
+    # review_reply | requester_action_required | admin_action_required | data_enrichment | replace_invalid_contact |
+    # review_potential_duplicate | prepare_quote | approve_quote | missing_document | deliver_result |
+    # failed_system_job | overdue_request | other
+    status: str = Field(default="open", index=True)   # open | in_progress | waiting | completed | dismissed
+    priority: str = "normal"       # low | normal | high | urgent (default normal; never auto-Urgent from overdue)
+    assigned_admin_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    created_by: Optional[int] = Field(default=None, foreign_key="user.id")   # NULL = system-created
+    source: str = "manual"         # manual | automatic
+    visibility: str = "internal"   # internal | requester_visible (the public half lives in SellerUpdate)
+    waiting_on: str = ""           # ""|buyer|seller|supplier|requester|internal|service_provider|system
+    related_request_id: Optional[int] = Field(default=None, foreign_key="servicerequest.id", index=True)
+    related_company_id: Optional[int] = Field(default=None, foreign_key="company.id")
+    related_lead_id: Optional[int] = Field(default=None, foreign_key="lead.id", index=True)
+    related_outreach_id: Optional[int] = Field(default=None, foreign_key="outreach.id")
+    related_quote_id: Optional[int] = Field(default=None, foreign_key="quote.id")
+    related_deal_id: Optional[int] = Field(default=None, foreign_key="deal.id")
+    related_seller_update_id: Optional[int] = Field(default=None, foreign_key="sellerupdate.id")
+    parent_id: Optional[int] = Field(default=None, foreign_key="workitem.id")
+    idempotency_key: str = Field(default="", index=True)   # de-dups automatic items (partial-unique over OPEN)
+    condition_version: str = ""    # identifies the underlying-condition INSTANCE+version; once a task for a
+    # given (idempotency_key, condition_version) is dispositioned, sync never recreates it UNTIL the condition
+    # materially changes (a new version) — so complete/dismiss is durable, not re-opened on the next sync.
+    inferred: bool = False         # True = migration/backfill-seeded, not an observed event
+    due_at: Optional[datetime] = None
+    started_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+    resolved_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    resolution_note: str = ""
+    dismissed_reason: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class RequestStatusEvent(SQLModel, table=True):
+    """Authoritative history of a ServiceRequest's workflow_status changes (who/when/why). The legacy
+    ServiceRequest.status keeps its exact meaning and drivers; this records the richer Phase-3 workflow."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    request_id: int = Field(foreign_key="servicerequest.id", index=True)
+    from_status: str = ""          # workflow_status before (submitted|under_review|approved|in_progress|...)
+    to_status: str = ""            # workflow_status after
+    from_legacy: str = ""          # legacy ServiceRequest.status before (for audit completeness)
+    to_legacy: str = ""            # legacy ServiceRequest.status after
+    actor_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    reason: str = ""
+    inferred: bool = False         # True = backfill-seeded from legacy status, not an observed transition
     created_at: datetime = Field(default_factory=datetime.utcnow)

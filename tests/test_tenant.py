@@ -195,7 +195,7 @@ def test_service_file_delivery_is_owner_only(ctx, tmp_path, monkeypatch):
         rid = s.exec(select(ServiceRequest)).first().id
     _login(client, "admin@t.local")
     client.post(f"/admin/requests/{rid}/approve", follow_redirects=False)
-    assert client.post(f"/admin/requests/{rid}/done", data={"result": "Contract ready"},
+    assert client.post(f"/admin/requests/{rid}/done", data={"result": "Contract ready", "seller_safe": "1"},
                        files={"file": ("contract.pdf", b"%PDF-1.4 fake", "application/pdf")},
                        follow_redirects=False).status_code == 303
     with Session(engine) as s:

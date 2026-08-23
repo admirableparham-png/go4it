@@ -3,11 +3,11 @@
 {% block content %}
 {% set ic = "input" %}
 
-{% macro page_url(p) %}/leads?page={{ p }}{% if f.q %}&q={{ f.q|urlencode }}{% endif %}{% if f.stage %}&stage={{ f.stage }}{% endif %}{% if f.source %}&source={{ f.source|urlencode }}{% endif %}{% if f.category %}&category={{ f.category|urlencode }}{% endif %}{% if f.dest %}&dest={{ f.dest }}{% endif %}{% if f.owner %}&owner={{ f.owner }}{% endif %}{% if f.contact %}&contact={{ f.contact }}{% endif %}{% if f.due %}&due={{ f.due }}{% endif %}{% if f.sort %}&sort={{ f.sort }}{% endif %}{% endmacro %}
+{% macro page_url(p) %}/leads?page={{ p }}{% if f.q %}&q={{ f.q|urlencode }}{% endif %}{% if f.stage %}&stage={{ f.stage }}{% endif %}{% if f.source %}&source={{ f.source|urlencode }}{% endif %}{% if f.category %}&category={{ f.category|urlencode }}{% endif %}{% if f.dest %}&dest={{ f.dest }}{% endif %}{% if f.owner %}&owner={{ f.owner }}{% endif %}{% if f.contact %}&contact={{ f.contact }}{% endif %}{% if f.due %}&due={{ f.due }}{% endif %}{% if f.listed %}&listed={{ f.listed }}{% endif %}{% if f.sort %}&sort={{ f.sort }}{% endif %}{% endmacro %}
 
 <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
   <div>
-    <h2 class="text-2xl font-extrabold tracking-tight flex items-center gap-2 font-display">🎯 {% if is_admin %}Leads{% else %}My buyers{% endif %} <span class="badge badge-slate">{{ total }}</span></h2>
+    <h2 class="text-2xl font-extrabold tracking-tight flex items-center gap-2 font-display">🎯 {% if is_admin %}Buyers &amp; Prospects{% else %}My buyers{% endif %} <span class="badge badge-slate">{{ total }}</span></h2>
     <p class="text-slate-400 text-sm mt-1">{% if is_admin %}Your buyer pipeline &mdash; filter, sort, and work each lead.{% else %}The buyers we've delivered to you, plus any you add. Filter, sort, and work each one.{% endif %}</p>
   </div>
 </div>
@@ -68,6 +68,10 @@
     <select name="contact" class="select"><option value="">Any contact</option>
       <option value="yes" {% if f.contact=='yes' %}selected{% endif %}>Has phone/email</option>
       <option value="no" {% if f.contact=='no' %}selected{% endif %}>Needs enrichment</option></select>
+    <select name="listed" class="select">
+      <option value="yes" {% if f.listed=='yes' or not f.listed %}selected{% endif %}>Active buyers</option>
+      <option value="no" {% if f.listed=='no' %}selected{% endif %}>Unlisted</option>
+      <option value="all" {% if f.listed=='all' %}selected{% endif %}>Active + unlisted</option></select>
     <select name="sort" class="select">
       <option value="new" {% if f.sort=='new' %}selected{% endif %}>Newest</option>
       <option value="old" {% if f.sort=='old' %}selected{% endif %}>Oldest</option>
@@ -81,17 +85,41 @@
   </div>
 </form>
 
+{% if is_admin and saved_views is defined %}
+<div class="flex flex-wrap gap-1.5 mb-3">
+  <a href="/leads" class="btn btn-sm {{ 'btn-primary' if not f.view else 'btn-neutral' }}">All</a>
+  {% for key, spec in saved_views.items() %}
+    <a href="/leads?view={{ key }}" class="btn btn-sm {{ 'btn-primary' if f.view==key else 'btn-neutral' }}">{{ spec[0] }}</a>
+  {% endfor %}
+  <a href="/duplicates" class="btn btn-sm btn-neutral">Potential duplicates</a>
+</div>
+{% if stats %}
+<div class="card-soft mb-4 flex flex-wrap gap-x-6 gap-y-1 text-[12px]" style="padding:.7rem .9rem">
+  <span class="eyebrow">Response performance</span>
+  <span>Attempted: <b class="tabular-nums">{{ stats.attempted }}</b></span>
+  <span>Delivered: <b class="tabular-nums">{{ stats.delivered }}</b></span>
+  <span>Human replies: <b class="tabular-nums">{{ stats.human_replies }}</b></span>
+  <span>Positive: <b class="tabular-nums">{{ stats.positive }}</b> &middot; Bounces: <b class="tabular-nums">{{ stats.bounces }}</b></span>
+  <span title="human replies / {{ stats.denominator_label }}">Response rate: <b class="tabular-nums">{{ stats.response_rate }}%</b> <span class="text-slate-500">(&divide; {{ stats.denominator_label }})</span></span>
+  <span>Qualification: <b class="tabular-nums">{{ stats.qualification_rate }}%</b></span>
+</div>
+{% endif %}
+{% endif %}
+
 {% if leads %}
 <form method="post" action="/leads/bulk" onsubmit="return this.querySelector('[name=action]').value!=='delete' || confirm('Delete the selected leads? This cannot be undone.')">
   <div class="flex flex-wrap items-center gap-2 mb-3 text-xs">
     <span class="text-slate-500">Bulk on selected:</span>
     <select name="action" class="select" style="width:auto">
+      <option value="email">✉ Email selected&hellip;</option>
       {% if is_admin %}<option value="assign_me">Assign to me</option>
       <option value="assign">Assign to&hellip;</option>{% endif %}
       <option value="stage">Set stage&hellip;</option>
       <option value="followup_today">Follow up: today</option>
       <option value="followup_week">Follow up: +7 days</option>
       <option value="followup_clear">Clear follow-up</option>
+      <option value="unlist">Unlist (hide)</option>
+      <option value="relist">Re-list</option>
       <option value="delete">Delete&hellip;</option>
     </select>
     {% if is_admin %}<select name="owner_id" class="select" style="width:auto"><option value="">(owner)</option>{% for u in users %}<option value="{{ u.id }}">{{ u.name or u.email }}</option>{% endfor %}</select>{% endif %}
@@ -108,6 +136,7 @@
           <th>Buyer / contact</th>
           <th>Dest</th>
           <th>Source</th>
+          {% if is_admin %}<th>Engagement</th>{% endif %}
           <th>Posted</th>
           <th>Stage</th>
           <th>Owner</th>
@@ -134,12 +163,29 @@
               </div>
             </td>
             <td>{% if ld.dest_country %}<span class="badge badge-sky text-[10px]">{{ ld.dest_country }}</span>{% else %}<span class="text-slate-600">—</span>{% endif %}</td>
-            <td><span class="badge badge-slate text-[10px]">{{ ld.source }}</span></td>
+            <td><span class="badge badge-slate text-[10px]" title="{{ ld.source }}">{{ source_map.get(ld.id, ld.source) if source_map is defined else ld.source }}</span></td>
+            {% if is_admin %}
+            <td>
+              {% set ec = ld.engagement_class or 'prospect' %}
+              {% set ecolor = {'prospect':'badge-slate','contacted':'badge-sky','engaged':'badge-emerald','qualified':'badge-emerald','customer':'badge-emerald','invalid':'badge-rose','archived':'badge-slate'} %}
+              <span class="badge {{ ecolor.get(ec,'badge-slate') }} text-[10px]">{{ ec }}</span>
+              {% if ld.reply_outcome and ld.reply_outcome not in ('none','') %}<span class="text-[10px] text-slate-500">{{ ld.reply_outcome }}</span>{% endif %}
+              {% if ld.company_id %}
+                {% if verif_map is defined and verif_map.get(ld.company_id) in ('verified','partial') %}<span class="badge badge-emerald text-[9px]" title="verification">{{ verif_map.get(ld.company_id)[:4] }}</span>{% endif %}
+                {% if dupe_ids is defined and ld.company_id in dupe_ids %}<a href="/duplicates" class="badge badge-amber text-[9px]">dup?</a>{% endif %}
+                <a href="/companies/{{ ld.company_id }}" class="text-[10px] link">company↗</a>
+              {% endif %}
+            </td>
+            {% endif %}
             <td class="text-xs {% if ld.posted_at %}text-slate-300{% else %}text-slate-600{% endif %}">{{ ld.posted_at.strftime('%b %d, %Y') if ld.posted_at else '—' }}</td>
             <td><span class="badge badge-{{ ld.status }} uppercase text-[10px] font-bold">{{ ld.status }}</span></td>
             <td class="text-slate-400 text-xs">{{ (owner.name or owner.email) if owner else '—' }}</td>
             <td class="text-right text-slate-400 tabular-nums">{{ mcounts.get(ld.id, 0) }}</td>
-            <td class="text-right"><button formaction="/leads/{{ ld.id }}/delete" formmethod="post" onclick="return confirm('Delete this lead? This removes it and its quotes/deals.')" class="text-slate-600 hover:text-rose-400 px-1.5 text-base leading-none" title="Delete lead">&times;</button></td>
+            <td class="text-right whitespace-nowrap">
+              {% if f.listed == 'no' %}<button formaction="/leads/{{ ld.id }}/unlist?relist=1" formmethod="post" class="text-slate-500 hover:text-emerald-400 px-1.5 text-base leading-none" title="Re-list buyer">&#8634;</button>
+              {% else %}<button formaction="/leads/{{ ld.id }}/unlist" formmethod="post" class="text-slate-500 hover:text-amber-400 px-1.5 text-base leading-none" title="Unlist (hide from your list)">&#8856;</button>{% endif %}
+              <button formaction="/leads/{{ ld.id }}/delete" formmethod="post" onclick="return confirm('Permanently delete this buyer (and its quotes/deals)? Use Unlist to just hide it.')" class="text-slate-600 hover:text-rose-400 px-1.5 text-base leading-none" title="Delete permanently">&times;</button>
+            </td>
           </tr>
         {% endfor %}
       </tbody>

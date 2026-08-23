@@ -46,6 +46,50 @@ MIGRATIONS = [
     ("quote", "owner_id", "INTEGER"),          # tenant scope; backfilled from lead.owner_id below
     ("servicerequest", "result_file_path", "VARCHAR DEFAULT ''"),   # Phase 3 file delivery
     ("servicerequest", "result_url", "VARCHAR DEFAULT ''"),
+    ("lead", "active", "BOOLEAN DEFAULT 1"),   # reversible "unlist" — existing buyers stay listed
+    # confidential managed-outreach pipeline
+    ("lead", "managed", "BOOLEAN DEFAULT 0"),
+    ("lead", "seller_id", "INTEGER"),
+    ("lead", "request_id", "INTEGER"),
+    ("lead", "pipeline_stage", "VARCHAR DEFAULT 'identified'"),
+    ("lead", "anon_ref", "VARCHAR DEFAULT ''"),
+    ("lead", "assigned_admin_id", "INTEGER"),
+    ("lead", "buyer_category", "VARCHAR DEFAULT ''"),
+    ("lead", "company_size_band", "VARCHAR DEFAULT ''"),
+    ("lead", "fit_score", "FLOAT DEFAULT 0"),
+    ("lead", "seller_action_required", "BOOLEAN DEFAULT 0"),
+    ("requestdeliverable", "seller_safe", "BOOLEAN DEFAULT 0"),
+    ("mailaccount", "admin_owned", "BOOLEAN DEFAULT 0"),
+    # these live on the NEW tables (create_all makes them with the columns); only needed where the table
+    # already existed from an earlier boot — the loop skips them if the table isn't there yet.
+    ("stageevent", "inferred", "BOOLEAN DEFAULT 0"),
+    ("sellerupdate", "status", "VARCHAR DEFAULT 'open'"),
+    ("sellerupdate", "resolved_at", "TIMESTAMP"),
+    ("sellerupdate", "resolved_by", "VARCHAR DEFAULT ''"),
+    ("auditlog", "tenant_id", "INTEGER"),
+    # Trade Network (Phase 2) — additive links on existing tables (new tables handled by create_all)
+    ("lead", "company_id", "INTEGER"),
+    ("lead", "engagement_class", "VARCHAR DEFAULT ''"),
+    ("lead", "reply_outcome", "VARCHAR DEFAULT ''"),
+    ("supplier", "company_id", "INTEGER"),
+    # Requests + Work Queue (Phase 3) — additive columns on the existing servicerequest table.
+    # Legacy status/request_type are UNCHANGED; these enrich the admin surface only. The new
+    # workitem / requeststatusevent TABLES are made (with all their columns/indexes) by create_all.
+    ("servicerequest", "direction", "VARCHAR DEFAULT 'sell'"),
+    ("servicerequest", "workflow_status", "VARCHAR DEFAULT ''"),
+    ("servicerequest", "priority", "VARCHAR DEFAULT 'normal'"),
+    ("servicerequest", "assigned_admin_id", "INTEGER"),
+    ("servicerequest", "due_at", "TIMESTAMP"),
+    ("servicerequest", "last_activity_at", "TIMESTAMP"),
+    ("servicerequest", "next_action_note", "VARCHAR DEFAULT ''"),
+    ("servicerequest", "action_required_admin", "BOOLEAN DEFAULT 0"),
+    ("servicerequest", "action_required_requester", "BOOLEAN DEFAULT 0"),
+    ("servicerequest", "on_behalf_company_id", "INTEGER"),
+    ("servicerequest", "admin_last_read_at", "TIMESTAMP"),
+    ("servicerequest", "requester_last_read_at", "TIMESTAMP"),
+    # durable-disposition column on the workitem table (only needed on DBs where workitem already existed
+    # from an earlier boot; fresh DBs get it from create_all — the loop skips absent tables).
+    ("workitem", "condition_version", "VARCHAR DEFAULT ''"),
 ]
 
 
@@ -59,8 +103,13 @@ def run():
         return
     con = sqlite3.connect(db)
     cur = con.cursor()
+    # Tables that don't exist yet are created (with all their columns) by create_all()/init_db on app boot —
+    # skip their column migrations here so a fresh DB doesn't hit "no such table" ALTERs.
+    existing_tables = {r[0] for r in cur.execute("SELECT name FROM sqlite_master WHERE type='table'")}
     applied = 0
     for table, column, decl in MIGRATIONS:
+        if table not in existing_tables:
+            continue
         cols = {r[1] for r in cur.execute(f"PRAGMA table_info({table})")}
         if column not in cols:
             cur.execute(f"ALTER TABLE {table} ADD COLUMN {column} {decl}")
@@ -80,9 +129,21 @@ def run():
     tables = {r[0] for r in cur.execute("SELECT name FROM sqlite_master WHERE type='table'")}
     for idx, table, column in [("ix_quote_share_token", "quote", "share_token"),
                                ("ix_outreach_message_id", "outreach", "message_id"),
-                               ("ix_quote_owner_id", "quote", "owner_id")]:
+                               ("ix_quote_owner_id", "quote", "owner_id"),
+                               ("ix_lead_seller_id", "lead", "seller_id"),
+                               ("ix_lead_request_id", "lead", "request_id"),
+                               ("ix_lead_anon_ref", "lead", "anon_ref"),
+                               ("ix_auditlog_tenant_id", "auditlog", "tenant_id"),
+                               ("ix_lead_company_id", "lead", "company_id"),
+                               ("ix_supplier_company_id", "supplier", "company_id"),
+                               ("ix_servicerequest_assigned_admin_id", "servicerequest", "assigned_admin_id")]:
         if table in tables:
             cur.execute(f"CREATE INDEX IF NOT EXISTS {idx} ON {table}({column})")
+    # DB-level anon_ref uniqueness: a PARTIAL unique index so blank refs never collide but two buyers in one
+    # request can never share a reference.
+    if "lead" in tables and "anon_ref" in {r[1] for r in cur.execute("PRAGMA table_info(lead)")}:
+        cur.execute("CREATE UNIQUE INDEX IF NOT EXISTS uq_lead_req_anonref "
+                    "ON lead(request_id, anon_ref) WHERE anon_ref != ''")
     con.commit()
     con.close()
     print(f"migrations applied: {applied}")

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% set active = 'markets' %}
+{% block content %}
+
+{% set hdr = {
+     "section": "Intelligence",
+     "title": "Markets",
+     "desc": "One place to reach every market page. This view only organizes access — the underlying country datasets are unchanged and each existing page and bookmark keeps working.",
+     "count": cards|length,
+     "breadcrumb": [{"label": "Intelligence"}, {"label": "Markets"}]
+   } %}
+{% include "partials/admin_page_header.html" %}
+
+<div class="mb-5 max-w-md">
+  <label for="market-search" class="field-label">Find a market</label>
+  <input id="market-search" class="input" type="search" autocomplete="off"
+         placeholder="Search countries…" aria-controls="market-grid"
+         oninput="g4FilterMarkets(this.value)">
+</div>
+
+{% if cards %}
+<div id="market-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  {% for c in cards %}
+  <a href="{{ c.href }}" class="card card-hover g4-market" data-name="{{ c.name|lower }}" data-iso="{{ c.iso|lower }}"
+     style="text-decoration:none; color:inherit; display:block">
+    <div class="flex items-center justify-between mb-2">
+      <span class="badge badge-slate tabular-nums">{{ c.iso }}</span>
+      <span class="eyebrow">Market</span>
+    </div>
+    <div class="text-lg font-bold font-display">{{ c.name }}</div>
+    <p class="text-sm mt-1" style="color:var(--muted)">{{ c.summary }}</p>
+    <div class="mt-3 text-sm link">Open market page &rarr;</div>
+  </a>
+  {% endfor %}
+</div>
+<div id="market-empty" class="empty mt-4" hidden>No market matches that search.</div>
+{% else %}
+<div class="empty">No market pages are registered yet.</div>
+{% endif %}
+
+<script>
+  // Client-side, read-only filter over the registered market cards. Touches nothing on the server.
+  function g4FilterMarkets(q) {
+    q = (q || '').trim().toLowerCase();
+    var shown = 0;
+    document.querySelectorAll('#market-grid .g4-market').forEach(function (el) {
+      var hit = !q || el.dataset.name.indexOf(q) > -1 || el.dataset.iso.indexOf(q) > -1;
+      el.style.display = hit ? '' : 'none';
+      if (hit) shown++;
+    });
+    var empty = document.getElementById('market-empty');
+    if (empty) empty.hidden = shown !== 0;
+  }
+</script>
+{% endblock %}

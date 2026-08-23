@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% set active = 'sellers' %}
+{% block content %}
+{% set hdr = {"section":"Trade Network","title":"Sellers","count":rows|length,
+   "desc":"Companies we sell FOR — platform accounts and login-less/external sellers. Never hard-deleted with history."} %}
+{% include "partials/admin_page_header.html" %}
+
+<details class="card mb-4" style="border:1px solid var(--border)">
+  <summary class="cursor-pointer font-semibold text-sm">+ Add a seller</summary>
+  <form method="post" action="/sellers" class="grid sm:grid-cols-3 gap-2 mt-3">
+    <div><label class="field-label">Company *</label><input class="input" name="name" required></div>
+    <div><label class="field-label">Country</label><input class="input" name="country" placeholder="TR"></div>
+    <div><label class="field-label">City</label><input class="input" name="city"></div>
+    <div><label class="field-label">Website</label><input class="input" name="website"></div>
+    <div><label class="field-label">Contact name</label><input class="input" name="contact_name"></div>
+    <div><label class="field-label">Email</label><input class="input" name="email"></div>
+    <div><label class="field-label">Phone</label><input class="input" name="phone"></div>
+    <div><label class="field-label">Link platform account (user id)</label><input class="input" name="account_user_id" placeholder="optional"></div>
+    <div class="flex items-end"><button class="btn btn-primary btn-block" data-busy="Saving">Add seller</button></div>
+  </form>
+</details>
+
+<form method="get" action="/sellers" class="flex flex-wrap gap-2 mb-3 items-end">
+  <div><label class="field-label">Search</label><input class="input" name="q" value="{{ q }}" placeholder="name…"></div>
+  <div><label class="field-label">Country</label><input class="input" name="country" value="{{ country }}"></div>
+  <div><label class="field-label">Status</label>
+    <select class="select" name="status">
+      {% for s in ['active','archived','all'] %}<option value="{{ s }}" {{ 'selected' if status==s }}>{{ s }}</option>{% endfor %}
+    </select></div>
+  <button class="btn btn-neutral btn-sm">Filter</button>
+  <a class="btn btn-ghost-sky btn-sm" href="/export/sellers.csv">Export CSV</a>
+</form>
+
+<div class="table-wrap">
+  <table class="data-table">
+    <thead><tr><th>Company</th><th>Country</th><th>Account</th><th>Contacts</th><th>Requests</th><th>Verification</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+      <tr>
+        <td><a class="link" href="/companies/{{ r.c.id }}">{{ r.c.name }}</a></td>
+        <td>{{ r.c.country or '—' }}</td>
+        <td>{% if r.account %}<span class="badge badge-sky text-[10px]">{{ r.account.email }}</span>{% else %}<span class="text-slate-500 text-xs">external</span>{% endif %}</td>
+        <td class="tabular-nums">{{ r.contacts }}</td>
+        <td class="tabular-nums">{{ r.requests }}</td>
+        <td><span class="badge badge-slate text-[10px]">{{ r.c.verification_status }}</span></td>
+        <td><span class="badge {{ 'badge-emerald' if r.c.status=='active' else 'badge-slate' }} text-[10px]">{{ r.c.status }}</span></td>
+        <td class="text-right">
+          <form method="post" action="/sellers/{{ r.c.id }}/archive" class="inline" data-no-spin>
+            <input type="hidden" name="restore" value="{{ '0' if r.c.status=='active' else '1' }}">
+            <button class="btn btn-ghost-sky btn-sm">{{ 'Archive' if r.c.status=='active' else 'Restore' }}</button>
+          </form>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="8" class="text-center text-slate-500 py-6">No sellers yet.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

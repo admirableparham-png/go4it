@@ -10,6 +10,7 @@ httpx>=0.28.1,<0.29
 rapidfuzz>=3.13,<4
 python-dotenv>=1.2,<2
 itsdangerous>=2.1,<3
+cryptography>=42,<46         # Fernet — encrypts traders' connected-mailbox app passwords at rest
 playwright>=1.40,<2
 gunicorn>=21,<24            # production process manager (runs uvicorn workers)
 
