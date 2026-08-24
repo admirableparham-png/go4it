@@ -10,8 +10,6 @@ import os
 import re
 from datetime import datetime
 
-from sqlmodel import select
-
 from . import attachments as ATT
 from .models import DocumentRequirement, ServiceRequest, TradeDocument
 from .pipeline import audit, sanitize_scan

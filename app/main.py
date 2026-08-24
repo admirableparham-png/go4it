@@ -78,9 +78,9 @@ from . import ops_providers as OPSPROV
 from . import payments as PAY
 from . import remittance as REMIT
 from . import seller_progress as SP
-from .models import (CustomsCase, DeliveryConfirmation, DocumentRequirement, FreightOffer, FreightRequest,
-                     OperationCase, OperationalException, PaymentMilestone, RemittanceCase, Settlement,
-                     SettlementAdjustment, Shipment, ShipmentEvent, ShipmentLeg, TradeDocument)
+from .models import (CustomsCase, DocumentRequirement, FreightOffer, FreightRequest, OperationCase,
+                     OperationalException, PaymentMilestone, RemittanceCase, Settlement, Shipment,
+                     ShipmentEvent, ShipmentLeg, TradeDocument)
 from .research_engine import (PARTNERS, country_options, market_report,
                               product_options, rank_opportunities, recommend_destinations,
                               resolve_query)
