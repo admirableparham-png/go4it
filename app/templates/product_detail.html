@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% set active = 'catalog' %}
+{% block content %}
+{% set tabs = [('overview','Overview'),('specs','Specifications'),('suppliers','Suppliers'),('pricing','Pricing'),('documents','Documents'),('catalogs','Catalogs'),('activity','Activity')] %}
+
+<div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+  <div>
+    <a href="/catalog" class="text-slate-500 text-sm hover:underline">&larr; Catalog</a>
+    <h2 class="text-xl font-bold tracking-tight mt-1">{{ p.name }}
+      <span class="badge badge-slate text-[10px]">{{ p.status }}</span>
+      <span class="badge {% if p.verification_status=='verified' %}badge-emerald{% elif p.verification_status=='rejected' %}badge-rose{% else %}badge-slate{% endif %} text-[10px]">{{ p.verification_status }}</span>
+    </h2>
+    <p class="text-slate-500 text-sm">{% if p.sku %}<span class="font-mono">{{ p.sku }}</span> &middot; {% endif %}{{ cat.name if cat else (p.category or 'uncategorized') }} &middot; {{ p.origin_country or p.origin_region or 'origin?' }}</p>
+  </div>
+  <div class="text-right">
+    <div class="text-sm {% if completeness < 60 %}text-amber-400{% else %}text-emerald-400{% endif %}">Completeness {{ completeness }}%</div>
+    {% if missing %}<div class="text-[11px] text-amber-400">Missing: {{ missing|join(', ') }}</div>{% endif %}
+  </div>
+</div>
+
+<div class="flex flex-wrap gap-1 mb-4 border-b border-white/10 pb-2">
+  {% for key, label in tabs %}
+    <a href="/catalog/products/{{ p.id }}?tab={{ key }}" class="btn btn-sm {% if tab==key %}btn-primary{% else %}btn-neutral{% endif %}">{{ label }}</a>
+  {% endfor %}
+</div>
+
+{% if tab == 'overview' or tab == 'specs' %}
+  <form method="post" action="/catalog/products/{{ p.id }}/edit" class="card space-y-3 max-w-3xl">
+    <div class="eyebrow">{{ 'Overview' if tab=='overview' else 'Specifications' }} &middot; explicit save</div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      {% macro fld(name, label, val, type='text') %}
+        <label class="text-xs text-slate-400">{{ label }}<input name="{{ name }}" value="{{ val if val is not none else '' }}" class="input mt-0.5" {% if type=='number' %}type="number" step="any"{% endif %}></label>
+      {% endmacro %}
+      {% if tab == 'overview' %}
+        {{ fld('name','Name', p.name) }}{{ fld('sku','SKU', p.sku) }}
+        {{ fld('brand','Brand', p.brand) }}{{ fld('grade','Grade / purity', p.grade) }}
+        {{ fld('hs_code','HS code', p.hs_code) }}{{ fld('unit','Unit', p.unit) }}
+        {{ fld('exw_price','EXW price', p.exw_price, 'number') }}{{ fld('currency','Currency', p.currency) }}
+        {{ fld('min_order_qty','MOQ', p.min_order_qty, 'number') }}{{ fld('category','Category', p.category) }}
+        {{ fld('origin_country','Origin country', p.origin_country) }}{{ fld('origin_city','Origin city', p.origin_city) }}
+        <label class="text-xs text-slate-400 sm:col-span-2">Short description<input name="short_description" value="{{ p.short_description }}" class="input mt-0.5"></label>
+      {% else %}
+        {{ fld('weight_kg_per_unit','Weight kg/unit', p.weight_kg_per_unit, 'number') }}{{ fld('cbm_per_unit','CBM/unit', p.cbm_per_unit, 'number') }}
+        {{ fld('units_per_package','Units/package', p.units_per_package, 'number') }}{{ fld('packaging','Packaging', p.packaging) }}
+        {{ fld('producer','Producer', p.producer) }}{{ fld('production_capacity','Capacity', p.production_capacity) }}
+        {{ fld('lead_time_days','Lead time (days)', p.lead_time_days, 'number') }}{{ fld('shelf_life','Shelf life', p.shelf_life) }}
+        {{ fld('storage_requirements','Storage', p.storage_requirements) }}{{ fld('incoterms','Incoterms (CSV)', p.incoterms) }}
+        {{ fld('certifications','Certifications', p.certifications) }}
+        <label class="text-xs text-slate-400 sm:col-span-2">Specification<textarea name="spec" rows="3" class="input mt-0.5">{{ p.spec }}</textarea></label>
+      {% endif %}
+      <label class="text-xs text-slate-400 sm:col-span-2">Internal notes (admin-only)<textarea name="internal_notes" rows="2" class="input mt-0.5">{{ p.internal_notes }}</textarea></label>
+    </div>
+    <div class="flex gap-2">
+      <button class="btn btn-primary btn-sm">Save</button>
+      <a href="/catalog/products/{{ p.id }}" class="btn btn-neutral btn-sm">Cancel</a>
+    </div>
+  </form>
+  {% if tab == 'overview' %}
+  <div class="flex gap-2 mt-3">
+    <form method="post" action="/catalog/products/{{ p.id }}/verify"><input type="hidden" name="verification_status" value="verified"><button class="btn btn-secondary btn-sm">Mark verified</button></form>
+    <form method="post" action="/catalog/products/{{ p.id }}/verify"><input type="hidden" name="verification_status" value="rejected"><button class="btn btn-neutral btn-sm">Reject</button></form>
+    <form method="post" action="/catalog/products/{{ p.id }}/status"><input type="hidden" name="status" value="{{ 'archived' if p.active else 'active' }}"><button class="btn btn-neutral btn-sm">{{ 'Archive' if p.active else 'Activate' }}</button></form>
+  </div>
+  {% endif %}
+
+{% elif tab == 'suppliers' %}
+  <div class="card mb-3">
+    <div class="eyebrow mb-2">Linked suppliers</div>
+    {% if sup_links %}
+      {% for sl in sup_links %}
+        <div class="flex items-center justify-between border-t border-white/5 py-1.5 text-sm">
+          <div>{{ companies[sl.company_id].name if sl.company_id in companies else 'company '+sl.company_id|string }}
+            {% if sl.is_primary %}<span class="badge badge-emerald text-[10px]">primary</span>{% endif %}
+            {% if sl.supplier_sku %}<span class="text-[11px] font-mono text-slate-500">{{ sl.supplier_sku }}</span>{% endif %}</div>
+          <a href="/companies/{{ sl.company_id }}" class="text-xs text-sky-400 hover:underline">Trade Network &rarr;</a>
+        </div>
+      {% endfor %}
+    {% else %}<div class="empty">No suppliers linked yet.</div>{% endif %}
+  </div>
+  <form method="post" action="/catalog/products/{{ p.id }}/suppliers" class="card space-y-2 max-w-lg">
+    <div class="eyebrow">Link a supplier (canonical company)</div>
+    <select name="company_id" class="input" required>
+      <option value="">Select supplier company…</option>
+      {% for c in supplier_companies %}<option value="{{ c.id }}">{{ c.name }} ({{ c.country }})</option>{% endfor %}
+    </select>
+    <div class="grid grid-cols-2 gap-1">
+      <input name="supplier_sku" placeholder="supplier SKU" class="input">
+      <input name="supplier_price" type="number" step="any" placeholder="their price" class="input">
+    </div>
+    <label class="text-xs text-slate-400 flex items-center gap-1"><input type="checkbox" name="is_primary" value="1"> primary supplier</label>
+    <button class="btn btn-secondary btn-sm">Link supplier</button>
+  </form>
+
+{% elif tab == 'pricing' %}
+  <form method="post" action="/catalog/products/{{ p.id }}/price" class="card space-y-2 max-w-2xl mb-3">
+    <div class="eyebrow">New landed-price version (immutable once saved)</div>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-1">
+      <select name="incoterm" class="input">{% for t in incoterms %}<option value="{{ t }}">{{ t }}</option>{% endfor %}</select>
+      <input name="quantity" type="number" step="any" placeholder="qty (MOQ)" class="input">
+      <input name="margin_pct" type="number" step="any" placeholder="margin % of price" class="input">
+      <input name="destination" placeholder="destination" class="input">
+    </div>
+    <button class="btn btn-secondary btn-sm">Calculate + save version</button>
+    <p class="text-[11px] text-slate-500">Decimal math &middot; expired rates &amp; missing duties are surfaced, never guessed.</p>
+  </form>
+  {% for pr in price_rows %}{% set pv = pr.pv %}
+    <div class="card mb-2">
+      <div class="flex items-center justify-between">
+        <div class="text-sm font-medium">v{{ pv.version }} &middot; {{ pv.incoterm }} &middot; {{ '%.2f'|format(pv.unit_price) }} {{ pv.currency }}/unit
+          <span class="badge {% if pv.status=='approved' %}badge-emerald{% elif pv.status=='needs_review' %}badge-amber{% elif pv.status=='expired' %}badge-rose{% else %}badge-slate{% endif %} text-[10px]">{{ pv.status }}</span></div>
+        <div class="flex gap-1">
+          {% if pv.status in ('draft','needs_review') %}<form method="post" action="/catalog/products/{{ p.id }}/price/{{ pv.id }}/action"><input type="hidden" name="action" value="approved"><button class="btn btn-secondary btn-xs">Approve</button></form>{% endif %}
+          <form method="post" action="/catalog/products/{{ p.id }}/price/{{ pv.id }}/action"><input type="hidden" name="action" value="duplicate"><button class="btn btn-neutral btn-xs">Duplicate</button></form>
+        </div>
+      </div>
+      <div class="text-[11px] text-slate-500 mt-1">margin {{ pv.margin_pct }}% of price &middot; markup {{ pv.markup_pct }}% of cost &middot; total {{ '%.2f'|format(pv.total_price) }} {{ pv.currency }}</div>
+      <table class="w-full text-xs mt-1"><tbody>
+        {% for ln in pr.breakdown %}<tr><td class="text-slate-400 py-0.5">{{ ln.label }}</td><td class="text-right tabular-nums">{{ ln.amount }} {{ ln.currency }}</td></tr>{% endfor %}
+      </tbody></table>
+      {% if pr.excluded %}<div class="text-[11px] text-amber-400 mt-1">Excluded: {% for e in pr.excluded %}{{ e.label }} ({{ e.reason }}){% if not loop.last %}, {% endif %}{% endfor %}</div>{% endif %}
+    </div>
+  {% else %}<div class="empty">No price versions yet.</div>{% endfor %}
+
+{% elif tab == 'documents' %}
+  {% include 'partials/product_documents.html' ignore missing %}
+  {% if not docs %}<div class="empty">No documents.{% if not attachments_supported|default(true) %} Uploads pending secure storage.{% endif %}</div>{% endif %}
+
+{% elif tab == 'catalogs' %}
+  {% if catalogs %}
+    {% for j in catalogs %}
+      <div class="card mb-2 flex items-center justify-between">
+        <div class="text-sm">Catalog v{{ j.version }} <span class="badge badge-slate text-[10px]">{{ j.status }}</span> <span class="text-[11px] text-slate-500">{{ j.provider }}</span></div>
+        {% if j.status=='approved' and j.file_path %}<a href="/catalog/studio/{{ j.id }}/download" class="btn btn-neutral btn-xs">Download PDF</a>{% endif %}
+      </div>
+    {% endfor %}
+  {% else %}<div class="empty">No generated catalogs yet. Use Catalog Studio.</div>{% endif %}
+
+{% elif tab == 'activity' %}
+  <div class="card">
+    <div class="eyebrow mb-2">Audit &amp; activity</div>
+    {% for a in acts %}
+      <div class="border-t border-white/5 py-1.5 text-xs flex justify-between">
+        <span>{{ a.action }} <span class="text-slate-500">{{ a.meta }}</span></span>
+        <span class="text-slate-500">{{ a.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+      </div>
+    {% else %}<div class="empty">No activity recorded.</div>{% endfor %}
+  </div>
+{% endif %}
+{% endblock %}

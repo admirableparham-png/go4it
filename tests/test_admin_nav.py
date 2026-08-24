@@ -20,15 +20,16 @@ PRIMARY = ["Dashboard", "Work Queue", "Requests", "Network", "Outreach", "Produc
 # every existing admin destination must remain reachable from the header (primary hrefs + mobile panel kids)
 REACHABLE = ["/admin/work-queue", "/admin/requests", "/leads", "/suppliers",
              "/campaigns", "/inbox", "/followups", "/templates", "/suppression", "/mail", "/outreach/analytics",
-             "/catalog", "/rates", "/quotes", "/deals", "/research", "/intel", "/markets", "/lines/cd-dvd",
-             "/command", "/ingest", "/admin/users", "/admin/activity",
-             "/sellers", "/data-quality", "/duplicates"]   # Phase 2 Trade Network + Phase 4 Outreach
+             "/catalog", "/categories", "/pricing", "/quotes", "/deals", "/research", "/intel", "/markets",
+             "/lines/cd-dvd", "/command", "/ingest", "/admin/users", "/admin/activity",
+             "/sellers", "/data-quality", "/duplicates"]   # + Phase 5: Suppliers/Categories/Pricing under Products
 # admin-only routes (unchanged backend gate) — a non-admin must still get 403
 ADMIN_ONLY = ["/command", "/research", "/suppliers", "/catalog", "/rates", "/ingest", "/admin/users",
               "/admin/activity", "/lines/cd-dvd", "/uae", "/intel", "/georgia", "/markets",
               "/sellers", "/data-quality", "/duplicates", "/export/buyers.csv",
               "/admin/work-queue",   # Phase 3 Work Queue
-              "/campaigns", "/inbox", "/followups", "/templates", "/suppression", "/outreach/analytics"]  # Phase 4
+              "/campaigns", "/inbox", "/followups", "/templates", "/suppression", "/outreach/analytics",  # Phase 4
+              "/categories", "/pricing"]  # Phase 5 Products/Pricing
 
 
 @pytest.fixture
@@ -104,9 +105,9 @@ def test_each_workspace_has_its_own_contextual_row(ctx):
     client, _, _ = ctx
     _login(client, "admin@t.local")
     cases = {
-        "/leads": ("Network pages", ["Buyers &amp; Prospects", "Suppliers"]),
+        "/leads": ("Network pages", ["Buyers &amp; Prospects", "Sellers"]),
         "/campaign": ("Outreach pages", ["Campaigns", "Email Accounts"]),
-        "/catalog": ("Products pages", ["Catalog", "Rates &amp; Costs"]),
+        "/catalog": ("Products pages", ["Catalog", "Categories", "Suppliers", "Pricing &amp; Rates"]),
         "/quotes": ("Commercial pages", ["Quotes", "Deals"]),
         "/research": ("Intelligence pages", ["Research", "Market Intel", "Markets", "Product Lines", "Command"]),
         "/ingest": ("Admin pages", ["Data Imports", "Accounts &amp; Access", "Team Activity"]),
@@ -126,7 +127,7 @@ def test_detail_pages_activate_correct_parent_and_child(ctx):
         (f"/leads/{ids['lead']}", "Network", "Buyers &amp; Prospects", "Network pages"),
         (f"/quotes/{ids['quote']}", "Commercial", "Quotes", "Commercial pages"),
         (f"/deals/{ids['deal']}", "Commercial", "Deals", "Commercial pages"),
-        ("/suppliers", "Network", "Suppliers", "Network pages"),
+        ("/suppliers", "Products", "Suppliers", "Products pages"),
     ]
     for path, parent, child, aria in checks:
         body = client.get(path).text

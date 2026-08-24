@@ -117,6 +117,41 @@ MIGRATIONS = [
     # Phase-4 gate: durable RFC Message-ID on the crash-safe send record (only needed where campaignsend
     # already existed from an earlier boot; fresh DBs get it from create_all — the loop skips absent tables).
     ("campaignsend", "rfc_message_id", "VARCHAR DEFAULT ''"),
+    # Products, Catalogs, Suppliers & Pricing (Phase 5) — additive columns on the existing product/supplier/
+    # fxrate tables. The new Phase-5 TABLES (productcategory/productcategoryalias/productvariant/
+    # productsupplier/costrate/productpriceversion/productdocument/cataloggenerationjob) are made by
+    # create_all + scripts/migrate_gate_p5.py; the loop below skips their columns until the table exists.
+    ("product", "sku", "VARCHAR DEFAULT ''"),
+    ("product", "short_description", "VARCHAR DEFAULT ''"),
+    ("product", "category_id", "INTEGER"),
+    ("product", "subcategory", "VARCHAR DEFAULT ''"),
+    ("product", "brand", "VARCHAR DEFAULT ''"),
+    ("product", "grade", "VARCHAR DEFAULT ''"),
+    ("product", "origin_country", "VARCHAR DEFAULT ''"),
+    ("product", "origin_city", "VARCHAR DEFAULT ''"),
+    ("product", "producer", "VARCHAR DEFAULT ''"),
+    ("product", "units_per_package", "FLOAT DEFAULT 0"),
+    ("product", "production_capacity", "VARCHAR DEFAULT ''"),
+    ("product", "lead_time_days", "INTEGER DEFAULT 0"),
+    ("product", "shelf_life", "VARCHAR DEFAULT ''"),
+    ("product", "storage_requirements", "VARCHAR DEFAULT ''"),
+    ("product", "certifications", "VARCHAR DEFAULT ''"),
+    ("product", "incoterms", "VARCHAR DEFAULT ''"),
+    ("product", "status", "VARCHAR DEFAULT 'active'"),
+    ("product", "completeness_score", "INTEGER DEFAULT 0"),
+    ("product", "verification_status", "VARCHAR DEFAULT 'unverified'"),
+    ("product", "verified_at", "TIMESTAMP"),
+    ("product", "verified_by", "VARCHAR DEFAULT ''"),
+    ("product", "internal_notes", "VARCHAR DEFAULT ''"),
+    ("product", "created_at", "TIMESTAMP"),
+    ("supplier", "reliability_rated", "BOOLEAN DEFAULT 0"),
+    ("workitem", "related_product_id", "INTEGER"),
+    ("fxrate", "source", "VARCHAR DEFAULT ''"),
+    ("fxrate", "kind", "VARCHAR DEFAULT 'manual'"),
+    ("fxrate", "retrieved_at", "TIMESTAMP"),
+    ("fxrate", "expires_at", "TIMESTAMP"),
+    ("fxrate", "verified_by", "VARCHAR DEFAULT ''"),
+    ("fxrate", "active", "BOOLEAN DEFAULT 1"),
 ]
 
 
@@ -164,7 +199,11 @@ def run():
                                ("ix_lead_company_id", "lead", "company_id"),
                                ("ix_supplier_company_id", "supplier", "company_id"),
                                ("ix_servicerequest_assigned_admin_id", "servicerequest", "assigned_admin_id"),
-                               ("ix_outreach_campaign_id", "outreach", "campaign_id")]:
+                               ("ix_outreach_campaign_id", "outreach", "campaign_id"),
+                               ("ix_product_sku", "product", "sku"),
+                               ("ix_product_category_id", "product", "category_id"),
+                               ("ix_product_origin_country", "product", "origin_country"),
+                               ("ix_product_supplier_id", "product", "supplier_id")]:
         if table in tables:
             cur.execute(f"CREATE INDEX IF NOT EXISTS {idx} ON {table}({column})")
     # DB-level anon_ref uniqueness: a PARTIAL unique index so blank refs never collide but two buyers in one

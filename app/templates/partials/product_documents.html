@@ -1,0 +1,29 @@
+<div class="card mb-3">
+  <div class="eyebrow mb-2">Private product documents</div>
+  {% if docs %}
+    {% for d in docs %}
+      <div class="flex items-center justify-between border-t border-white/5 py-1.5 text-sm">
+        <div>
+          <span class="badge badge-slate text-[10px]">{{ d.doc_type }}</span>
+          {{ d.title or d.original_filename }}
+          {% if d.seller_safe %}<span class="badge badge-emerald text-[10px]">seller-safe</span>{% endif %}
+          <span class="text-[11px] text-slate-500">{{ (d.size_bytes / 1024)|round(1) }} KB</span>
+        </div>
+        <div class="flex gap-1">
+          <a href="/catalog/products/{{ p.id }}/documents/{{ d.id }}/download" class="btn btn-neutral btn-xs">Download</a>
+          <form method="post" action="/catalog/products/{{ p.id }}/documents/{{ d.id }}/archive"><button class="btn btn-neutral btn-xs">Archive</button></form>
+        </div>
+      </div>
+    {% endfor %}
+  {% endif %}
+</div>
+<form method="post" action="/catalog/products/{{ p.id }}/documents" enctype="multipart/form-data" class="card space-y-2 max-w-lg">
+  <div class="eyebrow">Upload document (private, admin-only)</div>
+  <select name="doc_type" class="input">
+    {% for t in ['datasheet','certificate','lab_report','product_image','packaging_image','spec','commercial'] %}<option value="{{ t }}">{{ t }}</option>{% endfor %}
+  </select>
+  <input name="title" placeholder="title (optional)" class="input">
+  <input type="file" name="file" required class="input">
+  <button class="btn btn-secondary btn-sm">Upload</button>
+  <p class="text-[11px] text-slate-500">Stored privately (outside /static), validated + admin-download-gated. Seller access only via seller-safe publish. No buyer data.</p>
+</form>

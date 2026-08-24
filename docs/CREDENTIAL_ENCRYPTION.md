@@ -25,12 +25,17 @@ python -c "import secrets; print(secrets.token_urlsafe(48))"
 # put it in .env:  CREDENTIAL_ENCRYPTION_KEYS=<that value>
 ```
 
-## Verify there is no plaintext / encrypt legacy plaintext
+## Observe the plaintext count, then encrypt if any
 ```bash
-./.venv/bin/python scripts/encrypt_credentials.py --dry-run   # counts plaintext creds; changes nothing
+./.venv/bin/python scripts/encrypt_credentials.py --dry-run   # OBSERVE plaintext count; changes nothing
 ./.venv/bin/python scripts/encrypt_credentials.py             # encrypts any plaintext, verify-before-persist
 ```
-Idempotent (re-run → 0), verifies each new token round-trips **before** replacing the old value, transactional.
+The dry-run count is an **observed** result — do **not** assume production is 0. If it reports 0, record and
+verify it (spot-check a decrypt). If it reports plaintext, encrypt + verify **before** starting the workers.
+The apply step verifies each new token round-trips **before** replacing the old value (the original is never
+deleted/overwritten until encrypted persistence + decryption are confirmed), is transactional, and idempotent
+(re-run → 0). Credentials are **never printed**. See `docs/PRODUCTION_MIGRATION.md` for the worker-pause →
+key-first → verify → restart deployment order.
 
 ## One-time migration off SECRET_KEY, and key rotation (same command)
 ```bash

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% set active = 'categories' %}
+{% block content %}
+<div class="flex items-end justify-between gap-3 mb-4">
+  <div>
+    <h2 class="text-xl font-bold tracking-tight">Categories <span class="badge badge-slate">{{ cats|length }}</span></h2>
+    <p class="text-slate-500 text-sm mt-0.5">Structured taxonomy &middot; {{ uncategorized }} product(s) uncategorized.</p>
+  </div>
+  <a href="/catalog" class="btn btn-neutral btn-sm">&larr; Catalog</a>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+  <div class="lg:col-span-2 card overflow-x-auto">
+    <table class="w-full text-sm min-w-[560px]">
+      <thead class="text-slate-500 text-xs uppercase text-left"><tr><th class="py-1 pr-2">Category</th><th class="pr-2">Parent</th><th class="pr-2">Products</th><th class="pr-2">Status</th><th class="pr-2">Aliases</th><th></th></tr></thead>
+      <tbody>
+        {% for c in cats %}
+        <tr class="border-t border-white/5 {% if c.status=='archived' %}opacity-50{% endif %}">
+          <td class="py-1.5 pr-2 font-medium">{{ c.name }}{% if c.inferred %} <span class="badge badge-slate text-[9px]">inferred</span>{% endif %}{% if c.merged_into_id %} <span class="badge badge-amber text-[9px]">merged</span>{% endif %}</td>
+          <td class="pr-2 text-slate-500">{{ c.parent_id or '—' }}</td>
+          <td class="pr-2 tabular-nums">{{ counts.get(c.id, 0) }}</td>
+          <td class="pr-2"><span class="badge badge-slate text-[10px]">{{ c.status }}</span></td>
+          <td class="pr-2 text-[11px] text-slate-500">{{ (aliases.get(c.id, []))|join(', ') or '—' }}</td>
+          <td class="pr-2 text-right">
+            <form method="post" action="/categories/{{ c.id }}/status" class="inline"><input type="hidden" name="status" value="{{ 'active' if c.status=='archived' else 'archived' }}"><button class="btn btn-neutral btn-xs">{{ 'Restore' if c.status=='archived' else 'Archive' }}</button></form>
+          </td>
+        </tr>
+        {% else %}<tr><td colspan="6" class="empty">No categories yet.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="space-y-4">
+    <form method="post" action="/categories" class="card space-y-2">
+      <div class="eyebrow">New category</div>
+      <input name="name" placeholder="category name" required class="input">
+      <select name="parent_id" class="input"><option value="">(top level)</option>{% for c in cats %}{% if c.status=='active' %}<option value="{{ c.id }}">{{ c.name }}</option>{% endif %}{% endfor %}</select>
+      <button class="btn btn-primary btn-sm btn-block">Create</button>
+    </form>
+
+    <form method="post" action="/categories/merge" class="card space-y-2">
+      <div class="eyebrow">Merge (safe, reversible)</div>
+      <select name="source_id" class="input" required><option value="">Merge FROM…</option>{% for c in cats %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select>
+      <select name="dest_id" class="input" required><option value="">…INTO (survivor)</option>{% for c in cats %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select>
+      <button class="btn btn-secondary btn-sm btn-block">Merge</button>
+      <p class="text-[11px] text-slate-500">Products re-point to the survivor; the source is archived (never deleted). Product history is preserved.</p>
+    </form>
+
+    <form method="post" action="/categories/{{ cats[0].id if cats else 0 }}/alias" class="card space-y-2">
+      <div class="eyebrow">Add alias (import matching)</div>
+      <input name="alias" placeholder="alternate spelling" class="input">
+      <button class="btn btn-neutral btn-sm btn-block">Add alias to first category</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -31,6 +31,7 @@ def init_db() -> None:
     _ensure_trade_network_indexes()
     _ensure_workitem_indexes()
     _ensure_outreach_indexes()
+    _ensure_product_indexes()
 
 
 def _ensure_trade_network_indexes() -> None:
@@ -87,6 +88,26 @@ def _ensure_outreach_indexes() -> None:
                               "WHERE campaign_id IS NOT NULL"))
             conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_suppression_addr_scope "
                               "ON suppression(email_normalized, scope, tenant_id) WHERE active = 1"))
+            conn.commit()
+    except Exception:  # noqa: BLE001 — never block startup on the guard
+        pass
+
+
+def _ensure_product_indexes() -> None:
+    """Products/Pricing (Phase 5) DB-level guards (idempotent, never block boot):
+    one product↔supplier link per (product, company); one active category name per (tenant, parent); one
+    canonical category per alias. Enforced as partial-unique indexes so archived rows never collide."""
+    if not _is_sqlite:
+        return
+    try:
+        with engine.connect() as conn:
+            from sqlalchemy import text
+            conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_productsupplier_pc "
+                              "ON productsupplier(product_id, company_id)"))
+            conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_productcategory_active "
+                              "ON productcategory(tenant_id, name_normalized, parent_id) WHERE status = 'active'"))
+            conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_prodcatalias_norm "
+                              "ON productcategoryalias(alias_normalized)"))
             conn.commit()
     except Exception:  # noqa: BLE001 — never block startup on the guard
         pass

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% set active = 'studio' %}
+{% block content %}
+<div class="flex items-end justify-between gap-3 mb-4">
+  <div>
+    <h2 class="text-xl font-bold tracking-tight">Catalog Studio</h2>
+    <p class="text-slate-500 text-sm mt-0.5">Generate a branded one-pager PDF from APPROVED product fields. Contact is always Go4it &middot; never auto-emailed.</p>
+  </div>
+  <a href="/catalog" class="btn btn-neutral btn-sm">&larr; Catalog</a>
+</div>
+
+<div class="card mb-4 text-sm">
+  <span class="eyebrow">Providers</span>
+  <span class="ml-2">Built-in (HTML→PDF): <b class="{% if 'ready' in provider_status.builtin %}text-emerald-400{% else %}text-amber-400{% endif %}">{{ provider_status.builtin }}</b></span>
+  <span class="ml-3">Higgs: <b class="{% if provider_status.higgs=='configured' %}text-emerald-400{% else %}text-slate-400{% endif %}">{{ 'Configured' if provider_status.higgs=='configured' else 'Not configured' }}</b></span>
+  {% if provider_status.higgs != 'configured' %}<span class="text-[11px] text-slate-500 ml-2">(deferred pending real credentials/API docs)</span>{% endif %}
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+  <form method="post" action="/catalog/studio/generate" class="card space-y-2">
+    <div class="eyebrow">Generate</div>
+    <select name="product_id" required class="input">
+      <option value="">Select product…</option>
+      {% for p in products %}<option value="{{ p.id }}" {% if selected==p.id %}selected{% endif %}>{{ p.name }}</option>{% endfor %}
+    </select>
+    <select name="provider" class="input"><option value="builtin">Built-in (self-hosted PDF)</option><option value="higgs">Higgs (if configured)</option></select>
+    <button class="btn btn-primary btn-sm btn-block">Generate catalog</button>
+    <p class="text-[11px] text-slate-500">Only approved fields + images &middot; no supplier/buyer contacts, no margins.</p>
+  </form>
+
+  <div class="lg:col-span-2 card overflow-x-auto">
+    <div class="eyebrow mb-2">Generated catalogs</div>
+    <table class="w-full text-sm min-w-[560px]">
+      <thead class="text-slate-500 text-xs uppercase text-left"><tr><th class="py-1 pr-2">Product</th><th class="pr-2">v</th><th class="pr-2">Provider</th><th class="pr-2">Status</th><th></th></tr></thead>
+      <tbody>
+        {% for j in jobs %}
+        <tr class="border-t border-white/5">
+          <td class="py-1.5 pr-2">{{ prod_names.get(j.product_id, j.product_id) }}</td>
+          <td class="pr-2">{{ j.version }}</td>
+          <td class="pr-2 text-xs">{{ j.provider }}</td>
+          <td class="pr-2"><span class="badge {% if j.status=='approved' %}badge-emerald{% elif j.status=='needs_review' %}badge-amber{% elif j.status=='failed' %}badge-rose{% else %}badge-slate{% endif %} text-[10px]">{{ j.status }}</span>{% if j.seller_safe %} <span class="badge badge-emerald text-[9px]">seller-safe</span>{% endif %}</td>
+          <td class="pr-2 text-right">
+            {% if j.file_path and j.status in ('needs_review','approved') %}<a href="/catalog/studio/{{ j.id }}/download" class="btn btn-neutral btn-xs">PDF</a>{% endif %}
+            {% if j.status=='needs_review' %}<form method="post" action="/catalog/studio/{{ j.id }}/action" class="inline"><input type="hidden" name="action" value="approve"><button class="btn btn-secondary btn-xs">Approve</button></form>{% endif %}
+            {% if j.status=='approved' and not j.seller_safe %}<form method="post" action="/catalog/studio/{{ j.id }}/action" class="inline"><input type="hidden" name="action" value="publish_seller_safe"><button class="btn btn-neutral btn-xs">Publish seller-safe</button></form>{% endif %}
+            {% if j.status=='failed' %}<span class="text-[11px] text-rose-400">{{ j.error }}</span>{% endif %}
+          </td>
+        </tr>
+        {% else %}<tr><td colspan="5" class="empty">No catalogs generated yet.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

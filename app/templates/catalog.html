@@ -1,104 +1,139 @@
 {% extends "base.html" %}
 {% set active = 'catalog' %}
 {% block content %}
-{% set ic = "input" %}
 
-<div class="flex flex-wrap items-end justify-between gap-3 mb-6">
+<div class="flex flex-wrap items-end justify-between gap-3 mb-4">
   <div>
-    <h2 class="text-xl font-bold tracking-tight flex items-center gap-2">Catalog <span class="badge badge-slate">{{ products|length }}</span></h2>
-    <p class="text-slate-500 text-sm mt-0.5">Your quotable Iranian supply &mdash; leads match against this.</p>
+    <h2 class="text-xl font-bold tracking-tight flex items-center gap-2">Catalog <span class="badge badge-slate">{{ total }}</span></h2>
+    <p class="text-slate-500 text-sm mt-0.5">Canonical supply catalog &mdash; buy-cost + margin, admin only.</p>
+  </div>
+  <div class="flex flex-wrap gap-1">
+    <a href="/catalog/export.csv" class="btn btn-neutral btn-sm">Export CSV</a>
+    <a href="/catalog/template.csv" class="btn btn-neutral btn-sm">CSV template</a>
+    <a href="/categories" class="btn btn-neutral btn-sm">Categories</a>
   </div>
 </div>
 
 {% if imported or updated or errors %}
-  <div class="card mb-6 text-sm">
+  <div class="card mb-4 text-sm">
     CSV import: <span class="text-emerald-400 font-medium">{{ imported }} added</span>,
-    <span class="text-sky-400 font-medium">{{ updated }} updated</span>{% if errors %},
-    <span class="text-amber-400 font-medium">{{ errors }} row error(s)</span>{% endif %}.
+    <span class="text-sky-400 font-medium">{{ updated }} updated</span>,
+    <span class="text-rose-400 font-medium">{{ errors }} errors</span>
+    {% if errors %} &middot; <a href="/catalog/import/report.csv" class="underline">error report</a>{% endif %}
   </div>
 {% endif %}
 
-<div class="grid lg:grid-cols-3 gap-8">
-
-  <!-- Add / import -->
-  <section class="lg:col-span-1 space-y-6">
-    <div>
-      <h3 class="text-sm font-semibold mb-3 text-sky-400">Import catalog CSV</h3>
-      <form method="post" action="/catalog/import" enctype="multipart/form-data" class="card space-y-3">
-        <input type="file" name="file" accept=".csv" required
-               class="block w-full text-sm text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-sky-600 file:hover:bg-sky-500 file:text-white file:px-3 file:py-1.5 file:text-sm file:cursor-pointer">
-        <button class="btn btn-secondary btn-block" data-busy="Importing">Upload &amp; import</button>
-        <p class="text-xs text-slate-500">
-          Columns are matched flexibly (name/product, price/exw, moq, hs, weight, supplier&hellip;).
-          <a href="/catalog/sample.csv" class="link">Download sample CSV</a>
-        </p>
-      </form>
-    </div>
-
-    <div>
-      <h3 class="text-sm font-semibold mb-3 text-emerald-400">Add one product</h3>
-      <form method="post" action="/catalog/products" class="card space-y-2">
-        <input name="name" required placeholder="Product name" class="{{ ic }}">
-        <div class="grid grid-cols-2 gap-2">
-          <input name="category" placeholder="Category" class="{{ ic }}">
-          <input name="spec" placeholder="Spec / grade" class="{{ ic }}">
-        </div>
-        <div class="grid grid-cols-3 gap-2">
-          <input name="hs_code" placeholder="HS code" class="{{ ic }}">
-          <input name="exw_price" type="number" step="any" min="0" placeholder="EXW price" class="{{ ic }}">
-          <input name="unit" placeholder="Unit" class="{{ ic }}">
-        </div>
-        <div class="grid grid-cols-3 gap-2">
-          <input name="weight_kg_per_unit" type="number" step="any" min="0" placeholder="Weight kg" class="{{ ic }}">
-          <input name="cbm_per_unit" type="number" step="any" min="0" placeholder="CBM" class="{{ ic }}">
-          <input name="min_order_qty" type="number" step="any" min="0" placeholder="MOQ" class="{{ ic }}">
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <input name="origin_region" placeholder="Origin (e.g. Tabriz)" class="{{ ic }}">
-          <input name="supplier" placeholder="Supplier" class="{{ ic }}">
-        </div>
-        <input name="packaging" placeholder="Packaging" class="{{ ic }}">
-        <button class="btn btn-primary btn-block" data-busy="Adding">Add product</button>
-      </form>
-    </div>
-  </section>
-
-  <!-- Product list -->
-  <section class="lg:col-span-2">
-    <h3 class="text-sm font-semibold text-slate-300 mb-3">Products</h3>
-    {% if products %}
-      <div class="table-wrap">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Cat</th>
-              <th>HS</th>
-              <th class="text-right">EXW</th>
-              <th class="text-right">MOQ</th>
-              <th>Origin</th>
-              <th>Supplier</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for p in products %}
-              <tr class="{% if not p.active %}opacity-50{% endif %}">
-                <td>{{ p.name }} <span class="text-slate-500">{{ p.spec }}</span></td>
-                <td class="text-slate-400">{{ p.category }}</td>
-                <td class="text-slate-400 font-mono text-xs">{{ p.hs_code }}</td>
-                <td class="text-right tabular-nums">{{ p.exw_price }} {{ p.currency }}/{{ p.unit }}</td>
-                <td class="text-right text-slate-400 tabular-nums">{{ p.min_order_qty }}</td>
-                <td class="text-slate-400">{{ p.origin_region }}</td>
-                <td class="text-slate-400">{{ suppliers[p.supplier_id].name if p.supplier_id in suppliers else '' }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+  <!-- filters + import -->
+  <div class="lg:col-span-1 space-y-4">
+    <form method="get" action="/catalog" class="card space-y-2">
+      <div class="eyebrow">Filter</div>
+      <input name="q" value="{{ q }}" placeholder="name / SKU / HS / brand" class="input">
+      <select name="category" class="input">
+        <option value="">All categories</option>
+        <option value="none" {% if f.category=='none' %}selected{% endif %}>— Uncategorized —</option>
+        {% for id, c in cats.items() %}<option value="{{ id }}" {% if f.category==id|string %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+      </select>
+      <select name="origin" class="input">
+        <option value="">Any origin</option>
+        {% for o in origins %}<option value="{{ o }}" {% if f.origin==o %}selected{% endif %}>{{ o }}</option>{% endfor %}
+      </select>
+      <select name="supplier" class="input">
+        <option value="">Any supplier</option>
+        {% for id, c in companies.items() %}<option value="{{ id }}" {% if f.supplier==id|string %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+      </select>
+      <div class="grid grid-cols-2 gap-1">
+        <select name="status" class="input"><option value="">Any status</option>
+          {% for s in ['draft','active','archived'] %}<option value="{{ s }}" {% if f.status==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
+        <select name="verification" class="input"><option value="">Any verify</option>
+          {% for s in ['unverified','verified','rejected'] %}<option value="{{ s }}" {% if f.verification==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
+        <select name="completeness" class="input"><option value="">Any completeness</option>
+          <option value="low" {% if f.completeness=='low' %}selected{% endif %}>&lt; 60%</option>
+          <option value="high" {% if f.completeness=='high' %}selected{% endif %}>&ge; 60%</option></select>
+        <select name="price" class="input"><option value="">Any price</option>
+          <option value="yes" {% if f.price=='yes' %}selected{% endif %}>Has price</option>
+          <option value="no" {% if f.price=='no' %}selected{% endif %}>No price</option></select>
+        <select name="hs" class="input"><option value="">Any HS</option>
+          <option value="yes" {% if f.hs=='yes' %}selected{% endif %}>Has HS</option>
+          <option value="no" {% if f.hs=='no' %}selected{% endif %}>No HS</option></select>
+        <select name="listed" class="input">
+          <option value="yes" {% if f.listed=='yes' %}selected{% endif %}>Active</option>
+          <option value="archived" {% if f.listed=='archived' %}selected{% endif %}>Archived</option>
+          <option value="all" {% if f.listed=='all' %}selected{% endif %}>All</option></select>
       </div>
-    {% else %}
-      <div class="empty">No products yet. Add one or import a CSV on the left.</div>
-    {% endif %}
-  </section>
+      <select name="sort" class="input">
+        <option value="new" {% if f.sort=='new' %}selected{% endif %}>Newest</option>
+        <option value="name" {% if f.sort=='name' %}selected{% endif %}>Name A-Z</option>
+        <option value="updated" {% if f.sort=='updated' %}selected{% endif %}>Recently updated</option>
+        <option value="price" {% if f.sort=='price' %}selected{% endif %}>Price high-low</option>
+      </select>
+      <button class="btn btn-primary btn-sm btn-block">Apply</button>
+    </form>
 
+    <form method="post" action="/catalog/import/preview" enctype="multipart/form-data" class="card space-y-2">
+      <div class="eyebrow">Import CSV</div>
+      <input type="file" name="file" accept=".csv" required class="input">
+      <button class="btn btn-secondary btn-sm btn-block">Preview import</button>
+      <p class="text-[11px] text-slate-500">Preview before applying &middot; conservative de-dup (never name-only).</p>
+    </form>
+  </div>
+
+  <!-- product table + bulk -->
+  <div class="lg:col-span-3">
+    <form method="post" action="/catalog/bulk" class="card overflow-x-auto">
+      <div class="flex flex-wrap items-center gap-2 mb-2">
+        <select name="action" class="input" style="max-width:180px">
+          <option value="">Bulk action…</option>
+          <option value="category">Assign category</option>
+          <option value="activate">Activate</option>
+          <option value="archive">Archive</option>
+        </select>
+        <select name="category_id" class="input" style="max-width:180px">
+          <option value="">(category)</option>
+          {% for id, c in cats.items() %}<option value="{{ id }}">{{ c.name }}</option>{% endfor %}
+        </select>
+        <button class="btn btn-neutral btn-sm">Apply to selected</button>
+      </div>
+      {% if rows %}
+      <table class="w-full text-sm min-w-[860px]">
+        <thead class="text-slate-500 text-xs uppercase tracking-wide text-left">
+          <tr><th class="py-1 pr-2"></th><th class="pr-2">Product</th><th class="pr-2">Category</th>
+            <th class="pr-2">HS</th><th class="pr-2">Origin</th><th class="pr-2">Suppliers</th>
+            <th class="pr-2 text-right">EXW</th><th class="pr-2">MOQ</th><th class="pr-2">Verify</th>
+            <th class="pr-2">Complete</th><th class="pr-2">Status</th></tr>
+        </thead>
+        <tbody>
+        {% for r in rows %}{% set p = r.p %}
+          <tr class="border-t border-white/5 {% if not p.active %}opacity-50{% endif %}">
+            <td class="py-1.5 pr-2"><input type="checkbox" name="product_ids" value="{{ p.id }}"></td>
+            <td class="pr-2"><a href="/catalog/products/{{ p.id }}" class="font-medium hover:underline">{{ p.name }}</a>
+              {% if p.sku %}<div class="text-[11px] text-slate-500 font-mono">{{ p.sku }}</div>{% endif %}</td>
+            <td class="pr-2">{{ cats[p.category_id].name if p.category_id in cats else (p.category or '—') }}</td>
+            <td class="pr-2 font-mono text-xs">{{ p.hs_code or '—' }}</td>
+            <td class="pr-2">{{ p.origin_country or p.origin_region or '—' }}</td>
+            <td class="pr-2">{{ supcounts.get(p.id, 0) }}</td>
+            <td class="pr-2 text-right tabular-nums">{% if p.exw_price %}{{ '%.2f'|format(p.exw_price) }} <span class="text-slate-500 text-[10px]">{{ p.currency }}/{{ p.unit or 'u' }}</span>{% else %}<span class="text-rose-400">—</span>{% endif %}</td>
+            <td class="pr-2 tabular-nums">{{ p.min_order_qty or '—' }}</td>
+            <td class="pr-2"><span class="badge {% if p.verification_status=='verified' %}badge-emerald{% elif p.verification_status=='rejected' %}badge-rose{% else %}badge-slate{% endif %} text-[10px]">{{ p.verification_status }}</span></td>
+            <td class="pr-2"><span class="{% if r.completeness < 60 %}text-amber-400{% else %}text-emerald-400{% endif %} tabular-nums">{{ r.completeness }}%</span></td>
+            <td class="pr-2"><span class="badge badge-slate text-[10px]">{{ p.status }}</span></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+        <div class="empty">No products match. Adjust the filters, or import a CSV.</div>
+      {% endif %}
+    </form>
+
+    {% if pages > 1 %}
+      <div class="flex items-center justify-center gap-2 mt-3 text-sm">
+        {% set qs = 'q=%s&category=%s&origin=%s&supplier=%s&status=%s&verification=%s&completeness=%s&price=%s&hs=%s&listed=%s&sort=%s'|format(q, f.category, f.origin, f.supplier, f.status, f.verification, f.completeness, f.price, f.hs, f.listed, f.sort) %}
+        {% if page > 1 %}<a class="btn btn-neutral btn-sm" href="/catalog?{{ qs }}&page={{ page-1 }}">Prev</a>{% endif %}
+        <span class="text-slate-500">Page {{ page }} / {{ pages }}</span>
+        {% if page < pages %}<a class="btn btn-neutral btn-sm" href="/catalog?{{ qs }}&page={{ page+1 }}">Next</a>{% endif %}
+      </div>
+    {% endif %}
+  </div>
 </div>
 {% endblock %}

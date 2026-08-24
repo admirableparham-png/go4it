@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% set active = 'pricing' %}
+{% block content %}
+<div class="flex items-end justify-between gap-3 mb-4">
+  <h2 class="text-xl font-bold tracking-tight">Price preview &middot; {{ p.name }}</h2>
+  <a href="/catalog/products/{{ p.id }}?tab=pricing" class="btn btn-neutral btn-sm">Save as a version &rarr;</a>
+</div>
+<div class="card max-w-2xl">
+  <div class="flex items-center justify-between mb-2">
+    <div class="text-lg font-bold">{{ '%.2f'|format(calc.unit_price) }} {{ calc.currency }}/unit
+      <span class="badge badge-slate text-[10px]">{{ calc.incoterm }}</span>
+      {% if calc.status=='needs_review' %}<span class="badge badge-amber text-[10px]">needs review</span>{% endif %}</div>
+    <div class="text-xs text-slate-500">FX: {{ fx_label }}</div>
+  </div>
+  <div class="text-[11px] text-slate-500 mb-2">margin {{ calc.margin_pct }}% of price &middot; markup {{ calc.markup_pct }}% of cost &middot; total {{ '%.2f'|format(calc.total_price) }} {{ calc.currency }} for {{ calc.quantity }} units</div>
+  <table class="w-full text-sm"><tbody>
+    {% for ln in calc.breakdown %}<tr class="border-t border-white/5"><td class="py-1 text-slate-300">{{ ln.label }}</td><td class="text-right tabular-nums">{{ ln.amount }} {{ ln.currency }}</td></tr>{% endfor %}
+  </tbody></table>
+  {% if calc.excluded_costs %}
+    <div class="text-[11px] text-amber-400 mt-2">Excluded / not included:
+      {% for e in calc.excluded_costs %}{{ e.label }} <span class="text-slate-500">({{ e.reason }})</span>{% if not loop.last %}, {% endif %}{% endfor %}</div>
+  {% endif %}
+</div>
+{% endblock %}

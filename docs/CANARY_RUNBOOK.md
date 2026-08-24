@@ -21,10 +21,15 @@ a successful live result.
 Set these in the environment (never commit real addresses):
 ```bash
 export CANARY_ENABLED=1
-export CANARY_ALLOWLIST="you@yourdomain.com,ops@yourdomain.com"
+export CANARY_ALLOWLIST="you@yourdomain.com,bounce@simulator.amazonses.com"  # BOTH recipients allowlisted
 export CANARY_TEST_RECIPIENT="you@yourdomain.com"        # MUST be inside CANARY_ALLOWLIST
-export CANARY_BAD_RECIPIENT="nouser@yourdomain.com"      # a known-invalid address for the bounce test
+export CANARY_BAD_RECIPIENT="bounce@simulator.amazonses.com"  # MUST be inside CANARY_ALLOWLIST
 ```
+`CANARY_BAD_RECIPIENT` must be a **provider bounce simulator** (e.g. the SES simulator address above, or your
+provider's equivalent) **or** a test address/domain **controlled by Go4it** — **never** a random invalid
+external address (that would spray unknown third parties and harm sender reputation). **Both** the good and the
+bounce recipients must be explicitly listed in `CANARY_ALLOWLIST`.
+
 Connect one live admin-owned mailbox with a valid SMTP app-password at **/mail** (credentials are stored
 encrypted — see docs/CREDENTIAL_ENCRYPTION.md). Confirm SPF/DKIM/DMARC on that domain out-of-band.
 

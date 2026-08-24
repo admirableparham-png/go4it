@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% set active = 'catalog' %}
+{% block content %}
+<div class="flex items-end justify-between gap-3 mb-4">
+  <div>
+    <h2 class="text-xl font-bold tracking-tight">Import preview</h2>
+    <p class="text-slate-500 text-sm mt-0.5">{{ row_count }} rows parsed &middot; review before applying. Nothing has been written yet.</p>
+  </div>
+  <a href="/catalog" class="btn btn-neutral btn-sm">Cancel</a>
+</div>
+
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+  <div class="card text-center"><div class="text-2xl font-bold text-emerald-400">{{ preview.new }}</div><div class="eyebrow">New</div></div>
+  <div class="card text-center"><div class="text-2xl font-bold text-sky-400">{{ preview.update }}</div><div class="eyebrow">Update</div></div>
+  <div class="card text-center"><div class="text-2xl font-bold text-amber-400">{{ preview.ambiguous }}</div><div class="eyebrow">Ambiguous</div></div>
+  <div class="card text-center"><div class="text-2xl font-bold text-rose-400">{{ errors|length }}</div><div class="eyebrow">Errors</div></div>
+</div>
+
+{% if preview.ambiguous %}
+  <div class="card mb-4 text-sm border border-amber-500/30">
+    <b class="text-amber-400">{{ preview.ambiguous }} ambiguous row(s)</b> matched more than one product — they will be routed to a Work Queue review task, never auto-merged.
+  </div>
+{% endif %}
+
+<div class="card overflow-x-auto mb-4">
+  <table class="w-full text-sm min-w-[640px]">
+    <thead class="text-slate-500 text-xs uppercase text-left"><tr><th class="py-1 pr-2">Row</th><th class="pr-2">Name / SKU</th><th class="pr-2">Decision</th><th class="pr-2">Basis</th></tr></thead>
+    <tbody>
+      {% for r in preview.rows %}
+      <tr class="border-t border-white/5">
+        <td class="py-1.5 pr-2 text-slate-500">{{ r.row }}</td>
+        <td class="pr-2">{{ r.name }}{% if r.sku %} <span class="text-[11px] font-mono text-slate-500">{{ r.sku }}</span>{% endif %}</td>
+        <td class="pr-2"><span class="badge {% if r.decision=='new' %}badge-emerald{% elif r.decision=='update' %}badge-sky{% elif r.decision=='ambiguous' %}badge-amber{% else %}badge-slate{% endif %} text-[10px]">{{ r.decision }}</span></td>
+        <td class="pr-2 text-slate-500 text-xs">{{ r.basis or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if errors %}
+  <div class="card mb-4 text-sm">
+    <div class="eyebrow mb-1">Parse errors</div>
+    {% for e in errors %}<div class="text-rose-400 text-xs">{{ e }}</div>{% endfor %}
+  </div>
+{% endif %}
+
+<form method="post" action="/catalog/import">
+  <button class="btn btn-primary">Apply import ({{ preview.new }} new, {{ preview.update }} updates)</button>
+  <a href="/catalog" class="btn btn-neutral">Cancel</a>
+</form>
+{% endblock %}

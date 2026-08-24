@@ -107,8 +107,11 @@
               {% if s.email %}{% if s.phone %} · {% endif %}<a href="mailto:{{ s.email }}" class="link" onclick="event.stopPropagation()">{{ s.email }}</a>{% endif %}
               {% if not s.phone and not s.email %}<span class="text-amber-500/70">no contact</span>{% endif %}
             </div>
-            <div class="text-right text-slate-300 tabular-nums">{{ pcounts.get(s.id, 0) }}</div>
-            <div class="text-right text-amber-400/80 text-xs">{{ '★' * s.reliability }}<span class="text-slate-700">{{ '★' * (5 - s.reliability) }}</span></div>
+            <div class="text-right text-slate-300 tabular-nums">{{ product_counts.get(s.id, pcounts.get(s.id, 0)) }}
+              {% if missing_map.get(s.id) %}<span class="text-amber-500/70 text-[10px] block">⚠ {{ missing_map[s.id]|join(', ') }}</span>{% endif %}</div>
+            <div class="text-right text-xs" title="Reliability is a manual admin rating with a basis — never a decorative default.">
+              {% if s.reliability_rated %}<span class="text-amber-400/80">{{ '★' * s.reliability }}</span><span class="text-slate-700">{{ '★' * (5 - s.reliability) }}</span>
+              {% else %}<span class="text-slate-500">Not yet rated</span>{% endif %}</div>
             <div class="text-right">
               {% if s.active %}<span class="badge badge-emerald text-[10px]">active</span>
               {% else %}<span class="badge badge-slate text-[10px]">off</span>{% endif %}

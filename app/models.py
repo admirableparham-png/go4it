@@ -26,7 +26,8 @@ class Supplier(SQLModel, table=True):
     contact: str = ""
     email: str = ""
     phone: str = ""
-    reliability: int = 3           # 1-5, team's own rating
+    reliability: int = 3           # 1-5, team's MANUAL rating (only meaningful when reliability_rated=True)
+    reliability_rated: bool = False  # Phase 5: False = never explicitly rated → show "Not yet rated", not stars
     payment_terms: str = ""
     active: bool = True
     company_id: Optional[int] = Field(default=None, foreign_key="company.id", index=True)  # Trade Network link (additive)
@@ -48,10 +49,34 @@ class Product(SQLModel, table=True):
     packaging: str = ""
     min_order_qty: float = 0
     origin_region: str = ""        # e.g. Tabriz, Isfahan, Tehran
-    supplier_id: Optional[int] = Field(default=None, foreign_key="supplier.id")
+    supplier_id: Optional[int] = Field(default=None, foreign_key="supplier.id", index=True)
     active: bool = True
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     updated_by: str = ""
+    # --- Phase 5 canonical catalog (all additive; legacy fields above are preserved + kept in sync) ---
+    sku: str = Field(default="", index=True)          # internal product code / SKU
+    short_description: str = ""                        # short commercial description
+    category_id: Optional[int] = Field(default=None, foreign_key="productcategory.id", index=True)
+    subcategory: str = ""
+    brand: str = ""
+    grade: str = ""                                    # grade / purity / variant descriptor
+    origin_country: str = Field(default="", index=True)
+    origin_city: str = ""
+    producer: str = ""                                 # producer / manufacturer
+    units_per_package: float = 0
+    production_capacity: str = ""                      # free text, e.g. "500 t/month"
+    lead_time_days: int = 0
+    shelf_life: str = ""
+    storage_requirements: str = ""
+    certifications: str = ""                           # comma-separated
+    incoterms: str = ""                                # comma-separated available terms (EXW,FOB,CIF,...)
+    status: str = "active"                             # draft | active | archived (mirrors `active`)
+    completeness_score: int = 0                        # 0-100, cached; computed from field presence
+    verification_status: str = "unverified"            # unverified | verified | rejected
+    verified_at: Optional[datetime] = None
+    verified_by: str = ""
+    internal_notes: str = ""                           # ADMIN-ONLY; never shown to sellers
+    created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
 class Lead(SQLModel, table=True):
@@ -160,6 +185,13 @@ class FxRate(SQLModel, table=True):
     quote: str = "USD"
     rate: float = 1
     note: str = ""
+    # --- Phase 5 provenance/staleness (additive; existing quote_service.fx_rate only reads `rate`) ---
+    source: str = ""               # where the rate came from (manual entry, provider name, ...)
+    kind: str = "manual"           # manual | live  (never present a manual/stale rate as live)
+    retrieved_at: Optional[datetime] = None    # when it was entered/fetched
+    expires_at: Optional[datetime] = None      # staleness threshold; past it → "Stale"
+    verified_by: str = ""
+    active: bool = True
 
 
 # --------------------------------------------------------------------------- team & activity
@@ -611,6 +643,7 @@ class WorkItem(SQLModel, table=True):
     related_quote_id: Optional[int] = Field(default=None, foreign_key="quote.id")
     related_deal_id: Optional[int] = Field(default=None, foreign_key="deal.id")
     related_seller_update_id: Optional[int] = Field(default=None, foreign_key="sellerupdate.id")
+    related_product_id: Optional[int] = Field(default=None, foreign_key="product.id")  # Phase 5
     parent_id: Optional[int] = Field(default=None, foreign_key="workitem.id")
     idempotency_key: str = Field(default="", index=True)   # de-dups automatic items (partial-unique over OPEN)
     condition_version: str = ""    # identifies the underlying-condition INSTANCE+version; once a task for a
@@ -838,5 +871,186 @@ class CampaignSend(SQLModel, table=True):
     provider_message_id: str = ""
     sent_at: Optional[datetime] = None
     outreach_id: Optional[int] = Field(default=None, foreign_key="outreach.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+# ========================================================================================
+# Phase 5 — Products, Catalogs, Suppliers & Pricing (admin-only canonical layer, additive)
+# ========================================================================================
+
+class ProductCategory(SQLModel, table=True):
+    """A structured product category (replaces unrestricted free-text Product.category). Hierarchical
+    (parent_id), archivable, and mergeable (merged_into_id points at the survivor — reversible, never deletes
+    product history). tenant_id NULL = global admin catalog."""
+    __table_args__ = (UniqueConstraint("tenant_id", "name_normalized", "parent_id",
+                                       name="uq_productcategory_scope"),)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)  # NULL = global
+    name: str = ""
+    name_normalized: str = Field(default="", index=True)
+    slug: str = Field(default="", index=True)
+    parent_id: Optional[int] = Field(default=None, foreign_key="productcategory.id", index=True)
+    spec_fields: str = ""          # JSON list of optional category-specific spec field names
+    status: str = "active"         # active | archived
+    merged_into_id: Optional[int] = Field(default=None, foreign_key="productcategory.id")  # survivor (reversible)
+    inferred: bool = False         # True = created by the conservative backfill from legacy free text
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class ProductCategoryAlias(SQLModel, table=True):
+    """An alternate spelling that maps to a canonical category — used for CSV import + research matching so
+    inconsistent inbound category text resolves deterministically instead of spawning duplicates."""
+    __table_args__ = (UniqueConstraint("alias_normalized", name="uq_prodcatalias_norm"),)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    alias_normalized: str = Field(default="", index=True)
+    category_id: int = Field(foreign_key="productcategory.id", index=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class ProductVariant(SQLModel, table=True):
+    """A concrete variant/grade of a canonical product (e.g. purity 99.99% vs 99.9%), each with its own SKU
+    and optional price/MOQ. Additive — a product with no variants still prices off its base fields."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    product_id: int = Field(foreign_key="product.id", index=True)
+    name: str = ""
+    grade: str = ""
+    sku: str = ""
+    attributes: str = ""           # JSON dict of variant-specific spec values
+    base_price: float = 0
+    currency: str = "USD"
+    min_order_qty: float = 0
+    active: bool = True
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class ProductSupplier(SQLModel, table=True):
+    """The canonical product↔supplier link. `company_id` points at the Trade Network Company that holds the
+    supplier role (CompanyRole role='supplier') — NOT a separate contact store. Uniqueness on
+    (product_id, company_id) prevents duplicate links. Supplier contacts/commercial detail stay admin-only."""
+    __table_args__ = (UniqueConstraint("product_id", "company_id", name="uq_productsupplier_pc"),)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    product_id: int = Field(foreign_key="product.id", index=True)
+    company_id: int = Field(foreign_key="company.id", index=True)
+    supplier_sku: str = ""
+    supplier_price: float = 0
+    currency: str = "USD"
+    min_order_qty: float = 0
+    lead_time_days: int = 0
+    is_primary: bool = False
+    verified: bool = False
+    notes: str = ""                # ADMIN-ONLY
+    inferred: bool = False         # True = created by the backfill from legacy Product.supplier_id
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class CostRate(SQLModel, table=True):
+    """A structured, reusable, time-bounded cost/rate component for the pricing calculator (the new layer;
+    legacy RateCard/CostParam are untouched so existing quotes are unaffected). Expired rates are never used
+    silently — the calculator surfaces them. tenant_id NULL = global."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)  # NULL = global
+    name: str = ""
+    rate_type: str = Field(default="", index=True)
+    # base_price|packaging|inland_freight|export_clearance|coo|inspection|documentation|insurance|
+    # intl_freight|import_clearance|duty|tax|finance|fx_adj|operational_fee|margin
+    origin: str = ""
+    destination: str = ""
+    transport_mode: str = ""       # road|sea|air|rail|""
+    carrier: str = ""
+    currency: str = "USD"
+    unit_basis: str = "per_shipment"   # per_unit|per_tonne|per_truck|per_shipment|pct
+    amount: float = 0
+    min_charge: float = 0
+    capacity_assumption: str = ""
+    valid_from: Optional[datetime] = None
+    valid_until: Optional[datetime] = None
+    source: str = ""
+    confidence: str = "unverified"     # unverified|estimated|quoted|contracted
+    status: str = "active"             # active|expired (expired is never auto-applied)
+    internal_notes: str = ""           # ADMIN-ONLY
+    created_by: str = ""
+    updated_by: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class ProductPriceVersion(SQLModel, table=True):
+    """An IMMUTABLE landed-price calculation for a product at a given Incoterm/route. Never rewritten — to
+    revise, an admin DUPLICATES it to a new version (supersedes_id). Freezes the full breakdown, the cost
+    components used, the FX snapshot (with source+timestamp), the rate validity, and both margin% and markup%
+    so a historical calculation reproduces identically. Admin-only."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    product_id: int = Field(foreign_key="product.id", index=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    version: int = 1
+    incoterm: str = "EXW"
+    origin: str = ""
+    destination: str = ""
+    transport_mode: str = ""
+    currency: str = "USD"
+    quantity: float = 1
+    weight_kg_per_unit: float = 0
+    unit_basis: str = "per_unit"
+    inputs: str = ""               # JSON: the resolved cost components + assumptions used
+    breakdown: str = ""            # JSON: list of {label, basis, amount, currency}
+    excluded_costs: str = ""       # JSON: components deliberately Not-included/Required (never guessed)
+    unit_price: float = 0
+    total_price: float = 0
+    cost_total: float = 0
+    margin_pct: float = 0          # margin / price   (distinct from markup)
+    markup_pct: float = 0          # margin / cost
+    fx_snapshot: str = ""          # JSON: {base, quote, rate, source, kind, retrieved_at}
+    rate_valid_until: Optional[datetime] = None
+    status: str = Field(default="draft", index=True)  # draft|needs_review|approved|expired|archived
+    supersedes_id: Optional[int] = Field(default=None, foreign_key="productpriceversion.id")
+    notes: str = ""
+    created_by: str = ""
+    approved_by: str = ""
+    approved_at: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class ProductDocument(SQLModel, table=True):
+    """A private admin-managed product file (datasheet, certificate, lab report, product/packaging image,
+    spec, commercial doc). Stored under PRODUCT_FILES_DIR (outside /static); admin-download-gated; archived,
+    never destructively deleted. Seller access ONLY when explicitly published as a seller-safe deliverable."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    product_id: int = Field(foreign_key="product.id", index=True)
+    doc_type: str = ""             # datasheet|certificate|lab_report|product_image|packaging_image|spec|commercial
+    file_path: str = ""            # relative path under PRODUCT_FILES_DIR (<product_id>/<doc_id>_<safe_name>)
+    original_filename: str = ""    # metadata only — never used for the on-disk name
+    content_type: str = ""
+    size_bytes: int = 0
+    title: str = ""
+    status: str = "active"         # active | archived
+    seller_safe: bool = False      # True = admin published it through the seller-safe deliverable flow
+    uploaded_by: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class CatalogGenerationJob(SQLModel, table=True):
+    """One versioned Catalog Studio generation for a product. Runs as a bounded background job; a failure
+    opens a work item and never blocks other workers. Stores the generated PDF privately, records the
+    provider (builtin|higgs) + generation date, and retains the source ProductPriceVersion reference. Only
+    APPROVED product fields are used; contact is Go4it (never supplier/buyer)."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    product_id: int = Field(foreign_key="product.id", index=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    version: int = 1
+    status: str = Field(default="draft", index=True)  # draft|generating|needs_review|approved|failed|archived
+    provider: str = "builtin"      # builtin (Playwright HTML->PDF) | higgs (not configured)
+    provider_job_id: str = ""
+    price_version_id: Optional[int] = Field(default=None, foreign_key="productpriceversion.id")
+    template: str = "onepager"
+    params: str = ""               # JSON: the APPROVED fields snapshot sent to the generator (no contacts/margins)
+    file_path: str = ""            # relative path under PRODUCT_FILES_DIR (private PDF)
+    error: str = ""
+    seller_safe: bool = False      # approved catalog intentionally published as a seller-safe deliverable
+    generated_by: str = ""
+    generated_at: Optional[datetime] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)

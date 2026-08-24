@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% set active = 'pricing' %}
+{% block content %}
+<div class="flex items-end justify-between gap-3 mb-4">
+  <div>
+    <h2 class="text-xl font-bold tracking-tight">Pricing &amp; Rates</h2>
+    <p class="text-slate-500 text-sm mt-0.5">Structured cost components, FX with honest staleness, and the landed-price calculator. Admin only.</p>
+  </div>
+  <a href="/rates" class="btn btn-neutral btn-sm">Legacy rates (quotes)</a>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+  <!-- cost rates -->
+  <div class="lg:col-span-2 card overflow-x-auto">
+    <div class="eyebrow mb-2">Cost rates</div>
+    <table class="w-full text-sm min-w-[640px]">
+      <thead class="text-slate-500 text-xs uppercase text-left"><tr><th class="py-1 pr-2">Type</th><th class="pr-2">Name</th><th class="pr-2">Basis</th><th class="pr-2 text-right">Amount</th><th class="pr-2">Route</th><th class="pr-2">Valid until</th><th class="pr-2">State</th></tr></thead>
+      <tbody>
+        {% for rr in rate_rows %}{% set r = rr.r %}
+        <tr class="border-t border-white/5 {% if not rr.active %}opacity-50{% endif %}">
+          <td class="py-1.5 pr-2">{{ rate_types.get(r.rate_type, r.rate_type) }}</td>
+          <td class="pr-2 text-slate-400">{{ r.name or '—' }}</td>
+          <td class="pr-2 text-xs">{{ r.unit_basis }}</td>
+          <td class="pr-2 text-right tabular-nums">{{ '%.2f'|format(r.amount) }} {{ r.currency }}</td>
+          <td class="pr-2 text-xs">{{ r.origin or '*' }}→{{ r.destination or '*' }}</td>
+          <td class="pr-2 text-xs">{{ r.valid_until.strftime('%Y-%m-%d') if r.valid_until else '—' }}</td>
+          <td class="pr-2"><span class="badge {% if rr.active %}badge-emerald{% else %}badge-rose{% endif %} text-[10px]">{{ 'active' if rr.active else 'expired' }}</span></td>
+        </tr>
+        {% else %}<tr><td colspan="7" class="empty">No cost rates yet.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- add rate -->
+  <form method="post" action="/pricing/rates" class="card space-y-2">
+    <div class="eyebrow">Add cost rate</div>
+    <select name="rate_type" required class="input">{% for k, v in rate_types.items() %}{% if k != 'base_price' %}<option value="{{ k }}">{{ v }}</option>{% endif %}{% endfor %}</select>
+    <input name="name" placeholder="name / provider" class="input">
+    <div class="grid grid-cols-2 gap-1">
+      <select name="unit_basis" class="input"><option value="per_shipment">per shipment</option><option value="per_unit">per unit</option><option value="per_tonne">per tonne</option><option value="per_truck">per truck</option><option value="pct">% of goods</option></select>
+      <input name="amount" type="number" step="any" placeholder="amount" class="input" required>
+      <input name="currency" value="USD" class="input"><input name="min_charge" type="number" step="any" placeholder="min charge" class="input">
+      <input name="origin" placeholder="origin" class="input"><input name="destination" placeholder="destination" class="input">
+      <input name="valid_until" type="date" class="input">
+      <select name="confidence" class="input"><option value="unverified">unverified</option><option value="estimated">estimated</option><option value="quoted">quoted</option><option value="contracted">contracted</option></select>
+    </div>
+    <button class="btn btn-secondary btn-sm btn-block">Add rate</button>
+  </form>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
+  <!-- FX -->
+  <div class="lg:col-span-2 card">
+    <div class="eyebrow mb-2">FX snapshots</div>
+    {% for fr in fx_rows %}{% set f = fr.fx %}
+      <div class="flex items-center justify-between border-t border-white/5 py-1.5 text-sm">
+        <div>{{ f.base }} → {{ f.quote }} @ <b class="tabular-nums">{{ f.rate }}</b> <span class="text-[11px] text-slate-500">{{ f.source or 'manual' }}</span></div>
+        <span class="badge {% if fr.state=='live' %}badge-emerald{% elif fr.state=='stale' %}badge-amber{% elif fr.state=='unavailable' %}badge-rose{% else %}badge-slate{% endif %} text-[10px]">{{ fr.label }}</span>
+      </div>
+    {% else %}<div class="empty">No FX yet (defaults to 1:1; never presented as live).</div>{% endfor %}
+  </div>
+  <form method="post" action="/pricing/fx" class="card space-y-2">
+    <div class="eyebrow">Enter FX (manual)</div>
+    <div class="grid grid-cols-2 gap-1">
+      <input name="base" placeholder="base e.g. EUR" required class="input"><input name="quote" value="USD" class="input">
+      <input name="rate" type="number" step="any" placeholder="rate" required class="input">
+      <input name="expires_days" type="number" placeholder="expires (days)" class="input">
+    </div>
+    <button class="btn btn-secondary btn-sm btn-block">Save FX</button>
+    <p class="text-[11px] text-slate-500">Manual entry only — no unapproved external source. A past-expiry rate shows as Stale.</p>
+  </form>
+</div>
+{% endblock %}

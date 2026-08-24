@@ -2,20 +2,45 @@
 
 Explicit, idempotent procedure. Do **not** rely on ORM `create_all` alone in production.
 
-## Order (each step is idempotent)
+## Deployment order (credential key FIRST — mandatory)
+The application must **never** be deployed to production without its dedicated credential-encryption key
+already configured. Follow this order exactly:
+
+1. **Pause the campaign + email workers** (stop `worker.py --campaigns` / any send loop) so nothing sends or
+   reads credentials mid-migration.
+2. **Generate a strong dedicated key:** `python -c "import secrets; print(secrets.token_urlsafe(48))"`.
+3. **Store it in the production secret manager / environment** as `CREDENTIAL_ENCRYPTION_KEYS`. **Never commit
+   it** to Git or a tracked `.env`. (A leaked key defeats the encryption.)
+4. **Back up + integrity-check** the production database: `./.venv/bin/python scripts/backup_db.py`.
+5. **Deploy the production-gate code.**
+6. **Run migrations + credential rewrapping** (steps below).
+7. **Restart the workers only after verification** (migration verified + credential dry-run reviewed).
+
+## Migration steps (each is idempotent)
 ```bash
-./.venv/bin/python scripts/backup_db.py            # 1) dated snapshot + integrity check (REQUIRED)
-./.venv/bin/python scripts/migrate.py              # 2) additive columns (incl. campaignsend.rfc_message_id,
-                                                   #    mailaccount.cred_enc_version)
-./.venv/bin/python scripts/migrate_gate.py --dry-run   # 3) preview: pending ops + pre counts, no changes
-./.venv/bin/python scripts/migrate_gate.py             # 4) apply: campaignsend table + unique constraint +
-                                                       #    lease/retry/status/rfc indexes; verifies + asserts
-                                                       #    operational counts invariant
-./.venv/bin/python scripts/encrypt_credentials.py --dry-run   # 5) confirm plaintext=0 (credentials)
+./.venv/bin/python scripts/backup_db.py            # dated snapshot + integrity check (REQUIRED)
+./.venv/bin/python scripts/migrate.py              # additive columns (incl. campaignsend.rfc_message_id,
+                                                   #   mailaccount.cred_enc_version)
+./.venv/bin/python scripts/migrate_gate.py --dry-run   # preview: pending ops + pre counts, no changes
+./.venv/bin/python scripts/migrate_gate.py             # apply: campaignsend table + unique constraint +
+                                                       #   lease/retry/status/rfc indexes; verifies + asserts
+                                                       #   operational counts invariant
+./.venv/bin/python scripts/encrypt_credentials.py --dry-run   # OBSERVE the plaintext count (see below)
 ```
-Then start the app. `migrate_gate.py` runs a `PRAGMA integrity_check` first, prints PRE/POST operational
-counts, aborts if any operational count changes, and verifies the indexes/constraint exist before reporting
-success. Re-running any step performs zero duplicate operations.
+`migrate_gate.py` runs a `PRAGMA integrity_check` first, prints PRE/POST operational counts, aborts if any
+operational count changes, and verifies the indexes/constraint exist before reporting success. Re-running any
+step performs zero duplicate operations.
+
+## Credential rewrapping — the dry-run count is an OBSERVED result
+Do **not** assume production has zero plaintext credentials. Treat the `--dry-run` output as an observation:
+- **If the plaintext count is 0:** record and verify it (spot-check that a stored credential decrypts), then
+  proceed.
+- **If plaintext credentials exist:** encrypt and verify them **before** starting the workers —
+  `./.venv/bin/python scripts/encrypt_credentials.py` (or `--rewrap --apply` to move onto the dedicated key).
+  The tool verifies each new ciphertext round-trips **before** replacing the old value, so the original is
+  never deleted or overwritten until encrypted persistence + decryption are confirmed.
+- Credentials are **never printed** in migration output.
+Only after the credential state is verified do you restart the workers (step 7 above).
 
 ## What the gate creates
 - `campaignsend` table

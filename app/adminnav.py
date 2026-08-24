@@ -30,7 +30,6 @@ WORKSPACES = [
         {"key": "leads", "label": "Buyers & Prospects", "endpoint": "leads_list",
          "paths": ("/leads", "/companies")},   # company detail lights up Buyers & Prospects
         {"key": "sellers", "label": "Sellers", "endpoint": "sellers_list", "paths": ("/sellers",)},
-        {"key": "suppliers", "label": "Suppliers", "endpoint": "suppliers_list", "paths": ("/suppliers",)},
         {"key": "dataquality", "label": "Data Quality", "endpoint": "data_quality", "paths": ("/data-quality",)},
         {"key": "duplicates", "label": "Duplicate Review", "endpoint": "duplicates_list", "paths": ("/duplicates",)},
     ]},
@@ -50,7 +49,12 @@ WORKSPACES = [
 
     {"key": "products", "label": "Products", "icon": "box", "role": "admin", "children": [
         {"key": "catalog", "label": "Catalog", "endpoint": "catalog", "paths": ("/catalog",)},
-        {"key": "rates", "label": "Rates & Costs", "endpoint": "rates_page", "paths": ("/rates",)},
+        {"key": "categories", "label": "Categories", "endpoint": "categories_page", "paths": ("/categories",)},
+        {"key": "suppliers", "label": "Suppliers", "endpoint": "suppliers_list", "paths": ("/suppliers",)},
+        {"key": "pricing", "label": "Pricing & Rates", "endpoint": "pricing_page",
+         "paths": ("/pricing", "/rates")},
+        {"key": "studio", "label": "Catalog Studio", "endpoint": "catalog_studio",
+         "paths": ("/catalog/studio",)},
     ]},
 
     {"key": "commercial", "label": "Commercial", "icon": "briefcase", "role": "admin", "children": [

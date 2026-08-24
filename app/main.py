@@ -37,7 +37,14 @@ from .models import (Activity, AuditLog, CommandJob, Company, CompanyRole, Compl
                      CostParam, Deal, DuplicateCandidate, FxRate, IngestionRun, Lead, MailAccount, Match,
                      Outreach, Product, Provenance, Quote, RateCard, RequestDeliverable, RequestMessage,
                      RequestStatusEvent, SellerUpdate, ServiceRequest, StageEvent, Supplier, User, WorkItem)
+from .models import (CatalogGenerationJob, CostRate, ProductCategory, ProductCategoryAlias, ProductDocument,
+                     ProductPriceVersion, ProductSupplier, ProductVariant)
 from . import company_service as CS
+from . import category_service as CATS
+from . import pricing as PRICING
+from . import product_import as PIMPORT
+from . import catalog_studio as STUDIO
+from . import attachments as ATT
 from . import tradenet as TN
 from . import work_queue as WQ
 from . import request_service as RS
@@ -822,11 +829,36 @@ def suppliers_list(request: Request, q: str = "", country: str = "", listed: str
         elif listed == "archived":
             stmt = stmt.where(Supplier.active == False)                       # noqa: E712
         suppliers = session.exec(stmt.order_by(Supplier.country, Supplier.name)).all()
+        # product counts: legacy Product.supplier_id + canonical ProductSupplier links (by company)
         pcounts = {sid: c for sid, c in session.exec(
             select(Product.supplier_id, func.count(Product.id)).group_by(Product.supplier_id)).all()}
+        ps_by_company = {}
+        for cid, c in session.exec(select(ProductSupplier.company_id, func.count(ProductSupplier.id))
+                                   .group_by(ProductSupplier.company_id)).all():
+            ps_by_company[cid] = c
+        companies = {c.id: c for c in session.exec(select(Company)).all()}
+        # supplied categories per supplier (via its products)
+        rows = []
+        for s in suppliers:
+            n_products = pcounts.get(s.id, 0) + (ps_by_company.get(s.company_id, 0) if s.company_id else 0)
+            co = companies.get(s.company_id) if s.company_id else None
+            missing = []
+            if not (s.contact or s.email or s.phone):
+                missing.append("contact")
+            if not s.company_id:
+                missing.append("company link")
+            if n_products == 0:
+                missing.append("products")
+            rows.append({"s": s, "n_products": n_products, "company": co, "missing": missing,
+                         "verification": (co.verification_status if co else "—"),
+                         "reliability": (s.reliability if s.reliability_rated else None)})
         countries = sorted({s.country for s in session.exec(select(Supplier)).all() if s.country})
+        product_counts = {r["s"].id: r["n_products"] for r in rows}
+        verifications = {r["s"].id: r["verification"] for r in rows}
+        missing_map = {r["s"].id: r["missing"] for r in rows}
         ctx = {"request": request, "user": user, "active": "suppliers",
-               "suppliers": suppliers, "pcounts": pcounts, "can_edit": True,
+               "suppliers": suppliers, "rows": rows, "pcounts": pcounts, "product_counts": product_counts,
+               "verifications": verifications, "missing_map": missing_map, "can_edit": True,
                "q": q, "country": country, "listed": listed, "countries": countries}
     return templates.TemplateResponse("suppliers.html", ctx)
 
@@ -861,6 +893,7 @@ def supplier_create(request: Request, name: str = Form(...), country: str = Form
         sup.email = (email or "").strip()
         sup.phone = (phone or "").strip()
         sup.reliability = _clamp_reliability(reliability)
+        sup.reliability_rated = True   # an admin explicitly reviewed + set the rating
         sup.payment_terms = (payment_terms or "").strip()
         session.add(sup)
         session.commit()
@@ -896,6 +929,7 @@ def supplier_edit(request: Request, supplier_id: int, name: str = Form(...),
         sup.email = (email or "").strip()
         sup.phone = (phone or "").strip()
         sup.reliability = _clamp_reliability(reliability)
+        sup.reliability_rated = True   # an admin explicitly reviewed + set the rating
         sup.payment_terms = (payment_terms or "").strip()
         session.add(sup)
         session.commit()
@@ -1767,19 +1801,100 @@ def delete_lead(request: Request, lead_id: int):
 
 # ----------------------------------------------------------------------------- catalog
 
+PRODUCT_SORTS = {"new": Product.id.desc(), "name": Product.name.asc(),
+                 "updated": Product.updated_at.desc(), "price": Product.exw_price.desc()}
+_COMPLETENESS_FIELDS = ("name", "sku", "category_id", "hs_code", "unit", "exw_price", "weight_kg_per_unit",
+                        "origin_country", "spec", "min_order_qty")
+
+
+def _product_completeness(p) -> int:
+    """0-100 cached completeness from the presence of the key catalog fields (origin_country OR origin_region
+    counts). Cheap + deterministic; the Work Queue uses the same notion of 'incomplete'."""
+    present = 0
+    for f in _COMPLETENESS_FIELDS:
+        v = getattr(p, f, None)
+        if f == "origin_country":
+            v = v or getattr(p, "origin_region", "")
+        if v not in (None, "", 0, 0.0):
+            present += 1
+    return round(present * 100 / len(_COMPLETENESS_FIELDS))
+
+
 @app.get("/catalog", response_class=HTMLResponse)
-def catalog(request: Request, imported: int = 0, updated: int = 0, errors: int = 0):
+def catalog(request: Request, q: str = "", category: str = "", origin: str = "", supplier: str = "",
+            status: str = "", verification: str = "", completeness: str = "", price: str = "", hs: str = "",
+            listed: str = "yes", sort: str = "new", page: int = 1,
+            imported: int = 0, updated: int = 0, errors: int = 0):
+    """The admin catalog workspace — server-side search / filter / sort / pagination (never loads the whole
+    catalog into the browser). Admin only (exposes EXW buy-cost + margin)."""
+    per = 50
     with Session(engine) as session:
         user = current_user(request, session)
-        if not is_admin(user):          # catalog exposes EXW buy-cost (founder margin) — admin only
+        if not is_admin(user):
             return _forbidden()
-        products = session.exec(select(Product).order_by(Product.id.desc())).all()
-        suppliers = {s.id: s for s in session.exec(select(Supplier)).all()}
-    return templates.TemplateResponse(
-        "catalog.html",
-        {"request": request, "user": user, "products": products, "suppliers": suppliers,
-         "imported": imported, "updated": updated, "errors": errors},
-    )
+        stmt = select(Product)
+        if listed == "archived":
+            stmt = stmt.where(Product.active == False)          # noqa: E712
+        elif listed != "all":
+            stmt = stmt.where(Product.active == True)           # noqa: E712
+        if q:
+            like = f"%{q.strip()}%"
+            stmt = stmt.where(Product.name.ilike(like) | Product.sku.ilike(like)
+                              | Product.hs_code.ilike(like) | Product.brand.ilike(like))
+        if category == "none":
+            stmt = stmt.where(Product.category_id == None)      # noqa: E711
+        elif category.isdigit():
+            stmt = stmt.where(Product.category_id == int(category))
+        if origin:
+            stmt = stmt.where((Product.origin_country == origin) | (Product.origin_region == origin))
+        if supplier.isdigit():
+            pids = [ps.product_id for ps in session.exec(
+                select(ProductSupplier).where(ProductSupplier.company_id == int(supplier))).all()]
+            stmt = stmt.where(Product.id.in_(pids or [-1]))
+        if status:
+            stmt = stmt.where(Product.status == status)
+        if verification:
+            stmt = stmt.where(Product.verification_status == verification)
+        if hs == "no":
+            stmt = stmt.where((Product.hs_code == None) | (Product.hs_code == ""))   # noqa: E711
+        elif hs == "yes":
+            stmt = stmt.where((Product.hs_code != None) & (Product.hs_code != ""))    # noqa: E711
+        if price == "yes":
+            stmt = stmt.where(Product.exw_price > 0)
+        elif price == "no":
+            stmt = stmt.where((Product.exw_price == None) | (Product.exw_price == 0))  # noqa: E711
+        total = session.exec(select(func.count()).select_from(stmt.subquery())).one()
+        pages = max(1, (total + per - 1) // per)
+        page = min(max(1, page), pages)
+        order = PRODUCT_SORTS.get(sort, PRODUCT_SORTS["new"])
+        products = session.exec(stmt.order_by(order).offset((page - 1) * per).limit(per)).all()
+        # completeness filter is post-hoc (cheap on a page of 50)
+        rows = [{"p": p, "completeness": _product_completeness(p)} for p in products]
+        if completeness == "low":
+            rows = [r for r in rows if r["completeness"] < 60]
+        elif completeness == "high":
+            rows = [r for r in rows if r["completeness"] >= 60]
+        pids = [p.id for p in products]
+        supcounts = {}
+        if pids:
+            for ps in session.exec(select(ProductSupplier).where(ProductSupplier.product_id.in_(pids))).all():
+                supcounts[ps.product_id] = supcounts.get(ps.product_id, 0) + 1
+        for p in products:
+            if not supcounts.get(p.id) and p.supplier_id:
+                supcounts[p.id] = 1
+        cats = {c.id: c for c in session.exec(select(ProductCategory).where(
+            ProductCategory.status == "active")).all()}
+        companies = {c.id: c for c in session.exec(select(Company).where(
+            Company.primary_role == "supplier")).all()}
+        origins = sorted({(p.origin_country or p.origin_region) for p in session.exec(
+            select(Product)).all() if (p.origin_country or p.origin_region)})
+    return templates.TemplateResponse("catalog.html", {
+        "request": request, "user": user, "rows": rows, "supcounts": supcounts, "cats": cats,
+        "companies": companies, "origins": origins, "total": total, "page": page, "pages": pages,
+        "q": q, "f": {"category": category, "origin": origin, "supplier": supplier, "status": status,
+                      "verification": verification, "completeness": completeness, "price": price, "hs": hs,
+                      "listed": listed, "sort": sort},
+        "imported": imported, "updated": updated, "errors": errors})
 
 
 @app.post("/catalog/products")
@@ -1814,33 +1929,85 @@ def add_product(
     return RedirectResponse("/catalog", status_code=303)
 
 
-@app.post("/catalog/import")
-def import_catalog(request: Request, file: UploadFile = File(...)):
+@app.post("/catalog/import/preview", response_class=HTMLResponse)
+def import_catalog_preview(request: Request, file: UploadFile = File(...)):
+    """Parse + classify each row (new/update/ambiguous/skip) WITHOUT writing — conservative identity, never
+    name-only. The admin reviews the preview before applying."""
     with Session(engine) as session:
-        if not is_admin(current_user(request, session)):     # shared catalog/suppliers = admin-write only
+        user = current_user(request, session)
+        if not is_admin(user):
             return _forbidden()
         text = file.file.read().decode("utf-8-sig", errors="replace")
-        rows, errors = parse_products(text)
-        imported = updated = 0
-        fields = ("category", "spec", "hs_code", "exw_price", "currency", "unit",
-                  "weight_kg_per_unit", "cbm_per_unit", "packaging", "min_order_qty",
-                  "origin_region")
-        for rec in rows:
-            sup = _get_or_create_supplier(session, rec.get("supplier", ""))
-            existing = session.exec(select(Product).where(Product.name == rec["name"])).first()
-            product = existing or Product(name=rec["name"])
-            for field in fields:
-                if field in rec:
-                    setattr(product, field, rec[field])
-            if sup:
-                product.supplier_id = sup.id
-            product.updated_at = datetime.utcnow()
-            session.add(product)
-            updated += 1 if existing else 0
-            imported += 0 if existing else 1
+        rows, errors, mapping = PIMPORT.parse(text)
+        prev = PIMPORT.preview(session, rows)
+        request.session["_import_csv"] = text        # stash for the apply step
+    return templates.TemplateResponse("catalog_import.html", {
+        "request": request, "user": user, "active": "catalog", "preview": prev, "errors": errors,
+        "mapping": mapping, "row_count": len(rows)})
+
+
+@app.post("/catalog/import")
+def import_catalog(request: Request, file: UploadFile = File(None)):
+    """Apply the import (idempotent, transaction-safe). Uses the stashed preview CSV, or a freshly uploaded
+    file. Ambiguous rows become review tasks (never auto-merged)."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        text = ""
+        if file is not None:
+            text = file.file.read().decode("utf-8-sig", errors="replace")
+        else:
+            text = request.session.pop("_import_csv", "")
+        if not text:
+            return RedirectResponse("/catalog?errors=1", status_code=303)
+        rows, _errors, _map = PIMPORT.parse(text)
+        counts, report = PIMPORT.apply(session, rows, actor=user)
         session.commit()
+        pipeline.audit(session, user, "product", None, "catalog_import", counts)
+        session.commit()
+        request.session["_import_report"] = PIMPORT.error_report_csv(report)
     return RedirectResponse(
-        f"/catalog?imported={imported}&updated={updated}&errors={len(errors)}", status_code=303)
+        f"/catalog?imported={counts['created']}&updated={counts['updated']}&errors={counts['errors']}",
+        status_code=303)
+
+
+@app.get("/catalog/import/report.csv", response_class=PlainTextResponse)
+def import_report_csv(request: Request):
+    with Session(engine) as session:
+        if not is_admin(current_user(request, session)):
+            return _forbidden()
+    rep = request.session.get("_import_report", "row,result,detail\n")
+    return PlainTextResponse(rep, headers={"Content-Disposition": "attachment; filename=import_report.csv"})
+
+
+@app.get("/catalog/export.csv", response_class=PlainTextResponse)
+def catalog_export(request: Request):
+    """Admin-only, audited CSV export of the catalog."""
+    import csv as _csv
+    import io as _io
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        products = session.exec(select(Product).order_by(Product.id)).all()
+        out = _io.StringIO()
+        w = _csv.writer(out)
+        w.writerow(["id", "sku", "name", "category", "hs_code", "origin_country", "unit", "exw_price",
+                    "currency", "min_order_qty", "verification_status", "status"])
+        for p in products:
+            w.writerow([p.id, p.sku, p.name, p.category, p.hs_code, p.origin_country or p.origin_region,
+                        p.unit, p.exw_price, p.currency, p.min_order_qty, p.verification_status, p.status])
+        pipeline.audit(session, user, "export", None, "catalog_export", {"rows": len(products)})
+        session.commit()
+    return PlainTextResponse(out.getvalue(),
+                             headers={"Content-Disposition": "attachment; filename=go4it_catalog.csv"})
+
+
+@app.get("/catalog/template.csv", response_class=PlainTextResponse)
+def catalog_template_csv():
+    return PlainTextResponse(PIMPORT.template_csv(),
+                             headers={"Content-Disposition": "attachment; filename=go4it_products_template.csv"})
 
 
 @app.get("/catalog/sample.csv", response_class=PlainTextResponse)
@@ -1848,6 +2015,568 @@ def sample_csv():
     return PlainTextResponse(
         SAMPLE_CSV,
         headers={"Content-Disposition": "attachment; filename=go4it_products_sample.csv"})
+
+
+# ----------------------------------------------------------------------------- product detail (Phase 5)
+_PRODUCT_EDIT_FIELDS = ("name", "sku", "short_description", "spec", "category", "subcategory", "brand", "grade",
+                        "hs_code", "unit", "currency", "exw_price", "weight_kg_per_unit", "cbm_per_unit",
+                        "packaging", "min_order_qty", "units_per_package", "origin_country", "origin_city",
+                        "origin_region", "producer", "incoterms", "certifications", "lead_time_days",
+                        "production_capacity", "shelf_life", "storage_requirements", "internal_notes")
+
+
+@app.get("/catalog/products/{product_id}", response_class=HTMLResponse)
+def product_detail(request: Request, product_id: int, tab: str = "overview"):
+    """The tabbed admin product workspace (Overview/Specifications/Suppliers/Pricing/Documents/Catalogs/
+    Activity). Admin only. No business mutation on this GET."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        p = session.get(Product, product_id)
+        if not p:
+            return _not_found()
+        cat = session.get(ProductCategory, p.category_id) if p.category_id else None
+        sup_links = session.exec(select(ProductSupplier).where(
+            ProductSupplier.product_id == p.id)).all()
+        companies = {c.id: c for c in session.exec(select(Company)).all()}
+        supplier_companies = session.exec(select(Company).where(Company.primary_role == "supplier")).all()
+        prices = session.exec(select(ProductPriceVersion).where(
+            ProductPriceVersion.product_id == p.id).order_by(ProductPriceVersion.version.desc())).all()
+        docs = session.exec(select(ProductDocument).where(
+            ProductDocument.product_id == p.id, ProductDocument.status == "active")).all()
+        catalogs = session.exec(select(CatalogGenerationJob).where(
+            CatalogGenerationJob.product_id == p.id).order_by(CatalogGenerationJob.version.desc())).all()
+        acts = session.exec(select(AuditLog).where(
+            AuditLog.entity_type.in_(("product", "price_version")),
+            AuditLog.entity_id == p.id).order_by(AuditLog.id.desc()).limit(50)).all()
+        cats = session.exec(select(ProductCategory).where(ProductCategory.status == "active")).all()
+        completeness = _product_completeness(p)
+        missing = WQ._missing_fields(session, p)
+        # parse price breakdowns for display
+        import json as _json
+        price_rows = []
+        for pv in prices:
+            try:
+                bd = _json.loads(pv.breakdown or "[]")
+                ex = _json.loads(pv.excluded_costs or "[]")
+            except Exception:  # noqa: BLE001
+                bd, ex = [], []
+            price_rows.append({"pv": pv, "breakdown": bd, "excluded": ex})
+    return templates.TemplateResponse("product_detail.html", {
+        "request": request, "user": user, "active": "catalog", "p": p, "cat": cat, "tab": tab,
+        "sup_links": sup_links, "companies": companies, "supplier_companies": supplier_companies,
+        "price_rows": price_rows, "docs": docs, "catalogs": catalogs, "acts": acts, "cats": cats,
+        "completeness": completeness, "missing": missing, "incoterms": PRICING.INCOTERMS})
+
+
+@app.post("/catalog/products/{product_id}/edit")
+async def product_edit(request: Request, product_id: int):
+    """Explicit Save. Every changed field is audited (previous → new). No-op fields are ignored."""
+    form = await request.form()
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        p = session.get(Product, product_id)
+        if not p:
+            return _not_found()
+        changes = {}
+        for f in _PRODUCT_EDIT_FIELDS:
+            if f not in form:
+                continue
+            raw = form.get(f, "")
+            new = _coerce_field(p, f, raw)
+            old = getattr(p, f, None)
+            if new != old:
+                changes[f] = {"from": _safe(old), "to": _safe(new)}
+                setattr(p, f, new)
+        if changes:
+            if "category" in changes and (p.category or "").strip():
+                cat = CATS.get_or_create_category(session, p.category)
+                if cat:
+                    p.category_id = cat.id
+            p.status = "active" if p.active else "archived"
+            p.completeness_score = _product_completeness(p)
+            p.updated_at = datetime.utcnow()
+            p.updated_by = user.email
+            session.add(p)
+            pipeline.audit(session, user, "product", p.id, "product_edit", {"fields": list(changes.keys())})
+            session.commit()
+    return RedirectResponse(f"/catalog/products/{product_id}", status_code=303)
+
+
+@app.post("/catalog/products/{product_id}/verify")
+def product_verify(request: Request, product_id: int, verification_status: str = Form("verified")):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        p = session.get(Product, product_id)
+        if not p:
+            return _not_found()
+        if verification_status not in ("unverified", "verified", "rejected"):
+            verification_status = "unverified"
+        prev, p.verification_status = p.verification_status, verification_status
+        p.verified_at = datetime.utcnow() if verification_status == "verified" else None
+        p.verified_by = user.email if verification_status == "verified" else ""
+        session.add(p)
+        pipeline.audit(session, user, "product", p.id, "product_verify",
+                       {"from": prev, "to": verification_status})
+        session.commit()
+    return RedirectResponse(f"/catalog/products/{product_id}", status_code=303)
+
+
+@app.post("/catalog/products/{product_id}/status")
+def product_status(request: Request, product_id: int, status: str = Form("active")):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        p = session.get(Product, product_id)
+        if not p:
+            return _not_found()
+        if status not in ("draft", "active", "archived"):
+            status = "active"
+        prev = p.status
+        p.status = status
+        p.active = (status != "archived")
+        session.add(p)
+        pipeline.audit(session, user, "product", p.id, "product_status", {"from": prev, "to": status})
+        session.commit()
+    return RedirectResponse(f"/catalog/products/{product_id}", status_code=303)
+
+
+@app.post("/catalog/products/{product_id}/suppliers")
+def product_supplier_add(request: Request, product_id: int, company_id: int = Form(...),
+                         supplier_sku: str = Form(""), supplier_price: float = Form(0),
+                         currency: str = Form("USD"), is_primary: str = Form("")):
+    """Link a product to a canonical Trade Network supplier Company (idempotent on (product, company))."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        p = session.get(Product, product_id)
+        co = session.get(Company, company_id)
+        if not p or not co:
+            return _not_found()
+        exists = session.exec(select(ProductSupplier).where(
+            ProductSupplier.product_id == product_id, ProductSupplier.company_id == company_id)).first()
+        if not exists:
+            session.add(ProductSupplier(product_id=product_id, company_id=company_id,
+                                        supplier_sku=supplier_sku, supplier_price=supplier_price,
+                                        currency=currency, is_primary=(is_primary == "1")))
+            CS._add_role(session, co, "supplier")
+            pipeline.audit(session, user, "product", product_id, "product_supplier_link",
+                           {"company_id": company_id})
+            session.commit()
+    return RedirectResponse(f"/catalog/products/{product_id}?tab=suppliers", status_code=303)
+
+
+@app.post("/catalog/products/{product_id}/price")
+def product_price_new(request: Request, product_id: int, incoterm: str = Form("EXW"),
+                      quantity: float = Form(0), destination: str = Form(""),
+                      transport_mode: str = Form(""), margin_pct: float = Form(0),
+                      target_currency: str = Form("")):
+    """Create an IMMUTABLE price version from the calculator. Never edits an existing version."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        p = session.get(Product, product_id)
+        if not p:
+            return _not_found()
+        PRICING.create_price_version(session, p, incoterm=incoterm,
+                                     quantity=(quantity or None), destination=destination,
+                                     transport_mode=transport_mode, margin_pct=margin_pct,
+                                     target_currency=(target_currency or None), actor=user)
+        session.commit()
+    return RedirectResponse(f"/catalog/products/{product_id}?tab=pricing", status_code=303)
+
+
+@app.post("/catalog/products/{product_id}/price/{pv_id}/action")
+def product_price_action(request: Request, product_id: int, pv_id: int, action: str = Form(...)):
+    """Approve / duplicate-to-revise / mark needs_review / expire / archive a price version. History is never
+    rewritten — 'duplicate' clones to a fresh draft."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        pv = session.get(ProductPriceVersion, pv_id)
+        if not pv or pv.product_id != product_id:
+            return _not_found()
+        if action == "duplicate":
+            PRICING.duplicate_version(session, pv, actor=user)
+        elif action in ("approved", "needs_review", "expired", "archived", "draft"):
+            PRICING.transition_version(session, pv, action, actor=user)
+        session.commit()
+    return RedirectResponse(f"/catalog/products/{product_id}?tab=pricing", status_code=303)
+
+
+@app.post("/catalog/bulk")
+async def catalog_bulk(request: Request):
+    """Bulk category-assign or status-change over selected products. Admin only; audited."""
+    form = await request.form()
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        ids = [int(x) for x in form.getlist("product_ids") if str(x).isdigit()]
+        action = form.get("action", "")
+        if action == "category" and form.get("category_id", "").isdigit():
+            cid = int(form["category_id"])
+            n = CATS.move_products(session, ids, cid, actor=user)
+            pipeline.audit(session, user, "product", None, "bulk_category", {"n": n, "category_id": cid})
+        elif action in ("archive", "activate"):
+            n = 0
+            for pid in ids:
+                p = session.get(Product, pid)
+                if p:
+                    p.active = (action == "activate")
+                    p.status = "active" if p.active else "archived"
+                    session.add(p); n += 1
+            pipeline.audit(session, user, "product", None, "bulk_status", {"n": n, "action": action})
+        session.commit()
+    return RedirectResponse("/catalog", status_code=303)
+
+
+# ----------------------------------------------------------------------------- categories (Phase 5)
+@app.get("/categories", response_class=HTMLResponse)
+def categories_page(request: Request):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        cats = session.exec(select(ProductCategory).order_by(ProductCategory.name)).all()
+        counts = {c.id: CATS.product_count(session, c.id) for c in cats}
+        uncategorized = session.exec(select(func.count()).select_from(Product).where(
+            Product.category_id == None)).one()                 # noqa: E711
+        aliases = {}
+        for a in session.exec(select(ProductCategoryAlias)).all():
+            aliases.setdefault(a.category_id, []).append(a.alias_normalized)
+    return templates.TemplateResponse("categories.html", {
+        "request": request, "user": user, "active": "categories", "cats": cats, "counts": counts,
+        "uncategorized": uncategorized, "aliases": aliases})
+
+
+@app.post("/categories")
+def category_create(request: Request, name: str = Form(...), parent_id: str = Form("")):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        pid = int(parent_id) if parent_id.isdigit() else None
+        CATS.get_or_create_category(session, name, parent_id=pid)
+        session.commit()
+    return RedirectResponse("/categories", status_code=303)
+
+
+@app.post("/categories/merge")
+def category_merge(request: Request, source_id: int = Form(...), dest_id: int = Form(...)):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        CATS.merge_categories(session, source_id, dest_id, actor=user)
+        session.commit()
+    return RedirectResponse("/categories", status_code=303)
+
+
+@app.post("/categories/{category_id}/status")
+def category_status(request: Request, category_id: int, status: str = Form("active")):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        CATS.set_status(session, category_id, status, actor=user)
+        session.commit()
+    return RedirectResponse("/categories", status_code=303)
+
+
+@app.post("/categories/{category_id}/alias")
+def category_alias_add(request: Request, category_id: int, alias: str = Form(...)):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        CATS.add_alias(session, alias, category_id)
+        session.commit()
+    return RedirectResponse("/categories", status_code=303)
+
+
+# ----------------------------------------------------------------------------- pricing & rates (Phase 5)
+@app.get("/pricing", response_class=HTMLResponse)
+def pricing_page(request: Request):
+    """Admin-only structured cost rates + FX (with honest staleness) + a standalone landed-price calculator.
+    Separate page from Catalog (Catalog and Pricing are never combined into one crowded screen)."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        rates = session.exec(select(CostRate).order_by(CostRate.rate_type, CostRate.id.desc())).all()
+        fxs = session.exec(select(FxRate).order_by(FxRate.id.desc())).all()
+        now = datetime.utcnow()
+        rate_rows = [{"r": r, "active": PRICING.rate_active({
+            "status": r.status, "valid_from": r.valid_from, "valid_until": r.valid_until}, now)} for r in rates]
+        fx_rows = [{"fx": f, "state": PRICING.fx_state({
+            "rate": f.rate, "kind": f.kind, "expires_at": f.expires_at}, now),
+            "label": PRICING.fx_label(PRICING.fx_state({
+                "rate": f.rate, "kind": f.kind, "expires_at": f.expires_at}, now))} for f in fxs]
+    return templates.TemplateResponse("pricing.html", {
+        "request": request, "user": user, "active": "pricing", "rate_rows": rate_rows, "fx_rows": fx_rows,
+        "rate_types": PRICING._LABELS, "incoterms": PRICING.INCOTERMS})
+
+
+@app.post("/pricing/rates")
+def cost_rate_create(request: Request, name: str = Form(""), rate_type: str = Form(...),
+                     origin: str = Form(""), destination: str = Form(""), transport_mode: str = Form(""),
+                     currency: str = Form("USD"), unit_basis: str = Form("per_shipment"),
+                     amount: float = Form(0), min_charge: float = Form(0), valid_until: str = Form(""),
+                     source: str = Form(""), confidence: str = Form("unverified")):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        vu = None
+        if valid_until:
+            try:
+                vu = datetime.fromisoformat(valid_until)
+            except ValueError:
+                vu = None
+        session.add(CostRate(name=name, rate_type=rate_type, origin=origin, destination=destination,
+                             transport_mode=transport_mode, currency=currency, unit_basis=unit_basis,
+                             amount=amount, min_charge=min_charge, valid_until=vu, source=source,
+                             confidence=confidence, created_by=user.email))
+        pipeline.audit(session, user, "cost_rate", None, "cost_rate_create", {"type": rate_type})
+        session.commit()
+    return RedirectResponse("/pricing", status_code=303)
+
+
+@app.post("/pricing/fx")
+def fx_upsert(request: Request, base: str = Form(...), quote: str = Form("USD"), rate: float = Form(...),
+              kind: str = Form("manual"), source: str = Form(""), expires_days: int = Form(0)):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        if rate <= 0:
+            return RedirectResponse("/pricing", status_code=303)
+        base, quote = base.upper().strip(), quote.upper().strip()
+        row = session.exec(select(FxRate).where(FxRate.base == base, FxRate.quote == quote)).first()
+        now = datetime.utcnow()
+        exp = now + timedelta(days=expires_days) if expires_days > 0 else None
+        if row:
+            row.rate, row.kind, row.source = rate, kind, source
+            row.retrieved_at, row.expires_at, row.verified_by, row.active = now, exp, user.email, True
+        else:
+            row = FxRate(base=base, quote=quote, rate=rate, kind=kind, source=source, retrieved_at=now,
+                         expires_at=exp, verified_by=user.email, active=True)
+        session.add(row)
+        pipeline.audit(session, user, "fx_rate", None, "fx_upsert", {"base": base, "quote": quote})
+        session.commit()
+    return RedirectResponse("/pricing", status_code=303)
+
+
+@app.post("/pricing/calc", response_class=HTMLResponse)
+def pricing_calc(request: Request, product_id: int = Form(...), incoterm: str = Form("EXW"),
+                 quantity: float = Form(0), margin_pct: float = Form(0), destination: str = Form(""),
+                 target_currency: str = Form("")):
+    """Standalone calculator preview (does NOT persist). To save, use the product Pricing tab."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        p = session.get(Product, product_id)
+        if not p:
+            return _not_found()
+        fx = PRICING._fx_for(session, p.currency or "USD", (target_currency or p.currency or "USD"))
+        rates = PRICING._rates_for(session, p, None)
+        calc = PRICING.compute_price(base_price=p.exw_price, base_currency=p.currency or "USD",
+                                     quantity=(quantity or p.min_order_qty or 1),
+                                     weight_kg_per_unit=p.weight_kg_per_unit, incoterm=incoterm, rates=rates,
+                                     fx=fx, margin_pct=margin_pct, target_currency=(target_currency or None))
+    return templates.TemplateResponse("pricing_calc_result.html", {
+        "request": request, "user": user, "p": p, "calc": calc,
+        "fx_label": PRICING.fx_label(calc["fx_state"])})
+
+
+def _coerce_field(p, field, raw):
+    """Coerce a form string to the product field's type (float/int/str)."""
+    cur = getattr(p, field, None)
+    if isinstance(cur, bool):
+        return raw in ("1", "true", "on", "yes")
+    if isinstance(cur, int) and not isinstance(cur, bool):
+        try:
+            return int(float(raw)) if raw != "" else 0
+        except ValueError:
+            return cur
+    if isinstance(cur, float):
+        try:
+            return float(raw) if raw != "" else 0.0
+        except ValueError:
+            return cur
+    return (raw or "").strip()
+
+
+def _safe(v):
+    return v.isoformat() if isinstance(v, datetime) else v
+
+
+# ----------------------------------------------------------------------------- product documents (Phase 5, B)
+@app.post("/catalog/products/{product_id}/documents")
+def product_document_upload(request: Request, product_id: int, doc_type: str = Form("spec"),
+                            title: str = Form(""), file: UploadFile = File(...)):
+    """Upload a PRIVATE product document. Validated (extension/MIME/size/dangerous/traversal via the tested
+    _secure_validate), stored under PRODUCT_FILES_DIR with a safe generated name, original filename kept as
+    metadata, admin-only, audited. NOT the disabled email-attachment path."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        p = session.get(Product, product_id)
+        if not p:
+            return _not_found()
+        data = file.file.read(ATT.MAX_BYTES + 1)
+        ok, reason = ATT._secure_validate(file.filename or "", file.content_type or "", len(data))
+        if not ok or len(data) > ATT.MAX_BYTES:
+            return RedirectResponse(f"/catalog/products/{product_id}?tab=documents&err=1", status_code=303)
+        doc = ProductDocument(product_id=product_id, doc_type=doc_type, title=title,
+                              original_filename=file.filename or "", content_type=file.content_type or "",
+                              size_bytes=len(data), uploaded_by=user.email, status="active")
+        session.add(doc); session.flush()
+        doc.file_path = _save_product_file(product_id, doc.id, file, data)
+        session.add(doc)
+        pipeline.audit(session, user, "product", product_id, "document_upload",
+                       {"doc_id": doc.id, "type": doc_type})
+        session.commit()
+    return RedirectResponse(f"/catalog/products/{product_id}?tab=documents", status_code=303)
+
+
+@app.get("/catalog/products/{product_id}/documents/{doc_id}/download")
+def product_document_download(request: Request, product_id: int, doc_id: int):
+    """Download a product document. Admin always; a seller ONLY if it was published seller-safe. Path is
+    rebuilt + re-validated to stay inside PRODUCT_FILES_DIR (no traversal)."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        doc = session.get(ProductDocument, doc_id)
+        if not doc or doc.product_id != product_id or doc.status != "active":
+            return _not_found()
+        if not is_admin(user) and not doc.seller_safe:
+            return _not_found()                          # 404, not 403 — don't reveal it exists
+        rel = doc.file_path
+    path = (PRODUCT_FILES_DIR / rel).resolve()
+    if not str(path).startswith(str(PRODUCT_FILES_DIR.resolve()) + os.sep) or not path.exists():
+        return _not_found()
+    return FileResponse(str(path), filename=doc.original_filename or path.name,
+                        media_type=doc.content_type or "application/octet-stream")
+
+
+@app.post("/catalog/products/{product_id}/documents/{doc_id}/archive")
+def product_document_archive(request: Request, product_id: int, doc_id: int):
+    """Archive (never destructively delete) a product document."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        doc = session.get(ProductDocument, doc_id)
+        if not doc or doc.product_id != product_id:
+            return _not_found()
+        doc.status = "archived"; session.add(doc)
+        pipeline.audit(session, user, "product", product_id, "document_archive", {"doc_id": doc_id})
+        session.commit()
+    return RedirectResponse(f"/catalog/products/{product_id}?tab=documents", status_code=303)
+
+
+# ----------------------------------------------------------------------------- Catalog Studio (Phase 5, B)
+@app.get("/catalog/studio", response_class=HTMLResponse)
+def catalog_studio(request: Request, product_id: int = 0):
+    """Admin-only Catalog Studio — generate a branded one-pager PDF. Shows provider status honestly (Higgs is
+    'Not configured' until real credentials/API docs exist)."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        products = session.exec(select(Product).where(Product.active == True)                # noqa: E712
+                                .order_by(Product.name).limit(500)).all()
+        jobs = session.exec(select(CatalogGenerationJob).order_by(
+            CatalogGenerationJob.id.desc()).limit(50)).all()
+        prod_names = {p.id: p.name for p in session.exec(select(Product)).all()}
+    return templates.TemplateResponse("catalog_studio.html", {
+        "request": request, "user": user, "active": "studio", "products": products, "jobs": jobs,
+        "prod_names": prod_names, "provider_status": STUDIO.provider_status(),
+        "selected": product_id})
+
+
+@app.post("/catalog/studio/generate")
+def catalog_studio_generate(request: Request, product_id: int = Form(...), provider: str = Form("builtin")):
+    """Create a generation job and run it inline (bounded). A failure marks the job failed + opens a work item
+    — it never blocks. Only APPROVED product fields are sent; contact is Go4it."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        p = session.get(Product, product_id)
+        if not p:
+            return _not_found()
+        version = (session.exec(select(func.count()).select_from(CatalogGenerationJob)
+                                .where(CatalogGenerationJob.product_id == product_id)).one() or 0) + 1
+        job = CatalogGenerationJob(product_id=product_id, version=version, status="draft",
+                                   provider=provider, generated_by=user.email)
+        session.add(job); session.flush()
+        pv = session.exec(select(ProductPriceVersion).where(
+            ProductPriceVersion.product_id == product_id,
+            ProductPriceVersion.status == "approved").order_by(ProductPriceVersion.version.desc())).first()
+        STUDIO.generate_catalog(session, job, PRODUCT_FILES_DIR, price_version=pv, actor=user)
+        session.commit()
+        if job.status == "failed":
+            WQ.create_work_item_safe(session, actor=user, type="catalog_generation_failed",
+                                     title=f"Catalog generation failed (product {product_id})",
+                                     description=(job.error or "generation failed")[:400],
+                                     related_product_id=product_id,
+                                     idempotency_key=f"catalog_generation_failed:job:{job.id}",
+                                     condition_version=f"v{job.version}")
+            session.commit()
+    return RedirectResponse(f"/catalog/studio?product_id={product_id}", status_code=303)
+
+
+@app.post("/catalog/studio/{job_id}/action")
+def catalog_studio_action(request: Request, job_id: int, action: str = Form(...)):
+    """Approve / archive / publish-seller-safe a generated catalog. Never auto-emails."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        job = session.get(CatalogGenerationJob, job_id)
+        if not job:
+            return _not_found()
+        if action == "approve" and job.status == "needs_review":
+            job.status = "approved"
+        elif action == "archive":
+            job.status = "archived"
+        elif action == "publish_seller_safe" and job.status == "approved":
+            job.seller_safe = True               # intentional seller-safe publish (existing confidentiality flow)
+        session.add(job)
+        pipeline.audit(session, user, "product", job.product_id, "catalog_" + action, {"job": job_id})
+        session.commit()
+        pid = job.product_id
+    return RedirectResponse(f"/catalog/studio?product_id={pid}", status_code=303)
+
+
+@app.get("/catalog/studio/{job_id}/download")
+def catalog_studio_download(request: Request, job_id: int):
+    """Download a generated catalog PDF. Admin always; seller only if published seller-safe. Never auto-sent."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        job = session.get(CatalogGenerationJob, job_id)
+        if not job or not job.file_path or job.status not in ("needs_review", "approved"):
+            return _not_found()
+        if not is_admin(user) and not job.seller_safe:
+            return _not_found()
+        rel = job.file_path
+    path = (PRODUCT_FILES_DIR / rel).resolve()
+    if not str(path).startswith(str(PRODUCT_FILES_DIR.resolve()) + os.sep) or not path.exists():
+        return _not_found()
+    return FileResponse(str(path), filename=f"go4it_catalog_{job_id}.pdf", media_type="application/pdf")
 
 
 # ----------------------------------------------------------------------------- quotes
@@ -2640,6 +3369,19 @@ def _save_deliverable_file(req_id, deliverable_id, upload):
     fname = f"{deliverable_id}_{_safe_name(upload.filename)}"
     (dest_dir / fname).write_bytes(data)
     return f"{req_id}/{fname}"
+
+
+PRODUCT_FILES_DIR = BASE_DIR.parent / "product_files"   # PRIVATE, outside /static (Phase 5 product docs)
+
+
+def _save_product_file(product_id, doc_id, upload, data):
+    """Persist a validated product file named <doc_id>_<safe_name> under product_files/<product_id>/.
+    `data` is already-read + validated bytes. Returns the stored relative path."""
+    dest_dir = PRODUCT_FILES_DIR / str(product_id)
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    fname = f"{doc_id}_{_safe_name(upload.filename)}"
+    (dest_dir / fname).write_bytes(data)
+    return f"{product_id}/{fname}"
 
 
 def _deliverables_for(session, req_ids):

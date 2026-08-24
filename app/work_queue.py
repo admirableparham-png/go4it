@@ -26,7 +26,12 @@ TYPES = ["review_new_request", "follow_up_buyer", "follow_up_seller", "follow_up
          "failed_system_job", "overdue_request",
          # Phase 4 (Outreach) work-item types
          "review_inbound_reply", "unmatched_inbound", "mailbox_auth_failure", "campaign_paused",
-         "spam_complaint", "high_bounce_rate", "other"]
+         "spam_complaint", "high_bounce_rate",
+         # Phase 5 (Products/Pricing) work-item types
+         "product_incomplete", "product_uncategorized", "missing_hs_code", "missing_supplier",
+         "missing_origin", "missing_unit", "missing_base_price", "stale_product_verification",
+         "expired_price", "expired_rate", "price_needs_approval", "catalog_needs_review",
+         "catalog_generation_failed", "ambiguous_import_match", "invalid_document", "other"]
 TYPE_LABELS = {
     "review_new_request": "Review new request", "follow_up_buyer": "Follow up with buyer",
     "follow_up_seller": "Follow up with seller", "follow_up_supplier": "Follow up with supplier",
@@ -38,7 +43,14 @@ TYPE_LABELS = {
     "overdue_request": "Overdue request",
     "review_inbound_reply": "Review inbound reply", "unmatched_inbound": "Unmatched inbound message",
     "mailbox_auth_failure": "Mailbox authentication failure", "campaign_paused": "Campaign paused by failure",
-    "spam_complaint": "Spam complaint", "high_bounce_rate": "High bounce-rate alert", "other": "Other",
+    "spam_complaint": "Spam complaint", "high_bounce_rate": "High bounce-rate alert",
+    "product_incomplete": "Incomplete product", "product_uncategorized": "Uncategorized product",
+    "missing_hs_code": "Missing HS code", "missing_supplier": "Missing supplier", "missing_origin": "Missing origin",
+    "missing_unit": "Missing unit", "missing_base_price": "Missing base price",
+    "stale_product_verification": "Stale product verification", "expired_price": "Expired price version",
+    "expired_rate": "Expired cost rate", "price_needs_approval": "Price version needs approval",
+    "catalog_needs_review": "Catalog needs review", "catalog_generation_failed": "Catalog generation failed",
+    "ambiguous_import_match": "Ambiguous import match", "invalid_document": "Invalid document", "other": "Other",
 }
 STATUSES = ["open", "in_progress", "waiting", "completed", "dismissed"]
 NONTERMINAL = ("open", "in_progress", "waiting")
@@ -50,7 +62,14 @@ PARTY_OF_TYPE = {"follow_up_buyer": "buyer", "follow_up_seller": "seller", "foll
                  "review_inbound_reply": "buyer", "replace_invalid_contact": "buyer",
                  "failed_system_job": "system", "unmatched_inbound": "system",
                  "mailbox_auth_failure": "system", "campaign_paused": "system",
-                 "spam_complaint": "system", "high_bounce_rate": "system"}
+                 "spam_complaint": "system", "high_bounce_rate": "system",
+                 "product_incomplete": "internal", "product_uncategorized": "internal",
+                 "missing_hs_code": "internal", "missing_supplier": "supplier", "missing_origin": "internal",
+                 "missing_unit": "internal", "missing_base_price": "internal",
+                 "stale_product_verification": "internal", "expired_price": "internal", "expired_rate": "internal",
+                 "price_needs_approval": "internal", "catalog_needs_review": "internal",
+                 "catalog_generation_failed": "system", "ambiguous_import_match": "internal",
+                 "invalid_document": "internal"}
 PRIORITY_BADGE = {"low": "slate", "normal": "sky", "high": "amber", "urgent": "rose"}
 STATUS_BADGE = {"open": "queued", "in_progress": "running", "waiting": "amber",
                 "completed": "won", "dismissed": "slate"}
@@ -68,8 +87,8 @@ def create_work_item(session, *, type, title, description="", tenant_id=None, pr
                      assigned_admin_id=None, created_by=None, source="manual", visibility="internal",
                      waiting_on="", related_request_id=None, related_company_id=None, related_lead_id=None,
                      related_outreach_id=None, related_quote_id=None, related_deal_id=None,
-                     related_seller_update_id=None, parent_id=None, idempotency_key="", condition_version="",
-                     inferred=False, due_at=None) -> WorkItem:
+                     related_seller_update_id=None, related_product_id=None, parent_id=None,
+                     idempotency_key="", condition_version="", inferred=False, due_at=None) -> WorkItem:
     """Create a WorkItem (does not commit). status defaults to 'waiting' when waiting_on is set, else 'open'.
     Raises IntegrityError if an OPEN item with the same idempotency_key already exists (partial-unique index)."""
     if status is None:
@@ -81,9 +100,9 @@ def create_work_item(session, *, type, title, description="", tenant_id=None, pr
                   related_request_id=related_request_id, related_company_id=related_company_id,
                   related_lead_id=related_lead_id, related_outreach_id=related_outreach_id,
                   related_quote_id=related_quote_id, related_deal_id=related_deal_id,
-                  related_seller_update_id=related_seller_update_id, parent_id=parent_id,
-                  idempotency_key=idempotency_key, condition_version=condition_version, inferred=inferred,
-                  due_at=due_at)
+                  related_seller_update_id=related_seller_update_id, related_product_id=related_product_id,
+                  parent_id=parent_id, idempotency_key=idempotency_key, condition_version=condition_version,
+                  inferred=inferred, due_at=due_at)
     session.add(wi)
     session.flush()  # surface the partial-unique IntegrityError to the caller now
     return wi
@@ -521,6 +540,123 @@ def sync_auth_failed_mailboxes(session, actor=None, inferred=False, budget=None)
     return n
 
 
+# --- Phase 5 product/pricing scanners -------------------------------------------------------------
+# The completeness fields whose absence makes a product "incomplete". Each missing field is encoded in the
+# condition_version so a task re-opens if a fixed field breaks again, and auto-resolves when all are present.
+_PRODUCT_REQUIRED = ("hs_code", "origin", "unit", "base_price", "supplier", "category")
+
+
+def _missing_fields(session, p):
+    from .models import ProductSupplier
+    miss = []
+    if not (p.hs_code or "").strip():
+        miss.append("hs_code")
+    if not ((p.origin_country or p.origin_region or "").strip()):
+        miss.append("origin")
+    if not (p.unit or "").strip():
+        miss.append("unit")
+    if not (p.exw_price and p.exw_price > 0):
+        miss.append("base_price")
+    if p.category_id is None and not (p.category or "").strip():
+        miss.append("category")
+    has_sup = p.supplier_id is not None or session.exec(
+        select(ProductSupplier.id).where(ProductSupplier.product_id == p.id)).first() is not None
+    if not has_sup:
+        miss.append("supplier")
+    return miss
+
+
+def sync_incomplete_products(session, actor=None, inferred=False, budget=None) -> int:
+    """One 'incomplete product' task per product missing key fields; version = the sorted missing-field set so a
+    re-broken field re-alerts and a fully-completed product auto-resolves. Skips archived products."""
+    from .models import Product
+    n = 0
+    for p in session.exec(select(Product).where(Product.active == True)).all():  # noqa: E712
+        miss = _missing_fields(session, p)
+        key = f"product_incomplete:product:{p.id}"
+        if not miss:
+            resolve_by_key(session, key, actor, "product complete")
+            continue
+        if _capped(budget, n):
+            break
+        version = ",".join(sorted(miss))
+        if already_handled(session, key, version):
+            continue
+        if create_work_item_safe(session, actor=actor, type="product_incomplete",
+                                 title=f"Incomplete product: {p.name[:60]}",
+                                 description=f"Missing: {', '.join(miss)}.", related_product_id=p.id,
+                                 idempotency_key=key, condition_version=version, inferred=inferred):
+            n += 1
+    return n
+
+
+def sync_expired_price_versions(session, actor=None, inferred=False, budget=None) -> int:
+    """Flag approved price versions past their rate validity, and price versions awaiting approval."""
+    from .models import ProductPriceVersion
+    n = 0
+    now = datetime.utcnow()
+    for pv in session.exec(select(ProductPriceVersion).where(
+            ProductPriceVersion.status.in_(("approved", "needs_review", "draft")))).all():
+        if _capped(budget, n):
+            break
+        if pv.status == "needs_review":
+            key, ver, typ, title = (f"price_needs_approval:pv:{pv.id}", f"v{pv.version}",
+                                    "price_needs_approval", f"Price version needs approval (product {pv.product_id})")
+        elif pv.status == "approved" and pv.rate_valid_until and now > pv.rate_valid_until:
+            key, ver, typ, title = (f"expired_price:pv:{pv.id}", pv.rate_valid_until.isoformat(),
+                                    "expired_price", f"Approved price expired (product {pv.product_id})")
+        else:
+            continue
+        if already_handled(session, key, ver):
+            continue
+        if create_work_item_safe(session, actor=actor, type=typ, title=title, related_product_id=pv.product_id,
+                                 idempotency_key=key, condition_version=ver, inferred=inferred):
+            n += 1
+    return n
+
+
+def sync_expired_cost_rates(session, actor=None, inferred=False, budget=None) -> int:
+    """Flag active cost rates whose validity window has passed (they must not be used silently)."""
+    from .models import CostRate
+    n = 0
+    now = datetime.utcnow()
+    for r in session.exec(select(CostRate).where(CostRate.status == "active")).all():
+        if _capped(budget, n):
+            break
+        if not (r.valid_until and now > r.valid_until):
+            continue
+        key = f"expired_rate:rate:{r.id}"
+        ver = r.valid_until.isoformat()
+        if already_handled(session, key, ver):
+            continue
+        if create_work_item_safe(session, actor=actor, type="expired_rate",
+                                 title=f"Expired cost rate: {r.name or r.rate_type}",
+                                 description=f"{r.rate_type} valid_until {ver} — review before pricing use.",
+                                 idempotency_key=key, condition_version=ver, inferred=inferred):
+            n += 1
+    return n
+
+
+def sync_failed_catalog_jobs(session, actor=None, inferred=False, budget=None) -> int:
+    """Surface catalog generations that failed (bounded; a failure never blocks other workers)."""
+    from .models import CatalogGenerationJob
+    n = 0
+    for j in session.exec(select(CatalogGenerationJob).where(
+            CatalogGenerationJob.status == "failed")).all():
+        if _capped(budget, n):
+            break
+        key = f"catalog_generation_failed:job:{j.id}"
+        ver = f"v{j.version}"
+        if already_handled(session, key, ver):
+            continue
+        if create_work_item_safe(session, actor=actor, type="catalog_generation_failed",
+                                 title=f"Catalog generation failed (product {j.product_id})",
+                                 description=(j.error or "generation failed")[:400], related_product_id=j.product_id,
+                                 idempotency_key=key, condition_version=ver, inferred=inferred):
+            n += 1
+    return n
+
+
 _SCANNERS = [
     ("review_new_request", sync_unreviewed_requests),
     ("requester_action_required", sync_open_seller_questions),
@@ -532,6 +668,11 @@ _SCANNERS = [
     ("campaign_paused", sync_paused_campaigns),
     ("high_bounce_rate", sync_high_bounce_rate),
     ("mailbox_auth_failure", sync_auth_failed_mailboxes),
+    # Phase 5 product/pricing scanners
+    ("product_incomplete", sync_incomplete_products),
+    ("expired_price", sync_expired_price_versions),
+    ("expired_rate", sync_expired_cost_rates),
+    ("catalog_generation_failed", sync_failed_catalog_jobs),
 ]
 
 
