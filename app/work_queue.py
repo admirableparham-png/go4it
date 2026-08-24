@@ -912,6 +912,57 @@ def sync_delivery_confirmation(session, actor=None, inferred=False, budget=None)
     return n
 
 
+def sync_overdue_payments(session, actor=None, inferred=False, budget=None) -> int:
+    """A planned/awaiting payment milestone past its due date → payment_overdue."""
+    from .models import PaymentMilestone
+    n = 0
+    now = datetime.utcnow()
+    stop = _deadline(now)
+    for p in session.exec(select(PaymentMilestone).where(
+            PaymentMilestone.status.in_(("planned", "awaiting")),
+            PaymentMilestone.due_date != None)).all():  # noqa: E711
+        if _capped(budget, n) or datetime.utcnow() > stop:
+            break
+        if p.due_date >= now:
+            continue
+        bucket = p.due_date.strftime("%Y%m%d")
+        key = f"payment_overdue:pm:{p.id}"
+        if already_handled(session, key, bucket):
+            continue
+        if create_work_item_safe(session, actor=actor, type="payment_overdue", priority="high",
+                                 title=f"Payment {p.reference} overdue",
+                                 tenant_id=p.tenant_id, related_payment_id=p.id, related_deal_id=p.deal_id,
+                                 idempotency_key=key, condition_version=bucket, inferred=inferred):
+            n += 1
+    return n
+
+
+def sync_settlements_review(session, actor=None, inferred=False, budget=None) -> int:
+    """A delivered deal whose buyer payments are all received and with no settlement yet → settlement review."""
+    from .models import Deal, PaymentMilestone, Settlement
+    n = 0
+    stop = _deadline()
+    for d in session.exec(select(Deal).where(Deal.stage == "delivered")).all():
+        if _capped(budget, n) or datetime.utcnow() > stop:
+            break
+        if session.exec(select(Settlement).where(Settlement.deal_id == d.id)).first():
+            continue
+        buyer = session.exec(select(PaymentMilestone).where(
+            PaymentMilestone.deal_id == d.id,
+            PaymentMilestone.milestone_type.in_(("buyer_deposit", "buyer_balance")))).all()
+        if not buyer or any(p.status != "received" for p in buyer):
+            continue
+        key = f"settlement_review_required:deal:{d.id}"
+        if already_handled(session, key, "delivered"):
+            continue
+        if create_work_item_safe(session, actor=actor, type="settlement_review_required",
+                                 title=f"Deal {d.tracking_code} ready to settle",
+                                 tenant_id=d.owner_id, related_deal_id=d.id,
+                                 idempotency_key=key, condition_version="delivered", inferred=inferred):
+            n += 1
+    return n
+
+
 _SCANNERS = [
     ("review_new_request", sync_unreviewed_requests),
     ("requester_action_required", sync_open_seller_questions),
@@ -938,6 +989,8 @@ _SCANNERS = [
     ("tracking_stale", sync_stale_tracking),
     ("booking_confirmation_required", sync_booking_confirmation),
     ("delivery_confirmation_required", sync_delivery_confirmation),
+    ("payment_overdue", sync_overdue_payments),
+    ("settlement_review_required", sync_settlements_review),
 ]
 
 

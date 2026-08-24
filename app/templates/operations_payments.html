@@ -24,11 +24,24 @@
   </div>
 </div>
 
+<details class="card mb-4">
+  <summary class="cursor-pointer font-semibold font-display">New payment milestone</summary>
+  <form method="post" action="/operations/payments" class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+    <select name="milestone_type" class="input"><option value="">Type…</option>{% for t in ['buyer_deposit','buyer_balance','supplier_advance','supplier_balance','freight_payment','customs_payment','refund','other'] %}<option value="{{ t }}">{{ t.replace('_',' ') }}</option>{% endfor %}</select>
+    <input name="currency" placeholder="Currency" class="input" />
+    <input name="expected_amount" placeholder="Expected amount" class="input" />
+    <input name="due_date" type="date" class="input" />
+    <input name="deal_id" placeholder="Deal id (opt)" class="input" />
+    <label class="text-sm text-slate-400 flex items-center gap-1"><input type="checkbox" name="seller_visible" value="1"> Seller-visible</label>
+    <button class="btn">Create milestone</button>
+  </form>
+</details>
+
 <div class="eyebrow mb-2">Payment milestones</div>
 {% if pays %}
   <div class="table-wrap mb-8">
     <table class="data-table">
-      <thead><tr><th>Reference</th><th>Type</th><th class="text-right">Expected</th><th>Status</th><th>Due</th></tr></thead>
+      <thead><tr><th>Reference</th><th>Type</th><th class="text-right">Expected</th><th>Status</th><th>Due</th><th>Confirm (evidence required)</th></tr></thead>
       <tbody>
         {% for p in pays %}
           <tr>
@@ -37,6 +50,12 @@
             <td class="text-right tabular-nums">{{ p.currency }} {{ p.expected_amount }}</td>
             <td><span class="badge {{ 'badge-emerald' if p.status == 'received' else 'badge-amber' if p.status in ['awaiting','payment_failed','disputed'] else 'badge-slate' }}">{{ p.status.replace('_',' ') }}</span></td>
             <td class="text-slate-400">{{ p.due_date.strftime('%Y-%m-%d') if p.due_date else '—' }}</td>
+            <td>{% if p.status not in ['received','cancelled','refunded'] %}
+              <form method="post" action="/operations/payments/{{ p.id }}/confirm" class="flex gap-1">
+                <input name="confirmed_amount" placeholder="Amount" class="input input-sm" style="width:6rem" />
+                <input name="reference_code" placeholder="Bank ref" class="input input-sm" style="width:7rem" />
+                <button class="btn btn-sm">Confirm</button>
+              </form>{% else %}<span class="text-slate-600">—</span>{% endif %}</td>
           </tr>
         {% endfor %}
       </tbody>

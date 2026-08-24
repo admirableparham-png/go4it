@@ -132,4 +132,32 @@
   </section>
 
 </div>
+
+{% if progress %}
+<section class="mt-8">
+  <div class="eyebrow mb-2">Operational progress</div>
+  <div class="card">
+    <div class="flex flex-wrap items-center gap-1.5 mb-3">
+      {% for m in progress.completed_milestones %}
+        <span class="badge badge-emerald text-[10px]">{{ m }}</span>
+      {% endfor %}
+      {% if progress.next_milestone %}<span style="color:#475569">&rsaquo;</span><span class="badge badge-slate text-[10px]">{{ progress.next_milestone }}</span>{% endif %}
+    </div>
+    {% if progress.shipments %}
+      <div class="eyebrow mb-1">Shipments</div>
+      {% for s in progress.shipments %}
+        <div class="text-sm text-slate-300">{{ s.mode }} &middot; {{ s.milestone }}{% if s.estimated_arrival %} &middot; ETA {{ s.estimated_arrival }}{% endif %}{% if s.has_exception %} <span class="badge badge-rose text-[10px]">issue</span>{% endif %}</div>
+      {% endfor %}
+    {% endif %}
+    {% if progress.requested_documents %}
+      <div class="eyebrow mt-3 mb-1">Requested documents</div>
+      {% for d in progress.requested_documents %}<div class="text-sm text-slate-300">{{ d.doc_type.replace('_',' ') }} &middot; <span class="text-amber-400">{{ d.status }}</span></div>{% endfor %}
+    {% endif %}
+    {% if progress.exceptions %}
+      <div class="eyebrow mt-3 mb-1">Updates</div>
+      {% for e in progress.exceptions %}<div class="text-sm text-slate-400">{{ e.summary }}</div>{% endfor %}
+    {% endif %}
+  </div>
+</section>
+{% endif %}
 {% endblock %}

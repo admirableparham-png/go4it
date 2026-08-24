@@ -75,6 +75,9 @@ from . import customs as CUSTOMS
 from . import tradedocs as TDOCS
 from . import ops_exceptions as OPSX
 from . import ops_providers as OPSPROV
+from . import payments as PAY
+from . import remittance as REMIT
+from . import seller_progress as SP
 from .models import (CustomsCase, DeliveryConfirmation, DocumentRequirement, FreightOffer, FreightRequest,
                      OperationCase, OperationalException, PaymentMilestone, RemittanceCase, Settlement,
                      SettlementAdjustment, Shipment, ShipmentEvent, ShipmentLeg, TradeDocument)
@@ -99,7 +102,7 @@ templates.env.globals["admin_nav"] = adminnav.build_nav
 from .send_guard import mail_auth_display  # noqa: E402
 templates.env.globals["mail_auth_display"] = mail_auth_display
 
-PUBLIC_PREFIXES = ("/login", "/logout", "/static", "/api", "/go4it-capture.user.js", "/p/", "/q/")
+PUBLIC_PREFIXES = ("/login", "/logout", "/static", "/api", "/go4it-capture.user.js", "/p/", "/q/", "/ops/")
 
 # Allowed pipeline transitions. Lost requires a reason (enforced in the route).
 TRANSITIONS = {
@@ -3463,11 +3466,12 @@ def deal_detail(request: Request, deal_id: int):
         ).all()
         nxt = next_stage(deal.stage)
         missing = missing_docs_for(session, deal, nxt) if nxt else []
+        progress = SP.deal_seller_progress(session, deal)   # sanitized operational view (safe for everyone)
     return templates.TemplateResponse(
         "deal_detail.html",
         {"request": request, "user": user, "deal": deal, "lead": lead, "docs": docs,
          "stages": DEAL_STAGES, "next": nxt, "missing": missing,
-         "required_for": REQUIRED_DOCS, "doc_types": DOC_TYPES,
+         "required_for": REQUIRED_DOCS, "doc_types": DOC_TYPES, "progress": progress,
          "can_settle": role_at_least(user, "manager"), "today": datetime.utcnow()},
     )
 
@@ -3931,6 +3935,48 @@ def _ops_overview(session):
     }
 
 
+def _ops_analytics(session):
+    """Basic operational analytics — counts + per-currency money (currencies are NEVER summed together without
+    an explicit FX snapshot). No invented provider ratings or transit averages where evidence is insufficient."""
+    ships = session.exec(select(Shipment)).all()
+    by_mode, by_milestone = {}, {}
+    transit_days = []
+    for s in ships:
+        by_mode[s.mode or "—"] = by_mode.get(s.mode or "—", 0) + 1
+        by_milestone[s.current_milestone] = by_milestone.get(s.current_milestone, 0) + 1
+        if s.actual_departure and s.actual_arrival and s.actual_arrival >= s.actual_departure:
+            transit_days.append((s.actual_arrival - s.actual_departure).days)
+    pays = session.exec(select(PaymentMilestone)).all()
+    received_by_ccy, due_by_ccy = {}, {}
+    for p in pays:
+        if p.status in ("received", "partially_received"):
+            received_by_ccy[p.currency] = received_by_ccy.get(p.currency, Decimal("0")) + PRICING._d(p.confirmed_amount)
+        if p.status in ("planned", "awaiting", "partially_received"):
+            due_by_ccy[p.currency] = due_by_ccy.get(p.currency, Decimal("0")) + PRICING._d(p.expected_amount)
+    excs = session.exec(select(OperationalException)).all()
+    open_exc = sum(1 for e in excs if e.status in OPSX.OPEN_STATUSES)
+    return {
+        "ship_total": len(ships),
+        "by_mode": by_mode,
+        "by_milestone": by_milestone,
+        # only report an average when real departure+arrival data exists — never invented
+        "avg_transit_days": round(sum(transit_days) / len(transit_days), 1) if transit_days else None,
+        "exception_rate": round(open_exc / len(ships) * 100, 1) if ships else 0.0,
+        "received_by_ccy": {k: str(PRICING._q(v)) for k, v in received_by_ccy.items()},
+        "due_by_ccy": {k: str(PRICING._q(v)) for k, v in due_by_ccy.items()},
+        "remittance_by_status": _count_by(session, RemittanceCase, RemittanceCase.status),
+        "delivered": sum(1 for d in session.exec(select(Deal)).all() if d.stage == "delivered"),
+        "settled": session.exec(select(func.count()).select_from(Settlement)).one(),
+    }
+
+
+def _count_by(session, model, col):
+    out = {}
+    for v in session.exec(select(col)).all():
+        out[v or "—"] = out.get(v or "—", 0) + 1
+    return out
+
+
 @app.get("/operations", response_class=HTMLResponse)
 def operations_overview(request: Request):
     with Session(engine) as session:
@@ -3938,9 +3984,10 @@ def operations_overview(request: Request):
         if deny:
             return deny
         counts = _ops_overview(session)
+        analytics = _ops_analytics(session)
         recent = session.exec(select(OperationCase).order_by(OperationCase.id.desc()).limit(20)).all()
     return templates.TemplateResponse("operations_overview.html", {
-        "request": request, "user": user, "counts": counts, "recent": recent})
+        "request": request, "user": user, "counts": counts, "analytics": analytics, "recent": recent})
 
 
 @app.get("/operations/freight", response_class=HTMLResponse)
@@ -4382,8 +4429,8 @@ def operations_payments(request: Request, status: str = "", kind: str = "", page
                 received_by_ccy[p.currency] = received_by_ccy.get(p.currency, Decimal("0")) + PRICING._d(p.confirmed_amount)
     return templates.TemplateResponse("operations_payments.html", {
         "request": request, "user": user, "pays": pays, "remits": remits,
-        "due_by_ccy": {k: str(v) for k, v in due_by_ccy.items()},
-        "received_by_ccy": {k: str(v) for k, v in received_by_ccy.items()},
+        "due_by_ccy": {k: str(PRICING._q(v)) for k, v in due_by_ccy.items()},
+        "received_by_ccy": {k: str(PRICING._q(v)) for k, v in received_by_ccy.items()},
         "remit_configured": OPSPROV.remittance_status()["configured"],
         "total": total, "page": page, "pages": pages, "f": {"status": status, "kind": kind}})
 
@@ -4410,6 +4457,157 @@ def operations_exceptions(request: Request, status: str = "", severity: str = ""
     return templates.TemplateResponse("operations_exceptions.html", {
         "request": request, "user": user, "excs": excs, "severities": OPSX.SEVERITIES,
         "total": total, "page": page, "pages": pages, "f": {"status": status, "severity": severity}})
+
+
+@app.post("/operations/payments")
+def operations_create_payment(request: Request, milestone_type: str = Form(""), currency: str = Form(""),
+                              expected_amount: str = Form("0"), deal_id: str = Form(""),
+                              due_date: str = Form(""), payer_role: str = Form(""),
+                              payee_role: str = Form(""), seller_visible: str = Form("")):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        PAY.create_milestone(session, milestone_type=milestone_type, currency=currency,
+                             expected_amount=expected_amount,
+                             deal_id=int(deal_id) if deal_id.strip() else None, due_date=_parse_dt(due_date),
+                             payer_role=payer_role, payee_role=payee_role,
+                             seller_visible=(seller_visible == "1"), actor=user)
+        session.commit()
+    return RedirectResponse("/operations/payments", status_code=303)
+
+
+@app.post("/operations/payments/{pm_id}/confirm")
+def operations_confirm_payment(request: Request, pm_id: int, confirmed_amount: str = Form("0"),
+                               reference_code: str = Form(""), evidence_document_id: str = Form("")):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        pm = session.get(PaymentMilestone, pm_id)
+        if not pm:
+            return _not_found()
+        ok, err = PAY.confirm_payment(session, pm, confirmed_amount=confirmed_amount,
+                                      reference_code=reference_code,
+                                      evidence_document_id=int(evidence_document_id) if evidence_document_id.strip() else None,
+                                      actor=user)
+        if ok and pm.deal_id:
+            deal = session.get(Deal, pm.deal_id)
+            if deal:
+                OPS.project_deal_stage(session, deal, actor=user)
+        session.commit()
+        if not ok:
+            return HTMLResponse(f"Not confirmed: {err}", 400)
+    return RedirectResponse("/operations/payments", status_code=303)
+
+
+@app.post("/operations/remittance")
+def operations_create_remittance(request: Request, source_currency: str = Form(""),
+                                 dest_currency: str = Form(""), source_amount: str = Form("0"),
+                                 route_method_category: str = Form(""), deal_id: str = Form(""),
+                                 tenant_id: str = Form("")):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        REMIT.create_remittance(session, source_currency=source_currency, dest_currency=dest_currency,
+                                source_amount=source_amount, route_method_category=route_method_category,
+                                deal_id=int(deal_id) if deal_id.strip() else None,
+                                tenant_id=int(tenant_id) if tenant_id.strip() else None, actor=user)
+        session.commit()
+    return RedirectResponse("/operations/payments", status_code=303)
+
+
+@app.post("/operations/remittance/{rc_id}/status")
+def operations_remittance_status(request: Request, rc_id: int, to_status: str = Form(""),
+                                 compliance_reason: str = Form(""), reason: str = Form("")):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        rc = session.get(RemittanceCase, rc_id)
+        if not rc:
+            return _not_found()
+        REMIT.set_status(session, rc, to_status, compliance_reason=compliance_reason, reason=reason, actor=user)
+        session.commit()
+    return RedirectResponse("/operations/payments", status_code=303)
+
+
+@app.post("/operations/deals/{deal_id}/settle")
+def operations_settle_deal(request: Request, deal_id: int, revenue: str = Form("0"),
+                           verified_costs: str = Form("0"), supplier_proceeds: str = Form("0"),
+                           operational_costs: str = Form("0"), currency: str = Form(""),
+                           force: str = Form("")):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        if not role_at_least(user, "manager"):
+            return _forbidden()                            # settlement is manager+ only
+        deal = session.get(Deal, deal_id)
+        if not deal:
+            return _not_found()
+        st, err = PAY.record_settlement(session, deal, revenue=revenue, verified_costs=verified_costs,
+                                        supplier_proceeds=supplier_proceeds,
+                                        operational_costs=operational_costs, currency=currency,
+                                        force=(force == "1"), actor=user)
+        session.commit()
+        if err:
+            return HTMLResponse(f"Not settled: {err}", 400)
+    return RedirectResponse(f"/deals/{deal_id}", status_code=303)
+
+
+@app.post("/operations/exceptions")
+def operations_create_exception(request: Request, exc_type: str = Form(""), severity: str = Form("medium"),
+                                internal_description: str = Form(""),
+                                seller_safe_description: str = Form(""), deal_id: str = Form(""),
+                                shipment_id: str = Form("")):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        sh = session.get(Shipment, int(shipment_id)) if shipment_id.strip() else None
+        OPSX.raise_exception(session, exc_type=exc_type, severity=severity, actor=user,
+                             internal_description=internal_description,
+                             seller_safe_description=seller_safe_description,
+                             deal_id=int(deal_id) if deal_id.strip() else None,
+                             shipment_id=sh.id if sh else None,
+                             tenant_id=(sh.tenant_id if sh else None))
+        session.commit()
+    return RedirectResponse("/operations/exceptions", status_code=303)
+
+
+@app.post("/operations/exceptions/{exc_id}/resolve")
+def operations_resolve_exception(request: Request, exc_id: int, resolution: str = Form(""),
+                                 status: str = Form("resolved")):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        exc = session.get(OperationalException, exc_id)
+        if not exc:
+            return _not_found()
+        OPSX.resolve_exception(session, exc, resolution=resolution, status=status, actor=user)
+        session.commit()
+    return RedirectResponse("/operations/exceptions", status_code=303)
+
+
+@app.post("/ops/webhook/tracking")
+async def ops_webhook_tracking(request: Request, x_signature: str = Header(""),
+                               x_delivery_id: str = Header("")):
+    """Inbound carrier-tracking webhook. Signature-verified (HMAC) + replay-protected + rate-limited. With NO
+    provider configured (no OPS_WEBHOOK_SECRET) every call is rejected — there is no unauthenticated path in."""
+    if not RL.allow(RL.client_key(request, "opswh"), limit=60, window=60):
+        return JSONResponse({"ok": False}, status_code=429)
+    secret = OPSPROV.webhook_secret()
+    raw = await request.body()
+    if not OPSPROV.verify_webhook(secret, raw, x_signature):
+        return JSONResponse({"ok": False, "error": "unverified"}, status_code=401)
+    if OPSPROV.replay_seen(x_delivery_id):
+        return JSONResponse({"ok": False, "error": "replay"}, status_code=409)
+    # a configured provider would parse `raw` and call shipments.record_event(source="webhook:<provider>", ...);
+    # that ingestion is idempotent on (source, external_event_id). No provider is configured in this build.
+    return JSONResponse({"ok": True})
 
 
 # ----------------------------------------------------------------------------- ingestion

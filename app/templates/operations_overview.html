@@ -29,6 +29,26 @@
   {% endfor %}
 </div>
 
+{% if analytics %}
+<div class="grid md:grid-cols-3 gap-3 mb-8">
+  <div class="card">
+    <div class="eyebrow mb-2">Shipments by milestone</div>
+    {% for k, v in analytics.by_milestone.items() %}<div class="flex justify-between text-sm"><span class="text-slate-400">{{ k.replace('_',' ') }}</span><span class="tabular-nums text-slate-200">{{ v }}</span></div>{% else %}<div class="text-slate-500 text-sm">None yet.</div>{% endfor %}
+  </div>
+  <div class="card">
+    <div class="eyebrow mb-2">Payments received (per currency)</div>
+    {% for ccy, amt in analytics.received_by_ccy.items() %}<div class="flex justify-between text-sm"><span class="text-slate-400">{{ ccy or '—' }}</span><span class="tabular-nums text-emerald-400">{{ amt }}</span></div>{% else %}<div class="text-slate-500 text-sm">None.</div>{% endfor %}
+    <div class="mt-3 flex justify-between text-sm"><span class="text-slate-400">Exception rate</span><span class="tabular-nums {{ 'text-amber-400' if analytics.exception_rate else 'text-slate-300' }}">{{ analytics.exception_rate }}%</span></div>
+    <div class="flex justify-between text-sm"><span class="text-slate-400">Avg transit</span><span class="tabular-nums text-slate-300">{{ (analytics.avg_transit_days ~ ' days') if analytics.avg_transit_days is not none else 'insufficient data' }}</span></div>
+  </div>
+  <div class="card">
+    <div class="eyebrow mb-2">Outcomes</div>
+    <div class="flex justify-between text-sm"><span class="text-slate-400">Delivered deals</span><span class="tabular-nums text-slate-200">{{ analytics.delivered }}</span></div>
+    <div class="flex justify-between text-sm"><span class="text-slate-400">Settled</span><span class="tabular-nums text-slate-200">{{ analytics.settled }}</span></div>
+  </div>
+</div>
+{% endif %}
+
 <div class="flex items-center justify-between mb-2">
   <div class="eyebrow">Recent operation cases</div>
   <form method="post" action="/operations/cases" class="flex items-center gap-2">

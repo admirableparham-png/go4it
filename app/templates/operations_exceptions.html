@@ -6,6 +6,18 @@
   <p class="text-slate-400 text-sm mt-1">Operational problems being worked. Each carries an internal description and a separate seller-safe summary &mdash; only the latter can ever reach a seller.</p>
 </div>
 
+<details class="card mb-4">
+  <summary class="cursor-pointer font-semibold font-display">Raise an exception</summary>
+  <form method="post" action="/operations/exceptions" class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+    <select name="exc_type" class="input"><option value="">Type…</option>{% for t in ['missing_documents','document_rejected','booking_failed','provider_unresponsive','tracking_stale','departure_delayed','customs_hold','customs_rejection','payment_overdue','payment_failed','remittance_failure','cargo_damage','shortage','failed_delivery','system_failure','compliance_review'] %}<option value="{{ t }}">{{ t.replace('_',' ') }}</option>{% endfor %}</select>
+    <select name="severity" class="input">{% for sv in severities %}<option value="{{ sv }}" {{ 'selected' if sv == 'medium' }}>{{ sv }}</option>{% endfor %}</select>
+    <input name="deal_id" placeholder="Deal id (opt)" class="input" />
+    <input name="internal_description" placeholder="Internal description (admin-only)" class="input" />
+    <input name="seller_safe_description" placeholder="Seller-safe summary" class="input col-span-2" />
+    <button class="btn">Raise</button>
+  </form>
+</details>
+
 <form method="get" class="flex flex-wrap gap-2 mb-4">
   <select name="status" class="input input-sm">
     <option value="">Open (default)</option>
@@ -23,7 +35,7 @@
 {% if excs %}
   <div class="table-wrap">
     <table class="data-table">
-      <thead><tr><th>Reference</th><th>Type</th><th>Severity</th><th>Status</th><th>Seller-safe summary</th></tr></thead>
+      <thead><tr><th>Reference</th><th>Type</th><th>Severity</th><th>Status</th><th>Seller-safe summary</th><th></th></tr></thead>
       <tbody>
         {% for e in excs %}
           <tr>
@@ -32,6 +44,11 @@
             <td><span class="badge {{ 'badge-rose' if e.severity in ['high','critical'] else 'badge-amber' if e.severity == 'medium' else 'badge-slate' }}">{{ e.severity }}</span></td>
             <td><span class="badge badge-sky">{{ e.status.replace('_',' ') }}</span></td>
             <td class="text-slate-400">{{ e.seller_safe_description }}</td>
+            <td>{% if e.status not in ['resolved','dismissed'] %}
+              <form method="post" action="/operations/exceptions/{{ e.id }}/resolve" class="flex gap-1">
+                <input name="resolution" placeholder="Resolution" class="input input-sm" />
+                <button class="btn btn-sm">Resolve</button>
+              </form>{% endif %}</td>
           </tr>
         {% endfor %}
       </tbody>

@@ -60,6 +60,13 @@ def raise_exception(session, *, exc_type, severity="medium", actor=None, interna
           {"type": exc_type, "severity": severity}, tenant_id=tenant_id)
     if wq:
         _wq(session, exc)
+    # a sensitive exception NEVER auto-publishes to a seller — it creates a DRAFT update for admin approval
+    if tenant_id and severity in ("high", "critical"):
+        try:
+            from . import seller_progress as SP
+            SP.draft_exception_update(session, exc, actor=actor)
+        except Exception:  # noqa: BLE001
+            pass
     return exc
 
 
