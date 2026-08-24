@@ -55,19 +55,43 @@ Analytics**. The journey: Product/pricing → **Quote → buyer decision → Con
   deal, contract awaiting signature, …).
 
 ## Buyer-portal hardening (pre-Phase 7)
-- **No URL-token leakage:** `/q/{token}` is a **one-time exchange** — it validates the token, drops it into a
-  short-lived (30 min) **Secure/HttpOnly/SameSite** cookie session (SessionMiddleware), and 303-redirects to
-  the **tokenless** `/q/session`. The raw token never reappears in referrers, history, or proxy logs for the
-  buyer's view + decisions, and never in the page body. Every portal response sets **`Referrer-Policy:
-  no-referrer`, `Cache-Control: no-store`, a strict CSP (`default-src 'none'; frame-ancestors 'none';
-  script-src 'nonce-…'`), `X-Frame-Options: DENY`, `X-Robots-Tag: noindex`**.
-- **Decisions protected:** accept/reject/change are **POST-only** (`/q/session/respond`), **CSRF-checked**
-  (per-session token), **idempotent for every decision** (replay/double-submit safe), scoped to the **exact
-  version** the buyer saw, and rate-limited. Acceptance still only raises the admin deal task.
-- **Viewed via POST:** the GET render never mutates; a nonce'd inline beacon fires an **idempotent
-  `POST /q/session/view`** after the page renders to record `sent→viewed` once.
+- **Token never in a server-visible URL.** The buyer link is `{BASE_URL}/q/#<token>` — the token lives ONLY in
+  the URL **fragment**, which browsers never send to the server, so it cannot enter reverse-proxy/access logs.
+  `GET /q/` serves a tiny bootstrap page (the server sees only `/q/`, no token); a nonce'd script reads the
+  fragment, **`history.replaceState`s it out of the URL + history**, and POSTs it to `POST /q/exchange`.
+- **Server-side session; cookie holds only an opaque id.** The exchange opens a **`PortalSession`** row
+  (server-side) holding the quote version, token hash, expiry, revocation state + CSRF; the browser cookie
+  carries ONLY the opaque `sid`. Nothing sensitive lives in a client-readable/signed cookie. Subsequent
+  navigation + decisions use the tokenless `/q/session*` paths.
+- **Single-use link.** The link is **atomically consumed** on first exchange (`QuoteAccessToken.consumed_at`
+  set via a compare-and-swap on NULL); a buyer reopening the still-valid link **re-issues the same** session
+  (not a second one). Expired/revoked/consumed-and-gone → fails safe.
+- **Security headers** on every portal response: `Referrer-Policy: no-referrer`, `Cache-Control: no-store`,
+  strict CSP (`default-src 'none'; frame-ancestors 'none'; script-src 'nonce-…'; connect-src 'self'`),
+  `X-Frame-Options: DENY`, `X-Robots-Tag: noindex`.
+- **Decisions protected:** accept/reject/change are **POST-only** (`/q/session/respond`), **CSRF-checked**,
+  **idempotent for every decision** (replay/double-submit safe), scoped to the **exact version** the buyer
+  saw, rate-limited. Acceptance only raises the admin deal task.
+- **Viewed via POST:** the GET render never mutates; a nonce'd beacon fires an **idempotent
+  `POST /q/session/view`** after render to record `sent→viewed` once.
 - **EXW:** the internal EXW **cost** is never shown; an intentionally-included buyer-facing **EXW commercial
-  option** (approved buyer price, with included/excluded) IS displayed via `QuoteVersion.options`.
+  option** (approved buyer price, included/excluded) IS displayed via `QuoteVersion.options`.
+
+### Production proxy note (still required)
+The fragment approach means the raw token never reaches the origin server or its access logs. As
+defence-in-depth, the production reverse proxy should still be reviewed to confirm `/q/` request URLs are not
+being expanded/logged with query strings, and **the actual production proxy config must be tested** (not only
+application logs) before go-live. If a future flow ever puts a token in the path/query, redact `/q/*` in the
+proxy access log.
+
+## Work Queue count reconciliation
+The Phase-5 report's "87 incomplete-product tasks" were a **scanner PREDICTION** computed inside a rolled-back
+savepoint — they were **never persisted**. The current open queue is the pre-existing set (≈105–108: 53
+`approve_quote`, 29 `review_potential_duplicate`, 12 `failed_system_job`, 11 `replace_invalid_contact`).
+**The first production `run_all_sync` (the worker's periodic repair pass) will CREATE** the **87
+`product_incomplete`** tasks (products missing HS/origin/unit/price/supplier/category) plus a small number of
+`quote_expired` tasks (legacy sent quotes past validity), taking the open total to ≈195. This is expected,
+idempotent, and condition-versioned (re-running creates no duplicates).
 
 ## Migration (run order)
 ```

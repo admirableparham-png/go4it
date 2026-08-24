@@ -24,6 +24,8 @@ def ctx(monkeypatch, tmp_path):
     with e.connect() as c:
         c.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_quoteaccesstoken_hash ON quoteaccesstoken(token_hash) WHERE token_hash != ''"))
         c.commit()
+    from app import ratelimit as _RL
+    _RL.reset()                                                  # isolate the shared in-process rate limiter
     monkeypatch.setattr(main, "engine", e)
     monkeypatch.setattr(main, "QUOTE_FILES_DIR", tmp_path / "quote_files")
     monkeypatch.setattr(PDF, "render_pdf", _fake_render)         # no real chromium in the suite
@@ -89,9 +91,9 @@ def test_admin_download_and_buyer_via_token(ctx):
     seller = __import__("fastapi.testclient", fromlist=["TestClient"]).TestClient(main.app)
     _login(seller, "kim@t.local")
     assert seller.get(f"/quotes/{ids['quote']}/pdf").status_code == 404
-    # buyer downloads through the hardened cookie-session portal (token exchanged, tokenless PDF path)
+    # buyer downloads through the hardened portal (token via fragment→POST exchange, tokenless PDF path)
     buyer = __import__("fastapi.testclient", fromlist=["TestClient"]).TestClient(main.app)
-    buyer.get(f"/q/{ids['token']}", follow_redirects=False)     # one-time exchange → cookie session
+    assert buyer.post("/q/exchange", data={"token": ids["token"]}).json()["ok"] is True
     r = buyer.get("/q/session/pdf")
     assert r.status_code == 200 and r.content.startswith(b"%PDF")
     assert r.headers["cache-control"] == "no-store" and r.headers["referrer-policy"] == "no-referrer"

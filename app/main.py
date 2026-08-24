@@ -3154,7 +3154,7 @@ def send_quote(request: Request, quote_id: int):
                 return RedirectResponse(f"/quotes/{quote_id}?error=send", status_code=303)
             _ensure_share_token(session, q)
             raw_tok, _t = QP.mint_token(session, q, ver, actor=user, valid_days=q.validity_days)  # hashed buyer token
-            request.session["_portal_link"] = f"{BASE_URL}/q/{raw_tok}"   # the secure /q/ link, shown ONCE to the admin
+            request.session["_portal_link"] = f"{BASE_URL}/q/#{raw_tok}"   # secure FRAGMENT link (token client-side only), shown once
             session.add(q)
             # Supersede any prior live quote for this lead so its public link stops serving an
             # outdated price (the public routes only serve approved/sent — superseded ones 404).
@@ -3264,16 +3264,64 @@ def _portal_headers_apply(resp, nonce):
 
 
 def _portal_load(request, session):
-    """Resolve the cookie portal session → (quote, version, csrf) or None. Tokenless; scoped to one version."""
-    ok = QP.portal_session_ok(request.session.get("quote_portal"))
-    if not ok:
+    """Resolve the opaque cookie sid → the SERVER-SIDE PortalSession → (quote, version, csrf) or None. The
+    cookie holds only the opaque sid; all validity lives server-side."""
+    loaded = QP.load_session(session, request.session.get("qp_sid"))
+    if not loaded:
         return None
-    qid, vid, csrf = ok
-    q = session.get(Quote, qid)
-    ver = session.get(QuoteVersion, vid)
-    if not q or not ver or q.status not in QWF.PORTAL_VIEWABLE:
+    q, ver, csrf = loaded
+    if q.status not in QWF.PORTAL_VIEWABLE:
         return None
     return q, ver, csrf
+
+
+_PORTAL_BOOTSTRAP = """<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, nofollow">
+<title>Opening quotation…</title><style>body{{font-family:'Helvetica Neue',Arial,sans-serif;background:#0f172a;
+color:#e2e8f0;margin:0;padding:48px;text-align:center}}#msg{{color:#94a3b8;font-size:15px}}</style></head>
+<body><div id="msg">Opening your quotation…</div><script nonce="{nonce}">
+(function(){{var h=(location.hash||'').replace(/^#/,'');history.replaceState(null,'','/q/');
+if(!h){{document.getElementById('msg').textContent='This link is invalid.';return;}}
+fetch('/q/exchange',{{method:'POST',headers:{{'Content-Type':'application/x-www-form-urlencoded'}},
+body:'token='+encodeURIComponent(h),credentials:'same-origin'}}).then(function(r){{return r.json();}})
+.then(function(d){{if(d&&d.ok){{location.replace('/q/session');}}else{{
+document.getElementById('msg').textContent='This quotation link is not available.';}}}})
+.catch(function(){{document.getElementById('msg').textContent='Unable to open the quotation.';}});}})();
+</script></body></html>"""
+
+
+@app.get("/q/", response_class=HTMLResponse)
+def quote_portal_bootstrap(request: Request):
+    """Bootstrap page for the buyer link `/q/#<token>`. The token lives ONLY in the URL FRAGMENT — never sent
+    to the server or a proxy access log. A nonce'd script reads the fragment, strips it via history.replaceState,
+    and POSTs it to /q/exchange. GET reaches the proxy as just `/q/` (no token)."""
+    if not RL.allow(RL.client_key(request, "qboot"), limit=60, window=60):
+        return HTMLResponse("Too many requests.", status_code=429)
+    nonce = secrets.token_urlsafe(16)
+    resp = HTMLResponse(_PORTAL_BOOTSTRAP.format(nonce=nonce))
+    return _portal_headers_apply(resp, nonce)
+
+
+@app.post("/q/exchange")
+def quote_portal_exchange(request: Request, token: str = Form("")):
+    """One-time POST exchange: atomically CONSUME the link token (single-use) and open a SERVER-SIDE
+    PortalSession; the browser gets only an opaque sid cookie. The raw token never appears in a URL/log."""
+    if not RL.allow(RL.client_key(request, "qexch"), limit=30, window=60):
+        return JSONResponse({"ok": False}, status_code=429)
+    with Session(engine) as session:
+        opened = QP.open_session(session, token)
+        if not opened:
+            return JSONResponse({"ok": False}, status_code=404)
+        ps, q, ver = opened
+        QWF.mark_expired_if_due(session, q)
+        if q.status not in QWF.PORTAL_VIEWABLE:
+            QP.revoke_session(session, ps.sid)
+            session.commit()
+            return JSONResponse({"ok": False}, status_code=404)
+        sid = ps.sid
+        session.commit()
+    request.session["qp_sid"] = sid        # cookie carries ONLY the opaque server-session id
+    return JSONResponse({"ok": True})
 
 
 # NOTE: these fixed /q/session* routes are declared BEFORE /q/{token} so the token catch-all never captures
@@ -3308,7 +3356,7 @@ def quote_portal_mark_viewed(request: Request, csrf: str = Form("")):
         if not loaded:
             return JSONResponse({"ok": False}, status_code=404)
         q, ver, good_csrf = loaded
-        if not QP.csrf_ok({"csrf": good_csrf}, csrf):
+        if not QP.csrf_ok(good_csrf, csrf):
             return JSONResponse({"ok": False}, status_code=403)
         QP.record_view(session, q, ver)
         session.commit()
@@ -3329,7 +3377,7 @@ def quote_portal_decide(request: Request, action: str = Form(...), message: str 
             return _portal_headers_apply(
                 HTMLResponse("This quotation link is not available.", status_code=404), nonce)
         q, ver, good_csrf = loaded
-        if not QP.csrf_ok({"csrf": good_csrf}, csrf):
+        if not QP.csrf_ok(good_csrf, csrf):
             return _portal_headers_apply(HTMLResponse("Invalid request token.", status_code=403), nonce)
         result, why = QP.record_buyer_action(session, q, ver, action, message=message)
         if result == "invalid":
@@ -3373,29 +3421,6 @@ def quote_portal_pdf(request: Request):
     resp = FileResponse(str(path), filename=f"quote_{ver.quote_id}.pdf", media_type="application/pdf")
     resp.headers["Cache-Control"] = "no-store"
     resp.headers["Referrer-Policy"] = "no-referrer"
-    return resp
-
-
-@app.get("/q/{token}")
-def quote_portal_exchange(request: Request, token: str):
-    """ONE-TIME link exchange: validate the URL token, drop it into a short-lived Secure/HttpOnly/SameSite
-    cookie session, and redirect to the TOKENLESS /q/session — so the token never reappears in referrers,
-    history or proxy logs for the buyer's subsequent view + decisions. GET does NOT mutate commercial terms."""
-    if not RL.allow(RL.client_key(request, "qportal"), limit=40, window=60):
-        return HTMLResponse("Too many requests. Please retry shortly.", status_code=429)
-    with Session(engine) as session:
-        resolved = QP.resolve_token(session, token)
-        if not resolved:
-            return HTMLResponse("This quotation link is not available.", status_code=404)
-        tok, q, ver = resolved
-        QWF.mark_expired_if_due(session, q)          # read-side expiry flip (system, not a buyer term change)
-        session.commit()
-        if q.status not in QWF.PRESENTABLE:
-            return HTMLResponse("This quotation link is not available.", status_code=404)
-        request.session["quote_portal"] = QP.new_portal_session(q, ver)   # HttpOnly signed cookie (SessionMiddleware)
-    resp = RedirectResponse("/q/session", status_code=303)
-    resp.headers["Referrer-Policy"] = "no-referrer"
-    resp.headers["Cache-Control"] = "no-store"
     return resp
 
 

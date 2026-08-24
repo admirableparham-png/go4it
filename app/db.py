@@ -127,6 +127,8 @@ def _ensure_commercial_indexes() -> None:
                               "ON quoteaccesstoken(token_hash) WHERE token_hash != ''"))
             conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_deal_quote_version "
                               "ON deal(quote_version_id) WHERE quote_version_id IS NOT NULL"))
+            conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_portalsession_sid "
+                              "ON portalsession(sid) WHERE sid != ''"))
             conn.commit()
     except Exception:  # noqa: BLE001 — never block startup on the guard
         pass

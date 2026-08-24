@@ -21,37 +21,84 @@ def hash_token(raw: str) -> str:
     return hashlib.sha256((raw or "").encode()).hexdigest()
 
 
-# --- one-time link exchange: the URL token is swapped for a short-lived cookie session, so the token never
-# --- reappears in referrers / history / logs for the buyer's subsequent navigation + decisions.
-def new_portal_session(quote, version, now=None) -> dict:
+# --- one-time link exchange → a SERVER-SIDE session. The raw token arrives via a URL FRAGMENT (never sent to
+# --- the server / proxy logs), is POSTed to the exchange, atomically CONSUMED (single-use), and swapped for a
+# --- PortalSession row. The browser cookie carries ONLY the opaque `sid` — no quote id, token, expiry, or CSRF
+# --- ever lives in a client-readable cookie.
+def open_session(session, raw, *, now=None):
+    """Consume a link token (single-use, atomic) and open a server-side PortalSession. Returns
+    (portal_session, quote, version) or None. A re-open of an already-consumed token re-issues its still-valid
+    session (so a buyer reopening the email link is not broken), else fails safely."""
+    from sqlalchemy import update as _upd
+    from .models import PortalSession, Quote, QuoteAccessToken, QuoteVersion
     now = now or datetime.utcnow()
-    return {"qid": quote.id, "vid": version.id, "csrf": secrets.token_urlsafe(24),
-            "exp": (now + timedelta(minutes=PORTAL_TTL_MIN)).isoformat()}
-
-
-def portal_session_ok(sess, now=None):
-    """Return (quote_id, version_id, csrf) from a valid portal session, else None (expired/malformed)."""
-    if not isinstance(sess, dict) or not sess.get("qid") or not sess.get("vid") or not sess.get("csrf"):
+    if not (raw or "").strip():
         return None
-    exp = sess.get("exp")
-    try:
-        if exp and (now or datetime.utcnow()) > datetime.fromisoformat(exp):
-            return None
-    except ValueError:
+    tok = session.exec(select(QuoteAccessToken).where(QuoteAccessToken.token_hash == hash_token(raw))).first()
+    if not tok or tok.revoked:
         return None
-    return sess["qid"], sess["vid"], sess["csrf"]
+    if tok.expires_at and now > tok.expires_at:
+        return None
+    quote = session.get(Quote, tok.quote_id)
+    version = session.get(QuoteVersion, tok.quote_version_id)
+    if not quote or not version:
+        return None
+    if version.id != quote.current_version_id and quote.status == "superseded":
+        return None
+    # ATOMIC single-use consume: only the first exchange flips consumed_at (CAS on NULL).
+    res = session.execute(_upd(QuoteAccessToken).where(
+        QuoteAccessToken.id == tok.id, QuoteAccessToken.consumed_at.is_(None)).values(consumed_at=now))
+    if res.rowcount == 1:
+        ps = PortalSession(sid=secrets.token_urlsafe(32), quote_id=quote.id, quote_version_id=version.id,
+                           token_id=tok.id, token_hash=tok.token_hash, csrf=secrets.token_urlsafe(24),
+                           expires_at=now + timedelta(minutes=PORTAL_TTL_MIN))
+        session.add(ps); session.flush()
+        return ps, quote, version
+    # already consumed → reuse the still-valid session opened from this token (buyer refreshed the link)
+    ps = session.exec(select(PortalSession).where(
+        PortalSession.token_id == tok.id, PortalSession.revoked == False)   # noqa: E712
+        .order_by(PortalSession.id.desc())).first()
+    if ps and (not ps.expires_at or now <= ps.expires_at):
+        return ps, quote, version
+    return None
 
 
-def csrf_ok(sess, submitted) -> bool:
-    good = (sess or {}).get("csrf", "")
-    return bool(good) and secrets.compare_digest(str(good), str(submitted or ""))
+def load_session(session, sid, *, now=None):
+    """Resolve an opaque portal-session id (from the cookie) → (quote, version, csrf) or None. All validity
+    (revocation, expiry, version) is checked against the SERVER-SIDE record, not the cookie."""
+    from .models import PortalSession, Quote, QuoteVersion
+    now = now or datetime.utcnow()
+    if not (sid or "").strip():
+        return None
+    ps = session.exec(select(PortalSession).where(PortalSession.sid == sid)).first()
+    if not ps or ps.revoked:
+        return None
+    if ps.expires_at and now > ps.expires_at:
+        return None
+    q = session.get(Quote, ps.quote_id)
+    ver = session.get(QuoteVersion, ps.quote_version_id)
+    if not q or not ver:
+        return None
+    return q, ver, ps.csrf
+
+
+def revoke_session(session, sid):
+    from .models import PortalSession
+    ps = session.exec(select(PortalSession).where(PortalSession.sid == sid)).first()
+    if ps:
+        ps.revoked = True; session.add(ps)
+
+
+def csrf_ok(good_csrf, submitted) -> bool:
+    return bool(good_csrf) and secrets.compare_digest(str(good_csrf), str(submitted or ""))
 
 
 # Buyer-portal security headers: no token/URL leakage, no caching, no framing, no indexing. A per-render CSP
 # nonce lets ONLY the view-beacon inline script run (everything else is 'none').
 def portal_headers(nonce: str) -> dict:
     csp = ("default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; "
-           f"script-src 'nonce-{nonce}'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'")
+           f"script-src 'nonce-{nonce}'; connect-src 'self'; form-action 'self'; base-uri 'none'; "
+           "frame-ancestors 'none'")
     return {"Referrer-Policy": "no-referrer", "Cache-Control": "no-store, max-age=0",
             "Pragma": "no-cache", "X-Robots-Tag": "noindex, nofollow", "X-Frame-Options": "DENY",
             "Content-Security-Policy": csp}

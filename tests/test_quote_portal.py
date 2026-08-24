@@ -94,41 +94,77 @@ def _csrf(html):
     return m.group(1) if m else ""
 
 
-def test_one_time_exchange_is_tokenless_and_headered(ctx):
+def _open(client, raw):
+    """The buyer flow: the token rides in the URL FRAGMENT (never sent), so tests emulate the JS by POSTing it
+    to the exchange. Returns the client with its portal cookie set."""
+    client.get("/q/")                                            # bootstrap page (no token server-side)
+    assert client.post("/q/exchange", data={"token": raw}).json()["ok"] is True
+    return client
+
+
+def test_token_never_in_url_bootstrap_is_clean(ctx):
     qid, vid, raw = _sent_quote(ctx)
     c = TestClient(main.app)
-    # the URL token is exchanged for a cookie session and redirected to a TOKENLESS path
-    r = c.get(f"/q/{raw}", follow_redirects=False)
-    assert r.status_code == 303 and r.headers["location"] == "/q/session"
-    assert r.headers["referrer-policy"] == "no-referrer"
-    # the render page is tokenless + carries the security headers, and never echoes the raw token
-    v = c.get("/q/session")
+    b = c.get("/q/")                                             # the server-visible URL is just "/q/" — no token
+    assert b.status_code == 200 and raw not in b.text           # token is in the fragment (client-only), not here
+    assert "history.replaceState" in b.text                     # strips the fragment from URL + history
+    assert "connect-src 'self'" in b.headers["content-security-policy"]
+
+
+def test_exchange_then_tokenless_headered_session(ctx):
+    qid, vid, raw = _sent_quote(ctx)
+    c = _open(TestClient(main.app), raw)
+    v = c.get("/q/session")                                     # tokenless URL
     assert v.status_code == 200 and raw not in v.text
     assert "frame-ancestors 'none'" in v.headers["content-security-policy"]
     assert v.headers["x-robots-tag"].startswith("noindex") and "no-store" in v.headers["cache-control"]
     assert v.headers["referrer-policy"] == "no-referrer"
 
 
+def test_cookie_holds_only_opaque_sid_state_is_server_side(ctx):
+    qid, vid, raw = _sent_quote(ctx)
+    c = _open(TestClient(main.app), raw)
+    from app.models import PortalSession
+    with Session(ctx) as s:
+        ps = s.exec(select(PortalSession)).one()
+        assert ps.sid and ps.quote_id == qid and ps.quote_version_id == vid   # state lives SERVER-SIDE
+        assert ps.token_hash and ps.csrf                                       # not in the cookie
+    # a fresh client with no cookie cannot reach the session (proves the cookie, not the URL, carries access)
+    assert TestClient(main.app).get("/q/session").status_code == 404
+
+
+def test_single_use_consumed_and_reissue(ctx):
+    qid, vid, raw = _sent_quote(ctx)
+    _open(TestClient(main.app), raw)
+    with Session(ctx) as s:
+        assert s.exec(select(QuoteAccessToken)).one().consumed_at is not None  # link atomically consumed
+        assert len(s.exec(select(__import__("app.models", fromlist=["PortalSession"]).PortalSession)).all()) == 1
+    # a buyer reopening the SAME still-valid link re-issues the same session (not a second one)
+    c2 = TestClient(main.app)
+    assert c2.post("/q/exchange", data={"token": raw}).json()["ok"] is True
+    from app.models import PortalSession
+    with Session(ctx) as s:
+        assert len(s.exec(select(PortalSession)).all()) == 1                   # reused, not duplicated
+
+
 def test_get_does_not_mutate_view_recorded_via_post(ctx):
     qid, vid, raw = _sent_quote(ctx)
-    c = TestClient(main.app)
-    c.get(f"/q/{raw}", follow_redirects=False)
+    c = _open(TestClient(main.app), raw)
     page = c.get("/q/session")                                   # GET render — must NOT change status
     with Session(ctx) as s:
         assert s.get(Quote, qid).status == "sent" and s.get(Quote, qid).viewed_at is None
-    # the controlled POST records the view (idempotent)
     csrf = _csrf(page.text)
     assert c.post("/q/session/view", data={"csrf": csrf}).status_code == 200
     with Session(ctx) as s:
         assert s.get(Quote, qid).status == "viewed"
-    c.post("/q/session/view", data={"csrf": csrf})              # repeat → no error, still viewed once
+    c.post("/q/session/view", data={"csrf": csrf})              # repeat → still viewed once
     with Session(ctx) as s:
         assert s.get(Quote, qid).status == "viewed"
 
 
 def test_decisions_are_post_only_and_csrf_protected(ctx):
     qid, vid, raw = _sent_quote(ctx)
-    c = TestClient(main.app); c.get(f"/q/{raw}", follow_redirects=False)
+    c = _open(TestClient(main.app), raw)
     page = c.get("/q/session"); csrf = _csrf(page.text)
     assert c.get("/q/session/respond").status_code == 405        # POST-only
     assert c.post("/q/session/respond", data={"action": "accept", "csrf": "bad"},
@@ -139,7 +175,7 @@ def test_decisions_are_post_only_and_csrf_protected(ctx):
 
 def test_every_decision_idempotent_and_records_version(ctx):
     qid, vid, raw = _sent_quote(ctx)
-    c = TestClient(main.app); c.get(f"/q/{raw}", follow_redirects=False)
+    c = _open(TestClient(main.app), raw)
     csrf = _csrf(c.get("/q/session").text)
     c.post("/q/session/respond", data={"action": "accept", "csrf": csrf}, follow_redirects=False)
     c.post("/q/session/respond", data={"action": "accept", "csrf": csrf}, follow_redirects=False)  # replay
@@ -171,21 +207,22 @@ def test_exw_option_shown_but_internal_cost_hidden(ctx):
         s.add(ver); s.commit()
         QW.transition(s, q, "approved"); QW.transition(s, q, "sent"); s.commit()
         raw, _ = QP.mint_token(s, q, ver, valid_days=14); s.commit()
-    c = TestClient(main.app); c.get(f"/q/{raw}", follow_redirects=False)
+    c = _open(TestClient(main.app), raw)
     body = c.get("/q/session").text
     assert "EXW" in body and "Ex-works" in body and "8200" in body        # the buyer EXW OPTION is shown
     assert "8000" not in body                                             # the internal EXW buy-cost is NOT
 
 
-def test_bad_token_404_and_seller_no_special_access(ctx):
+def test_bad_token_fails_safe(ctx):
     c = TestClient(main.app)
-    assert c.get("/q/nope", follow_redirects=False).status_code == 404    # unknown token fails safe
+    assert c.post("/q/exchange", data={"token": "totally-wrong"}).status_code == 404   # unknown → 404
+    assert c.get("/q/session").status_code == 404                        # no session without an exchange
     seller = TestClient(main.app); _login(seller, "kim@t.local")
-    assert seller.get("/q/nope", follow_redirects=False).status_code == 404
+    assert seller.post("/q/exchange", data={"token": "x"}).status_code == 404
 
 
 def test_rate_limit_blocks_flood(ctx):
     RL.reset()
     c = TestClient(main.app)
-    codes = [c.get("/q/guess", follow_redirects=False).status_code for _ in range(60)]
+    codes = [c.post("/q/exchange", data={"token": "guess"}).status_code for _ in range(60)]
     assert 429 in codes                                          # token-guessing is throttled

@@ -160,6 +160,7 @@ MIGRATIONS = [
     ("deal", "quote_version_id", "INTEGER"),
     ("deal", "ready_for_ops", "BOOLEAN DEFAULT 0"),
     ("workitem", "related_contract_id", "INTEGER"),
+    ("quoteaccesstoken", "consumed_at", "TIMESTAMP"),   # portal hardening: single-use link consumption
 ]
 
 

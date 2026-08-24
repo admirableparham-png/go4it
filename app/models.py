@@ -1157,9 +1157,27 @@ class QuoteAccessToken(SQLModel, table=True):
     token_hash: str = Field(default="", index=True)
     expires_at: Optional[datetime] = None
     revoked: bool = False
+    consumed_at: Optional[datetime] = None   # single-use: the FIRST exchange consumes the link (atomic)
     created_by: str = ""
     last_viewed_at: Optional[datetime] = None
     view_count: int = 0
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class PortalSession(SQLModel, table=True):
+    """A SERVER-SIDE buyer-portal session. The browser cookie carries ONLY the opaque `sid`; the sensitive
+    state (quote version, token hash, expiry, revocation, CSRF) lives HERE, never in a client-readable cookie.
+    Created by the one-time link exchange; scoped to one quote version; short-lived + revocable."""
+    __table_args__ = (UniqueConstraint("sid", name="uq_portalsession_sid"),)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    sid: str = Field(default="", index=True)        # opaque random id stored in the cookie
+    quote_id: int = Field(foreign_key="quote.id", index=True)
+    quote_version_id: int = Field(foreign_key="quoteversion.id")
+    token_id: Optional[int] = Field(default=None, foreign_key="quoteaccesstoken.id")
+    token_hash: str = ""                            # the access-token hash this session was opened from
+    csrf: str = ""
+    expires_at: Optional[datetime] = None
+    revoked: bool = False
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 

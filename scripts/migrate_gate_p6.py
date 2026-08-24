@@ -21,16 +21,17 @@ from sqlmodel import Session, func, select   # noqa: E402
 
 from app.db import _is_sqlite, engine   # noqa: E402
 from app.models import (Contract, ContractDocument, ContractParty, ContractStatusEvent, ContractTemplate,
-                        ContractVersion, Deal, Outreach, Product, Quote, QuoteAccessToken, QuoteApproval,
-                        QuoteDocument, QuoteLineItem, QuoteStatusEvent, QuoteVersion, ServiceRequest,
-                        SignatureEvent)   # noqa: E402
+                        ContractVersion, Deal, Outreach, PortalSession, Product, Quote, QuoteAccessToken,
+                        QuoteApproval, QuoteDocument, QuoteLineItem, QuoteStatusEvent, QuoteVersion,
+                        ServiceRequest, SignatureEvent)   # noqa: E402
 
 _NEW_TABLES = [QuoteVersion, QuoteLineItem, QuoteStatusEvent, QuoteApproval, QuoteAccessToken, QuoteDocument,
-               Contract, ContractVersion, ContractParty, ContractStatusEvent, ContractTemplate,
+               PortalSession, Contract, ContractVersion, ContractParty, ContractStatusEvent, ContractTemplate,
                ContractDocument, SignatureEvent]
 _GATE_INDEXES = [
     ("uq_quoteaccesstoken_hash", "quoteaccesstoken", "token_hash", True, "token_hash != ''"),
     ("uq_deal_quote_version", "deal", "quote_version_id", True, "quote_version_id IS NOT NULL"),
+    ("uq_portalsession_sid", "portalsession", "sid", True, "sid != ''"),
     ("ix_quoteversion_quote", "quoteversion", "quote_id", False),
     ("ix_contract_status", "contract", "status", False),
 ]
