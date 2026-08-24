@@ -3020,11 +3020,13 @@ def quote_detail(request: Request, quote_id: int):
         share_url = ""
         if q.status in ("approved", "sent") and (q.share_token or "").strip():
             share_url = f"{BASE_URL}/p/{q.share_token}"
+    # the hardened secure /q/ link is shown ONCE right after send (raw token is never stored) — pop the flash
+    portal_link = request.session.pop("_portal_link", "")
     return templates.TemplateResponse(
         "quote_detail.html",
         {"request": request, "user": user, "q": q, "lead": lead, "product": product,
          "breakdown": breakdown, "fx": fx, "can_approve": role_at_least(user, "agent"),
-         "share_url": share_url},
+         "share_url": share_url, "portal_link": portal_link},
     )
 
 
@@ -3151,7 +3153,8 @@ def send_quote(request: Request, quote_id: int):
             if not ok:
                 return RedirectResponse(f"/quotes/{quote_id}?error=send", status_code=303)
             _ensure_share_token(session, q)
-            QP.mint_token(session, q, ver, actor=user, valid_days=q.validity_days)  # hashed buyer token
+            raw_tok, _t = QP.mint_token(session, q, ver, actor=user, valid_days=q.validity_days)  # hashed buyer token
+            request.session["_portal_link"] = f"{BASE_URL}/q/{raw_tok}"   # the secure /q/ link, shown ONCE to the admin
             session.add(q)
             # Supersede any prior live quote for this lead so its public link stops serving an
             # outdated price (the public routes only serve approved/sent — superseded ones 404).
@@ -3254,45 +3257,83 @@ def quote_create_deal(request: Request, quote_id: int):
     return RedirectResponse(f"/deals/{dealid}" if dealid else "/quotes", status_code=303)
 
 
-@app.get("/q/{token}", response_class=HTMLResponse)
-def quote_portal(request: Request, token: str):
-    """Secure buyer quote portal (hashed token, version-scoped). Records a controlled view. No internal costs."""
-    if not RL.allow(RL.client_key(request, "qportal"), limit=40, window=60):
-        return HTMLResponse("Too many requests. Please retry shortly.", status_code=429)
+def _portal_headers_apply(resp, nonce):
+    for k, v in QP.portal_headers(nonce).items():
+        resp.headers[k] = v
+    return resp
+
+
+def _portal_load(request, session):
+    """Resolve the cookie portal session → (quote, version, csrf) or None. Tokenless; scoped to one version."""
+    ok = QP.portal_session_ok(request.session.get("quote_portal"))
+    if not ok:
+        return None
+    qid, vid, csrf = ok
+    q = session.get(Quote, qid)
+    ver = session.get(QuoteVersion, vid)
+    if not q or not ver or q.status not in QWF.PORTAL_VIEWABLE:
+        return None
+    return q, ver, csrf
+
+
+# NOTE: these fixed /q/session* routes are declared BEFORE /q/{token} so the token catch-all never captures
+# them. They live under the already-auth-exempt "/q/" prefix and are tokenless (cookie-session backed).
+@app.get("/q/session", response_class=HTMLResponse)
+def quote_portal_view(request: Request):
+    """Render the buyer portal from the cookie session (TOKENLESS url). Pure GET — the `viewed` event is
+    recorded by a separate idempotent POST (/q/session/view) fired after the page renders."""
+    nonce = secrets.token_urlsafe(16)
     with Session(engine) as session:
-        resolved = QP.resolve_token(session, token)
-        if not resolved:
-            return HTMLResponse("This quotation link is not available.", status_code=404)
-        tok, q, ver = resolved
-        QWF.mark_expired_if_due(session, q)
-        if q.status not in QWF.PRESENTABLE:
-            session.commit()
-            return HTMLResponse("This quotation link is not available.", status_code=404)
-        QP.register_view(session, tok, q)          # controlled `viewed` event (not a term change)
-        session.commit()
+        loaded = _portal_load(request, session)
+        if not loaded:
+            return _portal_headers_apply(
+                HTMLResponse("This quotation link is not available.", status_code=404), nonce)
+        q, ver, csrf = loaded
         lead = session.get(Lead, q.lead_id)
         product = session.get(Product, q.product_id)
-        fx = json.loads(q.fx_snapshot or "{}")
+        options = QP.buyer_options(ver)
         expires = QWF.expiry_at(q)
-    return templates.TemplateResponse("q_portal.html", {
-        "request": request, "q": q, "lead": lead, "product": product, "fx": fx, "token": token,
-        "expires": expires, "today": datetime.utcnow()})
+    resp = templates.TemplateResponse("q_portal.html", {
+        "request": request, "q": q, "ver": ver, "lead": lead, "product": product, "options": options,
+        "csrf": csrf, "nonce": nonce, "expires": expires, "today": datetime.utcnow()})
+    return _portal_headers_apply(resp, nonce)
 
 
-@app.post("/q/{token}/respond", response_class=HTMLResponse)
-def quote_portal_respond(request: Request, token: str, action: str = Form(...), message: str = Form("")):
-    """Buyer accept/reject/change on the secure portal — idempotent, rate-limited. Never creates a Deal (raises
-    an admin task). Never exposes seller identity."""
+@app.post("/q/session/view")
+def quote_portal_mark_viewed(request: Request, csrf: str = Form("")):
+    """Idempotent controlled view event — fired by the page AFTER it renders (never on the document GET).
+    CSRF-checked. Records sent→viewed once."""
+    with Session(engine) as session:
+        loaded = _portal_load(request, session)
+        if not loaded:
+            return JSONResponse({"ok": False}, status_code=404)
+        q, ver, good_csrf = loaded
+        if not QP.csrf_ok({"csrf": good_csrf}, csrf):
+            return JSONResponse({"ok": False}, status_code=403)
+        QP.record_view(session, q, ver)
+        session.commit()
+    return JSONResponse({"ok": True})
+
+
+@app.post("/q/session/respond", response_class=HTMLResponse)
+def quote_portal_decide(request: Request, action: str = Form(...), message: str = Form(""),
+                        csrf: str = Form("")):
+    """Buyer accept/reject/change — POST-only, CSRF-protected, idempotent for EVERY decision, against the exact
+    version the buyer saw. Never creates a Deal (raises an admin task). Never exposes seller identity."""
     if not RL.allow(RL.client_key(request, "qrespond"), limit=20, window=60):
         return HTMLResponse("Too many requests. Please retry shortly.", status_code=429)
+    nonce = secrets.token_urlsafe(16)
     with Session(engine) as session:
-        resolved = QP.resolve_token(session, token)
-        if not resolved:
-            return HTMLResponse("This quotation link is not available.", status_code=404)
-        tok, q, ver = resolved
+        loaded = _portal_load(request, session)
+        if not loaded:
+            return _portal_headers_apply(
+                HTMLResponse("This quotation link is not available.", status_code=404), nonce)
+        q, ver, good_csrf = loaded
+        if not QP.csrf_ok({"csrf": good_csrf}, csrf):
+            return _portal_headers_apply(HTMLResponse("Invalid request token.", status_code=403), nonce)
         result, why = QP.record_buyer_action(session, q, ver, action, message=message)
         if result == "invalid":
-            return HTMLResponse("Bad request", status_code=400)
+            return _portal_headers_apply(HTMLResponse("Bad request", status_code=400), nonce)
         lead = session.get(Lead, q.lead_id)
         if lead and result in ("accepted", "rejected", "change_requested"):
             if lead.buyer_replied_at is None:
@@ -3305,30 +3346,57 @@ def quote_portal_respond(request: Request, token: str, action: str = Form(...), 
             session.add(lead)
         code = q.tracking_code
         session.commit()
-    accepted = result == "accepted" or result == "already_accepted"
-    return templates.TemplateResponse("proforma_thanks.html",
+    accepted = result in ("accepted", "already_accepted")
+    resp = templates.TemplateResponse("proforma_thanks.html",
                                       {"request": request, "accepted": accepted, "code": code})
+    return _portal_headers_apply(resp, nonce)
 
 
-@app.get("/q/{token}/pdf")
-def quote_portal_pdf(request: Request, token: str):
-    """Buyer PDF download via the secure token (only for a presentable version with a generated PDF)."""
+@app.get("/q/session/pdf")
+def quote_portal_pdf(request: Request):
+    """Buyer PDF download via the cookie session (tokenless). Only a presentable version with a generated PDF."""
     if not RL.allow(RL.client_key(request, "qpdf"), limit=20, window=60):
         return HTMLResponse("Too many requests.", status_code=429)
     with Session(engine) as session:
-        resolved = QP.resolve_token(session, token)
-        if not resolved:
+        loaded = _portal_load(request, session)
+        if not loaded:
             return _not_found()
-        tok, q, ver = resolved
+        q, ver, _csrf = loaded
         from .models import QuoteDocument
         doc = session.get(QuoteDocument, ver.pdf_document_id) if ver.pdf_document_id else None
-        if not doc or doc.status != "active" or q.status not in QWF.PRESENTABLE:
+        if not doc or doc.status != "active":
             return _not_found()
         rel = doc.file_path
     path = (QUOTE_FILES_DIR / rel).resolve()
     if not str(path).startswith(str(QUOTE_FILES_DIR.resolve()) + os.sep) or not path.exists():
         return _not_found()
-    return FileResponse(str(path), filename=f"quote_{ver.quote_id}.pdf", media_type="application/pdf")
+    resp = FileResponse(str(path), filename=f"quote_{ver.quote_id}.pdf", media_type="application/pdf")
+    resp.headers["Cache-Control"] = "no-store"
+    resp.headers["Referrer-Policy"] = "no-referrer"
+    return resp
+
+
+@app.get("/q/{token}")
+def quote_portal_exchange(request: Request, token: str):
+    """ONE-TIME link exchange: validate the URL token, drop it into a short-lived Secure/HttpOnly/SameSite
+    cookie session, and redirect to the TOKENLESS /q/session — so the token never reappears in referrers,
+    history or proxy logs for the buyer's subsequent view + decisions. GET does NOT mutate commercial terms."""
+    if not RL.allow(RL.client_key(request, "qportal"), limit=40, window=60):
+        return HTMLResponse("Too many requests. Please retry shortly.", status_code=429)
+    with Session(engine) as session:
+        resolved = QP.resolve_token(session, token)
+        if not resolved:
+            return HTMLResponse("This quotation link is not available.", status_code=404)
+        tok, q, ver = resolved
+        QWF.mark_expired_if_due(session, q)          # read-side expiry flip (system, not a buyer term change)
+        session.commit()
+        if q.status not in QWF.PRESENTABLE:
+            return HTMLResponse("This quotation link is not available.", status_code=404)
+        request.session["quote_portal"] = QP.new_portal_session(q, ver)   # HttpOnly signed cookie (SessionMiddleware)
+    resp = RedirectResponse("/q/session", status_code=303)
+    resp.headers["Referrer-Policy"] = "no-referrer"
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
 
 
 # ----------------------------------------------------------------------------- deals (post-win)

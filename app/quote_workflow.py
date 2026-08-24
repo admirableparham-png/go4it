@@ -13,6 +13,8 @@ STATUSES = ["draft", "needs_review", "approved", "sent", "viewed", "change_reque
             "rejected", "expired", "cancelled", "superseded"]
 TERMINAL = {"accepted", "rejected", "cancelled", "superseded"}
 PRESENTABLE = ("approved", "sent", "viewed")   # a buyer link may serve these (and only if not expired)
+# states the buyer portal may RENDER (read-only confirmation for a decided quote); decisions stay guarded
+PORTAL_VIEWABLE = ("approved", "sent", "viewed", "accepted", "rejected", "change_requested")
 
 # valid (from → {to}) transitions — the single source of truth
 TRANSITIONS = {

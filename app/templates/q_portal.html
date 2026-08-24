@@ -15,6 +15,7 @@
   .tot { font-size:20px; font-weight:700; color:#fff; }
   .pill { display:inline-block; padding:2px 8px; border-radius:999px; font-size:11px; background:#334155; }
   .exp { background:#7f1d1d; color:#fecaca; }
+  .opt { border:1px solid #334155; border-radius:8px; padding:10px 12px; margin:6px 0; }
   .btn { display:inline-block; padding:10px 16px; border-radius:8px; border:0; font-weight:600; cursor:pointer; font-size:14px; }
   .accept { background:#059669; color:#fff; } .neutral { background:#334155; color:#e2e8f0; }
   textarea, .btn { font-family:inherit; }
@@ -39,11 +40,26 @@
       <tr><td class="sm">Quantity</td><td>{{ '%g'|format(q.quantity) }} {{ product.unit if product else '' }}</td></tr>
       <tr><td class="sm">Incoterm</td><td>{{ q.incoterm }}{% if q.dest_border %} · {{ q.dest_border }}{% endif %}</td></tr>
     </table>
-    <table>
-      <tr><td class="tot">Total ({{ q.incoterm }})</td><td class="r tot">{{ '%.2f'|format(q.delivered_total) }} {{ q.quote_currency }}</td></tr>
-      <tr><td class="sm">Unit price</td><td class="r sm">{{ '%.2f'|format(q.delivered_unit) }} {{ q.quote_currency }}/{{ product.unit if product else 'unit' }}</td></tr>
-    </table>
-    <div class="sm" style="margin-top:8px">Prices indicative and subject to confirmation. Go4it mediates all supply.</div>
+
+    {% if options %}
+      {# Buyer-facing commercial options (e.g. an EXW option + a delivered/CIF option). These are approved
+         buyer prices — the internal EXW *cost* is never shown here. #}
+      <div class="sm" style="margin-top:6px">Commercial options</div>
+      {% for o in options %}
+        <div class="opt">
+          <div style="display:flex;justify-content:space-between"><b>{{ o.name }}{% if o.incoterm %} ({{ o.incoterm }}){% endif %}</b>
+            <span class="tot" style="font-size:15px">{{ '%.2f'|format(o.unit_price|float) if o.unit_price is defined else '' }} {{ o.currency or q.quote_currency }}{% if o.unit_price is defined %}/unit{% endif %}</span></div>
+          {% if o.total is defined %}<div class="sm">Order total: {{ '%.2f'|format(o.total|float) }} {{ o.currency or q.quote_currency }}</div>{% endif %}
+          <div class="sm">Included: {{ o.included or '—' }} · Excluded: {{ o.excluded or '—' }}</div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <table>
+        <tr><td class="tot">Total ({{ q.incoterm }})</td><td class="r tot">{{ '%.2f'|format(q.delivered_total) }} {{ q.quote_currency }}</td></tr>
+        <tr><td class="sm">Unit price</td><td class="r sm">{{ '%.2f'|format(q.delivered_unit) }} {{ q.quote_currency }}/{{ product.unit if product else 'unit' }}</td></tr>
+      </table>
+    {% endif %}
+    <div class="sm" style="margin-top:8px">Prices indicative and subject to confirmation. Go4it mediates the transaction.</div>
   </div>
 
   <div class="card">
@@ -55,16 +71,22 @@
       <div class="sm">This quotation has expired. Please contact Go4it for an updated offer.</div>
     {% else %}
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
-        <form method="post" action="/q/{{ token }}/respond"><input type="hidden" name="action" value="accept"><button class="btn accept">Accept quotation</button></form>
+        <form method="post" action="/q/session/respond"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="action" value="accept"><button class="btn accept">Accept quotation</button></form>
       </div>
-      <form method="post" action="/q/{{ token }}/respond">
-        <input type="hidden" name="action" value="changes">
+      <form method="post" action="/q/session/respond">
+        <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="action" value="changes">
         <textarea name="message" rows="3" placeholder="Request a change (optional message)"></textarea>
         <div style="margin-top:8px"><button class="btn neutral">Request a change</button></div>
       </form>
-      <form method="post" action="/q/{{ token }}/respond" style="margin-top:8px">
-        <input type="hidden" name="action" value="reject"><button class="btn neutral">Decline</button>
+      <form method="post" action="/q/session/respond" style="margin-top:8px">
+        <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="action" value="reject"><button class="btn neutral">Decline</button>
       </form>
     {% endif %}
   </div>
-</div></body></html>
+</div>
+<script nonce="{{ nonce }}">
+  // Record the VIEW via an idempotent controlled POST AFTER the page renders (never on the document GET).
+  try { fetch('/q/session/view', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body:'csrf={{ csrf }}', credentials:'same-origin'}); } catch (e) {}
+</script>
+</body></html>

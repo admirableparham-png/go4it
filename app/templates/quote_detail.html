@@ -1,6 +1,16 @@
 {% extends "base.html" %}
 {% set active = 'quotes' %}
 {% block content %}
+{% if portal_link %}
+  <div class="card mb-4 no-print" style="border-color:rgba(52,211,153,.4)">
+    <div class="eyebrow mb-1">Secure buyer link (shown once — the raw token is never stored)</div>
+    <div class="flex gap-2 items-center">
+      <input value="{{ portal_link }}" readonly onclick="this.select()" class="input" style="flex:1">
+      <a href="{{ portal_link }}" target="_blank" rel="noopener" class="btn btn-neutral btn-sm">Open</a>
+    </div>
+    <p class="text-[11px] text-slate-500 mt-1">Opening it exchanges the token for a private cookie session (tokenless URL). Send this link to the buyer.</p>
+  </div>
+{% endif %}
 <style>
   @media print {
     body { background: #fff !important; }

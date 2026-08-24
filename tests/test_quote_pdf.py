@@ -89,10 +89,12 @@ def test_admin_download_and_buyer_via_token(ctx):
     seller = __import__("fastapi.testclient", fromlist=["TestClient"]).TestClient(main.app)
     _login(seller, "kim@t.local")
     assert seller.get(f"/quotes/{ids['quote']}/pdf").status_code == 404
-    # buyer downloads through the token (public)
+    # buyer downloads through the hardened cookie-session portal (token exchanged, tokenless PDF path)
     buyer = __import__("fastapi.testclient", fromlist=["TestClient"]).TestClient(main.app)
-    r = buyer.get(f"/q/{ids['token']}/pdf")
+    buyer.get(f"/q/{ids['token']}", follow_redirects=False)     # one-time exchange → cookie session
+    r = buyer.get("/q/session/pdf")
     assert r.status_code == 200 and r.content.startswith(b"%PDF")
+    assert r.headers["cache-control"] == "no-store" and r.headers["referrer-policy"] == "no-referrer"
 
 
 def test_verify_pdf_seam(ctx, tmp_path):

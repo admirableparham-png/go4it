@@ -54,6 +54,21 @@ Analytics**. The journey: Product/pricing → **Quote → buyer decision → Con
 - **Work Queue:** 15 new commercial types + condition-versioned scanners (quote review/expired/accepted-needs-
   deal, contract awaiting signature, …).
 
+## Buyer-portal hardening (pre-Phase 7)
+- **No URL-token leakage:** `/q/{token}` is a **one-time exchange** — it validates the token, drops it into a
+  short-lived (30 min) **Secure/HttpOnly/SameSite** cookie session (SessionMiddleware), and 303-redirects to
+  the **tokenless** `/q/session`. The raw token never reappears in referrers, history, or proxy logs for the
+  buyer's view + decisions, and never in the page body. Every portal response sets **`Referrer-Policy:
+  no-referrer`, `Cache-Control: no-store`, a strict CSP (`default-src 'none'; frame-ancestors 'none';
+  script-src 'nonce-…'`), `X-Frame-Options: DENY`, `X-Robots-Tag: noindex`**.
+- **Decisions protected:** accept/reject/change are **POST-only** (`/q/session/respond`), **CSRF-checked**
+  (per-session token), **idempotent for every decision** (replay/double-submit safe), scoped to the **exact
+  version** the buyer saw, and rate-limited. Acceptance still only raises the admin deal task.
+- **Viewed via POST:** the GET render never mutates; a nonce'd inline beacon fires an **idempotent
+  `POST /q/session/view`** after the page renders to record `sent→viewed` once.
+- **EXW:** the internal EXW **cost** is never shown; an intentionally-included buyer-facing **EXW commercial
+  option** (approved buyer price, with included/excluded) IS displayed via `QuoteVersion.options`.
+
 ## Migration (run order)
 ```
 backup_db.py → migrate.py → migrate_gate_p6.py [--dry-run] → backfill_commercial.py [--dry-run]
