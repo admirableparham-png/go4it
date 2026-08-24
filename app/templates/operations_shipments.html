@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-6">
+  <div class="eyebrow mb-1">Operations</div>
+  <h2 class="text-2xl font-extrabold tracking-tight font-display flex items-center gap-2">Shipments <span class="badge badge-slate">{{ total }}</span></h2>
+  <p class="text-slate-400 text-sm mt-1">Planned and in-flight shipments. Tracking references and carrier identity are admin-only. A shipment is never marked delivered by a passed ETA.</p>
+</div>
+
+<form method="get" class="flex flex-wrap gap-2 mb-4">
+  <input name="q" value="{{ f.q }}" placeholder="Reference…" class="input input-sm" />
+  <select name="milestone" class="input input-sm">
+    <option value="">Any milestone</option>
+    {% for m in ['planning','booked','export_cleared','in_transit','import_cleared','delivered'] %}
+      <option value="{{ m }}" {{ 'selected' if f.milestone == m }}>{{ m.replace('_',' ') }}</option>
+    {% endfor %}
+  </select>
+  <button class="btn btn-sm">Filter</button>
+  <details class="ml-auto"><summary class="cursor-pointer text-sm link">Book shipment</summary></details>
+</form>
+
+<form method="post" action="/operations/shipments" class="card grid grid-cols-2 md:grid-cols-5 gap-2 mb-6">
+  <input name="mode" placeholder="Mode" class="input input-sm" />
+  <input name="origin" placeholder="Origin" class="input input-sm" />
+  <input name="destination" placeholder="Destination" class="input input-sm" />
+  <input name="booking_reference" placeholder="Booking ref (admin-only)" class="input input-sm" />
+  <input name="deal_id" placeholder="Deal id (opt)" class="input input-sm" />
+  <button class="btn btn-sm">Book</button>
+</form>
+
+{% if ships %}
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Reference</th><th>Mode</th><th>Route</th><th>Milestone</th><th>ETA</th><th>Exception</th></tr></thead>
+      <tbody>
+        {% for s in ships %}
+          <tr>
+            <td><a href="/operations/shipments/{{ s.id }}" class="font-mono link">{{ s.reference }}</a></td>
+            <td class="text-slate-300">{{ s.mode }}</td>
+            <td class="text-slate-400">{{ s.origin }} → {{ s.destination }}</td>
+            <td><span class="badge {{ 'badge-emerald' if s.current_milestone == 'delivered' else 'badge-sky' }}">{{ s.current_milestone.replace('_',' ') }}</span></td>
+            <td class="text-slate-400">{{ s.estimated_arrival.strftime('%Y-%m-%d') if s.estimated_arrival else '—' }}</td>
+            <td>{% if s.exception_state == 'open' %}<span class="badge badge-rose">open</span>{% else %}<span class="text-slate-600">—</span>{% endif %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="empty">No shipments yet.</div>
+{% endif %}
+{% endblock %}

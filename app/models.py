@@ -650,6 +650,10 @@ class WorkItem(SQLModel, table=True):
     related_seller_update_id: Optional[int] = Field(default=None, foreign_key="sellerupdate.id")
     related_product_id: Optional[int] = Field(default=None, foreign_key="product.id")  # Phase 5
     related_contract_id: Optional[int] = Field(default=None, foreign_key="contract.id")  # Phase 6
+    related_operation_case_id: Optional[int] = Field(default=None, foreign_key="operationcase.id")  # Phase 7
+    related_shipment_id: Optional[int] = Field(default=None, foreign_key="shipment.id")              # Phase 7
+    related_payment_id: Optional[int] = Field(default=None, foreign_key="paymentmilestone.id")       # Phase 7
+    related_exception_id: Optional[int] = Field(default=None, foreign_key="operationalexception.id") # Phase 7
     parent_id: Optional[int] = Field(default=None, foreign_key="workitem.id")
     idempotency_key: str = Field(default="", index=True)   # de-dups automatic items (partial-unique over OPEN)
     condition_version: str = ""    # identifies the underlying-condition INSTANCE+version; once a task for a
@@ -1326,4 +1330,419 @@ class SignatureEvent(SQLModel, table=True):
     signer_email: str = ""
     verified: bool = False         # manual typed name is NEVER verified=True
     signed_at: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+# ============================================================================
+# Operations (Phase 7) — Freight, Shipments, Documentation, Payments &
+# Remittance. STRICTLY ADDITIVE: the accepted commercial Deal + its DEAL_STAGES
+# stay the source of truth; these tables RECORD the operational execution that
+# advances that journey from VERIFIED milestones (see app/operations.py's
+# central projector). Go4it is NOT a licensed payment/remittance/customs/
+# freight provider — every record here COORDINATES and TRACKS; it never claims a
+# transfer/clearance/booking occurred without verified evidence. Money is stored
+# as TEXT and handled only through Decimal (see app/pricing._d/_q). Two-way
+# confidentiality holds: buyer identity/contact, provider identity/contact,
+# internal costs and Go4it margin are admin-only and never reach a seller.
+# ============================================================================
+
+
+class OperationCase(SQLModel, table=True):
+    """The operational umbrella for one piece of execution work. May be linked to a Deal, a ServiceRequest,
+    both, or be a controlled standalone service case. A Deal may have MANY cases/shipments — never one-per-Deal.
+    tenant_id = the seller the case concerns (owner-scoped, seller-safe projection only); owner_id = the admin."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    reference: str = Field(default="", index=True)     # OP-YYYYMM-####
+    case_type: str = "standalone"  # deal | request | standalone
+    deal_id: Optional[int] = Field(default=None, foreign_key="deal.id", index=True)
+    request_id: Optional[int] = Field(default=None, foreign_key="servicerequest.id", index=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)  # seller scope; NULL=internal
+    owner_id: Optional[int] = Field(default=None, foreign_key="user.id")   # admin owner
+    status: str = "open"           # open | in_progress | on_hold | completed | cancelled
+    priority: str = "normal"       # low | normal | high | urgent
+    due_at: Optional[datetime] = None
+    origin_country: str = ""
+    dest_country: str = ""
+    product_id: Optional[int] = Field(default=None, foreign_key="product.id")
+    category: str = ""
+    notes: str = ""                # internal only
+    inferred: bool = False         # True = backfill-seeded baseline case, not an observed op
+    created_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class FreightRequest(SQLModel, table=True):
+    """A structured request for freight/shipping on a case. Critical physical facts (weight, CBM, hazardous,
+    customs) are NEVER guessed — a missing critical field defaults NULL and raises a Work Queue action."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    reference: str = Field(default="", index=True)     # FR-YYYYMM-####
+    operation_case_id: Optional[int] = Field(default=None, foreign_key="operationcase.id", index=True)
+    deal_id: Optional[int] = Field(default=None, foreign_key="deal.id", index=True)
+    request_id: Optional[int] = Field(default=None, foreign_key="servicerequest.id")
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    cargo_description: str = ""
+    quantity: str = "0"            # Decimal-as-text
+    unit: str = ""
+    gross_weight_kg: Optional[str] = None   # None = unknown (never guessed)
+    net_weight_kg: Optional[str] = None
+    volume_cbm: Optional[str] = None
+    package_count: Optional[int] = None
+    package_type: str = ""
+    origin_address: str = ""
+    origin_port: str = ""
+    origin_country: str = ""
+    dest_address: str = ""
+    dest_port: str = ""
+    dest_country: str = ""
+    incoterm: str = ""
+    mode: str = ""                 # road | sea | air | rail | multimodal
+    cargo_ready_date: Optional[datetime] = None
+    requested_delivery_date: Optional[datetime] = None
+    temperature_reqs: str = ""
+    hazardous: Optional[bool] = None        # None = unknown → must be resolved, never assumed False
+    special_handling: str = ""
+    insurance_required: Optional[bool] = None
+    customs_required: Optional[bool] = None
+    owner_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    status: str = "draft"          # draft | open | quoting | offer_selected | booked | cancelled
+    internal_notes: str = ""
+    created_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class FreightOffer(SQLModel, table=True):
+    """A provider's offer against a FreightRequest — an immutable priced snapshot. The provider is a canonical
+    Trade Network Company with a freight_provider role (never a separate provider DB). Costs + provider identity
+    are ADMIN-ONLY. Expired offers are never silently used; selecting/replacing one is audited."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    freight_request_id: int = Field(foreign_key="freightrequest.id", index=True)
+    provider_company_id: Optional[int] = Field(default=None, foreign_key="company.id")  # freight_provider role
+    provider_name_cache: str = ""  # admin-only convenience label (never seller-facing)
+    mode: str = ""
+    route_summary: str = ""
+    service_description: str = ""
+    departure_estimate: Optional[datetime] = None
+    lead_time_days: Optional[int] = None
+    valid_until: Optional[datetime] = None
+    currency: str = ""
+    base_freight: str = "0"        # Decimal-as-text
+    surcharges: str = "0"
+    insurance_cost: str = "0"
+    customs_cost: str = "0"
+    total: str = "0"
+    fx_snapshot: str = ""          # JSON (pricing fx snapshot) when currencies are combined
+    included_services: str = ""
+    excluded_services: str = ""
+    source: str = "manual"         # manual | provider (provider = future integration)
+    provider_reference: str = ""
+    verification_status: str = "unverified"  # unverified | verified
+    document_id: Optional[int] = Field(default=None, foreign_key="tradedocument.id")
+    selection_status: str = "offered"  # offered | selected | rejected | replaced
+    selected_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    selected_at: Optional[datetime] = None
+    replaced_by_id: Optional[int] = Field(default=None, foreign_key="freightoffer.id")
+    replacement_reason: str = ""
+    created_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class Shipment(SQLModel, table=True):
+    """A canonical shipment record. A Deal may have several. Carrier/provider contacts + sensitive tracking
+    references are ADMIN-ONLY / masked from sellers. current_milestone mirrors verified progress; it never
+    advances on an estimate alone (delivery needs a DeliveryConfirmation, not a passed ETA)."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    reference: str = Field(default="", index=True)     # SH-YYYYMM-####
+    operation_case_id: Optional[int] = Field(default=None, foreign_key="operationcase.id", index=True)
+    deal_id: Optional[int] = Field(default=None, foreign_key="deal.id", index=True)
+    freight_offer_id: Optional[int] = Field(default=None, foreign_key="freightoffer.id")
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    mode: str = ""
+    carrier_company_id: Optional[int] = Field(default=None, foreign_key="company.id")  # admin-only
+    carrier_name_cache: str = ""   # admin-only label
+    booking_reference: str = ""    # admin-only / masked for sellers
+    container_reference: str = ""  # container/trailer/AWB/BOL — admin-only / masked
+    origin: str = ""
+    destination: str = ""
+    cargo_summary: str = ""
+    quantity: str = "0"
+    weight_kg: str = "0"
+    volume_cbm: str = "0"
+    planned_pickup: Optional[datetime] = None
+    actual_pickup: Optional[datetime] = None
+    planned_departure: Optional[datetime] = None
+    actual_departure: Optional[datetime] = None
+    estimated_arrival: Optional[datetime] = None
+    actual_arrival: Optional[datetime] = None
+    delivery_date: Optional[datetime] = None
+    current_milestone: str = "planning"  # planning|booked|export_cleared|in_transit|import_cleared|delivered
+    tracking_source: str = "manual"      # manual | provider name; "Provider not configured" until integrated
+    last_tracking_update: Optional[datetime] = None
+    exception_state: str = "none"        # none | open (mirrors an active OperationalException)
+    owner_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    status: str = "active"         # active | archived | cancelled
+    created_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class ShipmentLeg(SQLModel, table=True):
+    """One leg of a multimodal/multi-stop shipment. Legs are ordered by `sequence`; ordering is validated so an
+    out-of-order event never moves the whole shipment backward."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    shipment_id: int = Field(foreign_key="shipment.id", index=True)
+    sequence: int = 1
+    mode: str = ""
+    origin: str = ""
+    destination: str = ""
+    carrier_company_id: Optional[int] = Field(default=None, foreign_key="company.id")  # admin-only
+    vehicle_reference: str = ""    # vehicle/vessel/flight — admin-only
+    planned_departure: Optional[datetime] = None
+    planned_arrival: Optional[datetime] = None
+    actual_departure: Optional[datetime] = None
+    actual_arrival: Optional[datetime] = None
+    status: str = "planned"        # planned | in_progress | completed | skipped
+    tracking_reference: str = ""   # admin-only / masked
+    internal_notes: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class ShipmentEvent(SQLModel, table=True):
+    """A tracking event — manually recorded OR externally imported. External ingestion is IDEMPOTENT: a
+    (source, external_event_id) pair is unique (partial index) so a replayed webhook/import never duplicates.
+    The raw provider reference is stored privately; only seller_safe_summary may ever reach a seller. GPS/ETA/
+    events are never invented."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    shipment_id: int = Field(foreign_key="shipment.id", index=True)
+    leg_id: Optional[int] = Field(default=None, foreign_key="shipmentleg.id")
+    event_type: str = ""           # booked|departed|arrived|export_cleared|import_cleared|delivered|exception|note
+    event_at: Optional[datetime] = None
+    recorded_at: datetime = Field(default_factory=datetime.utcnow)
+    location: str = ""
+    source: str = "manual"         # manual | import | webhook:<provider>
+    external_event_id: str = Field(default="", index=True)   # unique per source (idempotent ingest)
+    confidence: str = "recorded"   # recorded | verified (admin-verified)
+    raw_reference: str = ""        # private provider payload/ref — NEVER seller-facing
+    admin_note: str = ""
+    seller_safe_summary: str = ""  # the ONLY field that may be surfaced to a seller
+    created_by: Optional[int] = Field(default=None, foreign_key="user.id")
+
+
+class DocumentRequirement(SQLModel, table=True):
+    """A 'what document is needed, from whom, by when' record. Distinct from the stored file (TradeDocument).
+    seller_action_required drives a sanitized seller document request; buyer_action_required stays internal."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    operation_case_id: Optional[int] = Field(default=None, foreign_key="operationcase.id", index=True)
+    deal_id: Optional[int] = Field(default=None, foreign_key="deal.id", index=True)
+    shipment_id: Optional[int] = Field(default=None, foreign_key="shipment.id")
+    request_id: Optional[int] = Field(default=None, foreign_key="servicerequest.id")
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    doc_type: str = ""             # commercial_invoice|packing_list|certificate_of_origin|bill_of_lading|...
+    required_from: str = ""        # seller | buyer | provider | customs | admin
+    due_date: Optional[datetime] = None
+    status: str = "missing"        # missing | requested | received | approved | rejected
+    document_id: Optional[int] = Field(default=None, foreign_key="tradedocument.id")
+    approval_state: str = "pending"  # pending | approved | rejected
+    rejection_reason: str = ""     # seller-safe reason when required_from == seller
+    seller_action_required: bool = False
+    buyer_action_required: bool = False   # internal only
+    notes: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    completed_at: Optional[datetime] = None
+
+
+class TradeDocument(SQLModel, table=True):
+    """A private stored trade document (generated or uploaded). Mirrors the hardened ProductDocument pattern:
+    private OPERATION_FILES_DIR, generated on-disk name, sha256, quarantine-by-default, archive-not-delete,
+    admin-download-gated. seller_safe=True only after an admin confirms it carries no buyer/provider PII —
+    then it reaches a seller solely via the owner-scoped RequestDeliverable mechanism."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    operation_case_id: Optional[int] = Field(default=None, foreign_key="operationcase.id", index=True)
+    shipment_id: Optional[int] = Field(default=None, foreign_key="shipment.id")
+    requirement_id: Optional[int] = Field(default=None, foreign_key="documentrequirement.id")
+    deal_id: Optional[int] = Field(default=None, foreign_key="deal.id")
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    doc_type: str = ""
+    kind: str = "upload"           # upload | generated
+    uploaded_by_role: str = "admin"  # admin | seller (seller uploads to their own request/op)
+    file_path: str = ""            # relative under OPERATION_FILES_DIR
+    original_filename: str = ""
+    content_type: str = ""
+    size_bytes: int = 0
+    sha256: str = ""
+    quarantine: str = "quarantined"  # quarantined | scanned
+    status: str = "active"         # active | archived
+    seller_safe: bool = False      # admin-confirmed no-PII → publishable to the owning seller
+    uploaded_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class CustomsCase(SQLModel, table=True):
+    """Coordination + tracking of an export/import customs interaction — NOT legal/customs advice. Clearance is
+    never inferred from shipment movement alone. Broker contacts + buyer/importer info are ADMIN-ONLY."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    reference: str = Field(default="", index=True)     # CU-YYYYMM-####
+    operation_case_id: Optional[int] = Field(default=None, foreign_key="operationcase.id", index=True)
+    shipment_id: Optional[int] = Field(default=None, foreign_key="shipment.id", index=True)
+    deal_id: Optional[int] = Field(default=None, foreign_key="deal.id")
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    side: str = "export"           # export | import
+    country: str = ""
+    broker_company_id: Optional[int] = Field(default=None, foreign_key="company.id")  # customs_broker; admin-only
+    required_documents: str = ""   # comma/JSON list
+    declaration_reference: str = ""
+    submitted_date: Optional[datetime] = None
+    clearance_date: Optional[datetime] = None
+    status: str = "not_started"    # not_started|documents_required|ready_to_submit|submitted|query_hold|cleared|rejected|cancelled
+    hold_reason: str = ""
+    duties_taxes: Optional[str] = None   # Decimal-as-text; only when explicitly provided
+    duties_currency: str = ""
+    owner_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    notes: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class DeliveryConfirmation(SQLModel, table=True):
+    """Evidence that a shipment was delivered. A shipment NEVER becomes delivered just because the ETA passed —
+    it needs one of these (provider event / proof-of-delivery doc / admin confirmation / controlled buyer
+    confirmation). Damage/shortage/failed delivery must raise an OperationalException, not silently complete."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    shipment_id: int = Field(foreign_key="shipment.id", index=True)
+    deal_id: Optional[int] = Field(default=None, foreign_key="deal.id")
+    source: str = "admin"          # provider | pod_document | admin | buyer
+    confirmed_at: Optional[datetime] = None
+    recipient_role: str = ""       # buyer | agent | warehouse | other
+    document_id: Optional[int] = Field(default=None, foreign_key="tradedocument.id")
+    condition_notes: str = ""
+    has_shortage: bool = False
+    has_damage: bool = False
+    failed: bool = False
+    admin_verifier: Optional[int] = Field(default=None, foreign_key="user.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class OperationalException(SQLModel, table=True):
+    """A tracked operational problem. Has an internal description AND a separate seller_safe_description (the
+    only text that may reach a seller, after sanitization). Integrates with the Work Queue without creating
+    duplicate unresolved tasks."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    reference: str = Field(default="", index=True)     # EX-YYYYMM-####
+    exc_type: str = ""             # missing_documents|document_rejected|booking_failed|provider_unresponsive|
+    # tracking_stale|departure_delayed|customs_hold|customs_rejection|payment_overdue|payment_failed|
+    # remittance_failure|cargo_damage|shortage|failed_delivery|system_failure|compliance_review
+    severity: str = "medium"       # low | medium | high | critical
+    operation_case_id: Optional[int] = Field(default=None, foreign_key="operationcase.id", index=True)
+    shipment_id: Optional[int] = Field(default=None, foreign_key="shipment.id")
+    deal_id: Optional[int] = Field(default=None, foreign_key="deal.id")
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    owner_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    status: str = "open"           # open|investigating|waiting_seller|waiting_buyer|waiting_provider|resolved|dismissed
+    due_date: Optional[datetime] = None
+    internal_description: str = ""      # admin-only
+    seller_safe_description: str = ""   # sanitized; the only text a seller may see
+    resolution: str = ""
+    created_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    resolved_at: Optional[datetime] = None
+
+
+class PaymentMilestone(SQLModel, table=True):
+    """Administrative payment tracking — NOT a payment processor. A milestone is confirmed only by an authorized
+    admin WITH evidence/reference (never on an email/screenshot alone). Amounts are Decimal-as-text. Card
+    numbers, banking passwords, crypto keys/seeds are NEVER stored. References shown to sellers are masked."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    reference: str = Field(default="", index=True)     # PM-YYYYMM-####
+    deal_id: Optional[int] = Field(default=None, foreign_key="deal.id", index=True)
+    operation_case_id: Optional[int] = Field(default=None, foreign_key="operationcase.id", index=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    milestone_type: str = ""       # buyer_deposit|buyer_balance|supplier_advance|supplier_balance|freight_payment|customs_payment|refund|other
+    expected_amount: str = "0"     # Decimal-as-text
+    currency: str = ""
+    due_date: Optional[datetime] = None
+    payer_role: str = ""           # buyer | supplier | go4it | provider
+    payee_role: str = ""
+    status: str = "planned"        # planned|awaiting|partially_received|received|payment_failed|refunded|cancelled|disputed
+    confirmed_amount: str = "0"
+    confirmed_date: Optional[datetime] = None
+    reference_code: str = ""       # bank/payment reference — masked for sellers
+    evidence_document_id: Optional[int] = Field(default=None, foreign_key="tradedocument.id")
+    confirmed_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    seller_visible: bool = False   # True only for the milestone the owning seller is authorized to see
+    internal_notes: str = ""       # admin-only (margin/other-party detail)
+    created_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class RemittanceCase(SQLModel, table=True):
+    """A coordination + tracking record for a remittance/Sarafi service request — NOT an executed transfer,
+    unless a licensed provider integration is configured. No wallet seeds / private keys / banking passwords.
+    Sensitive account identifiers are stored ENCRYPTED (via outreach.mail_encrypt) or as masked references. Uses
+    the Phase-5 FX snapshot; manual FX is never presented as live. 'Provider integration not configured' until a
+    real provider exists — no invented endpoints, no auto-initiated transfers."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    reference: str = Field(default="", index=True)     # RM-YYYYMM-####
+    request_id: Optional[int] = Field(default=None, foreign_key="servicerequest.id", index=True)
+    deal_id: Optional[int] = Field(default=None, foreign_key="deal.id")
+    operation_case_id: Optional[int] = Field(default=None, foreign_key="operationcase.id", index=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    source_currency: str = ""
+    dest_currency: str = ""
+    source_amount: str = "0"       # Decimal-as-text
+    expected_dest_amount: str = "0"
+    fx_snapshot: str = ""          # JSON (pricing fx snapshot); never presented as live when manual
+    route_method_category: str = ""  # bank | exchange_house | lc | third_country | other (category only)
+    provider_company_id: Optional[int] = Field(default=None, foreign_key="company.id")  # remittance_provider; admin-only
+    payer_role: str = ""
+    payee_role: str = ""
+    origin_country: str = ""
+    dest_country: str = ""
+    compliance_status: str = "not_reviewed"  # not_reviewed | in_review | cleared | rejected (reason internal)
+    compliance_reason: str = ""    # INTERNAL unless an approved safe explanation is published
+    account_ref_enc: str = ""      # ENCRYPTED sensitive account identifier (never plaintext)
+    payment_references: str = ""   # masked references only
+    expected_completion: Optional[datetime] = None
+    actual_completion: Optional[datetime] = None
+    fees: str = "0"
+    status: str = "requested"      # requested|information_required|compliance_review|quoted|approved|awaiting_funds|processing|paid|confirmed|rejected|cancelled|failed
+    owner_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    exception_reason: str = ""
+    notes: str = ""                # admin-only
+    created_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class Settlement(SQLModel, table=True):
+    """An IMMUTABLE financial settlement snapshot for a Deal. A Deal reaches 'settled' only after its configured
+    required financial milestones are complete. Corrections never edit this row — they append a
+    SettlementAdjustment. Sellers never see Go4it margin, buyer payments, or unrelated costs."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    deal_id: int = Field(foreign_key="deal.id", index=True)
+    revenue: str = "0"             # Decimal-as-text
+    verified_costs: str = "0"
+    supplier_proceeds: str = "0"
+    operational_costs: str = "0"
+    go4it_margin: str = "0"        # INTERNAL — never seller-facing
+    currency: str = ""
+    fx_snapshot: str = ""          # JSON; no cross-currency sum without explicit FX
+    outstanding: str = "0"
+    realized_margin: str = "0"     # INTERNAL
+    settlement_date: Optional[datetime] = None
+    approved_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class SettlementAdjustment(SQLModel, table=True):
+    """A controlled correction to a Settlement — appended, never destructive. Preserves full financial history."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    settlement_id: int = Field(foreign_key="settlement.id", index=True)
+    field: str = ""                # which figure is adjusted
+    delta: str = "0"               # Decimal-as-text signed adjustment
+    currency: str = ""
+    reason: str = ""
+    approved_by: Optional[int] = Field(default=None, foreign_key="user.id")
     created_at: datetime = Field(default_factory=datetime.utcnow)

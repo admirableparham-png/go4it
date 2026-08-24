@@ -37,7 +37,15 @@ TYPES = ["review_new_request", "follow_up_buyer", "follow_up_seller", "follow_up
          "quote_email_failed", "buyer_reply_needs_review", "contract_needs_review",
          "contract_change_requested", "contract_awaiting_signature", "contract_expired",
          "signed_doc_scan_review", "accepted_quote_needs_deal", "deal_missing_contract",
-         "deal_ready_for_handoff", "ambiguous_legacy_commercial", "other"]
+         "deal_ready_for_handoff", "ambiguous_legacy_commercial",
+         # Phase 7 (Operations) work-item types
+         "approved_request_needs_case", "operation_missing_data", "freight_request_incomplete",
+         "freight_offer_needs_review", "freight_offer_expiring", "booking_confirmation_required",
+         "shipment_update_overdue", "tracking_stale", "customs_document_missing", "customs_hold",
+         "seller_document_required", "uploaded_document_needs_review", "payment_due", "payment_overdue",
+         "payment_confirmation_required", "remittance_compliance_review", "remittance_delayed",
+         "delivery_confirmation_required", "cargo_damage_shortage", "settlement_review_required",
+         "operational_handoff_required", "external_integration_failure", "other"]
 TYPE_LABELS = {
     "review_new_request": "Review new request", "follow_up_buyer": "Follow up with buyer",
     "follow_up_seller": "Follow up with seller", "follow_up_supplier": "Follow up with supplier",
@@ -66,7 +74,22 @@ TYPE_LABELS = {
     "accepted_quote_needs_deal": "Accepted quote needs deal creation",
     "deal_missing_contract": "Deal missing required contract",
     "deal_ready_for_handoff": "Deal ready for operational handoff",
-    "ambiguous_legacy_commercial": "Ambiguous legacy commercial relationship", "other": "Other",
+    "ambiguous_legacy_commercial": "Ambiguous legacy commercial relationship",
+    "approved_request_needs_case": "Approved request needs operation case",
+    "operation_missing_data": "Operation missing required data",
+    "freight_request_incomplete": "Freight request incomplete",
+    "freight_offer_needs_review": "Freight offer needs review", "freight_offer_expiring": "Freight offer expiring",
+    "booking_confirmation_required": "Booking confirmation required",
+    "shipment_update_overdue": "Shipment update overdue", "tracking_stale": "Tracking stale",
+    "customs_document_missing": "Customs document missing", "customs_hold": "Customs hold",
+    "seller_document_required": "Seller document required",
+    "uploaded_document_needs_review": "Uploaded document needs review", "payment_due": "Payment due",
+    "payment_overdue": "Payment overdue", "payment_confirmation_required": "Payment confirmation required",
+    "remittance_compliance_review": "Remittance compliance review", "remittance_delayed": "Remittance delayed",
+    "delivery_confirmation_required": "Delivery confirmation required",
+    "cargo_damage_shortage": "Cargo damage / shortage", "settlement_review_required": "Settlement review required",
+    "operational_handoff_required": "Operational handoff required",
+    "external_integration_failure": "External integration failure", "other": "Other",
 }
 STATUSES = ["open", "in_progress", "waiting", "completed", "dismissed"]
 NONTERMINAL = ("open", "in_progress", "waiting")
@@ -93,7 +116,18 @@ PARTY_OF_TYPE = {"follow_up_buyer": "buyer", "follow_up_seller": "seller", "foll
                  "contract_awaiting_signature": "internal", "contract_expired": "internal",
                  "signed_doc_scan_review": "internal", "accepted_quote_needs_deal": "internal",
                  "deal_missing_contract": "internal", "deal_ready_for_handoff": "internal",
-                 "ambiguous_legacy_commercial": "internal"}
+                 "ambiguous_legacy_commercial": "internal",
+                 "approved_request_needs_case": "internal", "operation_missing_data": "internal",
+                 "freight_request_incomplete": "internal", "freight_offer_needs_review": "internal",
+                 "freight_offer_expiring": "internal", "booking_confirmation_required": "service_provider",
+                 "shipment_update_overdue": "service_provider", "tracking_stale": "service_provider",
+                 "customs_document_missing": "internal", "customs_hold": "service_provider",
+                 "seller_document_required": "seller", "uploaded_document_needs_review": "internal",
+                 "payment_due": "internal", "payment_overdue": "buyer",
+                 "payment_confirmation_required": "internal", "remittance_compliance_review": "internal",
+                 "remittance_delayed": "service_provider", "delivery_confirmation_required": "internal",
+                 "cargo_damage_shortage": "service_provider", "settlement_review_required": "internal",
+                 "operational_handoff_required": "internal", "external_integration_failure": "system"}
 PRIORITY_BADGE = {"low": "slate", "normal": "sky", "high": "amber", "urgent": "rose"}
 STATUS_BADGE = {"open": "queued", "in_progress": "running", "waiting": "amber",
                 "completed": "won", "dismissed": "slate"}
@@ -112,6 +146,8 @@ def create_work_item(session, *, type, title, description="", tenant_id=None, pr
                      waiting_on="", related_request_id=None, related_company_id=None, related_lead_id=None,
                      related_outreach_id=None, related_quote_id=None, related_deal_id=None,
                      related_seller_update_id=None, related_product_id=None, related_contract_id=None,
+                     related_operation_case_id=None, related_shipment_id=None, related_payment_id=None,
+                     related_exception_id=None,
                      parent_id=None, idempotency_key="", condition_version="", inferred=False,
                      due_at=None) -> WorkItem:
     """Create a WorkItem (does not commit). status defaults to 'waiting' when waiting_on is set, else 'open'.
@@ -126,8 +162,10 @@ def create_work_item(session, *, type, title, description="", tenant_id=None, pr
                   related_lead_id=related_lead_id, related_outreach_id=related_outreach_id,
                   related_quote_id=related_quote_id, related_deal_id=related_deal_id,
                   related_seller_update_id=related_seller_update_id, related_product_id=related_product_id,
-                  related_contract_id=related_contract_id, parent_id=parent_id,
-                  idempotency_key=idempotency_key, condition_version=condition_version,
+                  related_contract_id=related_contract_id,
+                  related_operation_case_id=related_operation_case_id, related_shipment_id=related_shipment_id,
+                  related_payment_id=related_payment_id, related_exception_id=related_exception_id,
+                  parent_id=parent_id, idempotency_key=idempotency_key, condition_version=condition_version,
                   inferred=inferred, due_at=due_at)
     session.add(wi)
     session.flush()  # surface the partial-unique IntegrityError to the caller now
@@ -764,6 +802,116 @@ def sync_contracts_awaiting_signature(session, actor=None, inferred=False, budge
     return n
 
 
+# --- Phase 7 operations scanners ------------------------------------------------------------------
+# All are condition-versioned, non-blocking and bounded by BOTH record count (budget) and a wall-clock
+# deadline (a slow provider/DB never lets a single scanner run away or block the others).
+_SCAN_DEADLINE_S = 5.0
+
+
+def _deadline(now=None):
+    return (now or datetime.utcnow()) + timedelta(seconds=_SCAN_DEADLINE_S)
+
+
+def sync_freight_offers_expiring(session, actor=None, inferred=False, budget=None) -> int:
+    """A selected/offered freight offer inside its last 48h of validity → a review task (never auto-uses an
+    expired offer)."""
+    from .models import FreightOffer, FreightRequest
+    n = 0
+    now = datetime.utcnow()
+    soon = now + timedelta(hours=48)
+    stop = _deadline(now)
+    for o in session.exec(select(FreightOffer).where(FreightOffer.selection_status.in_(("offered", "selected")),
+                                                     FreightOffer.valid_until != None)).all():  # noqa: E711
+        if _capped(budget, n) or datetime.utcnow() > stop:
+            break
+        if not (now < o.valid_until <= soon):
+            continue
+        fr = session.get(FreightRequest, o.freight_request_id)
+        key = f"freight_offer_expiring:offer:{o.id}"
+        if already_handled(session, key, o.valid_until.isoformat()):
+            continue
+        if create_work_item_safe(session, actor=actor, type="freight_offer_expiring",
+                                 title=f"Freight offer on {fr.reference if fr else o.freight_request_id} expiring",
+                                 tenant_id=fr.tenant_id if fr else None,
+                                 related_operation_case_id=fr.operation_case_id if fr else None,
+                                 idempotency_key=key, condition_version=o.valid_until.isoformat(),
+                                 inferred=inferred):
+            n += 1
+    return n
+
+
+def sync_stale_tracking(session, actor=None, inferred=False, budget=None) -> int:
+    """An in-transit shipment with no tracking update in >72h → a tracking_stale task (+ mark it for an
+    exception on review). Never invents a position; just flags the silence."""
+    from .models import Shipment
+    n = 0
+    now = datetime.utcnow()
+    cutoff = now - timedelta(hours=72)
+    stop = _deadline(now)
+    for s in session.exec(select(Shipment).where(Shipment.current_milestone == "in_transit",
+                                                 Shipment.status == "active")).all():
+        if _capped(budget, n) or datetime.utcnow() > stop:
+            break
+        last = s.last_tracking_update or s.actual_departure
+        if last and last > cutoff:
+            continue
+        bucket = (last or s.created_at).strftime("%Y%m%d")
+        key = f"tracking_stale:shipment:{s.id}"
+        if already_handled(session, key, bucket):
+            continue
+        if create_work_item_safe(session, actor=actor, type="tracking_stale",
+                                 title=f"Tracking stale on {s.reference}",
+                                 tenant_id=s.tenant_id, related_shipment_id=s.id, related_deal_id=s.deal_id,
+                                 related_operation_case_id=s.operation_case_id,
+                                 idempotency_key=key, condition_version=bucket, inferred=inferred):
+            n += 1
+    return n
+
+
+def sync_booking_confirmation(session, actor=None, inferred=False, budget=None) -> int:
+    """A shipment still in 'planning' with a selected freight offer → booking confirmation required."""
+    from .models import Shipment
+    n = 0
+    stop = _deadline()
+    for s in session.exec(select(Shipment).where(Shipment.current_milestone == "planning",
+                                                 Shipment.status == "active",
+                                                 Shipment.freight_offer_id != None)).all():  # noqa: E711
+        if _capped(budget, n) or datetime.utcnow() > stop:
+            break
+        key = f"booking_confirmation_required:shipment:{s.id}"
+        if already_handled(session, key, "planning"):
+            continue
+        if create_work_item_safe(session, actor=actor, type="booking_confirmation_required",
+                                 title=f"Confirm booking for {s.reference}",
+                                 tenant_id=s.tenant_id, related_shipment_id=s.id, related_deal_id=s.deal_id,
+                                 idempotency_key=key, condition_version="planning", inferred=inferred):
+            n += 1
+    return n
+
+
+def sync_delivery_confirmation(session, actor=None, inferred=False, budget=None) -> int:
+    """An import-cleared shipment with no delivery confirmation → delivery confirmation required (never
+    auto-delivered by a passed ETA)."""
+    from .models import DeliveryConfirmation, Shipment
+    n = 0
+    stop = _deadline()
+    for s in session.exec(select(Shipment).where(Shipment.current_milestone == "import_cleared",
+                                                 Shipment.status == "active")).all():
+        if _capped(budget, n) or datetime.utcnow() > stop:
+            break
+        if session.exec(select(DeliveryConfirmation).where(DeliveryConfirmation.shipment_id == s.id)).first():
+            continue
+        key = f"delivery_confirmation_required:shipment:{s.id}"
+        if already_handled(session, key, "import_cleared"):
+            continue
+        if create_work_item_safe(session, actor=actor, type="delivery_confirmation_required",
+                                 title=f"Confirm delivery for {s.reference}",
+                                 tenant_id=s.tenant_id, related_shipment_id=s.id, related_deal_id=s.deal_id,
+                                 idempotency_key=key, condition_version="import_cleared", inferred=inferred):
+            n += 1
+    return n
+
+
 _SCANNERS = [
     ("review_new_request", sync_unreviewed_requests),
     ("requester_action_required", sync_open_seller_questions),
@@ -785,6 +933,11 @@ _SCANNERS = [
     ("quote_expired", sync_expired_quotes),
     ("accepted_quote_needs_deal", sync_accepted_quotes_need_deal),
     ("contract_awaiting_signature", sync_contracts_awaiting_signature),
+    # Phase 7 operations scanners
+    ("freight_offer_expiring", sync_freight_offers_expiring),
+    ("tracking_stale", sync_stale_tracking),
+    ("booking_confirmation_required", sync_booking_confirmation),
+    ("delivery_confirmation_required", sync_delivery_confirmation),
 ]
 
 

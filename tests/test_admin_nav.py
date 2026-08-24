@@ -16,12 +16,14 @@ from app.auth import hash_password
 from app.models import Deal, Lead, Product, Quote, User, WorkItem
 
 PRIMARY = ["Dashboard", "Work Queue", "Requests", "Network", "Outreach", "Products", "Commercial",
-           "Intelligence", "Admin"]
+           "Operations", "Intelligence", "Admin"]
 # every existing admin destination must remain reachable from the header (primary hrefs + mobile panel kids)
 REACHABLE = ["/admin/work-queue", "/admin/requests", "/leads", "/suppliers",
              "/campaigns", "/inbox", "/followups", "/templates", "/suppression", "/mail", "/outreach/analytics",
              "/catalog", "/categories", "/pricing", "/quotes", "/contracts", "/deals", "/contract-templates",
              "/commercial/analytics", "/research", "/intel", "/markets",
+             "/operations", "/operations/freight", "/operations/shipments", "/operations/documentation",
+             "/operations/payments", "/operations/exceptions",   # Phase 7 Operations
              "/lines/cd-dvd", "/command", "/ingest", "/admin/users", "/admin/activity",
              "/sellers", "/data-quality", "/duplicates"]   # + Phase 5: Suppliers/Categories/Pricing under Products
 # admin-only routes (unchanged backend gate) — a non-admin must still get 403
@@ -31,7 +33,9 @@ ADMIN_ONLY = ["/command", "/research", "/suppliers", "/catalog", "/rates", "/ing
               "/admin/work-queue",   # Phase 3 Work Queue
               "/campaigns", "/inbox", "/followups", "/templates", "/suppression", "/outreach/analytics",  # Phase 4
               "/categories", "/pricing",  # Phase 5 Products/Pricing
-              "/contracts", "/contract-templates", "/commercial/analytics"]  # Phase 6 Commercial
+              "/contracts", "/contract-templates", "/commercial/analytics",  # Phase 6 Commercial
+              "/operations", "/operations/freight", "/operations/shipments", "/operations/documentation",
+              "/operations/payments", "/operations/exceptions"]  # Phase 7 Operations
 
 
 @pytest.fixture
@@ -111,6 +115,8 @@ def test_each_workspace_has_its_own_contextual_row(ctx):
         "/campaign": ("Outreach pages", ["Campaigns", "Email Accounts"]),
         "/catalog": ("Products pages", ["Catalog", "Categories", "Suppliers", "Pricing &amp; Rates"]),
         "/quotes": ("Commercial pages", ["Quotes", "Contracts", "Deals", "Commercial Analytics"]),
+        "/operations": ("Operations pages", ["Overview", "Freight", "Shipments", "Documentation",
+                                             "Payments &amp; Remittance", "Exceptions"]),
         "/research": ("Intelligence pages", ["Research", "Market Intel", "Markets", "Product Lines", "Command"]),
         "/ingest": ("Admin pages", ["Data Imports", "Accounts &amp; Access", "Team Activity"]),
     }
@@ -165,8 +171,8 @@ def test_non_admin_gets_no_admin_navigation(ctx):
     client, _, _ = ctx
     _login(client, "seller@t.local")
     body = client.get("/").text
-    for admin_label in ["Work Queue", "Network", "Outreach", "Commercial", "Intelligence", "Data Imports",
-                        "Buyers &amp; Prospects", "Accounts &amp; Access"]:
+    for admin_label in ["Work Queue", "Network", "Outreach", "Commercial", "Operations", "Intelligence",
+                        "Data Imports", "Buyers &amp; Prospects", "Accounts &amp; Access"]:
         assert admin_label not in body, f"seller saw admin nav: {admin_label}"
     assert "My Requests" in body and "Services" in body            # seller nav unchanged
 

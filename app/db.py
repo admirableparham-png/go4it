@@ -33,6 +33,7 @@ def init_db() -> None:
     _ensure_outreach_indexes()
     _ensure_product_indexes()
     _ensure_commercial_indexes()
+    _ensure_operations_indexes()
 
 
 def _ensure_trade_network_indexes() -> None:
@@ -129,6 +130,29 @@ def _ensure_commercial_indexes() -> None:
                               "ON deal(quote_version_id) WHERE quote_version_id IS NOT NULL"))
             conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_portalsession_sid "
                               "ON portalsession(sid) WHERE sid != ''"))
+            conn.commit()
+    except Exception:  # noqa: BLE001 — never block startup on the guard
+        pass
+
+
+def _ensure_operations_indexes() -> None:
+    """Operations (Phase 7) DB-level guards (idempotent, never block boot):
+    (a) idempotent external tracking ingest — a PARTIAL-unique index over (source, external_event_id) so a
+        replayed webhook/import never duplicates a ShipmentEvent (blank ids never collide);
+    (b) unique OperationCase reference; and
+    (c) at most ONE Deal-primary case per Deal (partial-unique on deal_id WHERE case_type='deal') so baseline
+        case creation from a Deal is idempotent under repeated clicks / worker retries."""
+    if not _is_sqlite:
+        return
+    try:
+        with engine.connect() as conn:
+            from sqlalchemy import text
+            conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_shipmentevent_ext "
+                              "ON shipmentevent(source, external_event_id) WHERE external_event_id != ''"))
+            conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_operationcase_reference "
+                              "ON operationcase(reference) WHERE reference != ''"))
+            conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_opcase_deal_primary "
+                              "ON operationcase(deal_id) WHERE case_type = 'deal' AND deal_id IS NOT NULL"))
             conn.commit()
     except Exception:  # noqa: BLE001 — never block startup on the guard
         pass

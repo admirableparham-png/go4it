@@ -161,6 +161,12 @@ MIGRATIONS = [
     ("deal", "ready_for_ops", "BOOLEAN DEFAULT 0"),
     ("workitem", "related_contract_id", "INTEGER"),
     ("quoteaccesstoken", "consumed_at", "TIMESTAMP"),   # portal hardening: single-use link consumption
+    # Operations (Phase 7) — additive WorkItem linkage columns to the new operational entities. New Phase-7
+    # tables are made by create_all + scripts/migrate_gate_p7.py.
+    ("workitem", "related_operation_case_id", "INTEGER"),
+    ("workitem", "related_shipment_id", "INTEGER"),
+    ("workitem", "related_payment_id", "INTEGER"),
+    ("workitem", "related_exception_id", "INTEGER"),
 ]
 
 

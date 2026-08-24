@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-6">
+  <div class="eyebrow mb-1">Operations · Shipment</div>
+  <h2 class="text-2xl font-extrabold tracking-tight font-display">{{ sh.reference }}</h2>
+  <p class="text-slate-400 text-sm mt-1">{{ sh.mode }} · {{ sh.origin }} → {{ sh.destination }} · <span class="badge badge-sky">{{ sh.current_milestone.replace('_',' ') }}</span></p>
+</div>
+
+<div class="card mb-6">
+  <div class="eyebrow mb-2">References <span class="text-slate-500 normal-case">— admin only, never shown to sellers</span></div>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+    <div><span class="eyebrow block mb-0.5">Booking</span><span class="font-mono text-slate-200">{{ sh.booking_reference or '—' }}</span></div>
+    <div><span class="eyebrow block mb-0.5">Container/AWB/BOL</span><span class="font-mono text-slate-200">{{ sh.container_reference or '—' }}</span></div>
+    <div><span class="eyebrow block mb-0.5">Carrier</span><span class="text-slate-200">{{ sh.carrier_name_cache or '—' }}</span></div>
+    <div><span class="eyebrow block mb-0.5">Tracking source</span><span class="text-slate-200">{{ sh.tracking_source }}</span></div>
+  </div>
+</div>
+
+<div class="grid md:grid-cols-2 gap-4 mb-6">
+  <div class="card">
+    <div class="eyebrow mb-2">Legs</div>
+    {% if legs %}
+      <ol class="space-y-1">
+        {% for l in legs %}
+          <li class="text-sm text-slate-300"><span class="font-mono text-slate-500">{{ l.sequence }}.</span> {{ l.mode }} {{ l.origin }} → {{ l.destination }} <span class="badge badge-slate">{{ l.status }}</span></li>
+        {% endfor %}
+      </ol>
+    {% else %}<div class="text-slate-500 text-sm">No legs.</div>{% endif %}
+    <form method="post" action="/operations/shipments/{{ sh.id }}/legs" class="grid grid-cols-4 gap-2 mt-3">
+      <input name="mode" placeholder="Mode" class="input input-sm" />
+      <input name="origin" placeholder="From" class="input input-sm" />
+      <input name="destination" placeholder="To" class="input input-sm" />
+      <button class="btn btn-sm">Add leg</button>
+    </form>
+  </div>
+  <div class="card">
+    <div class="eyebrow mb-2">Record tracking event</div>
+    <form method="post" action="/operations/shipments/{{ sh.id }}/events" class="grid grid-cols-2 gap-2">
+      <select name="event_type" class="input input-sm"><option value="">Type…</option>{% for e in ['booked','export_cleared','departed','arrived','import_cleared','delivered','note'] %}<option>{{ e }}</option>{% endfor %}</select>
+      <input name="location" placeholder="Location" class="input input-sm" />
+      <input name="event_at" type="datetime-local" class="input input-sm" />
+      <input name="seller_safe_summary" placeholder="Seller-safe summary" class="input input-sm" />
+      <button class="btn btn-sm col-span-2">Record</button>
+    </form>
+    <form method="post" action="/operations/shipments/{{ sh.id }}/deliver" class="grid grid-cols-2 gap-2 mt-3 pt-3" style="border-top:1px solid var(--border)">
+      <div class="col-span-2 eyebrow">Confirm delivery</div>
+      <select name="source" class="input input-sm"><option value="admin">Admin</option><option value="pod_document">POD document</option><option value="provider">Provider</option><option value="buyer">Buyer</option></select>
+      <input name="recipient_role" placeholder="Recipient role" class="input input-sm" />
+      <label class="text-sm text-slate-400 flex items-center gap-1"><input type="checkbox" name="has_damage" value="1"> Damage</label>
+      <label class="text-sm text-slate-400 flex items-center gap-1"><input type="checkbox" name="has_shortage" value="1"> Shortage</label>
+      <input name="condition_notes" placeholder="Condition notes" class="input input-sm col-span-2" />
+      <button class="btn btn-sm col-span-2">Confirm delivery</button>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="eyebrow mb-2">Tracking events</div>
+  {% if events %}
+    <table class="data-table">
+      <thead><tr><th>Type</th><th>When</th><th>Location</th><th>Source</th><th>Seller-safe summary</th></tr></thead>
+      <tbody>
+        {% for ev in events %}
+          <tr>
+            <td class="text-slate-200">{{ ev.event_type }}</td>
+            <td class="text-slate-400">{{ ev.event_at.strftime('%Y-%m-%d %H:%M') if ev.event_at else ev.recorded_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td class="text-slate-400">{{ ev.location }}</td>
+            <td class="text-slate-500">{{ ev.source }}</td>
+            <td class="text-slate-400">{{ ev.seller_safe_summary }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}<div class="text-slate-500 text-sm">No events recorded.</div>{% endif %}
+</div>
+{% endblock %}

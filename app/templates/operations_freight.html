@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-6">
+  <div class="eyebrow mb-1">Operations</div>
+  <h2 class="text-2xl font-extrabold tracking-tight font-display flex items-center gap-2">Freight <span class="badge badge-slate">{{ total }}</span></h2>
+  <p class="text-slate-400 text-sm mt-1">Freight requests and provider offers. Critical physical facts are never guessed &mdash; a missing one raises a Work Queue action. Provider identity and costs stay admin-only.</p>
+</div>
+
+<details class="card mb-6">
+  <summary class="cursor-pointer font-semibold font-display">New freight request</summary>
+  <form method="post" action="/operations/freight" class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+    <input name="cargo_description" placeholder="Cargo" class="input" />
+    <input name="quantity" placeholder="Qty" class="input" />
+    <input name="unit" placeholder="Unit" class="input" />
+    <select name="mode" class="input"><option value="">Mode…</option>{% for m in ['road','sea','air','rail','multimodal'] %}<option>{{ m }}</option>{% endfor %}</select>
+    <input name="origin_country" placeholder="Origin ISO" class="input" />
+    <input name="dest_country" placeholder="Dest ISO" class="input" />
+    <input name="incoterm" placeholder="Incoterm" class="input" />
+    <input name="gross_weight_kg" placeholder="Gross kg (if known)" class="input" />
+    <input name="volume_cbm" placeholder="CBM (if known)" class="input" />
+    <select name="hazardous" class="input"><option value="">Hazardous?</option><option value="no">No</option><option value="yes">Yes</option></select>
+    <select name="customs_required" class="input"><option value="">Customs?</option><option value="no">No</option><option value="yes">Yes</option></select>
+    <button class="btn">Create request</button>
+  </form>
+</details>
+
+{% if reqs %}
+  <div class="space-y-4">
+    {% for r in reqs %}
+      <div class="card">
+        <div class="flex items-center justify-between gap-2">
+          <div><span class="font-mono">{{ r.reference }}</span> <span class="badge badge-sky ml-2">{{ r.status.replace('_',' ') }}</span></div>
+          <div class="text-slate-400 text-sm">{{ r.mode }} · {{ r.origin_country }} → {{ r.dest_country }}</div>
+        </div>
+        <div class="text-slate-300 text-sm mt-1">{{ r.cargo_description }} {% if r.quantity and r.quantity != '0' %}· {{ r.quantity }} {{ r.unit }}{% endif %}</div>
+        {% set olist = offers.get(r.id, []) %}
+        <div class="mt-3">
+          <div class="eyebrow mb-1">Offers ({{ olist|length }})</div>
+          {% if olist %}
+            <table class="data-table">
+              <thead><tr><th>Provider</th><th>Route</th><th class="text-right">Total</th><th>Valid until</th><th>Status</th><th></th></tr></thead>
+              <tbody>
+                {% for o in olist %}
+                  <tr>
+                    <td class="text-slate-300">{{ o.provider_name_cache or ('Company #' ~ o.provider_company_id if o.provider_company_id else '—') }}</td>
+                    <td class="text-slate-400">{{ o.route_summary }}</td>
+                    <td class="text-right tabular-nums">{{ o.currency }} {{ o.total }}</td>
+                    <td class="text-slate-400">{{ o.valid_until.strftime('%Y-%m-%d') if o.valid_until else '—' }}</td>
+                    <td><span class="badge {{ 'badge-emerald' if o.selection_status == 'selected' else 'badge-slate' }}">{{ o.selection_status }}</span></td>
+                    <td>{% if o.selection_status != 'selected' %}<form method="post" action="/operations/offers/{{ o.id }}/select"><button class="btn btn-sm">Select</button></form>{% endif %}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}<div class="text-slate-500 text-sm">No offers yet.</div>{% endif %}
+          <details class="mt-2"><summary class="cursor-pointer text-sm link">Add offer</summary>
+            <form method="post" action="/operations/freight/{{ r.id }}/offers" class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+              <input name="provider_name_cache" placeholder="Provider (admin-only)" class="input input-sm" />
+              <input name="mode" placeholder="Mode" class="input input-sm" />
+              <input name="route_summary" placeholder="Route summary" class="input input-sm" />
+              <input name="currency" placeholder="Ccy" class="input input-sm" />
+              <input name="base_freight" placeholder="Base" class="input input-sm" />
+              <input name="surcharges" placeholder="Surcharges" class="input input-sm" />
+              <input name="insurance_cost" placeholder="Insurance" class="input input-sm" />
+              <input name="customs_cost" placeholder="Customs" class="input input-sm" />
+              <input name="lead_time_days" placeholder="Lead days" class="input input-sm" />
+              <input name="valid_until" type="date" class="input input-sm" />
+              <button class="btn btn-sm">Add offer</button>
+            </form>
+          </details>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty">No freight requests yet.</div>
+{% endif %}
+{% endblock %}

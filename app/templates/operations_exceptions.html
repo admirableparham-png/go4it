@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-6">
+  <div class="eyebrow mb-1">Operations</div>
+  <h2 class="text-2xl font-extrabold tracking-tight font-display flex items-center gap-2">Exceptions <span class="badge badge-slate">{{ total }}</span></h2>
+  <p class="text-slate-400 text-sm mt-1">Operational problems being worked. Each carries an internal description and a separate seller-safe summary &mdash; only the latter can ever reach a seller.</p>
+</div>
+
+<form method="get" class="flex flex-wrap gap-2 mb-4">
+  <select name="status" class="input input-sm">
+    <option value="">Open (default)</option>
+    {% for st in ['open','investigating','waiting_seller','waiting_buyer','waiting_provider','resolved','dismissed'] %}
+      <option value="{{ st }}" {{ 'selected' if f.status == st }}>{{ st.replace('_',' ') }}</option>
+    {% endfor %}
+  </select>
+  <select name="severity" class="input input-sm">
+    <option value="">Any severity</option>
+    {% for sv in severities %}<option value="{{ sv }}" {{ 'selected' if f.severity == sv }}>{{ sv }}</option>{% endfor %}
+  </select>
+  <button class="btn btn-sm">Filter</button>
+</form>
+
+{% if excs %}
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Reference</th><th>Type</th><th>Severity</th><th>Status</th><th>Seller-safe summary</th></tr></thead>
+      <tbody>
+        {% for e in excs %}
+          <tr>
+            <td class="font-mono">{{ e.reference }}</td>
+            <td class="text-slate-200">{{ e.exc_type.replace('_',' ') }}</td>
+            <td><span class="badge {{ 'badge-rose' if e.severity in ['high','critical'] else 'badge-amber' if e.severity == 'medium' else 'badge-slate' }}">{{ e.severity }}</span></td>
+            <td><span class="badge badge-sky">{{ e.status.replace('_',' ') }}</span></td>
+            <td class="text-slate-400">{{ e.seller_safe_description }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="empty">No exceptions {{ 'open' if not f.status }}. Clean board.</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-6">
+  <div class="eyebrow mb-1">Operations</div>
+  <h2 class="text-2xl font-extrabold tracking-tight font-display flex items-center gap-2">Payments &amp; Remittance <span class="badge badge-slate">{{ total }}</span></h2>
+  <p class="text-slate-400 text-sm mt-1">Administrative payment tracking &mdash; Go4it is not a payment processor. A milestone is confirmed only by an authorized admin with evidence. Values are shown strictly per currency.</p>
+</div>
+
+{% if not remit_configured %}
+  <div class="card mb-6" style="border-color:rgba(251,191,36,.35)">
+    <div class="text-sm text-amber-300 font-semibold">Provider integration not configured</div>
+    <div class="text-slate-400 text-sm mt-0.5">Remittance/Sarafi is coordination + tracking only. No transfer is ever initiated automatically and no transfer is claimed without verified evidence.</div>
+  </div>
+{% endif %}
+
+<div class="grid md:grid-cols-2 gap-4 mb-6">
+  <div class="card">
+    <div class="eyebrow mb-2">Due (per currency)</div>
+    {% for ccy, amt in due_by_ccy.items() %}<div class="flex justify-between text-sm"><span class="text-slate-400">{{ ccy or '—' }}</span><span class="tabular-nums text-slate-100">{{ amt }}</span></div>{% else %}<div class="text-slate-500 text-sm">None.</div>{% endfor %}
+  </div>
+  <div class="card">
+    <div class="eyebrow mb-2">Received (per currency)</div>
+    {% for ccy, amt in received_by_ccy.items() %}<div class="flex justify-between text-sm"><span class="text-slate-400">{{ ccy or '—' }}</span><span class="tabular-nums text-emerald-400">{{ amt }}</span></div>{% else %}<div class="text-slate-500 text-sm">None.</div>{% endfor %}
+  </div>
+</div>
+
+<div class="eyebrow mb-2">Payment milestones</div>
+{% if pays %}
+  <div class="table-wrap mb-8">
+    <table class="data-table">
+      <thead><tr><th>Reference</th><th>Type</th><th class="text-right">Expected</th><th>Status</th><th>Due</th></tr></thead>
+      <tbody>
+        {% for p in pays %}
+          <tr>
+            <td class="font-mono">{{ p.reference }}</td>
+            <td class="text-slate-300">{{ p.milestone_type.replace('_',' ') }}</td>
+            <td class="text-right tabular-nums">{{ p.currency }} {{ p.expected_amount }}</td>
+            <td><span class="badge {{ 'badge-emerald' if p.status == 'received' else 'badge-amber' if p.status in ['awaiting','payment_failed','disputed'] else 'badge-slate' }}">{{ p.status.replace('_',' ') }}</span></td>
+            <td class="text-slate-400">{{ p.due_date.strftime('%Y-%m-%d') if p.due_date else '—' }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}<div class="empty mb-8">No payment milestones yet.</div>{% endif %}
+
+<div class="eyebrow mb-2">Remittance cases</div>
+{% if remits %}
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Reference</th><th>Route</th><th class="text-right">Amount</th><th>Status</th><th>Compliance</th></tr></thead>
+      <tbody>
+        {% for rc in remits %}
+          <tr>
+            <td class="font-mono">{{ rc.reference }}</td>
+            <td class="text-slate-400">{{ rc.source_currency }} → {{ rc.dest_currency }} · {{ rc.route_method_category or '—' }}</td>
+            <td class="text-right tabular-nums">{{ rc.source_amount }}</td>
+            <td><span class="badge badge-sky">{{ rc.status.replace('_',' ') }}</span></td>
+            <td class="text-slate-500">{{ rc.compliance_status.replace('_',' ') }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}<div class="empty">No remittance cases yet.</div>{% endif %}
+{% endblock %}

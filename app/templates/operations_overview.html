@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-6">
+  <div class="eyebrow mb-1">Operations</div>
+  <h2 class="text-2xl font-extrabold tracking-tight font-display">Overview</h2>
+  <p class="text-slate-400 text-sm mt-1">Live operational execution &mdash; freight, shipments, documents, payments and exceptions. Records are created from approved Requests or Deals.</p>
+</div>
+
+{% set tiles = [
+  ('Active cases', counts.active_cases, '/operations'),
+  ('Awaiting freight offers', counts.offers_awaiting, '/operations/freight'),
+  ('Bookings to confirm', counts.bookings_awaiting, '/operations/shipments?milestone=planning'),
+  ('In transit', counts.in_transit, '/operations/shipments?milestone=in_transit'),
+  ('Customs actions due', counts.customs_due, '/operations'),
+  ('Documents missing', counts.docs_missing, '/operations/documentation?status=missing'),
+  ('Deliveries to confirm', counts.deliveries_awaiting, '/operations/shipments?milestone=import_cleared'),
+  ('Payments awaiting', counts.payments_awaiting, '/operations/payments'),
+  ('Payments overdue', counts.payments_overdue, '/operations/payments?status=awaiting'),
+  ('Open exceptions', counts.exceptions_open, '/operations/exceptions'),
+  ('Settlements awaiting', counts.settlements_awaiting, '/deals'),
+  ('Remittance active', counts.remittance_active, '/operations/payments'),
+] %}
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
+  {% for label, n, href in tiles %}
+    <a href="{{ href }}" class="card block hover:border-slate-500 transition-colors">
+      <div class="eyebrow mb-1">{{ label }}</div>
+      <div class="text-2xl font-extrabold tabular-nums {{ 'text-amber-400' if n and ('overdue' in label.lower() or 'exception' in label.lower()) else 'text-slate-100' }}">{{ n }}</div>
+    </a>
+  {% endfor %}
+</div>
+
+<div class="flex items-center justify-between mb-2">
+  <div class="eyebrow">Recent operation cases</div>
+  <form method="post" action="/operations/cases" class="flex items-center gap-2">
+    <input name="category" placeholder="standalone case category" class="input input-sm" />
+    <button class="btn btn-sm">New standalone case</button>
+  </form>
+</div>
+{% if recent %}
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Reference</th><th>Type</th><th>Status</th><th>Origin</th><th>Destination</th><th>Category</th></tr></thead>
+      <tbody>
+        {% for c in recent %}
+          <tr>
+            <td class="font-mono">{{ c.reference }}</td>
+            <td><span class="badge badge-slate">{{ c.case_type }}</span></td>
+            <td><span class="badge {{ 'badge-emerald' if c.status == 'completed' else 'badge-sky' }}">{{ c.status.replace('_',' ') }}</span></td>
+            <td class="text-slate-300">{{ c.origin_country }}</td>
+            <td class="text-slate-300">{{ c.dest_country }}</td>
+            <td class="text-slate-400">{{ c.category }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="empty">No operation cases yet. They are created from an approved Request or a Deal handoff.</div>
+{% endif %}
+{% endblock %}

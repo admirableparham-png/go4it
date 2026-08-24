@@ -67,6 +67,17 @@ from . import contract_service as CONTRACT
 from . import esign as ESIGN
 from .models import (Contract, ContractDocument, ContractParty, ContractStatusEvent, ContractTemplate,
                      ContractVersion, QuoteDocument, QuoteStatusEvent, QuoteVersion, SignatureEvent)
+from decimal import Decimal
+from . import operations as OPS
+from . import freight as FREIGHT
+from . import shipments as SHIP
+from . import customs as CUSTOMS
+from . import tradedocs as TDOCS
+from . import ops_exceptions as OPSX
+from . import ops_providers as OPSPROV
+from .models import (CustomsCase, DeliveryConfirmation, DocumentRequirement, FreightOffer, FreightRequest,
+                     OperationCase, OperationalException, PaymentMilestone, RemittanceCase, Settlement,
+                     SettlementAdjustment, Shipment, ShipmentEvent, ShipmentLeg, TradeDocument)
 from .research_engine import (PARTNERS, country_options, market_report,
                               product_options, rank_opportunities, recommend_destinations,
                               resolve_query)
@@ -3863,6 +3874,542 @@ def commercial_analytics(request: Request):
         "value_by_ccy": value_by_ccy, "accepted_value_by_ccy": accepted_value_by_ccy, "rates": rates,
         "quote_total": len(quotes), "contracts_review": contracts_review, "contracts_sig": contracts_sig,
         "deal_count": len(deals), "planned_margin": round(planned, 2), "realized_margin": round(realized, 2)})
+
+
+# ============================================================================= OPERATIONS (Phase 7)
+# Admin-first operational execution: freight, shipments, documentation, payments & remittance, exceptions.
+# Every management route is admin-only; sellers see only sanitized progress through their existing dashboard.
+OPERATION_FILES_DIR = BASE_DIR.parent / "operation_files"   # PRIVATE, outside /static
+
+
+def _ops_admin(request, session):
+    """(user, None) if admin, else (user, response) to return. Keeps the routes terse."""
+    user = current_user(request, session)
+    if not is_admin(user):
+        return user, _forbidden()
+    return user, None
+
+
+def _parse_dt(v):
+    v = (v or "").strip()
+    if not v:
+        return None
+    for fmt in ("%Y-%m-%dT%H:%M", "%Y-%m-%d %H:%M", "%Y-%m-%d"):
+        try:
+            return datetime.strptime(v, fmt)
+        except ValueError:
+            continue
+    return None
+
+
+def _ops_overview(session):
+    """Counts for the operations dashboard — every actionable operational queue, computed server-side."""
+    def c(model, *w):
+        stmt = select(func.count()).select_from(model)
+        for cond in w:
+            stmt = stmt.where(cond)
+        return session.exec(stmt).one()
+    now = datetime.utcnow()
+    return {
+        "active_cases": c(OperationCase, OperationCase.status.in_(("open", "in_progress"))),
+        "shipments_planning": c(Shipment, Shipment.current_milestone == "planning", Shipment.status == "active"),
+        "offers_awaiting": c(FreightRequest, FreightRequest.status == "quoting"),
+        "bookings_awaiting": c(Shipment, Shipment.current_milestone == "planning",
+                               Shipment.freight_offer_id != None),  # noqa: E711
+        "in_transit": c(Shipment, Shipment.current_milestone == "in_transit"),
+        "customs_due": c(CustomsCase, CustomsCase.status.in_(("documents_required", "submitted", "query_hold"))),
+        "docs_missing": c(DocumentRequirement, DocumentRequirement.status.in_(("missing", "requested"))),
+        "payments_awaiting": c(PaymentMilestone, PaymentMilestone.status.in_(("awaiting", "partially_received"))),
+        "payments_overdue": c(PaymentMilestone, PaymentMilestone.status.in_(("planned", "awaiting")),
+                              PaymentMilestone.due_date != None, PaymentMilestone.due_date < now),  # noqa: E711
+        "exceptions_open": c(OperationalException, OperationalException.status.in_(OPSX.OPEN_STATUSES)),
+        "deliveries_awaiting": c(Shipment, Shipment.current_milestone == "import_cleared",
+                                 Shipment.status == "active"),
+        "settlements_awaiting": c(Deal, Deal.stage == "delivered"),
+        "remittance_active": c(RemittanceCase, RemittanceCase.status.notin_(
+            ("confirmed", "cancelled", "rejected", "failed"))),
+    }
+
+
+@app.get("/operations", response_class=HTMLResponse)
+def operations_overview(request: Request):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        counts = _ops_overview(session)
+        recent = session.exec(select(OperationCase).order_by(OperationCase.id.desc()).limit(20)).all()
+    return templates.TemplateResponse("operations_overview.html", {
+        "request": request, "user": user, "counts": counts, "recent": recent})
+
+
+@app.get("/operations/freight", response_class=HTMLResponse)
+def operations_freight(request: Request, q: str = "", status: str = "", mode: str = "",
+                       origin: str = "", dest: str = "", page: int = 1):
+    per = 50
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        stmt = select(FreightRequest)
+        if q:
+            stmt = stmt.where(FreightRequest.reference.ilike(f"%{q.strip()}%"))
+        if status:
+            stmt = stmt.where(FreightRequest.status == status)
+        if mode:
+            stmt = stmt.where(FreightRequest.mode == mode)
+        if origin:
+            stmt = stmt.where(FreightRequest.origin_country == origin.upper())
+        if dest:
+            stmt = stmt.where(FreightRequest.dest_country == dest.upper())
+        total = session.exec(select(func.count()).select_from(stmt.subquery())).one()
+        pages = max(1, (total + per - 1) // per)
+        page = min(max(1, page), pages)
+        reqs = session.exec(stmt.order_by(FreightRequest.id.desc())
+                            .offset((page - 1) * per).limit(per)).all()
+        fr_ids = {r.id for r in reqs} or {0}
+        offers = {}
+        for o in session.exec(select(FreightOffer).where(FreightOffer.freight_request_id.in_(fr_ids))).all():
+            offers.setdefault(o.freight_request_id, []).append(o)
+    return templates.TemplateResponse("operations_freight.html", {
+        "request": request, "user": user, "reqs": reqs, "offers": offers, "total": total,
+        "page": page, "pages": pages, "f": {"q": q, "status": status, "mode": mode,
+        "origin": origin, "dest": dest}})
+
+
+@app.post("/operations/freight")
+def operations_freight_create(request: Request, cargo_description: str = Form(""), quantity: str = Form("0"),
+                              unit: str = Form(""), mode: str = Form(""), origin_country: str = Form(""),
+                              dest_country: str = Form(""), incoterm: str = Form(""),
+                              gross_weight_kg: str = Form(""), volume_cbm: str = Form(""),
+                              hazardous: str = Form(""), customs_required: str = Form(""),
+                              deal_id: str = Form(""), operation_case_id: str = Form("")):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        case = session.get(OperationCase, int(operation_case_id)) if operation_case_id.strip() else None
+        fields = dict(cargo_description=cargo_description, quantity=quantity or "0", unit=unit, mode=mode,
+                      origin_country=origin_country.upper(), dest_country=dest_country.upper(),
+                      incoterm=incoterm.upper(), tenant_id=(case.tenant_id if case else None),
+                      deal_id=int(deal_id) if deal_id.strip() else None)
+        # unknowns stay NULL (never guessed) unless explicitly answered
+        if gross_weight_kg.strip():
+            fields["gross_weight_kg"] = gross_weight_kg
+        if volume_cbm.strip():
+            fields["volume_cbm"] = volume_cbm
+        if hazardous in ("yes", "no"):
+            fields["hazardous"] = (hazardous == "yes")
+        if customs_required in ("yes", "no"):
+            fields["customs_required"] = (customs_required == "yes")
+        fr, _missing = FREIGHT.create_freight_request(session, case=case, actor=user, **fields)
+        session.commit()
+    return RedirectResponse("/operations/freight", status_code=303)
+
+
+@app.post("/operations/freight/{fr_id}/offers")
+def operations_add_offer(request: Request, fr_id: int, provider_company_id: str = Form(""),
+                         provider_name_cache: str = Form(""), mode: str = Form(""),
+                         route_summary: str = Form(""), currency: str = Form(""),
+                         base_freight: str = Form("0"), surcharges: str = Form("0"),
+                         insurance_cost: str = Form("0"), customs_cost: str = Form("0"),
+                         lead_time_days: str = Form(""), valid_until: str = Form("")):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        fr = session.get(FreightRequest, fr_id)
+        if not fr:
+            return _not_found()
+        FREIGHT.add_offer(session, fr, actor=user,
+                          provider_company_id=int(provider_company_id) if provider_company_id.strip() else None,
+                          provider_name_cache=provider_name_cache, mode=mode, route_summary=route_summary,
+                          currency=currency.upper(), base_freight=base_freight, surcharges=surcharges,
+                          insurance_cost=insurance_cost, customs_cost=customs_cost,
+                          lead_time_days=int(lead_time_days) if lead_time_days.strip() else None,
+                          valid_until=_parse_dt(valid_until))
+        session.commit()
+    return RedirectResponse("/operations/freight", status_code=303)
+
+
+@app.post("/operations/offers/{offer_id}/select")
+def operations_select_offer(request: Request, offer_id: int, reason: str = Form("")):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        offer = session.get(FreightOffer, offer_id)
+        if not offer:
+            return _not_found()
+        ok, err = FREIGHT.select_offer(session, offer, actor=user, reason=reason)
+        session.commit()
+    return RedirectResponse(f"/operations/freight?err={'' if ok else 'expired'}", status_code=303)
+
+
+@app.get("/operations/shipments", response_class=HTMLResponse)
+def operations_shipments(request: Request, q: str = "", milestone: str = "", mode: str = "", page: int = 1):
+    per = 50
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        stmt = select(Shipment)
+        if q:
+            stmt = stmt.where(Shipment.reference.ilike(f"%{q.strip()}%"))
+        if milestone:
+            stmt = stmt.where(Shipment.current_milestone == milestone)
+        if mode:
+            stmt = stmt.where(Shipment.mode == mode)
+        total = session.exec(select(func.count()).select_from(stmt.subquery())).one()
+        pages = max(1, (total + per - 1) // per)
+        page = min(max(1, page), pages)
+        ships = session.exec(stmt.order_by(Shipment.id.desc()).offset((page - 1) * per).limit(per)).all()
+    return templates.TemplateResponse("operations_shipments.html", {
+        "request": request, "user": user, "ships": ships, "total": total, "page": page, "pages": pages,
+        "f": {"q": q, "milestone": milestone, "mode": mode}})
+
+
+@app.get("/operations/shipments/{sh_id}", response_class=HTMLResponse)
+def operations_shipment_detail(request: Request, sh_id: int):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        sh = session.get(Shipment, sh_id)
+        if not sh:
+            return _not_found()
+        legs = session.exec(select(ShipmentLeg).where(ShipmentLeg.shipment_id == sh_id)
+                            .order_by(ShipmentLeg.sequence)).all()
+        events = session.exec(select(ShipmentEvent).where(ShipmentEvent.shipment_id == sh_id)
+                             .order_by(ShipmentEvent.id.desc())).all()
+    return templates.TemplateResponse("operations_shipment_detail.html", {
+        "request": request, "user": user, "sh": sh, "legs": legs, "events": events})
+
+
+@app.post("/operations/shipments")
+def operations_book_shipment(request: Request, mode: str = Form(""), origin: str = Form(""),
+                             destination: str = Form(""), booking_reference: str = Form(""),
+                             deal_id: str = Form(""), operation_case_id: str = Form(""),
+                             cargo_summary: str = Form("")):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        case = session.get(OperationCase, int(operation_case_id)) if operation_case_id.strip() else None
+        sh = SHIP.book_shipment(session, case=case, actor=user, mode=mode, origin=origin,
+                                destination=destination, booking_reference=booking_reference,
+                                cargo_summary=cargo_summary,
+                                deal_id=int(deal_id) if deal_id.strip() else None)
+        session.commit()
+        sid = sh.id
+    return RedirectResponse(f"/operations/shipments/{sid}", status_code=303)
+
+
+@app.post("/operations/shipments/{sh_id}/legs")
+def operations_add_leg(request: Request, sh_id: int, mode: str = Form(""), origin: str = Form(""),
+                       destination: str = Form(""), sequence: str = Form("")):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        sh = session.get(Shipment, sh_id)
+        if not sh:
+            return _not_found()
+        kw = dict(mode=mode, origin=origin, destination=destination)
+        if sequence.strip().isdigit():
+            kw["sequence"] = int(sequence)
+        SHIP.add_leg(session, sh, actor=user, **kw)
+        session.commit()
+    return RedirectResponse(f"/operations/shipments/{sh_id}", status_code=303)
+
+
+@app.post("/operations/shipments/{sh_id}/events")
+def operations_record_event(request: Request, sh_id: int, event_type: str = Form(""),
+                            location: str = Form(""), event_at: str = Form(""),
+                            seller_safe_summary: str = Form(""), admin_note: str = Form("")):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        sh = session.get(Shipment, sh_id)
+        if not sh:
+            return _not_found()
+        SHIP.record_event(session, sh, event_type=event_type, location=location,
+                          event_at=_parse_dt(event_at), seller_safe_summary=seller_safe_summary,
+                          admin_note=admin_note, source="manual", actor=user)
+        # a verified operational event may advance the deal journey
+        if sh.deal_id:
+            deal = session.get(Deal, sh.deal_id)
+            if deal:
+                OPS.project_deal_stage(session, deal, actor=user)
+        session.commit()
+    return RedirectResponse(f"/operations/shipments/{sh_id}", status_code=303)
+
+
+@app.post("/operations/shipments/{sh_id}/deliver")
+def operations_confirm_delivery(request: Request, sh_id: int, source: str = Form("admin"),
+                                recipient_role: str = Form(""), condition_notes: str = Form(""),
+                                has_damage: str = Form(""), has_shortage: str = Form(""),
+                                failed: str = Form("")):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        sh = session.get(Shipment, sh_id)
+        if not sh:
+            return _not_found()
+        SHIP.confirm_delivery(session, sh, source=source, recipient_role=recipient_role,
+                              condition_notes=condition_notes, has_damage=(has_damage == "1"),
+                              has_shortage=(has_shortage == "1"), failed=(failed == "1"), actor=user)
+        if sh.deal_id:
+            deal = session.get(Deal, sh.deal_id)
+            if deal:
+                OPS.project_deal_stage(session, deal, actor=user)
+        session.commit()
+    return RedirectResponse(f"/operations/shipments/{sh_id}", status_code=303)
+
+
+@app.post("/operations/customs")
+def operations_create_customs(request: Request, side: str = Form("export"), country: str = Form(""),
+                              shipment_id: str = Form(""), deal_id: str = Form(""),
+                              operation_case_id: str = Form("")):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        case = session.get(OperationCase, int(operation_case_id)) if operation_case_id.strip() else None
+        CUSTOMS.create_customs_case(session, case=case, side=side, country=country.upper(), actor=user,
+                                    shipment_id=int(shipment_id) if shipment_id.strip() else None,
+                                    deal_id=int(deal_id) if deal_id.strip() else None)
+        session.commit()
+    return RedirectResponse("/operations", status_code=303)
+
+
+@app.post("/operations/customs/{cc_id}/status")
+def operations_customs_status(request: Request, cc_id: int, to_status: str = Form(""),
+                              reason: str = Form("")):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        cc = session.get(CustomsCase, cc_id)
+        if not cc:
+            return _not_found()
+        CUSTOMS.set_customs_status(session, cc, to_status, reason=reason, actor=user)
+        session.commit()
+    return RedirectResponse("/operations", status_code=303)
+
+
+@app.get("/operations/documentation", response_class=HTMLResponse)
+def operations_documentation(request: Request, status: str = "", doc_type: str = "", page: int = 1):
+    per = 50
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        stmt = select(DocumentRequirement)
+        if status:
+            stmt = stmt.where(DocumentRequirement.status == status)
+        if doc_type:
+            stmt = stmt.where(DocumentRequirement.doc_type == doc_type)
+        total = session.exec(select(func.count()).select_from(stmt.subquery())).one()
+        pages = max(1, (total + per - 1) // per)
+        page = min(max(1, page), pages)
+        reqs = session.exec(stmt.order_by(DocumentRequirement.id.desc())
+                            .offset((page - 1) * per).limit(per)).all()
+        docs = session.exec(select(TradeDocument).where(TradeDocument.status == "active")
+                           .order_by(TradeDocument.id.desc()).limit(50)).all()
+    return templates.TemplateResponse("operations_documentation.html", {
+        "request": request, "user": user, "reqs": reqs, "docs": docs, "doc_types": TDOCS.DOC_TYPES,
+        "total": total, "page": page, "pages": pages, "f": {"status": status, "doc_type": doc_type}})
+
+
+@app.post("/operations/documentation/requirements")
+def operations_create_requirement(request: Request, doc_type: str = Form(""),
+                                  required_from: str = Form("seller"), due_date: str = Form(""),
+                                  operation_case_id: str = Form(""), deal_id: str = Form(""),
+                                  request_id: str = Form(""), tenant_id: str = Form("")):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        TDOCS.create_requirement(
+            session, doc_type=doc_type, required_from=required_from, due_date=_parse_dt(due_date),
+            operation_case_id=int(operation_case_id) if operation_case_id.strip() else None,
+            deal_id=int(deal_id) if deal_id.strip() else None,
+            request_id=int(request_id) if request_id.strip() else None,
+            tenant_id=int(tenant_id) if tenant_id.strip() else None, actor=user)
+        session.commit()
+    return RedirectResponse("/operations/documentation", status_code=303)
+
+
+@app.post("/operations/documentation/upload")
+async def operations_upload_document(request: Request, doc_type: str = Form(""),
+                                     requirement_id: str = Form(""), operation_case_id: str = Form(""),
+                                     tenant_id: str = Form(""), file: UploadFile = File(...)):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        data = await file.read(ATT.MAX_BYTES + 1)
+        if len(data) > ATT.MAX_BYTES:
+            return HTMLResponse("File too large", 400)
+        req = session.get(DocumentRequirement, int(requirement_id)) if requirement_id.strip() else None
+        doc, err = TDOCS.store_document(
+            session, files_dir=OPERATION_FILES_DIR, data=data, original_filename=file.filename or "file",
+            content_type=file.content_type or "", doc_type=doc_type, uploaded_by_role="admin",
+            requirement=req, operation_case_id=int(operation_case_id) if operation_case_id.strip() else None,
+            tenant_id=int(tenant_id) if tenant_id.strip() else None, actor=user)
+        session.commit()
+        if err:
+            return HTMLResponse(f"Rejected: {err}", 400)
+    return RedirectResponse("/operations/documentation", status_code=303)
+
+
+@app.post("/operations/documents/{doc_id}/scan-clear")
+def operations_scan_clear(request: Request, doc_id: int):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        doc = session.get(TradeDocument, doc_id)
+        if not doc:
+            return _not_found()
+        TDOCS.scan_clear(session, doc, actor=user)
+        session.commit()
+    return RedirectResponse("/operations/documentation", status_code=303)
+
+
+@app.get("/operations/documents/{doc_id}/download")
+def operations_download_document(request: Request, doc_id: int):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny                                    # admin-only download (non-admin already forbidden)
+        doc = session.get(TradeDocument, doc_id)
+        if not doc or not doc.file_path:
+            return _not_found()
+        path = (OPERATION_FILES_DIR / doc.file_path).resolve()
+        if not str(path).startswith(str(OPERATION_FILES_DIR.resolve()) + os.sep) or not path.exists():
+            return _not_found()
+        return FileResponse(str(path), media_type=doc.content_type or "application/octet-stream",
+                            filename=doc.original_filename or path.name,
+                            headers={"Cache-Control": "no-store", "X-Robots-Tag": "noindex"})
+
+
+@app.post("/operations/documentation/requirements/{req_id}/request-seller")
+def operations_request_seller_doc(request: Request, req_id: int, instructions: str = Form(""),
+                                  due_date: str = Form("")):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        req = session.get(DocumentRequirement, req_id)
+        if not req:
+            return _not_found()
+        ok, err = TDOCS.request_seller_document(session, req, instructions=instructions,
+                                                due_date=_parse_dt(due_date), actor=user)
+        session.commit()
+        if not ok:
+            return HTMLResponse(f"Not sent: {err}", 400)
+    return RedirectResponse("/operations/documentation", status_code=303)
+
+
+@app.post("/operations/cases")
+def operations_create_case(request: Request, deal_id: str = Form(""), request_id: str = Form(""),
+                           category: str = Form(""), origin_country: str = Form(""),
+                           dest_country: str = Form("")):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        if deal_id.strip():
+            deal = session.get(Deal, int(deal_id))
+            if not deal:
+                return _not_found()
+            OPS.ensure_case_for_deal(session, deal, actor=user)
+        elif request_id.strip():
+            req = session.get(ServiceRequest, int(request_id))
+            if not req:
+                return _not_found()
+            OPS.ensure_case_for_request(session, req, actor=user)
+        else:
+            OPS.create_standalone_case(session, actor=user, category=category,
+                                       origin_country=origin_country.upper(),
+                                       dest_country=dest_country.upper())
+        session.commit()
+    return RedirectResponse("/operations", status_code=303)
+
+
+@app.post("/operations/deals/{deal_id}/project")
+def operations_project_deal(request: Request, deal_id: int):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        deal = session.get(Deal, deal_id)
+        if not deal:
+            return _not_found()
+        OPS.project_deal_stage(session, deal, actor=user)
+        session.commit()
+    return RedirectResponse(f"/deals/{deal_id}", status_code=303)
+
+
+@app.get("/operations/payments", response_class=HTMLResponse)
+def operations_payments(request: Request, status: str = "", kind: str = "", page: int = 1):
+    per = 50
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        stmt = select(PaymentMilestone)
+        if status:
+            stmt = stmt.where(PaymentMilestone.status == status)
+        if kind:
+            stmt = stmt.where(PaymentMilestone.milestone_type == kind)
+        total = session.exec(select(func.count()).select_from(stmt.subquery())).one()
+        pages = max(1, (total + per - 1) // per)
+        page = min(max(1, page), pages)
+        pays = session.exec(stmt.order_by(PaymentMilestone.id.desc())
+                            .offset((page - 1) * per).limit(per)).all()
+        remits = session.exec(select(RemittanceCase).order_by(RemittanceCase.id.desc()).limit(50)).all()
+        # value strictly PER CURRENCY — never summed across currencies without an explicit FX snapshot
+        due_by_ccy, received_by_ccy = {}, {}
+        for p in session.exec(select(PaymentMilestone)).all():
+            if p.status in ("planned", "awaiting", "partially_received"):
+                due_by_ccy[p.currency] = due_by_ccy.get(p.currency, Decimal("0")) + PRICING._d(p.expected_amount)
+            if p.status in ("received", "partially_received"):
+                received_by_ccy[p.currency] = received_by_ccy.get(p.currency, Decimal("0")) + PRICING._d(p.confirmed_amount)
+    return templates.TemplateResponse("operations_payments.html", {
+        "request": request, "user": user, "pays": pays, "remits": remits,
+        "due_by_ccy": {k: str(v) for k, v in due_by_ccy.items()},
+        "received_by_ccy": {k: str(v) for k, v in received_by_ccy.items()},
+        "remit_configured": OPSPROV.remittance_status()["configured"],
+        "total": total, "page": page, "pages": pages, "f": {"status": status, "kind": kind}})
+
+
+@app.get("/operations/exceptions", response_class=HTMLResponse)
+def operations_exceptions(request: Request, status: str = "", severity: str = "", page: int = 1):
+    per = 50
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        stmt = select(OperationalException)
+        if status:
+            stmt = stmt.where(OperationalException.status == status)
+        else:
+            stmt = stmt.where(OperationalException.status.in_(OPSX.OPEN_STATUSES))
+        if severity:
+            stmt = stmt.where(OperationalException.severity == severity)
+        total = session.exec(select(func.count()).select_from(stmt.subquery())).one()
+        pages = max(1, (total + per - 1) // per)
+        page = min(max(1, page), pages)
+        excs = session.exec(stmt.order_by(OperationalException.id.desc())
+                            .offset((page - 1) * per).limit(per)).all()
+    return templates.TemplateResponse("operations_exceptions.html", {
+        "request": request, "user": user, "excs": excs, "severities": OPSX.SEVERITIES,
+        "total": total, "page": page, "pages": pages, "f": {"status": status, "severity": severity}})
 
 
 # ----------------------------------------------------------------------------- ingestion

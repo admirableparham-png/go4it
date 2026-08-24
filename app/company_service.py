@@ -24,7 +24,10 @@ from .pipeline import audit
 logger = logging.getLogger("go4it.company")
 
 # --------------------------------------------------------------------------- constants
-ROLES = ("buyer", "seller", "supplier")
+# buyer/seller/supplier are the commercial roles; the *_provider roles (Phase 7) let an operational provider —
+# freight forwarder, customs broker, remittance/exchange house — be a first-class Trade Network Company rather
+# than a disconnected provider database. Additive only; existing role logic is unchanged.
+ROLES = ("buyer", "seller", "supplier", "freight_provider", "customs_broker", "remittance_provider")
 
 # Free-mail / consumer domains — NEVER used as a company-identity match signal.
 GENERIC_DOMAINS = {

@@ -67,6 +67,21 @@ WORKSPACES = [
          "paths": ("/commercial/analytics",)},
     ]},
 
+    {"key": "operations", "label": "Operations", "icon": "truck", "role": "admin", "children": [
+        {"key": "ops_overview", "label": "Overview", "endpoint": "operations_overview",
+         "paths": ("/operations",)},
+        {"key": "ops_freight", "label": "Freight", "endpoint": "operations_freight",
+         "paths": ("/operations/freight",)},
+        {"key": "ops_shipments", "label": "Shipments", "endpoint": "operations_shipments",
+         "paths": ("/operations/shipments",)},
+        {"key": "ops_docs", "label": "Documentation", "endpoint": "operations_documentation",
+         "paths": ("/operations/documentation",)},
+        {"key": "ops_payments", "label": "Payments & Remittance", "endpoint": "operations_payments",
+         "paths": ("/operations/payments",)},
+        {"key": "ops_exceptions", "label": "Exceptions", "endpoint": "operations_exceptions",
+         "paths": ("/operations/exceptions",)},
+    ]},
+
     {"key": "intelligence", "label": "Intelligence", "icon": "compass", "role": "admin", "children": [
         {"key": "research", "label": "Research", "endpoint": "research", "paths": ("/research",)},
         {"key": "intel", "label": "Market Intel", "endpoint": "intel", "paths": ("/intel",)},
