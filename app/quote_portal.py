@@ -25,10 +25,13 @@ def hash_token(raw: str) -> str:
 # --- the server / proxy logs), is POSTed to the exchange, atomically CONSUMED (single-use), and swapped for a
 # --- PortalSession row. The browser cookie carries ONLY the opaque `sid` — no quote id, token, expiry, or CSRF
 # --- ever lives in a client-readable cookie.
-def open_session(session, raw, *, now=None):
-    """Consume a link token (single-use, atomic) and open a server-side PortalSession. Returns
-    (portal_session, quote, version) or None. A re-open of an already-consumed token re-issues its still-valid
-    session (so a buyer reopening the email link is not broken), else fails safely."""
+def open_session(session, raw, *, current_sid=None, now=None):
+    """TRULY single-use link exchange. Returns (portal_session, quote, version) or None.
+      * first exchange (token unconsumed): atomically CONSUME + create the session.
+      * re-exchange from the SAME browser (its cookie sid matches the session opened from this token):
+        continue with that same session.
+      * consumed token from ANY OTHER caller (no cookie / different cookie): REFUSED (None) — a leaked link
+        cannot be redeemed on a second device. Recovery is an admin link rotation (a new token)."""
     from sqlalchemy import update as _upd
     from .models import PortalSession, Quote, QuoteAccessToken, QuoteVersion
     now = now or datetime.utcnow()
@@ -54,10 +57,12 @@ def open_session(session, raw, *, now=None):
                            expires_at=now + timedelta(minutes=PORTAL_TTL_MIN))
         session.add(ps); session.flush()
         return ps, quote, version
-    # already consumed → reuse the still-valid session opened from this token (buyer refreshed the link)
+    # already consumed → continue ONLY for the browser that already holds THIS token's session cookie.
+    if not current_sid:
+        return None
     ps = session.exec(select(PortalSession).where(
-        PortalSession.token_id == tok.id, PortalSession.revoked == False)   # noqa: E712
-        .order_by(PortalSession.id.desc())).first()
+        PortalSession.token_id == tok.id, PortalSession.sid == current_sid,
+        PortalSession.revoked == False)).first()   # noqa: E712
     if ps and (not ps.expires_at or now <= ps.expires_at):
         return ps, quote, version
     return None
@@ -117,12 +122,17 @@ def buyer_options(version):
 def mint_token(session, quote, version, *, actor=None, valid_days=14, rotate=True):
     """Create a new access token for a quote VERSION; returns the RAW token (show once). If `rotate`, revoke
     the quote's other live tokens first. The raw value is never stored — only its hash."""
-    from .models import QuoteAccessToken
+    from .models import PortalSession, QuoteAccessToken
     if rotate:
         for t in session.exec(select(QuoteAccessToken).where(
                 QuoteAccessToken.quote_id == quote.id, QuoteAccessToken.revoked == False)).all():  # noqa: E712
             t.revoked = True
             session.add(t)
+            # rotating the link also kills any live cookie session opened from the old token (device recovery)
+            for ps in session.exec(select(PortalSession).where(
+                    PortalSession.token_id == t.id, PortalSession.revoked == False)).all():  # noqa: E712
+                ps.revoked = True
+                session.add(ps)
     raw = secrets.token_urlsafe(32)
     tok = QuoteAccessToken(quote_id=quote.id, quote_version_id=version.id, token_hash=hash_token(raw),
                            expires_at=datetime.utcnow() + timedelta(days=valid_days),

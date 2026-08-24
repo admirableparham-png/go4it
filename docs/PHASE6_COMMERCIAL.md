@@ -63,9 +63,14 @@ Analytics**. The journey: Product/pricing → **Quote → buyer decision → Con
   (server-side) holding the quote version, token hash, expiry, revocation state + CSRF; the browser cookie
   carries ONLY the opaque `sid`. Nothing sensitive lives in a client-readable/signed cookie. Subsequent
   navigation + decisions use the tokenless `/q/session*` paths.
-- **Single-use link.** The link is **atomically consumed** on first exchange (`QuoteAccessToken.consumed_at`
-  set via a compare-and-swap on NULL); a buyer reopening the still-valid link **re-issues the same** session
-  (not a second one). Expired/revoked/consumed-and-gone → fails safe.
+- **Truly single-use link.** The token is **atomically consumed** on the first exchange
+  (`QuoteAccessToken.consumed_at` set via a compare-and-swap on NULL). After that it can be redeemed **only by
+  the browser that already holds the `PortalSession` cookie opened from it** (its `sid` must match) — that
+  browser may reopen the same link and continue on its existing session (no second session is minted). A
+  consumed token presented by **any other / cookieless client is refused (410)** — a leaked or forwarded link
+  cannot be redeemed on a second device. **Recovery on another device = admin link rotation:** `mint_token(…,
+  rotate=True)` issues a fresh token and revokes the old token **and its live cookie session**. Expired/revoked
+  /unknown tokens fail safe.
 - **Security headers** on every portal response: `Referrer-Policy: no-referrer`, `Cache-Control: no-store`,
   strict CSP (`default-src 'none'; frame-ancestors 'none'; script-src 'nonce-…'; connect-src 'self'`),
   `X-Frame-Options: DENY`, `X-Robots-Tag: noindex`.

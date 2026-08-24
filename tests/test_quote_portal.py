@@ -133,18 +133,45 @@ def test_cookie_holds_only_opaque_sid_state_is_server_side(ctx):
     assert TestClient(main.app).get("/q/session").status_code == 404
 
 
-def test_single_use_consumed_and_reissue(ctx):
-    qid, vid, raw = _sent_quote(ctx)
-    _open(TestClient(main.app), raw)
-    with Session(ctx) as s:
-        assert s.exec(select(QuoteAccessToken)).one().consumed_at is not None  # link atomically consumed
-        assert len(s.exec(select(__import__("app.models", fromlist=["PortalSession"]).PortalSession)).all()) == 1
-    # a buyer reopening the SAME still-valid link re-issues the same session (not a second one)
-    c2 = TestClient(main.app)
-    assert c2.post("/q/exchange", data={"token": raw}).json()["ok"] is True
+def test_link_is_truly_single_use(ctx):
+    """A consumed link cannot be redeemed on a SECOND (cookieless) device — only the browser that already
+    holds the session cookie may continue. Recovery is an admin link rotation."""
     from app.models import PortalSession
+    qid, vid, raw = _sent_quote(ctx)
+    c1 = _open(TestClient(main.app), raw)                      # first exchange: consumes the token
     with Session(ctx) as s:
-        assert len(s.exec(select(PortalSession)).all()) == 1                   # reused, not duplicated
+        assert s.exec(select(QuoteAccessToken)).one().consumed_at is not None
+        assert len(s.exec(select(PortalSession)).all()) == 1
+    # a SECOND, cookieless client presenting the same (consumed) token is REFUSED — not a bearer link
+    c2 = TestClient(main.app)
+    r = c2.post("/q/exchange", data={"token": raw})
+    assert r.status_code == 410 and r.json()["ok"] is False
+    assert c2.get("/q/session").status_code == 404             # and it gets no session
+    with Session(ctx) as s:
+        assert len(s.exec(select(PortalSession)).all()) == 1   # no second session was minted
+    # the ORIGINAL browser (still holding its cookie) may re-open the same link and continue
+    assert c1.post("/q/exchange", data={"token": raw}).json()["ok"] is True
+    assert c1.get("/q/session").status_code == 200
+    with Session(ctx) as s:
+        assert len(s.exec(select(PortalSession)).all()) == 1   # same session, not duplicated
+
+
+def test_rotation_recovers_on_new_device_and_kills_old(ctx):
+    """Recovery: an admin rotates the link → a NEW token works on a fresh device, and the OLD link + its live
+    session are dead."""
+    from app.models import PortalSession
+    qid, vid, raw_old = _sent_quote(ctx)
+    c_old = _open(TestClient(main.app), raw_old)               # buyer opened the old link
+    assert c_old.get("/q/session").status_code == 200
+    # admin rotates the link (new token; revokes the old token + its live session)
+    with Session(ctx) as s:
+        q = s.get(Quote, qid); ver = s.get(QuoteVersion, vid)
+        raw_new, _ = QP.mint_token(s, q, ver, actor=None, valid_days=14, rotate=True); s.commit()
+    assert c_old.get("/q/session").status_code == 404          # old cookie session revoked
+    assert c_old.post("/q/exchange", data={"token": raw_old}).status_code == 410   # old token dead
+    c_new = TestClient(main.app)                               # recovery on a new device with the new link
+    assert c_new.post("/q/exchange", data={"token": raw_new}).json()["ok"] is True
+    assert c_new.get("/q/session").status_code == 200
 
 
 def test_get_does_not_mutate_view_recorded_via_post(ctx):
@@ -215,10 +242,11 @@ def test_exw_option_shown_but_internal_cost_hidden(ctx):
 
 def test_bad_token_fails_safe(ctx):
     c = TestClient(main.app)
-    assert c.post("/q/exchange", data={"token": "totally-wrong"}).status_code == 404   # unknown → 404
+    r = c.post("/q/exchange", data={"token": "totally-wrong"})
+    assert r.status_code in (404, 410) and r.json()["ok"] is False       # unknown token → refused
     assert c.get("/q/session").status_code == 404                        # no session without an exchange
     seller = TestClient(main.app); _login(seller, "kim@t.local")
-    assert seller.post("/q/exchange", data={"token": "x"}).status_code == 404
+    assert seller.post("/q/exchange", data={"token": "x"}).json()["ok"] is False
 
 
 def test_rate_limit_blocks_flood(ctx):

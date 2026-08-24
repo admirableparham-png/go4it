@@ -3308,10 +3308,12 @@ def quote_portal_exchange(request: Request, token: str = Form("")):
     PortalSession; the browser gets only an opaque sid cookie. The raw token never appears in a URL/log."""
     if not RL.allow(RL.client_key(request, "qexch"), limit=30, window=60):
         return JSONResponse({"ok": False}, status_code=429)
+    caller_sid = request.session.get("qp_sid")   # this browser's existing session, if any (for legit re-open)
     with Session(engine) as session:
-        opened = QP.open_session(session, token)
+        opened = QP.open_session(session, token, current_sid=caller_sid)
         if not opened:
-            return JSONResponse({"ok": False}, status_code=404)
+            # unknown/expired/revoked token, OR a consumed token presented without its matching cookie
+            return JSONResponse({"ok": False}, status_code=410)
         ps, q, ver = opened
         QWF.mark_expired_if_due(session, q)
         if q.status not in QWF.PORTAL_VIEWABLE:
