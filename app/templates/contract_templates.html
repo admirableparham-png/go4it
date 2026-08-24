@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% set active = 'ctemplates' %}
+{% block content %}
+<div class="flex items-end justify-between gap-3 mb-4"><h2 class="text-xl font-bold tracking-tight">Contract templates</h2></div>
+<div class="card mb-3 text-xs text-amber-300/80">{{ legal_notice }}</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+  <div class="card overflow-x-auto"><div class="eyebrow mb-2">Templates</div>
+    {% for t in templates_list %}<div class="border-t border-white/5 py-1.5 text-sm flex justify-between {% if t.status=='archived' %}opacity-50{% endif %}"><span>{{ t.name }} <span class="badge badge-slate text-[10px]">{{ t.contract_type }}/{{ t.side }}</span> v{{ t.version }}</span>
+      {% if t.status!='archived' %}<form method="post" action="/contract-templates/{{ t.id }}/archive"><button class="btn btn-neutral btn-xs">Archive</button></form>{% endif %}</div>
+    {% else %}<div class="empty">No templates yet.</div>{% endfor %}
+  </div>
+  <form method="post" action="/contract-templates" class="card space-y-2"><div class="eyebrow">New template</div>
+    <input name="name" placeholder="name" required class="input">
+    <div class="grid grid-cols-2 gap-1"><select name="contract_type" class="input">{% for t in types %}<option value="{{ t }}">{{ t }}</option>{% endfor %}</select>
+      <select name="side" class="input"><option value="buyer">buyer</option><option value="supplier">supplier</option></select></div>
+    <input name="allowed_vars" placeholder="allowed vars (comma/space): buyer_name total incoterm" class="input">
+    <textarea name="body" rows="6" placeholder="Template body with {{ '{{ buyer_name }}' }} placeholders (allowlisted only)" class="input"></textarea>
+    <button class="btn btn-secondary btn-sm btn-block">Save template</button>
+    <p class="text-[11px] text-slate-500">Unknown/unresolved variables are rejected; values are HTML-escaped.</p>
+  </form>
+</div>
+{% endblock %}

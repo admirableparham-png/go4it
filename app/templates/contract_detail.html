@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% set active = 'contracts' %}
+{% block content %}
+<div class="flex items-start justify-between gap-3 mb-3">
+  <div><a href="/contracts" class="text-slate-500 text-sm hover:underline">&larr; Contracts</a>
+    <h2 class="text-xl font-bold tracking-tight mt-1">{{ c.tracking_code }}
+      <span class="badge badge-slate text-[10px]">{{ c.status }}</span></h2>
+    <p class="text-slate-500 text-sm">{{ c.contract_type }} · {{ c.side }} side · {{ company.name if company else 'party not set' }}</p></div>
+</div>
+<div class="card mb-3 text-xs text-amber-300/80">{{ legal_notice }}</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+  <div class="lg:col-span-2 space-y-3">
+    <div class="card"><div class="eyebrow mb-2">Versions (immutable once approved/signed)</div>
+      {% for v in versions %}<div class="border-t border-white/5 py-1.5 text-sm flex justify-between"><span>v{{ v.version }} <span class="badge badge-slate text-[10px]">{{ v.status }}</span>{% if v.is_amendment %} <span class="badge badge-amber text-[10px]">amendment</span>{% endif %}</span><span class="text-[11px] text-slate-500">{{ v.signature_state }}</span></div>{% endfor %}
+    </div>
+    <div class="card"><div class="eyebrow mb-2">Documents (signed uploads quarantined)</div>
+      {% for d in docs %}<div class="border-t border-white/5 py-1.5 text-sm flex justify-between"><span>{{ d.kind }} · {{ d.original_filename or 'generated' }} {% if d.quarantine=='quarantined' %}<span class="badge badge-amber text-[10px]">quarantined</span>{% else %}<span class="badge badge-emerald text-[10px]">scanned</span>{% endif %}</span>
+        <span class="flex gap-1"><a href="/contracts/{{ c.id }}/documents/{{ d.id }}/download" class="btn btn-neutral btn-xs">Download</a>{% if d.quarantine=='quarantined' %}<form method="post" action="/contracts/{{ c.id }}/documents/{{ d.id }}/scan-clear"><button class="btn btn-neutral btn-xs">Mark scanned</button></form>{% endif %}</span></div>
+      {% else %}<div class="empty">No documents.</div>{% endfor %}
+      <form method="post" action="/contracts/{{ c.id }}/documents" enctype="multipart/form-data" class="mt-2 flex gap-1">
+        <input type="file" name="file" required class="input"><button class="btn btn-secondary btn-xs">Upload signed copy</button></form>
+    </div>
+    <div class="card"><div class="eyebrow mb-2">Signatures</div>
+      <div class="text-[11px] text-slate-500 mb-2">E-signature provider: <b>{{ 'Not configured' if esign_status.state!='configured' else 'Configured' }}</b> — manual tracking only (a typed name is NOT a verified signature).</div>
+      {% for s in sigs %}<div class="border-t border-white/5 py-1 text-sm">{{ s.party_role }}: {{ s.signer_name }} <span class="text-[11px] text-slate-500">{{ s.method }} · {{ 'verified' if s.verified else 'unverified' }}</span></div>{% else %}<div class="empty">No signatures recorded.</div>{% endfor %}
+      <form method="post" action="/contracts/{{ c.id }}/action" class="mt-2 grid grid-cols-2 gap-1">
+        <input type="hidden" name="action" value="manual_sign"><input name="signer_name" placeholder="signatory name" class="input"><input name="signer_email" placeholder="email" class="input">
+        <select name="party_role" class="input"><option value="buyer">buyer</option><option value="supplier">supplier</option><option value="go4it">go4it</option></select>
+        <button class="btn btn-neutral btn-xs">Record manual signature</button></form>
+    </div>
+  </div>
+  <div class="space-y-3">
+    <div class="card"><div class="eyebrow mb-2">Actions</div>
+      <div class="flex flex-wrap gap-1">
+        {% for st in next_states %}<form method="post" action="/contracts/{{ c.id }}/action"><input type="hidden" name="action" value="{{ st }}"><button class="btn btn-neutral btn-xs">{{ st }}</button></form>{% endfor %}
+        <form method="post" action="/contracts/{{ c.id }}/action"><input type="hidden" name="action" value="revise"><button class="btn btn-neutral btn-xs">Revise</button></form>
+        <form method="post" action="/contracts/{{ c.id }}/action"><input type="hidden" name="action" value="amend"><button class="btn btn-neutral btn-xs">Amend</button></form>
+      </div>
+    </div>
+    <div class="card"><div class="eyebrow mb-2">History</div>
+      {% for e in events %}<div class="text-[11px] text-slate-500 border-t border-white/5 py-1">{{ e.from_status }} → {{ e.to_status }}</div>{% else %}<div class="empty">—</div>{% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

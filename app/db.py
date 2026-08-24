@@ -32,6 +32,7 @@ def init_db() -> None:
     _ensure_workitem_indexes()
     _ensure_outreach_indexes()
     _ensure_product_indexes()
+    _ensure_commercial_indexes()
 
 
 def _ensure_trade_network_indexes() -> None:
@@ -108,6 +109,24 @@ def _ensure_product_indexes() -> None:
                               "ON productcategory(tenant_id, name_normalized, parent_id) WHERE status = 'active'"))
             conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_prodcatalias_norm "
                               "ON productcategoryalias(alias_normalized)"))
+            conn.commit()
+    except Exception:  # noqa: BLE001 — never block startup on the guard
+        pass
+
+
+def _ensure_commercial_indexes() -> None:
+    """Commercial (Phase 6) DB-level guards (idempotent, never block boot): a unique buyer-token hash, and a
+    PARTIAL-unique index enforcing exactly ONE Deal per accepted quote version (concurrency-safe idempotent
+    deal creation)."""
+    if not _is_sqlite:
+        return
+    try:
+        with engine.connect() as conn:
+            from sqlalchemy import text
+            conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_quoteaccesstoken_hash "
+                              "ON quoteaccesstoken(token_hash) WHERE token_hash != ''"))
+            conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_deal_quote_version "
+                              "ON deal(quote_version_id) WHERE quote_version_id IS NOT NULL"))
             conn.commit()
     except Exception:  # noqa: BLE001 — never block startup on the guard
         pass

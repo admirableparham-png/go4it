@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Quotation {{ q.tracking_code }}</title>
+<style>
+  body { font-family:'Helvetica Neue',Arial,sans-serif; background:#0f172a; color:#e2e8f0; margin:0; padding:24px; }
+  .wrap { max-width:720px; margin:0 auto; }
+  .card { background:#1e293b; border:1px solid #334155; border-radius:12px; padding:20px 22px; margin-bottom:16px; }
+  .brand { color:#38bdf8; font-weight:800; letter-spacing:.05em; font-size:12px; }
+  h1 { font-size:22px; margin:8px 0 2px; }
+  .meta { color:#94a3b8; font-size:13px; }
+  table { width:100%; border-collapse:collapse; margin:6px 0; }
+  td { padding:6px 4px; border-bottom:1px solid #334155; font-size:14px; }
+  .r { text-align:right; } .sm { color:#94a3b8; font-size:12px; }
+  .tot { font-size:20px; font-weight:700; color:#fff; }
+  .pill { display:inline-block; padding:2px 8px; border-radius:999px; font-size:11px; background:#334155; }
+  .exp { background:#7f1d1d; color:#fecaca; }
+  .btn { display:inline-block; padding:10px 16px; border-radius:8px; border:0; font-weight:600; cursor:pointer; font-size:14px; }
+  .accept { background:#059669; color:#fff; } .neutral { background:#334155; color:#e2e8f0; }
+  textarea, .btn { font-family:inherit; }
+  textarea { width:100%; background:#0f172a; color:#e2e8f0; border:1px solid #334155; border-radius:8px; padding:8px; }
+</style></head>
+<body><div class="wrap">
+  <div class="card">
+    <div class="brand">GO4IT · QUOTATION</div>
+    <h1>Quotation {{ q.tracking_code }}</h1>
+    <div class="meta">Issued {{ q.created_at.strftime('%Y-%m-%d') if q.created_at else '' }}
+      {% if expires %} · Valid until {{ expires.strftime('%Y-%m-%d') }}{% endif %}
+      {% if expires and today > expires %}<span class="pill exp">Expired</span>{% endif %}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sm">Prepared for</div>
+    <div style="font-size:16px;font-weight:600">{{ lead.buyer_company if lead and lead.buyer_company else 'Valued buyer' }}</div>
+    <div class="sm">{{ lead.dest_city ~ ', ' if lead and lead.dest_city }}{{ lead.dest_country if lead else '' }}</div>
+    <table>
+      <tr><td class="sm">Product</td><td>{{ product.name if product else q.tracking_code }}{% if product and product.spec %} · {{ product.spec }}{% endif %}</td></tr>
+      <tr><td class="sm">Quantity</td><td>{{ '%g'|format(q.quantity) }} {{ product.unit if product else '' }}</td></tr>
+      <tr><td class="sm">Incoterm</td><td>{{ q.incoterm }}{% if q.dest_border %} · {{ q.dest_border }}{% endif %}</td></tr>
+    </table>
+    <table>
+      <tr><td class="tot">Total ({{ q.incoterm }})</td><td class="r tot">{{ '%.2f'|format(q.delivered_total) }} {{ q.quote_currency }}</td></tr>
+      <tr><td class="sm">Unit price</td><td class="r sm">{{ '%.2f'|format(q.delivered_unit) }} {{ q.quote_currency }}/{{ product.unit if product else 'unit' }}</td></tr>
+    </table>
+    <div class="sm" style="margin-top:8px">Prices indicative and subject to confirmation. Go4it mediates all supply.</div>
+  </div>
+
+  <div class="card">
+    {% if q.buyer_response == 'accepted' %}
+      <div style="color:#34d399;font-weight:600">✓ You accepted this quotation{% if q.accepted_at %} on {{ q.accepted_at.strftime('%Y-%m-%d') }}{% endif %}. Our team will be in touch.</div>
+    {% elif q.buyer_response == 'changes' %}
+      <div style="color:#fbbf24;font-weight:600">Change request received — our team will follow up.</div>
+    {% elif expires and today > expires %}
+      <div class="sm">This quotation has expired. Please contact Go4it for an updated offer.</div>
+    {% else %}
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+        <form method="post" action="/q/{{ token }}/respond"><input type="hidden" name="action" value="accept"><button class="btn accept">Accept quotation</button></form>
+      </div>
+      <form method="post" action="/q/{{ token }}/respond">
+        <input type="hidden" name="action" value="changes">
+        <textarea name="message" rows="3" placeholder="Request a change (optional message)"></textarea>
+        <div style="margin-top:8px"><button class="btn neutral">Request a change</button></div>
+      </form>
+      <form method="post" action="/q/{{ token }}/respond" style="margin-top:8px">
+        <input type="hidden" name="action" value="reject"><button class="btn neutral">Decline</button>
+      </form>
+    {% endif %}
+  </div>
+</div></body></html>

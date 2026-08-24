@@ -59,7 +59,12 @@ WORKSPACES = [
 
     {"key": "commercial", "label": "Commercial", "icon": "briefcase", "role": "admin", "children": [
         {"key": "quotes", "label": "Quotes", "endpoint": "quotes_list", "paths": ("/quotes",)},
+        {"key": "contracts", "label": "Contracts", "endpoint": "contracts_list", "paths": ("/contracts",)},
         {"key": "deals", "label": "Deals", "endpoint": "deals_list", "paths": ("/deals",)},
+        {"key": "ctemplates", "label": "Templates", "endpoint": "contract_templates_list",
+         "paths": ("/contract-templates",)},
+        {"key": "canalytics", "label": "Commercial Analytics", "endpoint": "commercial_analytics",
+         "paths": ("/commercial/analytics",)},
     ]},
 
     {"key": "intelligence", "label": "Intelligence", "icon": "compass", "role": "admin", "children": [

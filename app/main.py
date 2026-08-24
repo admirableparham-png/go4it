@@ -56,7 +56,17 @@ from .models import (BounceRecord, Campaign, CampaignRecipient, CampaignStep, Em
 from .outreach import (build_parts, default_message, honey_message, mail_decrypt, mail_encrypt,
                        plain_parts, quotation_data, send_bulk_via_account, send_email, send_via_account,
                        verify_smtp, zinc_message)
-from .quote_service import create_quote
+from .quote_service import create_quote, ensure_version, revise_quote
+from . import quote_workflow as QWF
+from . import quote_portal as QP
+from . import quote_pdf as QPDF
+from . import pdf_render as PDF
+from . import ratelimit as RL
+from .deal_service import ensure_deal_for_quote_version, deal_ready_for_ops
+from . import contract_service as CONTRACT
+from . import esign as ESIGN
+from .models import (Contract, ContractDocument, ContractParty, ContractStatusEvent, ContractTemplate,
+                     ContractVersion, QuoteDocument, QuoteStatusEvent, QuoteVersion, SignatureEvent)
 from .research_engine import (PARTNERS, country_options, market_report,
                               product_options, rank_opportunities, recommend_destinations,
                               resolve_query)
@@ -78,7 +88,7 @@ templates.env.globals["admin_nav"] = adminnav.build_nav
 from .send_guard import mail_auth_display  # noqa: E402
 templates.env.globals["mail_auth_display"] = mail_auth_display
 
-PUBLIC_PREFIXES = ("/login", "/logout", "/static", "/api", "/go4it-capture.user.js", "/p/")
+PUBLIC_PREFIXES = ("/login", "/logout", "/static", "/api", "/go4it-capture.user.js", "/p/", "/q/")
 
 # Allowed pipeline transitions. Lost requires a reason (enforced in the route).
 TRANSITIONS = {
@@ -2906,17 +2916,72 @@ def lead_followup(request: Request, lead_id: int, next_action_at: str = Form("")
     return RedirectResponse(f"/leads/{lead_id}", status_code=303)
 
 
+QUOTE_STATUSES = QWF.STATUSES
+
+
 @app.get("/quotes", response_class=HTMLResponse)
-def quotes_list(request: Request):
+def quotes_list(request: Request, q: str = "", status: str = "", currency: str = "", incoterm: str = "",
+                sent: str = "", viewed: str = "", accepted: str = "", page: int = 1):
+    """Searchable, filterable, paginated quotes workspace (never loads all quotes). Tenant-scoped."""
+    per = 50
     with Session(engine) as session:
         user = current_user(request, session)
-        quotes = session.exec(scoped(select(Quote), Quote.owner_id, user).order_by(Quote.id.desc())).all()
-        lead_ids = {q.lead_id for q in quotes} or {0}
+        stmt = scoped(select(Quote), Quote.owner_id, user)
+        if q:
+            stmt = stmt.where(Quote.tracking_code.ilike(f"%{q.strip()}%"))
+        if status:
+            stmt = stmt.where(Quote.status == status)
+        if currency:
+            stmt = stmt.where(Quote.quote_currency == currency.upper())
+        if incoterm:
+            stmt = stmt.where(Quote.incoterm == incoterm.upper())
+        if sent == "yes":
+            stmt = stmt.where(Quote.status.in_(("sent", "viewed", "accepted", "rejected", "change_requested")))
+        if viewed == "yes":
+            stmt = stmt.where(Quote.viewed_at != None)                      # noqa: E711
+        elif viewed == "no":
+            stmt = stmt.where(Quote.viewed_at == None)                      # noqa: E711
+        if accepted == "yes":
+            stmt = stmt.where(Quote.status == "accepted")
+        elif accepted == "no":
+            stmt = stmt.where(Quote.status == "rejected")
+        total = session.exec(select(func.count()).select_from(stmt.subquery())).one()
+        pages = max(1, (total + per - 1) // per)
+        page = min(max(1, page), pages)
+        quotes = session.exec(stmt.order_by(Quote.id.desc()).offset((page - 1) * per).limit(per)).all()
+        lead_ids = {qt.lead_id for qt in quotes} or {0}
         leads = {l.id: l for l in session.exec(select(Lead).where(Lead.id.in_(lead_ids))).all()}
         products = {p.id: p for p in session.exec(select(Product)).all()}
-        rows = [{"q": q, "lead": leads.get(q.lead_id), "product": products.get(q.product_id)}
-                for q in quotes]
-    return templates.TemplateResponse("quotes_list.html", {"request": request, "user": user, "rows": rows})
+        rows = [{"q": qt, "lead": leads.get(qt.lead_id), "product": products.get(qt.product_id)}
+                for qt in quotes]
+    return templates.TemplateResponse("quotes_list.html", {
+        "request": request, "user": user, "rows": rows, "total": total, "page": page, "pages": pages,
+        "statuses": QUOTE_STATUSES,
+        "f": {"q": q, "status": status, "currency": currency, "incoterm": incoterm, "sent": sent,
+              "viewed": viewed, "accepted": accepted}})
+
+
+@app.get("/quotes/export.csv", response_class=PlainTextResponse)
+def quotes_export(request: Request):
+    """Admin-only, audited CSV export of quotes (tenant-scoped)."""
+    import csv as _csv
+    import io as _io
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        quotes = session.exec(select(Quote).order_by(Quote.id)).all()
+        out = _io.StringIO(); w = _csv.writer(out)
+        w.writerow(["ref", "version", "status", "incoterm", "currency", "quantity", "delivered_total",
+                    "validity_days", "created"])
+        for qt in quotes:
+            w.writerow([qt.tracking_code, qt.version, qt.status, qt.incoterm, qt.quote_currency, qt.quantity,
+                        qt.delivered_total, qt.validity_days,
+                        qt.created_at.strftime("%Y-%m-%d") if qt.created_at else ""])
+        pipeline.audit(session, user, "export", None, "quotes_export", {"rows": len(quotes)})
+        session.commit()
+    return PlainTextResponse(out.getvalue(),
+                             headers={"Content-Disposition": "attachment; filename=go4it_quotes.csv"})
 
 
 @app.get("/quotes/sample", response_class=HTMLResponse)
@@ -3047,13 +3112,28 @@ def approve_quote(request: Request, quote_id: int):
         q = session.get(Quote, quote_id)
         if q and not owns(q.owner_id, user):
             return _not_found()
-        if q and q.status == "draft":
-            q.status = "approved"
-            q.approved_by = user.email
-            session.add(q)
-            _ensure_share_token(session, q)     # buyer link ready to preview/share
+        if q and q.status in ("draft", "needs_review"):
+            ver = ensure_version(session, q, actor=user)     # freeze the immutable snapshot at approval
+            ok, why = QWF.transition(session, q, "approved", actor=user, reason="admin approval")
+            if ok:
+                q.approved_by = user.email
+                session.add(q)
+                from .models import QuoteApproval
+                session.add(QuoteApproval(quote_version_id=ver.id, approved_by=user.email,
+                                          checks=json.dumps(_quote_approval_checks(session, q, ver))))
+                _ensure_share_token(session, q)   # legacy /p/ link (kept for back-compat)
+                pipeline.audit(session, user, "quote", q.id, "quote_approved", {"version": q.version})
             session.commit()
     return RedirectResponse(f"/quotes/{quote_id}", status_code=303)
+
+
+def _quote_approval_checks(session, q, ver) -> dict:
+    """The approval checklist results (recorded on QuoteApproval). Buyer-facing content must carry no seller
+    identity / internal cost / margin — the buyer template + PDF are structurally cost-free (test-guarded)."""
+    return {"product": bool(q.product_id), "quantity": q.quantity > 0, "price": q.delivered_total > 0,
+            "currency": bool(q.quote_currency), "incoterm": bool(q.incoterm),
+            "no_unresolved_vars": not PDF.has_unresolved_vars(ver.commercial_text or ""),
+            "ddp_ok": not (q.incoterm == "DDP" and not q.dest_border)}
 
 
 @app.post("/quotes/{quote_id}/send")
@@ -3066,14 +3146,18 @@ def send_quote(request: Request, quote_id: int):
         if q and not owns(q.owner_id, user):
             return _not_found()
         if q and q.status == "approved":
-            q.status = "sent"
+            ver = ensure_version(session, q, actor=user)
+            ok, why = QWF.transition(session, q, "sent", actor=user, reason="quote sent")
+            if not ok:
+                return RedirectResponse(f"/quotes/{quote_id}?error=send", status_code=303)
             _ensure_share_token(session, q)
+            QP.mint_token(session, q, ver, actor=user, valid_days=q.validity_days)  # hashed buyer token
             session.add(q)
-            # Supersede any prior live quote for this lead so its public /p/ link stops serving an
-            # outdated price (the public route only serves approved/sent — superseded ones 404).
+            # Supersede any prior live quote for this lead so its public link stops serving an
+            # outdated price (the public routes only serve approved/sent — superseded ones 404).
             for old in session.exec(select(Quote).where(
                     Quote.lead_id == q.lead_id, Quote.id != q.id,
-                    Quote.status.in_(["approved", "sent"]))).all():
+                    Quote.status.in_(["approved", "sent", "viewed"]))).all():
                 old.status = "superseded"
                 session.add(old)
             lead = session.get(Lead, q.lead_id)
@@ -3085,6 +3169,166 @@ def send_quote(request: Request, quote_id: int):
                 _log(session, lead, user, "quote_sent", f"sent {q.tracking_code}")
             session.commit()
     return RedirectResponse(f"/quotes/{quote_id}", status_code=303)
+
+
+# ----------------------------------------------------------------------------- quote PDF + portal (Phase 6)
+QUOTE_FILES_DIR = BASE_DIR.parent / "quote_files"   # PRIVATE, outside /static
+
+
+@app.post("/quotes/{quote_id}/generate-pdf")
+def quote_generate_pdf(request: Request, quote_id: int):
+    """Generate the immutable branded quote PDF (admin). Only for an approved/sent version."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not role_at_least(user, "agent"):
+            return _forbidden()
+        q = session.get(Quote, quote_id)
+        if not q or not owns(q.owner_id, user):
+            return _not_found()
+        if q.status not in ("approved", "sent", "viewed", "accepted"):
+            return RedirectResponse(f"/quotes/{quote_id}?error=notapproved", status_code=303)
+        ver = ensure_version(session, q, actor=user)
+        link = f"{BASE_URL}/p/{q.share_token}" if q.share_token else ""
+        doc, err = QPDF.generate_quote_pdf(session, q, ver, QUOTE_FILES_DIR, actor=user, link=link)
+        if doc:
+            pipeline.audit(session, user, "quote", q.id, "quote_pdf_generated",
+                           {"doc_id": doc.id, "sha256": doc.sha256[:12]})
+        session.commit()
+    return RedirectResponse(f"/quotes/{quote_id}", status_code=303)
+
+
+@app.get("/quotes/{quote_id}/pdf")
+def quote_pdf_download(request: Request, quote_id: int):
+    """Admin download of the generated quote PDF (path re-validated inside QUOTE_FILES_DIR)."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        q = session.get(Quote, quote_id)
+        if not q or not owns(q.owner_id, user):
+            return _not_found()
+        from .models import QuoteDocument, QuoteVersion
+        ver = session.get(QuoteVersion, q.current_version_id) if q.current_version_id else None
+        doc = session.get(QuoteDocument, ver.pdf_document_id) if ver and ver.pdf_document_id else None
+        if not doc or doc.status != "active":
+            return _not_found()
+        rel = doc.file_path
+    path = (QUOTE_FILES_DIR / rel).resolve()
+    if not str(path).startswith(str(QUOTE_FILES_DIR.resolve()) + os.sep) or not path.exists():
+        return _not_found()
+    return FileResponse(str(path), filename=f"quote_{quote_id}.pdf", media_type="application/pdf")
+
+
+@app.post("/quotes/{quote_id}/revise")
+def quote_revise(request: Request, quote_id: int):
+    """Duplicate a quote into a new DRAFT version (never edits the sent/approved/accepted one)."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not role_at_least(user, "agent"):
+            return _forbidden()
+        q = session.get(Quote, quote_id)
+        if not q or not owns(q.owner_id, user):
+            return _not_found()
+        dup = revise_quote(session, q, actor=user)
+        newid = dup.id
+    return RedirectResponse(f"/quotes/{newid}", status_code=303)
+
+
+@app.post("/quotes/{quote_id}/create-deal")
+def quote_create_deal(request: Request, quote_id: int):
+    """Admin action from the 'accepted_quote_needs_deal' task — idempotently create the Deal for the accepted
+    version (unique per version; double-submit safe)."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not role_at_least(user, "agent"):
+            return _forbidden()
+        q = session.get(Quote, quote_id)
+        if not q or not owns(q.owner_id, user):
+            return _not_found()
+        from .models import QuoteVersion
+        ver = session.get(QuoteVersion, q.current_version_id) if q.current_version_id else None
+        if not ver or q.status != "accepted":
+            return RedirectResponse(f"/quotes/{quote_id}?error=notaccepted", status_code=303)
+        deal, created = ensure_deal_for_quote_version(session, ver, actor=user)
+        WQ.resolve_by_key(session, f"accepted_quote_needs_deal:qv:{ver.id}", user, "deal created")
+        session.commit()
+        dealid = deal.id if deal else 0
+    return RedirectResponse(f"/deals/{dealid}" if dealid else "/quotes", status_code=303)
+
+
+@app.get("/q/{token}", response_class=HTMLResponse)
+def quote_portal(request: Request, token: str):
+    """Secure buyer quote portal (hashed token, version-scoped). Records a controlled view. No internal costs."""
+    if not RL.allow(RL.client_key(request, "qportal"), limit=40, window=60):
+        return HTMLResponse("Too many requests. Please retry shortly.", status_code=429)
+    with Session(engine) as session:
+        resolved = QP.resolve_token(session, token)
+        if not resolved:
+            return HTMLResponse("This quotation link is not available.", status_code=404)
+        tok, q, ver = resolved
+        QWF.mark_expired_if_due(session, q)
+        if q.status not in QWF.PRESENTABLE:
+            session.commit()
+            return HTMLResponse("This quotation link is not available.", status_code=404)
+        QP.register_view(session, tok, q)          # controlled `viewed` event (not a term change)
+        session.commit()
+        lead = session.get(Lead, q.lead_id)
+        product = session.get(Product, q.product_id)
+        fx = json.loads(q.fx_snapshot or "{}")
+        expires = QWF.expiry_at(q)
+    return templates.TemplateResponse("q_portal.html", {
+        "request": request, "q": q, "lead": lead, "product": product, "fx": fx, "token": token,
+        "expires": expires, "today": datetime.utcnow()})
+
+
+@app.post("/q/{token}/respond", response_class=HTMLResponse)
+def quote_portal_respond(request: Request, token: str, action: str = Form(...), message: str = Form("")):
+    """Buyer accept/reject/change on the secure portal — idempotent, rate-limited. Never creates a Deal (raises
+    an admin task). Never exposes seller identity."""
+    if not RL.allow(RL.client_key(request, "qrespond"), limit=20, window=60):
+        return HTMLResponse("Too many requests. Please retry shortly.", status_code=429)
+    with Session(engine) as session:
+        resolved = QP.resolve_token(session, token)
+        if not resolved:
+            return HTMLResponse("This quotation link is not available.", status_code=404)
+        tok, q, ver = resolved
+        result, why = QP.record_buyer_action(session, q, ver, action, message=message)
+        if result == "invalid":
+            return HTMLResponse("Bad request", status_code=400)
+        lead = session.get(Lead, q.lead_id)
+        if lead and result in ("accepted", "rejected", "change_requested"):
+            if lead.buyer_replied_at is None:
+                lead.buyer_replied_at = datetime.utcnow()
+            if lead.status in ("new", "quoted"):
+                lead.status = "negotiating"
+            session.add(Outreach(lead_id=lead.id, direction="in", channel="portal",
+                                 from_addr=(lead.email or "buyer"), subject=f"Quote {q.tracking_code}",
+                                 body=f"Buyer {result} {q.tracking_code}."[:2000], status="received"))
+            session.add(lead)
+        code = q.tracking_code
+        session.commit()
+    accepted = result == "accepted" or result == "already_accepted"
+    return templates.TemplateResponse("proforma_thanks.html",
+                                      {"request": request, "accepted": accepted, "code": code})
+
+
+@app.get("/q/{token}/pdf")
+def quote_portal_pdf(request: Request, token: str):
+    """Buyer PDF download via the secure token (only for a presentable version with a generated PDF)."""
+    if not RL.allow(RL.client_key(request, "qpdf"), limit=20, window=60):
+        return HTMLResponse("Too many requests.", status_code=429)
+    with Session(engine) as session:
+        resolved = QP.resolve_token(session, token)
+        if not resolved:
+            return _not_found()
+        tok, q, ver = resolved
+        from .models import QuoteDocument
+        doc = session.get(QuoteDocument, ver.pdf_document_id) if ver.pdf_document_id else None
+        if not doc or doc.status != "active" or q.status not in QWF.PRESENTABLE:
+            return _not_found()
+        rel = doc.file_path
+    path = (QUOTE_FILES_DIR / rel).resolve()
+    if not str(path).startswith(str(QUOTE_FILES_DIR.resolve()) + os.sep) or not path.exists():
+        return _not_found()
+    return FileResponse(str(path), filename=f"quote_{ver.quote_id}.pdf", media_type="application/pdf")
 
 
 # ----------------------------------------------------------------------------- deals (post-win)
@@ -3263,6 +3507,267 @@ def settle_deal(request: Request, deal_id: int,
             session.add(deal)
             session.commit()
     return RedirectResponse(f"/deals/{deal_id}", status_code=303)
+
+
+# ----------------------------------------------------------------------------- contracts (Phase 6, B)
+CONTRACT_FILES_DIR = BASE_DIR.parent / "contract_files"   # PRIVATE, outside /static
+
+
+@app.get("/contracts", response_class=HTMLResponse)
+def contracts_list(request: Request, q: str = "", ctype: str = "", side: str = "", status: str = "",
+                   country: str = "", page: int = 1):
+    """Admin-only contracts workspace — search + filters + pagination."""
+    per = 50
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        stmt = select(Contract)
+        if q:
+            like = f"%{q.strip()}%"
+            stmt = stmt.where(Contract.tracking_code.ilike(like))
+        if ctype:
+            stmt = stmt.where(Contract.contract_type == ctype)
+        if side:
+            stmt = stmt.where(Contract.side == side)
+        if status:
+            stmt = stmt.where(Contract.status == status)
+        if country:
+            stmt = stmt.where(Contract.country == country.upper())
+        total = session.exec(select(func.count()).select_from(stmt.subquery())).one()
+        pages = max(1, (total + per - 1) // per)
+        page = min(max(1, page), pages)
+        contracts = session.exec(stmt.order_by(Contract.id.desc()).offset((page - 1) * per).limit(per)).all()
+        companies = {c.id: c for c in session.exec(select(Company)).all()}
+    return templates.TemplateResponse("contracts.html", {
+        "request": request, "user": user, "active": "contracts", "contracts": contracts,
+        "companies": companies, "total": total, "page": page, "pages": pages,
+        "types": CONTRACT.CONTRACT_TYPES, "statuses": CONTRACT.STATUSES,
+        "f": {"q": q, "ctype": ctype, "side": side, "status": status, "country": country}})
+
+
+@app.post("/contracts")
+def contract_new(request: Request, contract_type: str = Form(...), side: str = Form(...),
+                 company_id: str = Form(""), country: str = Form(""), quote_id: str = Form(""),
+                 deal_id: str = Form(""), terms: str = Form("")):
+    """Create a contract — the admin EXPLICITLY chooses type + side + party (never auto-assumed)."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        c, _v = CONTRACT.create_contract(
+            session, contract_type=contract_type, side=side,
+            company_id=int(company_id) if company_id.isdigit() else None,
+            country=country, quote_id=int(quote_id) if quote_id.isdigit() else None,
+            deal_id=int(deal_id) if deal_id.isdigit() else None, terms=terms,
+            owner_id=user.id, actor=user)
+        cid = c.id
+    return RedirectResponse(f"/contracts/{cid}", status_code=303)
+
+
+@app.get("/contracts/{contract_id}", response_class=HTMLResponse)
+def contract_detail(request: Request, contract_id: int):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        c = session.get(Contract, contract_id)
+        if not c:
+            return _not_found()
+        versions = session.exec(select(ContractVersion).where(
+            ContractVersion.contract_id == c.id).order_by(ContractVersion.version.desc())).all()
+        docs = session.exec(select(ContractDocument).where(
+            ContractDocument.contract_id == c.id, ContractDocument.status == "active")).all()
+        sigs = session.exec(select(SignatureEvent).where(SignatureEvent.contract_id == c.id)).all()
+        events = session.exec(select(ContractStatusEvent).where(
+            ContractStatusEvent.contract_id == c.id).order_by(ContractStatusEvent.id.desc())).all()
+        company = session.get(Company, c.company_id) if c.company_id else None
+    return templates.TemplateResponse("contract_detail.html", {
+        "request": request, "user": user, "active": "contracts", "c": c, "versions": versions, "docs": docs,
+        "sigs": sigs, "events": events, "company": company, "statuses": CONTRACT.STATUSES,
+        "next_states": sorted(CONTRACT.TRANSITIONS.get(c.status, set())),
+        "esign_status": ESIGN.provider_status(), "legal_notice": CONTRACT.LEGAL_NOTICE})
+
+
+@app.post("/contracts/{contract_id}/action")
+def contract_action(request: Request, contract_id: int, action: str = Form(...), reason: str = Form(""),
+                    signer_name: str = Form(""), signer_email: str = Form(""), party_role: str = Form("buyer")):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        c = session.get(Contract, contract_id)
+        if not c:
+            return _not_found()
+        if action == "revise":
+            CONTRACT.revise_contract(session, c, actor=user)
+        elif action == "amend":
+            CONTRACT.revise_contract(session, c, actor=user, is_amendment=True)
+        elif action == "manual_sign":
+            ver = session.get(ContractVersion, c.current_version_id)
+            ESIGN.record_manual_signature(session, c, ver, party_role=party_role, signer_name=signer_name,
+                                          signer_email=signer_email, actor=user)
+            CONTRACT.transition(session, c, "signed", actor=user, reason="manual signature recorded")
+        elif action in CONTRACT.STATUSES:
+            CONTRACT.transition(session, c, action, actor=user, reason=reason)
+        session.commit()
+    return RedirectResponse(f"/contracts/{contract_id}", status_code=303)
+
+
+@app.post("/contracts/{contract_id}/documents")
+def contract_doc_upload(request: Request, contract_id: int, file: UploadFile = File(...)):
+    """Upload a SIGNED contract copy — private, quarantined, admin-only until scan-cleared, hashed, never
+    overwrites the generated original."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        c = session.get(Contract, contract_id)
+        if not c:
+            return _not_found()
+        data = file.file.read(ATT.MAX_BYTES + 1)
+        ok, reason = ATT._secure_validate(file.filename or "", file.content_type or "", len(data))
+        if not ok or len(data) > ATT.MAX_BYTES:
+            return RedirectResponse(f"/contracts/{contract_id}?err=1", status_code=303)
+        doc = ContractDocument(contract_id=c.id, contract_version_id=c.current_version_id, kind="signed_upload",
+                               original_filename=file.filename or "", content_type=file.content_type or "",
+                               size_bytes=len(data), sha256=PDF.sha256_bytes(data), quarantine="quarantined",
+                               uploaded_by=user.email)
+        session.add(doc); session.flush()
+        dest = CONTRACT_FILES_DIR / str(c.id)
+        dest.mkdir(parents=True, exist_ok=True)
+        fname = f"{doc.id}_{_safe_name(file.filename)}"
+        (dest / fname).write_bytes(data)
+        doc.file_path = f"{c.id}/{fname}"
+        session.add(doc)
+        pipeline.audit(session, user, "contract", c.id, "signed_doc_upload", {"doc_id": doc.id})
+        session.commit()
+    return RedirectResponse(f"/contracts/{contract_id}", status_code=303)
+
+
+@app.get("/contracts/{contract_id}/documents/{doc_id}/download")
+def contract_doc_download(request: Request, contract_id: int, doc_id: int):
+    """ADMIN-ONLY download of a contract document (generated or signed upload)."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _not_found()
+        doc = session.get(ContractDocument, doc_id)
+        if not doc or doc.contract_id != contract_id or doc.status != "active":
+            return _not_found()
+        rel = doc.file_path
+    path = (CONTRACT_FILES_DIR / rel).resolve()
+    if not str(path).startswith(str(CONTRACT_FILES_DIR.resolve()) + os.sep) or not path.exists():
+        return _not_found()
+    return FileResponse(str(path), filename=doc.original_filename or path.name,
+                        media_type=doc.content_type or "application/octet-stream")
+
+
+@app.post("/contracts/{contract_id}/documents/{doc_id}/scan-clear")
+def contract_doc_scan_clear(request: Request, contract_id: int, doc_id: int):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        doc = session.get(ContractDocument, doc_id)
+        if not doc or doc.contract_id != contract_id:
+            return _not_found()
+        doc.quarantine = "scanned"; session.add(doc)
+        pipeline.audit(session, user, "contract", contract_id, "signed_doc_scan_clear", {"doc_id": doc_id})
+        session.commit()
+    return RedirectResponse(f"/contracts/{contract_id}", status_code=303)
+
+
+@app.get("/contract-templates", response_class=HTMLResponse)
+def contract_templates_list(request: Request):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        tpls = session.exec(select(ContractTemplate).order_by(ContractTemplate.id.desc())).all()
+    return templates.TemplateResponse("contract_templates.html", {
+        "request": request, "user": user, "active": "ctemplates", "templates_list": tpls,
+        "types": CONTRACT.CONTRACT_TYPES, "legal_notice": CONTRACT.LEGAL_NOTICE})
+
+
+@app.post("/contract-templates")
+def contract_template_save(request: Request, name: str = Form(...), contract_type: str = Form("buyer_sales"),
+                           side: str = Form("buyer"), body: str = Form(""), allowed_vars: str = Form("")):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        allow = [v.strip() for v in allowed_vars.replace(",", " ").split() if v.strip()]
+        # reject a template whose body uses a variable not on the allowlist
+        unknown = CONTRACT.template_vars(body) - set(allow)
+        if unknown:
+            return RedirectResponse("/contract-templates?err=vars", status_code=303)
+        session.add(ContractTemplate(name=name, contract_type=contract_type, side=side, body=body,
+                                     allowed_vars=json.dumps(allow), created_by=user.email))
+        pipeline.audit(session, user, "contract_template", None, "template_save", {"name": name})
+        session.commit()
+    return RedirectResponse("/contract-templates", status_code=303)
+
+
+@app.post("/contract-templates/{tpl_id}/archive")
+def contract_template_archive(request: Request, tpl_id: int):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        t = session.get(ContractTemplate, tpl_id)
+        if t:
+            t.status = "archived"; session.add(t)
+            pipeline.audit(session, user, "contract_template", tpl_id, "template_archive", {})
+            session.commit()
+    return RedirectResponse("/contract-templates", status_code=303)
+
+
+# ----------------------------------------------------------------------------- commercial analytics (Phase 6)
+@app.get("/commercial/analytics", response_class=HTMLResponse)
+def commercial_analytics(request: Request):
+    """Admin-only commercial analytics. Values are reported PER CURRENCY (never summed across currencies
+    without an explicit FX snapshot). Count / value / conversion-rate are shown distinctly."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        quotes = session.exec(select(Quote)).all()
+        by_status = {}
+        value_by_ccy = {}
+        accepted_value_by_ccy = {}
+        for q in quotes:
+            by_status[q.status] = by_status.get(q.status, 0) + 1
+            value_by_ccy.setdefault(q.quote_currency, 0.0)
+            value_by_ccy[q.quote_currency] += q.delivered_total or 0
+            if q.status == "accepted":
+                accepted_value_by_ccy.setdefault(q.quote_currency, 0.0)
+                accepted_value_by_ccy[q.quote_currency] += q.delivered_total or 0
+        sent = sum(1 for q in quotes if q.status in ("sent", "viewed", "accepted", "rejected", "change_requested"))
+        viewed = sum(1 for q in quotes if q.viewed_at is not None)
+        accepted = by_status.get("accepted", 0)
+        rejected = by_status.get("rejected", 0)
+        expired = by_status.get("expired", 0)
+        rates = {
+            "sent_to_viewed": round(viewed / sent * 100, 1) if sent else 0,
+            "viewed_to_accepted": round(accepted / viewed * 100, 1) if viewed else 0,
+            "rejection": round(rejected / sent * 100, 1) if sent else 0,
+            "expiry": round(expired / max(1, len(quotes)) * 100, 1),
+        }
+        contracts = session.exec(select(Contract)).all()
+        contracts_review = sum(1 for c in contracts if c.status == "needs_review")
+        contracts_sig = sum(1 for c in contracts if c.status in ("sent", "viewed"))
+        deals = session.exec(select(Deal)).all()
+        deal_value_by_ccy = {}
+        planned = realized = 0.0
+        for d in deals:
+            planned += d.planned_margin or 0
+            realized += d.realized_margin or 0
+    return templates.TemplateResponse("commercial_analytics.html", {
+        "request": request, "user": user, "active": "canalytics", "by_status": by_status,
+        "value_by_ccy": value_by_ccy, "accepted_value_by_ccy": accepted_value_by_ccy, "rates": rates,
+        "quote_total": len(quotes), "contracts_review": contracts_review, "contracts_sig": contracts_sig,
+        "deal_count": len(deals), "planned_margin": round(planned, 2), "realized_margin": round(realized, 2)})
 
 
 # ----------------------------------------------------------------------------- ingestion

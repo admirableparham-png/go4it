@@ -10,6 +10,20 @@
   <p class="text-slate-400 text-sm mt-1">{% if is_admin %}Two-price offers (EXW + delivered) generated from your catalog.{% else %}Price offers we prepare for your buyers.{% endif %}</p>
 </div>
 
+{% if is_admin and f is defined %}
+<form method="get" action="/quotes" class="card mb-4 flex flex-wrap gap-2 items-end">
+  <input name="q" value="{{ f.q }}" placeholder="ref" class="input" style="max-width:150px">
+  <select name="status" class="input" style="max-width:150px"><option value="">Any status</option>{% for s in statuses %}<option value="{{ s }}" {% if f.status==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
+  <input name="currency" value="{{ f.currency }}" placeholder="ccy" class="input" style="max-width:90px">
+  <input name="incoterm" value="{{ f.incoterm }}" placeholder="incoterm" class="input" style="max-width:110px">
+  <select name="viewed" class="input" style="max-width:130px"><option value="">Viewed?</option><option value="yes" {% if f.viewed=='yes' %}selected{% endif %}>Viewed</option><option value="no" {% if f.viewed=='no' %}selected{% endif %}>Not viewed</option></select>
+  <select name="accepted" class="input" style="max-width:130px"><option value="">Decision?</option><option value="yes" {% if f.accepted=='yes' %}selected{% endif %}>Accepted</option><option value="no" {% if f.accepted=='no' %}selected{% endif %}>Rejected</option></select>
+  <button class="btn btn-primary btn-sm">Filter</button>
+  <a href="/quotes/export.csv" class="btn btn-neutral btn-sm">Export CSV</a>
+  <span class="text-slate-500 text-sm ml-auto">{{ total }} total{% if pages > 1 %} · page {{ page }}/{{ pages }}{% endif %}</span>
+</form>
+{% endif %}
+
 {% if not is_admin %}
 <div class="card mb-6" style="border-color:rgba(34,211,238,.3)">
   <div class="flex items-start gap-3">
@@ -76,5 +90,13 @@
   </div>
 {% else %}
   <div class="empty">{% if is_admin %}No quotes yet. Add a lead (a draft quote is auto-created for the best match) or click &ldquo;Quote this&rdquo; on any match.{% else %}No quotes yet &mdash; when we price one of your buyers, it will appear here.{% endif %}</div>
+{% endif %}
+{% if pages is defined and pages > 1 %}
+  <div class="flex items-center justify-center gap-2 mt-3 text-sm">
+    {% set qs = 'q=%s&status=%s&currency=%s&incoterm=%s&viewed=%s&accepted=%s'|format(f.q, f.status, f.currency, f.incoterm, f.viewed, f.accepted) %}
+    {% if page > 1 %}<a class="btn btn-neutral btn-sm" href="/quotes?{{ qs }}&page={{ page-1 }}">Prev</a>{% endif %}
+    <span class="text-slate-500">Page {{ page }} / {{ pages }}</span>
+    {% if page < pages %}<a class="btn btn-neutral btn-sm" href="/quotes?{{ qs }}&page={{ page+1 }}">Next</a>{% endif %}
+  </div>
 {% endif %}
 {% endblock %}

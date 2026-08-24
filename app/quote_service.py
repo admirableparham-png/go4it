@@ -3,7 +3,7 @@ snapshot, then build and persist a Quote. Used by both the web routes and seed.
 """
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from sqlmodel import select
 
@@ -122,3 +122,86 @@ def create_quote(session, lead: Lead, product: Product, incoterm: str = "DAP") -
     session.commit()
     session.refresh(quote)
     return quote
+
+
+# --------------------------------------------------------------------- Phase 6: immutable versions
+def _snapshot_fields(session, quote) -> dict:
+    """The buyer-facing + internal frozen terms of a quote, for the immutable QuoteVersion."""
+    product = session.get(Product, quote.product_id) if quote.product_id else None
+    lead = session.get(Lead, quote.lead_id) if quote.lead_id else None
+    prod_snap = {}
+    if product:
+        prod_snap = {"id": product.id, "name": product.name, "sku": product.sku,
+                     "description": product.short_description or product.spec, "spec": product.spec,
+                     "hs_code": product.hs_code, "origin": product.origin_country or product.origin_region,
+                     "packaging": product.packaging, "lead_time_days": product.lead_time_days,
+                     "unit": product.unit, "updated_at": product.updated_at.isoformat() if product.updated_at else ""}
+    return {
+        "quote_id": quote.id, "version": quote.version, "status": quote.status,
+        "product_id": quote.product_id, "product_snapshot": prod_snap,
+        "quantity": quote.quantity, "unit": (product.unit if product else ""),
+        "unit_price": quote.delivered_unit, "currency": quote.quote_currency, "incoterm": quote.incoterm,
+        "origin": (product.origin_country or product.origin_region) if product else "",
+        "destination": quote.dest_border or (lead.dest_country if lead else ""),
+        "total": quote.delivered_total, "margin_pct": quote.margin_pct,
+        "fx_snapshot": quote.fx_snapshot, "params_snapshot": quote.params_snapshot,
+        "breakdown": quote.breakdown,
+    }
+
+
+def content_hash(fields: dict) -> str:
+    import hashlib
+    payload = json.dumps({k: fields.get(k) for k in
+                          ("quote_id", "version", "unit_price", "total", "currency", "incoterm",
+                           "quantity", "destination", "product_snapshot")}, sort_keys=True, default=str)
+    return hashlib.sha256(payload.encode()).hexdigest()
+
+
+def ensure_version(session, quote, *, inferred=False, actor=None):
+    """Get-or-create the IMMUTABLE QuoteVersion for a Quote row (1:1 — the legacy model already makes a new
+    Quote per version). Sets quote.current_version_id. Idempotent. Never edits an existing version."""
+    from .models import QuoteVersion
+    existing = session.exec(select(QuoteVersion).where(QuoteVersion.quote_id == quote.id)
+                            .order_by(QuoteVersion.version.desc())).first()
+    if existing:
+        if quote.current_version_id != existing.id:
+            quote.current_version_id = existing.id; session.add(quote)
+        return existing
+    f = _snapshot_fields(session, quote)
+    # legacy quoting treats margin_pct as a MARKUP on the cost subtotal (delivered = subtotal*(1+pct/100)),
+    # so record markup = that value and derive the true gross MARGIN (% of price) — distinct numbers.
+    legacy_markup = f.get("margin_pct") or 0.0
+    gross_margin = round(legacy_markup / (100.0 + legacy_markup) * 100.0, 2) if legacy_markup else 0.0
+    ver = QuoteVersion(
+        quote_id=quote.id, version=quote.version, status=quote.status, product_id=quote.product_id,
+        product_snapshot=json.dumps(f["product_snapshot"]), quantity=f["quantity"], unit=f["unit"],
+        unit_price=f["unit_price"], currency=f["currency"], incoterm=f["incoterm"], origin=f["origin"],
+        destination=f["destination"], total=f["total"], margin_pct=gross_margin, markup_pct=legacy_markup,
+        fx_snapshot=f["fx_snapshot"], params_snapshot=f["params_snapshot"],
+        validity_at=((quote.created_at + timedelta(days=quote.validity_days)) if quote.created_at else None),
+        content_hash=content_hash(f), created_by=getattr(actor, "email", "") or quote.created_by,
+        inferred=inferred)
+    session.add(ver); session.flush()
+    quote.current_version_id = ver.id; session.add(quote)
+    return ver
+
+
+def revise_quote(session, quote, actor=None) -> Quote:
+    """Duplicate a quote into a NEW draft version (never edits the accepted/sent/approved/expired one).
+    Creates a fresh Quote row (version+1) + its immutable QuoteVersion. Returns the new draft Quote."""
+    lead = session.get(Lead, quote.lead_id)
+    version = len(session.exec(select(Quote).where(Quote.lead_id == quote.lead_id)).all()) + 1
+    dup = Quote(lead_id=quote.lead_id, owner_id=quote.owner_id, product_id=quote.product_id,
+                quantity=quote.quantity, incoterm=quote.incoterm, dest_border=quote.dest_border,
+                quote_currency=quote.quote_currency, exw_unit=quote.exw_unit, exw_total=quote.exw_total,
+                delivered_unit=quote.delivered_unit, delivered_total=quote.delivered_total,
+                margin_pct=quote.margin_pct, breakdown=quote.breakdown, params_snapshot=quote.params_snapshot,
+                fx_snapshot=quote.fx_snapshot, validity_days=quote.validity_days, status="draft",
+                version=version, created_by=getattr(actor, "email", "") or "")
+    session.add(dup); session.commit(); session.refresh(dup)
+    dup.tracking_code = f"{lead.tracking_code}-Q{version}" if lead else f"Q{version}"
+    session.add(dup); session.commit(); session.refresh(dup)
+    ver = ensure_version(session, dup, actor=actor)
+    ver.supersedes_id = quote.current_version_id; session.add(ver)
+    session.commit()
+    return dup

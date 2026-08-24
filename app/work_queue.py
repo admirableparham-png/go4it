@@ -31,7 +31,13 @@ TYPES = ["review_new_request", "follow_up_buyer", "follow_up_seller", "follow_up
          "product_incomplete", "product_uncategorized", "missing_hs_code", "missing_supplier",
          "missing_origin", "missing_unit", "missing_base_price", "stale_product_verification",
          "expired_price", "expired_rate", "price_needs_approval", "catalog_needs_review",
-         "catalog_generation_failed", "ambiguous_import_match", "invalid_document", "other"]
+         "catalog_generation_failed", "ambiguous_import_match", "invalid_document",
+         # Phase 6 (Commercial) work-item types
+         "quote_needs_review", "quote_missing_pricing", "quote_expired", "quote_change_requested",
+         "quote_email_failed", "buyer_reply_needs_review", "contract_needs_review",
+         "contract_change_requested", "contract_awaiting_signature", "contract_expired",
+         "signed_doc_scan_review", "accepted_quote_needs_deal", "deal_missing_contract",
+         "deal_ready_for_handoff", "ambiguous_legacy_commercial", "other"]
 TYPE_LABELS = {
     "review_new_request": "Review new request", "follow_up_buyer": "Follow up with buyer",
     "follow_up_seller": "Follow up with seller", "follow_up_supplier": "Follow up with supplier",
@@ -50,7 +56,17 @@ TYPE_LABELS = {
     "stale_product_verification": "Stale product verification", "expired_price": "Expired price version",
     "expired_rate": "Expired cost rate", "price_needs_approval": "Price version needs approval",
     "catalog_needs_review": "Catalog needs review", "catalog_generation_failed": "Catalog generation failed",
-    "ambiguous_import_match": "Ambiguous import match", "invalid_document": "Invalid document", "other": "Other",
+    "ambiguous_import_match": "Ambiguous import match", "invalid_document": "Invalid document",
+    "quote_needs_review": "Quote needs review", "quote_missing_pricing": "Quote missing pricing inputs",
+    "quote_expired": "Quote expired", "quote_change_requested": "Quote change requested",
+    "quote_email_failed": "Quote email delivery failed", "buyer_reply_needs_review": "Buyer reply needs review",
+    "contract_needs_review": "Contract needs review", "contract_change_requested": "Contract change requested",
+    "contract_awaiting_signature": "Contract awaiting signature", "contract_expired": "Contract expired",
+    "signed_doc_scan_review": "Signed document needs scan review",
+    "accepted_quote_needs_deal": "Accepted quote needs deal creation",
+    "deal_missing_contract": "Deal missing required contract",
+    "deal_ready_for_handoff": "Deal ready for operational handoff",
+    "ambiguous_legacy_commercial": "Ambiguous legacy commercial relationship", "other": "Other",
 }
 STATUSES = ["open", "in_progress", "waiting", "completed", "dismissed"]
 NONTERMINAL = ("open", "in_progress", "waiting")
@@ -69,7 +85,15 @@ PARTY_OF_TYPE = {"follow_up_buyer": "buyer", "follow_up_seller": "seller", "foll
                  "stale_product_verification": "internal", "expired_price": "internal", "expired_rate": "internal",
                  "price_needs_approval": "internal", "catalog_needs_review": "internal",
                  "catalog_generation_failed": "system", "ambiguous_import_match": "internal",
-                 "invalid_document": "internal"}
+                 "invalid_document": "internal",
+                 "quote_needs_review": "internal", "quote_missing_pricing": "internal",
+                 "quote_expired": "internal", "quote_change_requested": "buyer",
+                 "quote_email_failed": "system", "buyer_reply_needs_review": "buyer",
+                 "contract_needs_review": "internal", "contract_change_requested": "internal",
+                 "contract_awaiting_signature": "internal", "contract_expired": "internal",
+                 "signed_doc_scan_review": "internal", "accepted_quote_needs_deal": "internal",
+                 "deal_missing_contract": "internal", "deal_ready_for_handoff": "internal",
+                 "ambiguous_legacy_commercial": "internal"}
 PRIORITY_BADGE = {"low": "slate", "normal": "sky", "high": "amber", "urgent": "rose"}
 STATUS_BADGE = {"open": "queued", "in_progress": "running", "waiting": "amber",
                 "completed": "won", "dismissed": "slate"}
@@ -87,8 +111,9 @@ def create_work_item(session, *, type, title, description="", tenant_id=None, pr
                      assigned_admin_id=None, created_by=None, source="manual", visibility="internal",
                      waiting_on="", related_request_id=None, related_company_id=None, related_lead_id=None,
                      related_outreach_id=None, related_quote_id=None, related_deal_id=None,
-                     related_seller_update_id=None, related_product_id=None, parent_id=None,
-                     idempotency_key="", condition_version="", inferred=False, due_at=None) -> WorkItem:
+                     related_seller_update_id=None, related_product_id=None, related_contract_id=None,
+                     parent_id=None, idempotency_key="", condition_version="", inferred=False,
+                     due_at=None) -> WorkItem:
     """Create a WorkItem (does not commit). status defaults to 'waiting' when waiting_on is set, else 'open'.
     Raises IntegrityError if an OPEN item with the same idempotency_key already exists (partial-unique index)."""
     if status is None:
@@ -101,7 +126,8 @@ def create_work_item(session, *, type, title, description="", tenant_id=None, pr
                   related_lead_id=related_lead_id, related_outreach_id=related_outreach_id,
                   related_quote_id=related_quote_id, related_deal_id=related_deal_id,
                   related_seller_update_id=related_seller_update_id, related_product_id=related_product_id,
-                  parent_id=parent_id, idempotency_key=idempotency_key, condition_version=condition_version,
+                  related_contract_id=related_contract_id, parent_id=parent_id,
+                  idempotency_key=idempotency_key, condition_version=condition_version,
                   inferred=inferred, due_at=due_at)
     session.add(wi)
     session.flush()  # surface the partial-unique IntegrityError to the caller now
@@ -657,6 +683,87 @@ def sync_failed_catalog_jobs(session, actor=None, inferred=False, budget=None) -
     return n
 
 
+# --- Phase 6 commercial scanners ------------------------------------------------------------------
+def sync_quotes_needing_review(session, actor=None, inferred=False, budget=None) -> int:
+    from .models import Quote
+    n = 0
+    for q in session.exec(select(Quote).where(Quote.status == "needs_review")).all():
+        if _capped(budget, n):
+            break
+        key = f"quote_needs_review:quote:{q.id}"
+        if already_handled(session, key, f"v{q.version}"):
+            continue
+        if create_work_item_safe(session, actor=actor, type="quote_needs_review",
+                                 title=f"Quote {q.tracking_code or q.id} needs review",
+                                 tenant_id=q.owner_id, related_quote_id=q.id, related_lead_id=q.lead_id,
+                                 idempotency_key=key, condition_version=f"v{q.version}", inferred=inferred):
+            n += 1
+    return n
+
+
+def sync_expired_quotes(session, actor=None, inferred=False, budget=None) -> int:
+    """Flip overdue approved/sent/viewed quotes to expired (never presented active) + raise a task once."""
+    from .models import Quote
+    from . import quote_workflow as QW
+    n = 0
+    for q in session.exec(select(Quote).where(Quote.status.in_(("approved", "sent", "viewed")))).all():
+        if _capped(budget, n):
+            break
+        if not QW.is_expired(q):
+            continue
+        QW.mark_expired_if_due(session, q)
+        key = f"quote_expired:quote:{q.id}"
+        if already_handled(session, key, f"v{q.version}"):
+            continue
+        if create_work_item_safe(session, actor=actor, type="quote_expired",
+                                 title=f"Quote {q.tracking_code or q.id} expired",
+                                 tenant_id=q.owner_id, related_quote_id=q.id, related_lead_id=q.lead_id,
+                                 idempotency_key=key, condition_version=f"v{q.version}", inferred=inferred):
+            n += 1
+    session.commit()
+    return n
+
+
+def sync_accepted_quotes_need_deal(session, actor=None, inferred=False, budget=None) -> int:
+    """Durable repair: an accepted quote version with no Deal → a create-deal task (idempotent)."""
+    from .models import Deal, Quote, QuoteVersion
+    n = 0
+    for q in session.exec(select(Quote).where(Quote.status == "accepted")).all():
+        if _capped(budget, n):
+            break
+        ver = session.get(QuoteVersion, q.current_version_id) if q.current_version_id else None
+        if ver is None:
+            continue
+        if session.exec(select(Deal).where(Deal.quote_version_id == ver.id)).first():
+            continue
+        key = f"accepted_quote_needs_deal:qv:{ver.id}"
+        if already_handled(session, key, "accepted"):
+            continue
+        if create_work_item_safe(session, actor=actor, type="accepted_quote_needs_deal",
+                                 title=f"Accepted quote {q.tracking_code or q.id} needs a deal",
+                                 tenant_id=q.owner_id, related_quote_id=q.id, related_lead_id=q.lead_id,
+                                 idempotency_key=key, condition_version="accepted", inferred=inferred):
+            n += 1
+    return n
+
+
+def sync_contracts_awaiting_signature(session, actor=None, inferred=False, budget=None) -> int:
+    from .models import Contract
+    n = 0
+    for c in session.exec(select(Contract).where(Contract.status == "sent")).all():
+        if _capped(budget, n):
+            break
+        key = f"contract_awaiting_signature:contract:{c.id}"
+        if already_handled(session, key, c.status):
+            continue
+        if create_work_item_safe(session, actor=actor, type="contract_awaiting_signature",
+                                 title=f"Contract {c.tracking_code or c.id} awaiting signature",
+                                 tenant_id=c.tenant_id, related_contract_id=c.id,
+                                 idempotency_key=key, condition_version=c.status, inferred=inferred):
+            n += 1
+    return n
+
+
 _SCANNERS = [
     ("review_new_request", sync_unreviewed_requests),
     ("requester_action_required", sync_open_seller_questions),
@@ -673,6 +780,11 @@ _SCANNERS = [
     ("expired_price", sync_expired_price_versions),
     ("expired_rate", sync_expired_cost_rates),
     ("catalog_generation_failed", sync_failed_catalog_jobs),
+    # Phase 6 commercial scanners
+    ("quote_needs_review", sync_quotes_needing_review),
+    ("quote_expired", sync_expired_quotes),
+    ("accepted_quote_needs_deal", sync_accepted_quotes_need_deal),
+    ("contract_awaiting_signature", sync_contracts_awaiting_signature),
 ]
 
 

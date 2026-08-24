@@ -153,6 +153,13 @@ MIGRATIONS = [
     ("fxrate", "expires_at", "TIMESTAMP"),
     ("fxrate", "verified_by", "VARCHAR DEFAULT ''"),
     ("fxrate", "active", "BOOLEAN DEFAULT 1"),
+    # Commercial: Quotes/Contracts/Deals (Phase 6) — additive columns on existing quote/deal/workitem.
+    # New Phase-6 tables are made by create_all + scripts/migrate_gate_p6.py.
+    ("quote", "current_version_id", "INTEGER"),
+    ("quote", "viewed_at", "TIMESTAMP"),
+    ("deal", "quote_version_id", "INTEGER"),
+    ("deal", "ready_for_ops", "BOOLEAN DEFAULT 0"),
+    ("workitem", "related_contract_id", "INTEGER"),
 ]
 
 

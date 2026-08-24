@@ -20,7 +20,8 @@ PRIMARY = ["Dashboard", "Work Queue", "Requests", "Network", "Outreach", "Produc
 # every existing admin destination must remain reachable from the header (primary hrefs + mobile panel kids)
 REACHABLE = ["/admin/work-queue", "/admin/requests", "/leads", "/suppliers",
              "/campaigns", "/inbox", "/followups", "/templates", "/suppression", "/mail", "/outreach/analytics",
-             "/catalog", "/categories", "/pricing", "/quotes", "/deals", "/research", "/intel", "/markets",
+             "/catalog", "/categories", "/pricing", "/quotes", "/contracts", "/deals", "/contract-templates",
+             "/commercial/analytics", "/research", "/intel", "/markets",
              "/lines/cd-dvd", "/command", "/ingest", "/admin/users", "/admin/activity",
              "/sellers", "/data-quality", "/duplicates"]   # + Phase 5: Suppliers/Categories/Pricing under Products
 # admin-only routes (unchanged backend gate) — a non-admin must still get 403
@@ -29,7 +30,8 @@ ADMIN_ONLY = ["/command", "/research", "/suppliers", "/catalog", "/rates", "/ing
               "/sellers", "/data-quality", "/duplicates", "/export/buyers.csv",
               "/admin/work-queue",   # Phase 3 Work Queue
               "/campaigns", "/inbox", "/followups", "/templates", "/suppression", "/outreach/analytics",  # Phase 4
-              "/categories", "/pricing"]  # Phase 5 Products/Pricing
+              "/categories", "/pricing",  # Phase 5 Products/Pricing
+              "/contracts", "/contract-templates", "/commercial/analytics"]  # Phase 6 Commercial
 
 
 @pytest.fixture
@@ -108,7 +110,7 @@ def test_each_workspace_has_its_own_contextual_row(ctx):
         "/leads": ("Network pages", ["Buyers &amp; Prospects", "Sellers"]),
         "/campaign": ("Outreach pages", ["Campaigns", "Email Accounts"]),
         "/catalog": ("Products pages", ["Catalog", "Categories", "Suppliers", "Pricing &amp; Rates"]),
-        "/quotes": ("Commercial pages", ["Quotes", "Deals"]),
+        "/quotes": ("Commercial pages", ["Quotes", "Contracts", "Deals", "Commercial Analytics"]),
         "/research": ("Intelligence pages", ["Research", "Market Intel", "Markets", "Product Lines", "Command"]),
         "/ingest": ("Admin pages", ["Data Imports", "Accounts &amp; Access", "Team Activity"]),
     }

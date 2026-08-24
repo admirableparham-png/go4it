@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% set active = 'contracts' %}
+{% block content %}
+<div class="flex items-end justify-between gap-3 mb-4">
+  <div><h2 class="text-xl font-bold tracking-tight">Contracts <span class="badge badge-slate">{{ total }}</span></h2>
+    <p class="text-slate-500 text-sm mt-0.5">Buyer-side and supplier-side contracts are separate, confidential documents.</p></div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+  <div class="lg:col-span-1 space-y-4">
+    <form method="get" action="/contracts" class="card space-y-2">
+      <div class="eyebrow">Filter</div>
+      <input name="q" value="{{ f.q }}" placeholder="ref" class="input">
+      <select name="ctype" class="input"><option value="">Any type</option>{% for t in types %}<option value="{{ t }}" {% if f.ctype==t %}selected{% endif %}>{{ t }}</option>{% endfor %}</select>
+      <select name="side" class="input"><option value="">Any side</option>{% for s in ['buyer','supplier','internal'] %}<option value="{{ s }}" {% if f.side==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
+      <select name="status" class="input"><option value="">Any status</option>{% for s in statuses %}<option value="{{ s }}" {% if f.status==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
+      <button class="btn btn-primary btn-sm btn-block">Apply</button>
+    </form>
+    <form method="post" action="/contracts" class="card space-y-2">
+      <div class="eyebrow">New contract</div>
+      <select name="contract_type" required class="input">{% for t in types %}<option value="{{ t }}">{{ t }}</option>{% endfor %}</select>
+      <select name="side" required class="input"><option value="buyer">buyer side</option><option value="supplier">supplier side</option><option value="internal">internal</option></select>
+      <input name="country" placeholder="country" class="input">
+      <input name="quote_id" placeholder="linked quote id (optional)" class="input">
+      <button class="btn btn-secondary btn-sm btn-block">Create</button>
+      <p class="text-[11px] text-slate-500">You explicitly choose type + side + party.</p>
+    </form>
+  </div>
+  <div class="lg:col-span-3 card overflow-x-auto">
+    <table class="w-full text-sm min-w-[640px]">
+      <thead class="text-slate-500 text-xs uppercase text-left"><tr><th class="py-1 pr-2">Ref</th><th class="pr-2">Type</th><th class="pr-2">Side</th><th class="pr-2">Party</th><th class="pr-2">Status</th><th class="pr-2">Quote</th></tr></thead>
+      <tbody>
+        {% for c in contracts %}
+        <tr class="border-t border-white/5"><td class="py-1.5 pr-2"><a href="/contracts/{{ c.id }}" class="font-medium hover:underline">{{ c.tracking_code }}</a></td>
+          <td class="pr-2">{{ c.contract_type }}</td><td class="pr-2">{{ c.side }}</td>
+          <td class="pr-2">{{ companies[c.company_id].name if c.company_id in companies else '—' }}</td>
+          <td class="pr-2"><span class="badge badge-slate text-[10px]">{{ c.status }}</span></td>
+          <td class="pr-2">{{ c.quote_id or '—' }}</td></tr>
+        {% else %}<tr><td colspan="6" class="empty">No contracts yet.</td></tr>{% endfor %}
+      </tbody></table>
+    {% if pages > 1 %}<div class="text-center text-sm mt-3 text-slate-500">Page {{ page }} / {{ pages }}</div>{% endif %}
+  </div>
+</div>
+{% endblock %}

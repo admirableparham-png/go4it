@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% set active = 'canalytics' %}
+{% block content %}
+<h2 class="text-xl font-bold tracking-tight mb-4">Commercial analytics</h2>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+  <div class="card text-center"><div class="text-2xl font-bold">{{ quote_total }}</div><div class="eyebrow">Quotes</div></div>
+  <div class="card text-center"><div class="text-2xl font-bold text-emerald-400">{{ by_status.get('accepted', 0) }}</div><div class="eyebrow">Accepted</div></div>
+  <div class="card text-center"><div class="text-2xl font-bold">{{ deal_count }}</div><div class="eyebrow">Deals</div></div>
+  <div class="card text-center"><div class="text-2xl font-bold text-amber-400">{{ contracts_sig }}</div><div class="eyebrow">Awaiting signature</div></div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+  <div class="card"><div class="eyebrow mb-2">Quotes by status (count)</div>
+    {% for st, n in by_status.items() %}<div class="flex justify-between border-t border-white/5 py-1 text-sm"><span>{{ st }}</span><span class="tabular-nums">{{ n }}</span></div>{% endfor %}</div>
+  <div class="card"><div class="eyebrow mb-2">Conversion rates (%)</div>
+    <div class="flex justify-between border-t border-white/5 py-1 text-sm"><span>Sent → viewed</span><span>{{ rates.sent_to_viewed }}%</span></div>
+    <div class="flex justify-between border-t border-white/5 py-1 text-sm"><span>Viewed → accepted</span><span>{{ rates.viewed_to_accepted }}%</span></div>
+    <div class="flex justify-between border-t border-white/5 py-1 text-sm"><span>Rejection</span><span>{{ rates.rejection }}%</span></div>
+    <div class="flex justify-between border-t border-white/5 py-1 text-sm"><span>Expiry</span><span>{{ rates.expiry }}%</span></div></div>
+  <div class="card"><div class="eyebrow mb-2">Quote value BY CURRENCY (never summed across currencies)</div>
+    {% for ccy, v in value_by_ccy.items() %}<div class="flex justify-between border-t border-white/5 py-1 text-sm"><span>{{ ccy }}</span><span class="tabular-nums">{{ '%.2f'|format(v) }} (accepted {{ '%.2f'|format(accepted_value_by_ccy.get(ccy, 0)) }})</span></div>{% else %}<div class="empty">—</div>{% endfor %}</div>
+  <div class="card"><div class="eyebrow mb-2">Margin (where data supports)</div>
+    <div class="flex justify-between border-t border-white/5 py-1 text-sm"><span>Planned margin</span><span class="tabular-nums">{{ planned_margin }}</span></div>
+    <div class="flex justify-between border-t border-white/5 py-1 text-sm"><span>Realized margin</span><span class="tabular-nums">{{ realized_margin }}</span></div>
+    <div class="text-[11px] text-slate-500 mt-1">Contracts awaiting review: {{ contracts_review }}</div></div>
+</div>
+{% endblock %}

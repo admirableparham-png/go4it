@@ -288,6 +288,8 @@ class Deal(SQLModel, table=True):
     quote_id: Optional[int] = Field(default=None, foreign_key="quote.id")
     owner_id: Optional[int] = Field(default=None, foreign_key="user.id")
     stage: str = "won"             # see deal_service.DEAL_STAGES
+    quote_version_id: Optional[int] = Field(default=None, foreign_key="quoteversion.id")  # Phase 6: 1 deal / version
+    ready_for_ops: bool = False    # Phase 6→7 handoff readiness (Phase 7 executes shipment/docs/remittance)
     planned_revenue: float = 0
     planned_cost: float = 0
     planned_margin: float = 0
@@ -348,6 +350,9 @@ class Quote(SQLModel, table=True):
     accepted_at: Optional[datetime] = None     # buyer accepted this pro-forma on the public link
     buyer_response: str = ""                    # "" | accepted | changes (buyer's action on /p/)
     created_at: datetime = Field(default_factory=datetime.utcnow)
+    # --- Phase 6 commercial (additive; status vocabulary expands to the 11-state workflow, see quote_workflow) ---
+    current_version_id: Optional[int] = Field(default=None, foreign_key="quoteversion.id")
+    viewed_at: Optional[datetime] = None        # first buyer view via a valid token (never set on a GET)
 
 
 class ServiceRequest(SQLModel, table=True):
@@ -644,6 +649,7 @@ class WorkItem(SQLModel, table=True):
     related_deal_id: Optional[int] = Field(default=None, foreign_key="deal.id")
     related_seller_update_id: Optional[int] = Field(default=None, foreign_key="sellerupdate.id")
     related_product_id: Optional[int] = Field(default=None, foreign_key="product.id")  # Phase 5
+    related_contract_id: Optional[int] = Field(default=None, foreign_key="contract.id")  # Phase 6
     parent_id: Optional[int] = Field(default=None, foreign_key="workitem.id")
     idempotency_key: str = Field(default="", index=True)   # de-dups automatic items (partial-unique over OPEN)
     condition_version: str = ""    # identifies the underlying-condition INSTANCE+version; once a task for a
@@ -1055,3 +1061,251 @@ class CatalogGenerationJob(SQLModel, table=True):
     generated_at: Optional[datetime] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+# ========================================================================================
+# Phase 6 — Commercial: Quotes, Contracts & Deals (admin-only; additive)
+# ========================================================================================
+
+class QuoteVersion(SQLModel, table=True):
+    """An IMMUTABLE snapshot of a quote's full commercial terms at a point in time (1:1 with a Quote row —
+    the legacy model already creates a separate Quote per version). Once approved/sent/accepted/expired it is
+    NEVER edited in place; a revision duplicates it into a new draft. Future Product/CostRate/FX changes never
+    alter a historical version. Buyer-facing; no internal margin/cost text is stored in buyer-shown fields."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    quote_id: int = Field(foreign_key="quote.id", index=True)
+    version: int = 1
+    status: str = Field(default="draft", index=True)   # see quote_workflow.STATUSES
+    product_id: Optional[int] = Field(default=None, foreign_key="product.id")
+    product_snapshot: str = ""     # JSON: identity + product version + description + spec + origin + packaging + lead_time
+    quantity: float = 0
+    unit: str = ""
+    unit_price: float = 0
+    currency: str = "USD"
+    incoterm: str = "DAP"
+    origin: str = ""
+    destination: str = ""
+    payment_terms: str = ""
+    included_costs: str = ""       # JSON
+    excluded_costs: str = ""       # JSON (Not included / Required — never guessed)
+    total: float = 0
+    margin_pct: float = 0          # INTERNAL — never rendered buyer-facing
+    markup_pct: float = 0          # INTERNAL
+    fx_snapshot: str = ""          # JSON incl. source + timestamp
+    params_snapshot: str = ""      # JSON
+    pricing_snapshot: str = ""     # JSON: the frozen prefill_for_quote result
+    options: str = ""              # JSON: [{name, incoterm, included, excluded, unit_price, total}]
+    commercial_text: str = ""      # approved buyer-facing text
+    validity_at: Optional[datetime] = None
+    content_hash: str = ""         # sha256 of the frozen terms (immutability anchor)
+    pdf_document_id: Optional[int] = Field(default=None, foreign_key="quotedocument.id")
+    approved_by: str = ""
+    approved_at: Optional[datetime] = None
+    approval_note: str = ""
+    sent_at: Optional[datetime] = None
+    supersedes_id: Optional[int] = Field(default=None, foreign_key="quoteversion.id")
+    inferred: bool = False         # created by the conservative backfill from an existing Quote row
+    created_by: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class QuoteLineItem(SQLModel, table=True):
+    """A line on a quote version (single-line default; supports multi-line quotes later)."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    quote_version_id: int = Field(foreign_key="quoteversion.id", index=True)
+    product_id: Optional[int] = Field(default=None, foreign_key="product.id")
+    description: str = ""
+    spec: str = ""
+    quantity: float = 0
+    unit: str = ""
+    unit_price: float = 0
+    currency: str = "USD"
+    incoterm: str = ""
+    line_total: float = 0
+
+
+class QuoteStatusEvent(SQLModel, table=True):
+    """Authoritative quote status history — every transition, actor + reason. Never mutated."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    quote_id: int = Field(foreign_key="quote.id", index=True)
+    quote_version_id: Optional[int] = Field(default=None, foreign_key="quoteversion.id")
+    from_status: str = ""
+    to_status: str = ""
+    actor_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    actor_kind: str = "admin"      # admin | buyer | system
+    reason: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class QuoteApproval(SQLModel, table=True):
+    """The approval record for a quote version — who, when, note + the checklist results (JSON)."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    quote_version_id: int = Field(foreign_key="quoteversion.id", index=True)
+    approved_by: str = ""
+    approved_at: datetime = Field(default_factory=datetime.utcnow)
+    note: str = ""
+    checks: str = ""               # JSON: {check_name: ok/fail/reason}
+
+
+class QuoteAccessToken(SQLModel, table=True):
+    """A secure buyer-portal token, HASHED at rest (sha256), scoped to ONE quote version, expiring, revocable,
+    rotatable. The raw token is shown once (in the send link) and never stored or logged."""
+    __table_args__ = (UniqueConstraint("token_hash", name="uq_quoteaccesstoken_hash"),)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    quote_id: int = Field(foreign_key="quote.id", index=True)
+    quote_version_id: int = Field(foreign_key="quoteversion.id", index=True)
+    token_hash: str = Field(default="", index=True)
+    expires_at: Optional[datetime] = None
+    revoked: bool = False
+    created_by: str = ""
+    last_viewed_at: Optional[datetime] = None
+    view_count: int = 0
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class QuoteDocument(SQLModel, table=True):
+    """An immutable generated quote PDF stored privately (QUOTE_FILES_DIR), with its sha256 hash. Admin
+    download-gated; buyer access only through the token portal. Never overwritten."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    quote_version_id: int = Field(foreign_key="quoteversion.id", index=True)
+    file_path: str = ""
+    sha256: str = ""
+    content_type: str = "application/pdf"
+    size_bytes: int = 0
+    status: str = "active"         # active | archived
+    created_by: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+# ---------------------------------------------------------------- Contracts (Checkpoint B)
+
+class Contract(SQLModel, table=True):
+    """A contract header. Admins EXPLICITLY choose the type + parties + side (never auto-assumed). Buyer-side
+    and supplier-side contracts are separate documents (confidentiality by default)."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    tracking_code: str = Field(default="", index=True)
+    contract_type: str = "buyer_sales"   # buyer_sales|supplier_purchase|service|nda|amendment|other
+    side: str = "buyer"                   # buyer | supplier | internal
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    country: str = ""
+    jurisdiction: str = ""
+    category: str = ""
+    product_id: Optional[int] = Field(default=None, foreign_key="product.id")
+    quote_id: Optional[int] = Field(default=None, foreign_key="quote.id", index=True)
+    quote_version_id: Optional[int] = Field(default=None, foreign_key="quoteversion.id")
+    deal_id: Optional[int] = Field(default=None, foreign_key="deal.id", index=True)
+    company_id: Optional[int] = Field(default=None, foreign_key="company.id")   # the counterparty company
+    status: str = Field(default="draft", index=True)   # see contract_service.STATUSES
+    current_version_id: Optional[int] = Field(default=None, foreign_key="contractversion.id")
+    owner_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    expires_at: Optional[datetime] = None
+    notes: str = ""                # ADMIN-ONLY
+    created_by: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class ContractVersion(SQLModel, table=True):
+    """IMMUTABLE once approved/sent/signed. A revision or amendment is a new linked version/addendum — signed
+    versions are never overwritten."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    contract_id: int = Field(foreign_key="contract.id", index=True)
+    version: int = 1
+    status: str = Field(default="draft", index=True)
+    contract_type: str = ""
+    parties_snapshot: str = ""     # JSON: the selected legal parties (buyer OR supplier side, never both external)
+    terms: str = ""                # JSON / text
+    payment_terms: str = ""
+    delivery_terms: str = ""
+    validity_at: Optional[datetime] = None
+    approved_clauses: str = ""     # JSON
+    template_id: Optional[int] = Field(default=None, foreign_key="contracttemplate.id")
+    document_hash: str = ""        # sha256 of the generated PDF
+    signature_state: str = "unsigned"   # unsigned | manual_pending | signed | declined
+    approved_by: str = ""
+    approved_at: Optional[datetime] = None
+    supersedes_id: Optional[int] = Field(default=None, foreign_key="contractversion.id")
+    is_amendment: bool = False
+    inferred: bool = False
+    created_by: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class ContractParty(SQLModel, table=True):
+    """A party on a contract version (explicitly chosen by the admin)."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    contract_id: int = Field(foreign_key="contract.id", index=True)
+    role: str = ""                 # buyer | supplier | go4it | witness
+    company_id: Optional[int] = Field(default=None, foreign_key="company.id")
+    name: str = ""
+    signatory_name: str = ""
+    signatory_email: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class ContractStatusEvent(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    contract_id: int = Field(foreign_key="contract.id", index=True)
+    contract_version_id: Optional[int] = Field(default=None, foreign_key="contractversion.id")
+    from_status: str = ""
+    to_status: str = ""
+    actor_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    reason: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class ContractTemplate(SQLModel, table=True):
+    """An admin-managed contract template. Variables use an allowlist; unknown/unresolved placeholders are
+    rejected at generation. Archived, never destructively deleted. NOT legal advice."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str = ""
+    contract_type: str = "buyer_sales"
+    side: str = "buyer"
+    country: str = ""
+    category: str = ""
+    language: str = "en"
+    body: str = ""                 # template text with {{allowlisted}} variables
+    allowed_vars: str = ""         # JSON list of permitted variable names
+    version: int = 1
+    status: str = "active"         # active | archived
+    approval_status: str = "draft" # draft | approved
+    created_by: str = ""
+    updated_by: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class ContractDocument(SQLModel, table=True):
+    """A private contract file: either a Go4it-generated PDF or an UPLOADED signed copy. Uploaded copies are
+    quarantined + admin-only until scan-cleared, linked to the exact version, hashed, archive-not-delete, and
+    never overwrite the generated original."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    contract_id: int = Field(foreign_key="contract.id", index=True)
+    contract_version_id: int = Field(foreign_key="contractversion.id", index=True)
+    kind: str = "generated"        # generated | signed_upload
+    file_path: str = ""
+    original_filename: str = ""
+    content_type: str = ""
+    size_bytes: int = 0
+    sha256: str = ""
+    quarantine: str = "quarantined"  # quarantined | scanned (uploads); generated PDFs default scanned
+    status: str = "active"         # active | archived
+    uploaded_by: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class SignatureEvent(SQLModel, table=True):
+    """A recorded signature action. A typed name is manual tracking only — NOT a legally verified signature.
+    Real e-signature is a future provider integration (honest 'Not configured' until then)."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    contract_id: int = Field(foreign_key="contract.id", index=True)
+    contract_version_id: int = Field(foreign_key="contractversion.id", index=True)
+    party_role: str = ""           # buyer | supplier | go4it
+    method: str = "manual"         # manual | provider (provider = future e-sign)
+    provider: str = ""             # "" | provider name (not configured this phase)
+    provider_ref: str = ""
+    signer_name: str = ""
+    signer_email: str = ""
+    verified: bool = False         # manual typed name is NEVER verified=True
+    signed_at: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
