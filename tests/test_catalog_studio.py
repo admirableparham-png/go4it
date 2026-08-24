@@ -108,11 +108,10 @@ def test_generation_lifecycle_and_authorized_download(ctx, monkeypatch):
     client.post(f"/catalog/studio/{jid}/action", data={"action": "approve"}, follow_redirects=False)
     with Session(engine) as s:
         assert s.get(CatalogGenerationJob, jid).status == "approved"
-    # seller blocked until published seller-safe
+    # the studio download route is ADMIN ONLY — sellers never reach it directly (seller access is only via a
+    # published owner-scoped deliverable; see test_phase5_hardening)
     seller = TestClient_(main); _login(seller, "kim@t.local")
     assert seller.get(f"/catalog/studio/{jid}/download").status_code == 404
-    client.post(f"/catalog/studio/{jid}/action", data={"action": "publish_seller_safe"}, follow_redirects=False)
-    assert seller.get(f"/catalog/studio/{jid}/download").status_code == 200
 
 
 def test_generation_failure_opens_workitem_nonblocking(ctx, monkeypatch):

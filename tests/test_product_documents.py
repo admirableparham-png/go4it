@@ -63,18 +63,17 @@ def test_dangerous_and_mismatch_rejected(ctx):
         assert s.exec(select(ProductDocument)).all() == []       # neither stored
 
 
-def test_seller_cannot_download_unless_seller_safe(ctx):
+def test_direct_download_is_admin_only(ctx):
+    """The direct product-document route is ADMIN ONLY — seller_safe alone never grants a seller access here
+    (seller access is only via a published owner-scoped deliverable, covered in test_phase5_hardening)."""
     client, engine, ids = ctx
     _login(client, "admin@t.local")
     _upload(client, ids["product"])
     with Session(engine) as s:
-        did = s.exec(select(ProductDocument.id)).one()
+        d = s.exec(select(ProductDocument)).one(); d.seller_safe = True; s.add(d); s.commit()  # force the flag
+        did = d.id
     seller = TestClient(main.app); _login(seller, "kim@t.local")
     assert seller.get(f"/catalog/products/{ids['product']}/documents/{did}/download").status_code == 404
-    # publish seller-safe → now allowed
-    with Session(engine) as s:
-        d = s.get(ProductDocument, did); d.seller_safe = True; s.add(d); s.commit()
-    assert seller.get(f"/catalog/products/{ids['product']}/documents/{did}/download").status_code == 200
 
 
 def test_archive_not_delete(ctx):

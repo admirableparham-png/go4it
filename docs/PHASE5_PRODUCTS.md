@@ -66,6 +66,27 @@ verification, reliability, prices, or activated expired rates). Idempotent.
 - **Post-go-live recovery:** `backfill_products.py --recover` removes only untouched inferred categories (no
   products, not merged); preserves every real admin change, price version and approved catalog.
 
+## Hardening (pre-Phase 6)
+- **Seller-safe access is tenant/owner-scoped.** `ProductDocument`/`CatalogGenerationJob` direct downloads are
+  **admin-only**; `seller_safe=True` alone never grants a seller access. A seller sees a file ONLY after an
+  admin **publishes it to a specific request** (`_publish_to_request` → a seller-safe `RequestDeliverable`),
+  accessed via the existing **owner-scoped** `request_deliverable_file` (Seller A cannot read Seller B's
+  files). Uploads default **private + quarantined**.
+- **Document quarantine.** MIME/extension validation is not malware scanning, so every upload is
+  `quarantine='quarantined'` and admin-only. Publication is limited to **Go4it-generated catalog PDFs** and
+  **validated safe raster images** (`product_image`/`packaging_image`, `image/png|jpeg`); other docs need an
+  explicit admin **scan-clear** (the malware-scan integration point) before they can be published.
+- **PDF sandbox.** Every product field is HTML-escaped; the Playwright context runs with **JavaScript
+  disabled** and **offline** with a `route("**/*")` guard that **blocks all network egress** (only inline
+  `data:`/`about:` load — no `file://`, no remote URLs, no injected fetches); hard execution timeout +
+  constrained launch flags. The HTML is fully self-contained.
+- **Production Chromium.** `playwright==1.60.0` pinned; prod must `playwright install chromium` at that
+  version and run `scripts/pdf_smoke.py` **inside the exact production container** (real PDF + fonts + embedded
+  image + A4 + writable/private storage) before trusting Catalog Studio there.
+- **Supplier navigation.** Products → Suppliers is a **product-focused projection**; the canonical
+  supplier/company record is managed in the **Trade Network** (`/companies`) and is neither replaced nor
+  duplicated (each supplier row links to its canonical company).
+
 ## Deferred / production-config
 - **Higgs** — deferred pending real credentials/API docs (interface + "Not configured" + mocked tests shipped).
 - **PDF in prod** — self-hosted Playwright works locally; prod containers need Chromium installed or it

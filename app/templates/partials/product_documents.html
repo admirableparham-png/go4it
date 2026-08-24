@@ -2,17 +2,25 @@
   <div class="eyebrow mb-2">Private product documents</div>
   {% if docs %}
     {% for d in docs %}
-      <div class="flex items-center justify-between border-t border-white/5 py-1.5 text-sm">
-        <div>
-          <span class="badge badge-slate text-[10px]">{{ d.doc_type }}</span>
-          {{ d.title or d.original_filename }}
-          {% if d.seller_safe %}<span class="badge badge-emerald text-[10px]">seller-safe</span>{% endif %}
-          <span class="text-[11px] text-slate-500">{{ (d.size_bytes / 1024)|round(1) }} KB</span>
+      <div class="border-t border-white/5 py-1.5 text-sm">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="badge badge-slate text-[10px]">{{ d.doc_type }}</span>
+            {{ d.title or d.original_filename }}
+            {% if d.quarantine == 'quarantined' %}<span class="badge badge-amber text-[10px]">quarantined</span>{% else %}<span class="badge badge-emerald text-[10px]">scanned</span>{% endif %}
+            {% if d.seller_safe %}<span class="badge badge-emerald text-[10px]">published</span>{% endif %}
+            <span class="text-[11px] text-slate-500">{{ (d.size_bytes / 1024)|round(1) }} KB</span>
+          </div>
+          <div class="flex gap-1">
+            <a href="/catalog/products/{{ p.id }}/documents/{{ d.id }}/download" class="btn btn-neutral btn-xs">Download</a>
+            {% if d.quarantine == 'quarantined' %}<form method="post" action="/catalog/products/{{ p.id }}/documents/{{ d.id }}/scan-clear"><button class="btn btn-neutral btn-xs" title="Attest scanned (malware-scan integration point)">Mark scanned</button></form>{% endif %}
+            <form method="post" action="/catalog/products/{{ p.id }}/documents/{{ d.id }}/archive"><button class="btn btn-neutral btn-xs">Archive</button></form>
+          </div>
         </div>
-        <div class="flex gap-1">
-          <a href="/catalog/products/{{ p.id }}/documents/{{ d.id }}/download" class="btn btn-neutral btn-xs">Download</a>
-          <form method="post" action="/catalog/products/{{ p.id }}/documents/{{ d.id }}/archive"><button class="btn btn-neutral btn-xs">Archive</button></form>
-        </div>
+        <form method="post" action="/catalog/products/{{ p.id }}/documents/{{ d.id }}/publish" class="flex gap-1 mt-1">
+          <input name="req_id" placeholder="publish to request #" class="input" style="max-width:180px;font-size:11px">
+          <button class="btn btn-neutral btn-xs" title="Publish to a specific request as a seller-safe deliverable (owner-scoped). Only images / scanned docs.">Publish seller-safe</button>
+        </form>
       </div>
     {% endfor %}
   {% endif %}

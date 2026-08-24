@@ -99,18 +99,34 @@ class BuiltinProvider:
             return "unavailable (playwright not installed)"
 
     def generate(self, html_str, out_path, timeout_ms=GEN_TIMEOUT_MS):
-        """Render HTML→PDF with headless Chromium. Returns (ok, error, provider_job_id). Never raises."""
+        """Render HTML→PDF with headless Chromium in a SANDBOX. Returns (ok, error, provider_job_id); never
+        raises. Sandbox: JavaScript OFF (neutralizes any injected <script>), ALL network egress blocked
+        (only inline data:/about: may load — no file://, no remote URLs, no data exfiltration), a hard
+        execution timeout, and constrained launch flags. The HTML is fully self-contained (inline CSS, no
+        external assets), so blocking the network never affects a legitimate render."""
         try:
             from playwright.sync_api import sync_playwright
         except Exception as e:  # noqa: BLE001
             return False, f"playwright unavailable: {e}", ""
+
+        def _guard(route):
+            url = (route.request.url or "").lower()
+            if url.startswith(("data:", "about:")):     # inline content + the blank page only
+                route.continue_()
+            else:                                        # http/https/file/ftp/anything → refused
+                route.abort()
         try:
             with sync_playwright() as pw:
-                browser = pw.chromium.launch()
+                browser = pw.chromium.launch(args=["--disable-extensions", "--disable-dev-shm-usage",
+                                                   "--disable-gpu"])
                 try:
-                    page = browser.new_page()
+                    context = browser.new_context(java_script_enabled=False, offline=True)
+                    context.set_default_timeout(timeout_ms)
+                    context.route("**/*", _guard)        # block file://, remote URLs, injected fetches
+                    page = context.new_page()
                     page.set_content(html_str, wait_until="load", timeout=timeout_ms)
                     page.pdf(path=str(out_path), format="A4", print_background=True)
+                    context.close()
                 finally:
                     browser.close()
             return True, "", "builtin"

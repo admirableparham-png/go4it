@@ -2454,21 +2454,101 @@ def product_document_upload(request: Request, product_id: int, doc_type: str = F
 
 @app.get("/catalog/products/{product_id}/documents/{doc_id}/download")
 def product_document_download(request: Request, product_id: int, doc_id: int):
-    """Download a product document. Admin always; a seller ONLY if it was published seller-safe. Path is
-    rebuilt + re-validated to stay inside PRODUCT_FILES_DIR (no traversal)."""
+    """Download a product document — ADMIN ONLY. Sellers never reach product files directly; seller access is
+    granted ONLY by publishing a file to a specific request as a seller-safe deliverable (owner-scoped, via
+    request_deliverable_file). `seller_safe` alone never grants access. Path re-validated inside
+    PRODUCT_FILES_DIR (no traversal)."""
     with Session(engine) as session:
         user = current_user(request, session)
+        if not is_admin(user):
+            return _not_found()                          # 404, not 403 — don't reveal it exists
         doc = session.get(ProductDocument, doc_id)
         if not doc or doc.product_id != product_id or doc.status != "active":
             return _not_found()
-        if not is_admin(user) and not doc.seller_safe:
-            return _not_found()                          # 404, not 403 — don't reveal it exists
         rel = doc.file_path
     path = (PRODUCT_FILES_DIR / rel).resolve()
     if not str(path).startswith(str(PRODUCT_FILES_DIR.resolve()) + os.sep) or not path.exists():
         return _not_found()
     return FileResponse(str(path), filename=doc.original_filename or path.name,
                         media_type=doc.content_type or "application/octet-stream")
+
+
+# --- seller-safe publication: link a file to a SPECIFIC request (owner-scoped) as a deliverable --------
+_PUBLISHABLE_IMAGE_MIME = ("image/png", "image/jpeg")
+
+
+def _doc_publishable(doc) -> bool:
+    """Without malware scanning, a product document is publishable to a seller ONLY if it is a validated safe
+    raster image (or an admin has explicitly marked it scanned). Other uploaded files stay quarantined."""
+    if doc.quarantine == "scanned":
+        return True
+    return (doc.doc_type in ("product_image", "packaging_image")
+            and (doc.content_type or "").lower() in _PUBLISHABLE_IMAGE_MIME)
+
+
+def _publish_to_request(session, req_id, src_abs_path, orig_name, delivered_by):
+    """Copy a private product/catalog file into the request's deliverable store and create a seller-safe
+    RequestDeliverable. Access then flows through request_deliverable_file, which is OWNER-SCOPED (Seller A
+    cannot read Seller B's requests). Returns the deliverable or None."""
+    sr = session.get(ServiceRequest, req_id)
+    if not sr or not src_abs_path.exists():
+        return None
+    data = src_abs_path.read_bytes()
+    if len(data) > MAX_DOC_BYTES:
+        return None
+    dv = RequestDeliverable(request_id=req_id, note="Published from product catalog", seller_safe=True,
+                            delivered_by=delivered_by)
+    session.add(dv); session.flush()
+    dest_dir = REQUEST_FILES_DIR / str(req_id)
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    fname = f"{dv.id}_{_safe_name(orig_name)}"
+    (dest_dir / fname).write_bytes(data)
+    dv.file_path = f"{req_id}/{fname}"
+    session.add(dv)
+    return dv
+
+
+@app.post("/catalog/products/{product_id}/documents/{doc_id}/publish")
+def product_document_publish(request: Request, product_id: int, doc_id: int, req_id: int = Form(...)):
+    """Publish a product IMAGE to a specific request as a seller-safe deliverable (owner-scoped access).
+    Refuses anything but validated raster images / scanned docs (quarantine)."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        doc = session.get(ProductDocument, doc_id)
+        if not doc or doc.product_id != product_id or doc.status != "active":
+            return _not_found()
+        if not _doc_publishable(doc):
+            return RedirectResponse(f"/catalog/products/{product_id}?tab=documents&err=quarantined",
+                                    status_code=303)
+        src = (PRODUCT_FILES_DIR / doc.file_path).resolve()
+        if not str(src).startswith(str(PRODUCT_FILES_DIR.resolve()) + os.sep):
+            return _not_found()
+        dv = _publish_to_request(session, req_id, src, doc.original_filename or "document", user.email)
+        if dv:
+            doc.seller_safe = True; session.add(doc)
+            pipeline.audit(session, user, "product", product_id, "document_publish",
+                           {"doc_id": doc_id, "request_id": req_id, "deliverable_id": dv.id})
+            session.commit()
+    return RedirectResponse(f"/catalog/products/{product_id}?tab=documents", status_code=303)
+
+
+@app.post("/catalog/products/{product_id}/documents/{doc_id}/scan-clear")
+def product_document_scan_clear(request: Request, product_id: int, doc_id: int):
+    """Admin marks a quarantined document as scanned (the malware-scan integration point). Until a real
+    scanner is wired, this is an explicit admin attestation — audited."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        doc = session.get(ProductDocument, doc_id)
+        if not doc or doc.product_id != product_id:
+            return _not_found()
+        doc.quarantine = "scanned"; session.add(doc)
+        pipeline.audit(session, user, "product", product_id, "document_scan_clear", {"doc_id": doc_id})
+        session.commit()
+    return RedirectResponse(f"/catalog/products/{product_id}?tab=documents", status_code=303)
 
 
 @app.post("/catalog/products/{product_id}/documents/{doc_id}/archive")
@@ -2540,8 +2620,9 @@ def catalog_studio_generate(request: Request, product_id: int = Form(...), provi
 
 
 @app.post("/catalog/studio/{job_id}/action")
-def catalog_studio_action(request: Request, job_id: int, action: str = Form(...)):
-    """Approve / archive / publish-seller-safe a generated catalog. Never auto-emails."""
+def catalog_studio_action(request: Request, job_id: int, action: str = Form(...), req_id: str = Form("")):
+    """Approve / archive a generated catalog, or PUBLISH an approved Go4it PDF to a SPECIFIC request as a
+    seller-safe deliverable (owner-scoped access). Never auto-emails."""
     with Session(engine) as session:
         user = current_user(request, session)
         if not is_admin(user):
@@ -2553,10 +2634,17 @@ def catalog_studio_action(request: Request, job_id: int, action: str = Form(...)
             job.status = "approved"
         elif action == "archive":
             job.status = "archived"
-        elif action == "publish_seller_safe" and job.status == "approved":
-            job.seller_safe = True               # intentional seller-safe publish (existing confidentiality flow)
+        elif action == "publish_seller_safe" and job.status == "approved" and req_id.isdigit():
+            src = (PRODUCT_FILES_DIR / job.file_path).resolve()
+            if str(src).startswith(str(PRODUCT_FILES_DIR.resolve()) + os.sep):
+                dv = _publish_to_request(session, int(req_id), src, f"go4it_catalog_{job_id}.pdf", user.email)
+                if dv:
+                    job.seller_safe = True         # marker only; access is via the owner-scoped deliverable
+                    pipeline.audit(session, user, "product", job.product_id, "catalog_publish",
+                                   {"job": job_id, "request_id": int(req_id), "deliverable_id": dv.id})
         session.add(job)
-        pipeline.audit(session, user, "product", job.product_id, "catalog_" + action, {"job": job_id})
+        if action != "publish_seller_safe":
+            pipeline.audit(session, user, "product", job.product_id, "catalog_" + action, {"job": job_id})
         session.commit()
         pid = job.product_id
     return RedirectResponse(f"/catalog/studio?product_id={pid}", status_code=303)
@@ -2564,13 +2652,14 @@ def catalog_studio_action(request: Request, job_id: int, action: str = Form(...)
 
 @app.get("/catalog/studio/{job_id}/download")
 def catalog_studio_download(request: Request, job_id: int):
-    """Download a generated catalog PDF. Admin always; seller only if published seller-safe. Never auto-sent."""
+    """Download a generated catalog PDF — ADMIN ONLY. Seller access is only via a published owner-scoped
+    deliverable (request_deliverable_file). Never auto-sent."""
     with Session(engine) as session:
         user = current_user(request, session)
+        if not is_admin(user):
+            return _not_found()
         job = session.get(CatalogGenerationJob, job_id)
         if not job or not job.file_path or job.status not in ("needs_review", "approved"):
-            return _not_found()
-        if not is_admin(user) and not job.seller_safe:
             return _not_found()
         rel = job.file_path
     path = (PRODUCT_FILES_DIR / rel).resolve()

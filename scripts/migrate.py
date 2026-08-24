@@ -146,6 +146,7 @@ MIGRATIONS = [
     ("product", "created_at", "TIMESTAMP"),
     ("supplier", "reliability_rated", "BOOLEAN DEFAULT 0"),
     ("workitem", "related_product_id", "INTEGER"),
+    ("productdocument", "quarantine", "VARCHAR DEFAULT 'quarantined'"),   # Phase-5 hardening
     ("fxrate", "source", "VARCHAR DEFAULT ''"),
     ("fxrate", "kind", "VARCHAR DEFAULT 'manual'"),
     ("fxrate", "retrieved_at", "TIMESTAMP"),

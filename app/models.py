@@ -1026,7 +1026,8 @@ class ProductDocument(SQLModel, table=True):
     size_bytes: int = 0
     title: str = ""
     status: str = "active"         # active | archived
-    seller_safe: bool = False      # True = admin published it through the seller-safe deliverable flow
+    quarantine: str = "quarantined"  # quarantined | scanned — admin-only until scanned (no auto-publish)
+    seller_safe: bool = False      # True ONLY once published to a specific request as a seller-safe deliverable
     uploaded_by: str = ""
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)

@@ -42,7 +42,7 @@
           <td class="pr-2 text-right">
             {% if j.file_path and j.status in ('needs_review','approved') %}<a href="/catalog/studio/{{ j.id }}/download" class="btn btn-neutral btn-xs">PDF</a>{% endif %}
             {% if j.status=='needs_review' %}<form method="post" action="/catalog/studio/{{ j.id }}/action" class="inline"><input type="hidden" name="action" value="approve"><button class="btn btn-secondary btn-xs">Approve</button></form>{% endif %}
-            {% if j.status=='approved' and not j.seller_safe %}<form method="post" action="/catalog/studio/{{ j.id }}/action" class="inline"><input type="hidden" name="action" value="publish_seller_safe"><button class="btn btn-neutral btn-xs">Publish seller-safe</button></form>{% endif %}
+            {% if j.status=='approved' and not j.seller_safe %}<form method="post" action="/catalog/studio/{{ j.id }}/action" class="inline-flex gap-1"><input type="hidden" name="action" value="publish_seller_safe"><input name="req_id" placeholder="req #" class="input" style="max-width:70px;font-size:11px"><button class="btn btn-neutral btn-xs" title="Publish this Go4it PDF to a specific request as a seller-safe deliverable (owner-scoped)">Publish</button></form>{% endif %}
             {% if j.status=='failed' %}<span class="text-[11px] text-rose-400">{{ j.error }}</span>{% endif %}
           </td>
         </tr>
