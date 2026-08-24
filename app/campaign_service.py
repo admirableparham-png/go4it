@@ -299,7 +299,12 @@ def send_step(session, campaign, rcpt, mailbox, now=None, sender=None) -> dict:
     cs = claim_send(session, campaign, rcpt, step_index, now)
     if cs is None:
         return {"status": "already_sent", "reason": "claimed/sent by another worker or terminal"}
-    # committed 'sending' BEFORE SMTP → a crash here is recoverable as an ambiguous (never auto-resent) row
+    # Durable RFC Message-ID: generate + persist ONCE, BEFORE the 'sending' transition. Reused verbatim on
+    # every safe retry of this logical send; never regenerated for the same (campaign,recipient,version,step).
+    if not cs.rfc_message_id:
+        cs.rfc_message_id = _make_message_id(mailbox)
+    # committed 'sending' (with the Message-ID) BEFORE SMTP → a crash here is recoverable as an ambiguous
+    # (never auto-resent) row, and the Message-ID survives a worker restart for reply correlation.
     cs.status = "sending"; cs.updated_at = now; session.add(cs); session.commit()
     if not SG.mailbox_take_slot(mailbox, now):
         cs.status = "retryable"; cs.last_error = "daily limit reached"
@@ -312,9 +317,12 @@ def send_step(session, campaign, rcpt, mailbox, now=None, sender=None) -> dict:
     body = SG.guard_buyer_text(session, step.body or "", campaign.tenant_id)   # buyers never learn the seller
     from_text, from_html = _parts(body)
     send = sender or _default_sender
-    okk, err, mid = send(mailbox, rcpt.to_email, subject, from_text, html=from_html, reply_to=mailbox.email)
+    # our durable RFC Message-ID becomes the actual Message-ID header of the sent mail (reply-correlation key)
+    okk, err, provider_id = send(mailbox, rcpt.to_email, subject, from_text, html=from_html,
+                                 reply_to=mailbox.email, message_id=cs.rfc_message_id)
     cs.attempt_count += 1
     cs.updated_at = now
+    prov = provider_id if (provider_id and provider_id != cs.rfc_message_id) else ""   # store provider id separately
     if okk:
         # provider ACCEPTED → NOW write the Outreach event (the unique index is the last-line dup guard) + mark sent
         row = Outreach(lead_id=rcpt.lead_id or 0, direction="out", channel="email",
@@ -322,7 +330,7 @@ def send_step(session, campaign, rcpt, mailbox, now=None, sender=None) -> dict:
                        subject=subject[:200], body=body[:4000], status="sent",
                        campaign_id=campaign.id, campaign_recipient_id=rcpt.id,
                        campaign_version=rcpt.sequence_version, campaign_step=step_index,
-                       message_id=mid or "", user_id=campaign.owner_id)
+                       message_id=cs.rfc_message_id or prov, user_id=campaign.owner_id)  # our id = the sent header
         try:
             with session.begin_nested():
                 session.add(row); session.flush()
@@ -330,10 +338,10 @@ def send_step(session, campaign, rcpt, mailbox, now=None, sender=None) -> dict:
             # an Outreach for this exact step already exists → a prior attempt actually delivered. Mark sent,
             # do NOT create a second event and do NOT re-advance the recipient beyond this step.
             session.rollback()
-            cs.status = "sent"; cs.sent_at = now; cs.provider_message_id = mid or ""
+            cs.status = "sent"; cs.sent_at = now; cs.provider_message_id = prov
             session.add(cs); session.commit()
-            return {"status": "sent", "reason": "already recorded", "provider_message_id": mid or ""}
-        cs.status = "sent"; cs.sent_at = now; cs.provider_message_id = mid or ""; cs.outreach_id = row.id
+            return {"status": "sent", "reason": "already recorded", "provider_message_id": prov}
+        cs.status = "sent"; cs.sent_at = now; cs.provider_message_id = prov; cs.outreach_id = row.id
         rcpt.last_sent_at = now; rcpt.status = "sent"; rcpt.current_step = step_index + 1
         rcpt.next_action_at = now + timedelta(days=max(0, _next_delay(session, campaign, rcpt)))
         if rcpt.current_step >= len(steps_for(session, campaign, rcpt.sequence_version)):
@@ -342,7 +350,8 @@ def send_step(session, campaign, rcpt, mailbox, now=None, sender=None) -> dict:
         if ld is not None and ld.first_response_at is None:
             ld.first_response_at = now; session.add(ld)
         session.add(cs); session.add(mailbox); session.commit()
-        return {"status": "sent", "reason": "", "provider_message_id": cs.provider_message_id}
+        return {"status": "sent", "reason": "", "rfc_message_id": cs.rfc_message_id,
+                "provider_message_id": cs.provider_message_id}
     # provider REJECTED → retry policy
     cs.last_error = (err or "")[:400]
     if classify_send_error(err) == "permanent" or cs.attempt_count >= RETRY_MAX:
@@ -402,9 +411,19 @@ def _parts(body):
     return plain_parts(body)
 
 
-def _default_sender(mailbox, to_addr, subject, text, html=None, reply_to=""):
+def _make_message_id(mailbox):
+    """A globally-unique, RFC-5322-compliant Message-ID (<uniq@domain>) using the mailbox's own domain."""
+    from email.utils import make_msgid
+    email = getattr(mailbox, "email", "") or ""
+    domain = email.split("@")[-1] if "@" in email else "go4it.vip"
+    return make_msgid(domain=domain)
+
+
+def _default_sender(mailbox, to_addr, subject, text, html=None, reply_to="", message_id="",
+                    in_reply_to="", references=""):
     from .outreach import send_via_account
-    return send_via_account(mailbox, to_addr, subject, text, html=html, reply_to=reply_to)
+    return send_via_account(mailbox, to_addr, subject, text, html=html, reply_to=reply_to,
+                            message_id=message_id, in_reply_to=in_reply_to, references=references)
 
 
 # --------------------------------------------------------------------- lifecycle + reply/bounce stop

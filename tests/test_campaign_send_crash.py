@@ -73,19 +73,19 @@ def _mb(s, ids):
 
 
 # --- senders ---------------------------------------------------------------------------------------
-def ok(mb, to, subject, text, html=None, reply_to="", in_reply_to=""):
+def ok(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references=""):
     return True, "", f"<mid-{to}>"
 
 
-def timeout(mb, to, subject, text, html=None, reply_to="", in_reply_to=""):
+def timeout(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references=""):
     return False, "connection timed out", ""
 
 
-def retryable(mb, to, subject, text, html=None, reply_to="", in_reply_to=""):
+def retryable(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references=""):
     return False, "451 4.7.1 greylisted, try again later", ""
 
 
-def permanent(mb, to, subject, text, html=None, reply_to="", in_reply_to=""):
+def permanent(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references=""):
     return False, "550 5.1.1 user unknown", ""
 
 
@@ -210,7 +210,7 @@ def test_worker_continues_after_one_failure(ctx, monkeypatch):
         for em in ("good1@x.com", "bad@x.com", "good2@x.com"):
             _recipient(s, c, ids, email=em)
 
-    def picky(mb, to, subject, text, html=None, reply_to="", in_reply_to=""):
+    def picky(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references=""):
         if to == "bad@x.com":
             return False, "550 5.1.1 user unknown", ""
         return True, "", f"<mid-{to}>"

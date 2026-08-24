@@ -148,6 +148,9 @@ def on_startup() -> None:
     if bad:
         logger.warning("Using DEFAULT %s - fine on localhost, MUST be set before deploy.",
                        ", ".join(bad))
+    from . import attachments as _att
+    if _att.config_warning():
+        logger.warning(_att.config_warning())      # prominent: flag set but attachments forcibly disabled
 
 
 # ----------------------------------------------------------------------------- helpers

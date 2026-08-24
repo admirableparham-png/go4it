@@ -64,7 +64,7 @@ def test_parse_email_extracts_fields():
     raw = (b"From: Buyer <buyer@acme.ge>\r\nSubject: Re: tiles\r\n"
            b"Message-ID: <abc@acme.ge>\r\nIn-Reply-To: <out99@go4it.local>\r\n"
            b"Content-Type: text/plain\r\n\r\nHello there\r\n")
-    frm, subj, body, mid, irt = parse_email(raw)
+    frm, subj, body, mid, irt, refs = parse_email(raw)
     assert frm == "buyer@acme.ge" and subj == "Re: tiles"
     assert "Hello there" in body and mid == "<abc@acme.ge>"
     assert irt == "<out99@go4it.local>"

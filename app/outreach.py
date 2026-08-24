@@ -15,8 +15,8 @@ from datetime import date, timedelta
 from email.message import EmailMessage
 from email.utils import make_msgid
 
-from .config import (BASE_URL, OUTREACH_SIGNATURE, SECRET_KEY, SMTP_ENABLED, SMTP_FROM, SMTP_HOST,
-                     SMTP_PASSWORD, SMTP_PORT, SMTP_USER)
+from .config import (BASE_URL, CREDENTIAL_ENCRYPTION_KEYS, OUTREACH_SIGNATURE, SECRET_KEY, SMTP_ENABLED,
+                     SMTP_FROM, SMTP_HOST, SMTP_PASSWORD, SMTP_PORT, SMTP_USER)
 
 _SIG_PATH = os.path.join(os.path.dirname(__file__), "outreach_signature.html")
 _SIGNATURE_TEXT = ("Best regards,\n\n"
@@ -307,54 +307,86 @@ def send_email(to_addr, subject, body, html=None, in_reply_to="", references="")
 
 def _fernet_from_secret(secret_str):
     """Build a Fernet (AES-128-CBC + HMAC-SHA256 — authenticated, reversible) cipher from an arbitrary secret
-    string. Used by the credential-encryption migration for KEY ROTATION (decrypt with old, encrypt with new)."""
+    string. The dedicated credential keys + the legacy SECRET_KEY are all derived through here."""
     from cryptography.fernet import Fernet
     key = base64.urlsafe_b64encode(hashlib.sha256((secret_str or "").encode()).digest())
     return Fernet(key)
 
 
-_DEFAULT_SECRET_KEYS = {"dev-insecure-change-me", "go4it", "change-me", "changeme", "secret"}
+_DEFAULT_SECRET_KEYS = {"dev-insecure-change-me", "go4it", "change-me", "changeme", "secret", ""}
+
+
+def _credential_keys():
+    """Dedicated credential-encryption keys, highest priority first (keys[0] encrypts; the rest are
+    decrypt-only rotation fallbacks). Falls back to SECRET_KEY ONLY on localhost so dev keeps working —
+    production must set CREDENTIAL_ENCRYPTION_KEYS (enforced by _encryption_key_ok)."""
+    if CREDENTIAL_ENCRYPTION_KEYS:
+        return list(CREDENTIAL_ENCRYPTION_KEYS)
+    from .config import IS_LOCAL
+    if IS_LOCAL and SECRET_KEY:
+        return [SECRET_KEY]
+    return []
 
 
 def _encryption_key_ok():
-    """(ok, reason). Fail CLOSED on a PUBLIC deployment still using a shipped-default/weak SECRET_KEY — refuse
-    to touch mailbox credentials rather than encrypt them under a forgeable key. Localhost dev is exempt.
-    Compares the CURRENT key directly (not config's boot-time snapshot) so it stays correct after rotation."""
+    """(ok, reason). Fail CLOSED on a PUBLIC deployment unless a dedicated CREDENTIAL_ENCRYPTION_KEYS is set to
+    a non-default value. Localhost dev is exempt (may fall back to SECRET_KEY). Never uses SECRET_KEY for NEW
+    encryption in production."""
     from .config import IS_LOCAL
-    if not SECRET_KEY:
-        return False, "SECRET_KEY is empty — cannot derive the credential encryption key"
-    if not IS_LOCAL and SECRET_KEY in _DEFAULT_SECRET_KEYS:
-        return False, ("SECRET_KEY is the shipped default on a public deployment — set SECRET_KEY in .env "
-                       "(see docs/CREDENTIAL_ENCRYPTION.md) before handling mailbox credentials")
+    keys = _credential_keys()
+    if not keys:
+        return False, ("no credential encryption key configured — set CREDENTIAL_ENCRYPTION_KEYS "
+                       "(see docs/CREDENTIAL_ENCRYPTION.md)")
+    if not IS_LOCAL:
+        if not CREDENTIAL_ENCRYPTION_KEYS:
+            return False, "CREDENTIAL_ENCRYPTION_KEYS must be set on a public deployment (not the SECRET_KEY)"
+        if CREDENTIAL_ENCRYPTION_KEYS[0] in _DEFAULT_SECRET_KEYS:
+            return False, "CREDENTIAL_ENCRYPTION_KEYS[0] is a weak/default value — use a strong random key"
     return True, ""
 
 
-def _fernet():
-    """The application credential cipher, keyed off SECRET_KEY. Fails closed in production (see
-    _encryption_key_ok) so credentials are never encrypted under the shipped default key."""
+def _current_cipher():
+    """Cipher that ENCRYPTS new/rotated values — always the FIRST dedicated key. Fails closed in production."""
     ok, why = _encryption_key_ok()
     if not ok:
         raise RuntimeError(f"credential encryption unavailable: {why}")
-    return _fernet_from_secret(SECRET_KEY)
+    return _fernet_from_secret(_credential_keys()[0])
+
+
+def _decrypt_cipher():
+    """MultiFernet that DECRYPTS with any configured dedicated key, then the legacy SECRET_KEY as a final
+    decrypt-only fallback (so pre-migration SECRET_KEY ciphertext still reads during the one-time migration)."""
+    from cryptography.fernet import MultiFernet
+    keys = list(_credential_keys())
+    if SECRET_KEY and SECRET_KEY not in keys:
+        keys.append(SECRET_KEY)                       # legacy fallback, decrypt-only
+    return MultiFernet([_fernet_from_secret(k) for k in keys])
+
+
+# Backwards-compat alias (older callers/tests referenced _fernet as the single cipher).
+def _fernet():
+    return _current_cipher()
 
 
 def mail_encrypt(secret):
-    """Encrypt a mailbox credential (SMTP/IMAP app-password) for storage. Returns "" for empty input.
-    Raises (fail-closed) if the encryption key is unavailable — never silently stores plaintext."""
+    """Encrypt a mailbox credential (SMTP/IMAP app-password) under the DEDICATED current key. Returns "" for
+    empty input. Raises (fail-closed) if no dedicated key is available in production — never stores plaintext."""
     if not secret:
         return ""
-    return _fernet().encrypt(secret.encode()).decode()
+    return _current_cipher().encrypt(secret.encode()).decode()
 
 
 def mail_decrypt(token):
-    """Decrypt a stored credential. Returns "" for a missing/undecryptable/rotated token; propagates the
-    fail-closed error if the key itself is unavailable (production + default key)."""
+    """Decrypt a stored credential, trying every dedicated key then the legacy SECRET_KEY. Returns "" for a
+    missing/undecryptable token; propagates the fail-closed error only if NO key is configured in production."""
     if not token:
         return ""
-    f = _fernet()   # fail-closed error (bad key) propagates; a bad TOKEN below is tolerated
+    ok, why = _encryption_key_ok()
+    if not ok:
+        raise RuntimeError(f"credential encryption unavailable: {why}")
     try:
-        return f.decrypt(token.encode()).decode()
-    except Exception:  # noqa: BLE001 — corrupt/rotated token, not a key problem
+        return _decrypt_cipher().decrypt(token.encode()).decode()
+    except Exception:  # noqa: BLE001 — corrupt/foreign token, not a key-configuration problem
         return ""
 
 
@@ -378,9 +410,12 @@ def plain_parts(body):
     return (body or ""), html
 
 
-def send_via_account(account, to_addr, subject, body, html=None, reply_to="", in_reply_to="", references=""):
+def send_via_account(account, to_addr, subject, body, html=None, reply_to="", in_reply_to="", references="",
+                     message_id=""):
     """Send an email from a trader's OWN connected MailAccount (its SMTP creds + From = its address).
-    Independent of the shared SMTP_* env. Returns (ok, error, message_id) — never raises."""
+    Independent of the shared SMTP_* env. If `message_id` is given (a durable RFC id generated + persisted by
+    the caller before submission) it becomes the Message-ID header — enabling reply correlation that survives
+    a retry/restart. Returns (ok, error, message_id) — never raises."""
     if not account:
         return False, "no sending account chosen", ""
     if not (to_addr or "").strip():
@@ -391,7 +426,7 @@ def send_via_account(account, to_addr, subject, body, html=None, reply_to="", in
     try:
         addr = (account.email or "").strip()
         domain = addr.split("@")[-1] if "@" in addr else "go4it.local"
-        mid = make_msgid(domain=domain)
+        mid = message_id or make_msgid(domain=domain)
         msg = EmailMessage()
         msg["Message-ID"] = mid
         msg["From"] = f"{account.from_name} <{addr}>" if account.from_name else addr

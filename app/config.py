@@ -99,6 +99,14 @@ FOLLOWUP_GRACE_BDAYS = int(os.getenv("FOLLOWUP_GRACE_BDAYS", "3"))  # business d
 REQUEST_REMINDER_HOURS = int(os.getenv("REQUEST_REMINDER_HOURS", "12"))       # a request pending this long -> ping
 REQUEST_REMINDER_INTERVAL = int(os.getenv("REQUEST_REMINDER_INTERVAL", "3600"))  # sweep cadence seconds; 0=off
 
+# --- Mailbox credential encryption (dedicated key, separate from SECRET_KEY) -
+# Authenticated-encryption keys for mailbox SMTP/IMAP credentials at rest. Comma-separated: the FIRST key
+# encrypts all new/rotated values; the rest are decrypt-only fallbacks for zero-downtime rotation. Kept
+# SEPARATE from the session SECRET_KEY so rotating one never touches the other. Required on a public deploy
+# (fail-closed); on localhost we fall back to SECRET_KEY so dev keeps working. Never hard-code a real key.
+CREDENTIAL_ENCRYPTION_KEYS = [k.strip() for k in os.getenv("CREDENTIAL_ENCRYPTION_KEYS", "").split(",")
+                              if k.strip()]
+
 # --- Production canary (founder-only, allowlist-gated) ----------------------
 # The live canary is OFF unless CANARY_ENABLED is set AND an allowlist of permitted test addresses is given.
 # It refuses to send to anything outside the allowlist and never uses a production campaign audience.

@@ -113,6 +113,10 @@ MIGRATIONS = [
     ("mailaccount", "dkim_status", "VARCHAR DEFAULT ''"),
     ("mailaccount", "dmarc_status", "VARCHAR DEFAULT ''"),
     ("mailaccount", "updated_at", "TIMESTAMP"),
+    ("mailaccount", "cred_enc_version", "INTEGER DEFAULT 1"),   # Phase-4 gate: credential encryption version
+    # Phase-4 gate: durable RFC Message-ID on the crash-safe send record (only needed where campaignsend
+    # already existed from an earlier boot; fresh DBs get it from create_all — the loop skips absent tables).
+    ("campaignsend", "rfc_message_id", "VARCHAR DEFAULT ''"),
 ]
 
 

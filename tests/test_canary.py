@@ -8,7 +8,8 @@ import scripts.canary as CAN
 
 
 def test_mechanism_checks_pass_in_isolation():
-    for fn in (CAN.check_suppression_blocks, CAN.check_pause_all_stops_worker, CAN.check_sellers_see_nothing):
+    for fn in (CAN.check_suppression_blocks, CAN.check_pause_all_stops_worker, CAN.check_sellers_see_nothing,
+               CAN.check_reply_correlation):
         ok, detail = fn()
         assert ok, f"{fn.__name__} failed: {detail}"
 

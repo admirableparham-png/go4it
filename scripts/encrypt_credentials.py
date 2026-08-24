@@ -1,23 +1,26 @@
-"""Mailbox credential encryption — migration + key rotation (Phase 4 hardening).
+"""Mailbox credential encryption — migration + key rotation (Phase 4 production-gate).
 
-Mailbox SMTP/IMAP credentials are stored ENCRYPTED at rest with Fernet (AES-128-CBC + HMAC-SHA256),
-keyed off SECRET_KEY. New installs already store ciphertext (mail_encrypt on save), so a dry-run here
-normally reports ZERO to migrate — this tool exists to (a) prove no plaintext is present, (b) safely
-encrypt any legacy plaintext, and (c) rotate the key. Secrets are NEVER printed.
+Mailbox SMTP/IMAP credentials are stored ENCRYPTED at rest with Fernet (AES-128-CBC + HMAC-SHA256), keyed off
+a DEDICATED CREDENTIAL_ENCRYPTION_KEYS list (separate from the session SECRET_KEY). The first key encrypts new
+values; the rest are decrypt-only fallbacks for rotation. This tool (a) proves no plaintext is present,
+(b) encrypts any legacy plaintext, and (c) re-wraps everything under the current key — which covers BOTH the
+one-time migration off SECRET_KEY-encrypted ciphertext AND ongoing key rotation. Secrets/keys are NEVER printed.
 
     ./.venv/bin/python scripts/encrypt_credentials.py --dry-run   # count plaintext creds; change nothing
     ./.venv/bin/python scripts/encrypt_credentials.py             # encrypt any plaintext (verify-before-persist)
-    GO4IT_OLD_SECRET_KEY=<old> ./.venv/bin/python scripts/encrypt_credentials.py --rotate            # re-key (dry)
-    GO4IT_OLD_SECRET_KEY=<old> ./.venv/bin/python scripts/encrypt_credentials.py --rotate --apply    # re-key
+    ./.venv/bin/python scripts/encrypt_credentials.py --rewrap             # re-wrap under current key (dry)
+    ./.venv/bin/python scripts/encrypt_credentials.py --rewrap --apply     # re-wrap under current key (apply)
 
-KEY ROTATION PROCEDURE (zero credential loss):
-  1) backup_db.py                                  # dated snapshot first
-  2) keep the CURRENT SECRET_KEY as GO4IT_OLD_SECRET_KEY, set the NEW one as SECRET_KEY in .env
-  3) run --rotate (dry) to see how many tokens re-key, then --rotate --apply
-  4) each token is decrypted with OLD and re-encrypted with NEW, verified to round-trip BEFORE the row is
-     written; the old value is only replaced once the new one is proven decryptable. Transactional: any
-     failure rolls the whole batch back — no half-rotated table.
-  5) remove GO4IT_OLD_SECRET_KEY once verified.
+ONE-TIME MIGRATION off SECRET_KEY, and KEY ROTATION (same command):
+  1) backup_db.py                                    # dated snapshot first
+  2) set CREDENTIAL_ENCRYPTION_KEYS="<new-key>,<previous-key-or-nothing>" in .env
+     - migrating off SECRET_KEY: the legacy SECRET_KEY is an automatic decrypt-only fallback, so just set the
+       new dedicated key as CREDENTIAL_ENCRYPTION_KEYS and run --rewrap.
+     - rotating a dedicated key: put the NEW key first and the OLD key second, run --rewrap, then drop the OLD.
+  3) --rewrap (dry) to preview, then --rewrap --apply. Each token is decrypted with whatever key still opens it
+     and re-encrypted under the CURRENT key, verified to round-trip BEFORE the row is written. A token that no
+     key can open is left UNTOUCHED (never destroyed). Transactional + idempotent.
+  4) once every value is under the new key, remove the old key from CREDENTIAL_ENCRYPTION_KEYS.
 """
 import os
 import sys
@@ -27,32 +30,34 @@ sys.path.insert(0, BASE)
 
 from sqlmodel import Session, select   # noqa: E402
 
-from app.config import SECRET_KEY   # noqa: E402
 from app.db import engine, init_db   # noqa: E402
 from app.models import MailAccount   # noqa: E402
-from app.outreach import _encryption_key_ok, _fernet, _fernet_from_secret   # noqa: E402
+from app.outreach import _current_cipher, _decrypt_cipher, _encryption_key_ok   # noqa: E402
 
 FIELDS = ("smtp_password_enc", "imap_password_enc")
 
 
-def _state(cipher, value):
-    """'empty' | 'encrypted' | 'plaintext' — never returns or logs the value itself."""
-    if not value:
-        return "empty"
-    try:
-        cipher.decrypt(value.encode())
-        return "encrypted"
-    except Exception:  # noqa: BLE001
-        return "plaintext"
-
-
-def scan(apply=False):
+def _guard():
     ok, why = _encryption_key_ok()
     if not ok:
         print(f"ABORT (fail-closed): {why}")
         sys.exit(2)
+
+
+def _under_current(cur, value):
+    """True if `value` already decrypts under the CURRENT key (so it needs no re-wrap)."""
+    try:
+        cur.decrypt(value.encode())
+        return True
+    except Exception:  # noqa: BLE001
+        return False
+
+
+def scan(apply=False):
+    """Encrypt any PLAINTEXT credential under the current dedicated key (verify-before-persist, idempotent)."""
+    _guard()
     init_db()
-    cipher = _fernet()
+    cur, multi = _current_cipher(), _decrypt_cipher()
     counts = {"accounts": 0, "empty": 0, "encrypted": 0, "plaintext": 0, "migrated": 0}
     with Session(engine) as s:
         rows = s.exec(select(MailAccount)).all()
@@ -60,41 +65,40 @@ def scan(apply=False):
         for m in rows:
             for field in FIELDS:
                 val = getattr(m, field, "") or ""
-                st = _state(cipher, val)
-                counts[st] += 1
-                if st == "plaintext":
-                    new_tok = cipher.encrypt(val.encode()).decode()
-                    if cipher.decrypt(new_tok.encode()).decode() != val:   # verify BEFORE replacing
-                        raise RuntimeError(f"verify failed for account {m.id} {field}")
-                    if apply:
-                        setattr(m, field, new_tok)
-                        s.add(m)
-                        counts["migrated"] += 1
+                if not val:
+                    counts["empty"] += 1
+                    continue
+                try:
+                    multi.decrypt(val.encode())          # decryptable by SOME configured key → already encrypted
+                    counts["encrypted"] += 1
+                    continue
+                except Exception:  # noqa: BLE001
+                    pass
+                counts["plaintext"] += 1
+                new_tok = cur.encrypt(val.encode()).decode()
+                if cur.decrypt(new_tok.encode()).decode() != val:      # verify BEFORE replacing
+                    raise RuntimeError(f"verify failed for account {m.id} {field}")
+                if apply:
+                    setattr(m, field, new_tok); s.add(m); counts["migrated"] += 1
         if apply:
             s.commit()
     mode = "APPLIED" if apply else "DRY-RUN"
-    print(f"[{mode}] accounts={counts['accounts']} fields: encrypted={counts['encrypted']} "
-          f"empty={counts['empty']} plaintext={counts['plaintext']} "
+    print(f"[{mode}] accounts={counts['accounts']} encrypted={counts['encrypted']} empty={counts['empty']} "
+          f"plaintext={counts['plaintext']} "
           f"{'migrated=' + str(counts['migrated']) if apply else 'would-migrate=' + str(counts['plaintext'])}")
     print("(secrets are never displayed)")
     return counts
 
 
-def rotate(apply=False):
-    old_key = os.getenv("GO4IT_OLD_SECRET_KEY", "")
-    if not old_key:
-        print("ABORT: set GO4IT_OLD_SECRET_KEY to the PREVIOUS key to rotate.")
-        sys.exit(2)
-    if old_key == SECRET_KEY:
-        print("ABORT: GO4IT_OLD_SECRET_KEY equals the current SECRET_KEY — nothing to rotate.")
-        sys.exit(2)
-    ok, why = _encryption_key_ok()
-    if not ok:
-        print(f"ABORT (fail-closed): {why}")
-        sys.exit(2)
+def rewrap(apply=False):
+    """Re-encrypt every credential under the CURRENT key — covers the one-time SECRET_KEY→dedicated migration
+    AND dedicated-key rotation. Decrypts with any key that still opens the token (dedicated fallbacks + legacy
+    SECRET_KEY), verifies the new ciphertext round-trips, then replaces. Unreadable tokens are left untouched
+    (never destroyed). Idempotent: tokens already under the current key are skipped."""
+    _guard()
     init_db()
-    old_c, new_c = _fernet_from_secret(old_key), _fernet()
-    counts = {"rotated": 0, "already_new": 0, "empty": 0, "unreadable": 0}
+    cur, multi = _current_cipher(), _decrypt_cipher()
+    counts = {"rewrapped": 0, "already_current": 0, "empty": 0, "unreadable": 0}
     with Session(engine) as s:
         for m in s.exec(select(MailAccount)).all():
             for field in FIELDS:
@@ -102,28 +106,31 @@ def rotate(apply=False):
                 if not val:
                     counts["empty"] += 1
                     continue
-                try:
-                    plain = old_c.decrypt(val.encode()).decode()
-                except Exception:  # noqa: BLE001 — not encrypted under the OLD key
-                    counts["already_new" if _state(new_c, val) == "encrypted" else "unreadable"] += 1
+                if _under_current(cur, val):
+                    counts["already_current"] += 1
                     continue
-                new_tok = new_c.encrypt(plain.encode()).decode()
-                if new_c.decrypt(new_tok.encode()).decode() != plain:   # verify BEFORE replacing
-                    raise RuntimeError(f"rotation verify failed for account {m.id} {field}")
+                try:
+                    plain = multi.decrypt(val.encode()).decode()       # any configured/legacy key
+                except Exception:  # noqa: BLE001 — no key opens it → DO NOT destroy
+                    counts["unreadable"] += 1
+                    continue
+                new_tok = cur.encrypt(plain.encode()).decode()
+                if cur.decrypt(new_tok.encode()).decode() != plain:    # verify BEFORE replacing
+                    raise RuntimeError(f"rewrap verify failed for account {m.id} {field}")
                 if apply:
                     setattr(m, field, new_tok); s.add(m)
-                counts["rotated"] += 1
+                counts["rewrapped"] += 1
         if apply:
             s.commit()
     mode = "APPLIED" if apply else "DRY-RUN"
-    print(f"[{mode}] rotate: rotated={counts['rotated']} already_new={counts['already_new']} "
+    print(f"[{mode}] rewrap: rewrapped={counts['rewrapped']} already_current={counts['already_current']} "
           f"empty={counts['empty']} unreadable={counts['unreadable']}")
-    print("(secrets are never displayed)")
+    print("(secrets and keys are never displayed)")
     return counts
 
 
 if __name__ == "__main__":
-    if "--rotate" in sys.argv:
-        rotate(apply="--apply" in sys.argv)
+    if "--rewrap" in sys.argv:
+        rewrap(apply="--apply" in sys.argv)
     else:
         scan(apply="--dry-run" not in sys.argv)

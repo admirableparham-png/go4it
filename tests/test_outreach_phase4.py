@@ -76,7 +76,7 @@ def _running_campaign(s, ids):
     return c
 
 
-def _ok_sender(mb, to, subject, text, html=None, reply_to="", in_reply_to=""):
+def _ok_sender(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references=""):
     return True, "", f"<mid-{to}>"
 
 

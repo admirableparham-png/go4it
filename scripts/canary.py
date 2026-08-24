@@ -73,7 +73,7 @@ def _running_campaign(s, ids):
     return c
 
 
-def _ok(mb, to, subject, text, html=None, reply_to="", in_reply_to=""):
+def _ok(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references=""):
     return True, "", f"<mid-{to}>"
 
 
@@ -133,6 +133,28 @@ def check_sellers_see_nothing():
         main.engine = old
 
 
+def check_reply_correlation():
+    """A durable RFC Message-ID is persisted before send and an inbound reply correlates back through
+    In-Reply-To AND References — exercised offline so the live canary only confirms real delivery."""
+    from app.inbound_email import handle_inbound
+    from app.models import CampaignSend, Outreach
+    eng, ids = _isolated()
+    with Session(eng) as s:
+        c = _running_campaign(s, ids)
+        ld = Lead(product="copper", managed=True, seller_id=ids["seller"], email="buyer@x.com")
+        s.add(ld); s.commit(); s.refresh(ld)
+        r = CampaignRecipient(campaign_id=c.id, tenant_id=ids["seller"], lead_id=ld.id, to_email="buyer@x.com",
+                              sequence_version=1, current_step=0, status="pending")
+        s.add(r); s.commit(); s.refresh(r)
+        CAMP.send_step(s, c, r, s.get(MailAccount, ids["mailbox"]), sender=_ok)
+        cs = s.exec(select(CampaignSend)).one()
+        mid = cs.rfc_message_id
+        has_id = bool(mid) and mid == (s.exec(select(Outreach).where(Outreach.direction == "out")).one().message_id)
+        via_refs = handle_inbound(s, "someone@buyer.com", "Re", "yes", message_id="<rp@x>",
+                                  references=f"<root@x> {mid}")
+        return has_id and via_refs == "threaded", f"msgid persisted={has_id}, reply via References={via_refs}"
+
+
 # --------------------------------------------------------------------- live preflight (gated)
 def live_preflight():
     reasons = []
@@ -168,7 +190,8 @@ def main_report():
     print("\nSafety mechanism checks (isolated in-memory DB — production untouched, no external email):")
     checks = [("suppression blocks a second send", check_suppression_blocks),
               ("Pause-All stops the campaign worker", check_pause_all_stops_worker),
-              ("sellers see no mailbox / inbox / suppression / buyer", check_sellers_see_nothing)]
+              ("sellers see no mailbox / inbox / suppression / buyer", check_sellers_see_nothing),
+              ("RFC Message-ID persisted + reply correlates (In-Reply-To/References)", check_reply_correlation)]
     all_ok = True
     for label, fn in checks:
         try:

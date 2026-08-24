@@ -1,39 +1,52 @@
 # Mailbox credential encryption (Phase 4)
 
 Mailbox SMTP/IMAP credentials (app-passwords) are the only reversible secrets Go4it stores. They are
-encrypted **at rest** and never rendered, logged, exported, or returned by any API.
+encrypted **at rest** under a **dedicated key** and never rendered, logged, exported, or returned by any API.
 
 ## How it works
-- **Cipher:** Fernet — AES-128-CBC + HMAC-SHA256. Authenticated (tamper-evident) and **reversible**
-  (unlike a password *hash*; we must be able to decrypt to log in to the mail provider).
-- **Key:** derived from the app secret `SECRET_KEY` (env). Not hard-coded. `docker-compose`/`.env` supplies it.
-- **Write path:** `app.outreach.mail_encrypt()` on every save. **Read path:** `mail_decrypt()` only inside the
-  SMTP/IMAP send/fetch code — a decrypted secret never reaches a template, response, log line, or audit record.
-- **Fail closed:** on a **public** deployment (`BASE_URL` not localhost) still using the shipped-default
-  `SECRET_KEY`, `mail_encrypt`/`mail_decrypt` **refuse to operate** (`_encryption_key_ok()`), and the app
-  refuses to boot at all (`app/main.py` startup guard). Localhost dev is exempt.
+- **Cipher:** Fernet — AES-128-CBC + HMAC-SHA256. Authenticated (tamper-evident) and **reversible** (we must
+  decrypt to log in to the mail provider — this is not a password *hash*).
+- **Dedicated key, separate from `SECRET_KEY`:** `CREDENTIAL_ENCRYPTION_KEYS` (env, comma-separated).
+  - The **first** key encrypts all new/rotated values.
+  - The remaining keys are **decrypt-only fallbacks** for zero-downtime rotation.
+  - The session `SECRET_KEY` is **never** used to encrypt new values; it remains only as a final
+    **decrypt-only** fallback so pre-migration ciphertext still reads until it is re-wrapped.
+- **Not hard-coded:** keys come from the environment only.
+- **Write path:** `mail_encrypt()` (current dedicated key). **Read path:** `mail_decrypt()` tries every
+  dedicated key, then the legacy `SECRET_KEY`. A decrypted secret never reaches a template, response, log, or
+  audit record.
+- **Fail closed:** on a **public** deployment (`BASE_URL` not localhost) `mail_encrypt`/`mail_decrypt`
+  **refuse to operate** unless `CREDENTIAL_ENCRYPTION_KEYS[0]` is set to a strong (non-default) value.
+  Localhost dev is exempt and may fall back to `SECRET_KEY` so development keeps working.
 
-## Verify there is no plaintext / migrate legacy plaintext
+## Generate a key
+```bash
+python -c "import secrets; print(secrets.token_urlsafe(48))"
+# put it in .env:  CREDENTIAL_ENCRYPTION_KEYS=<that value>
+```
+
+## Verify there is no plaintext / encrypt legacy plaintext
 ```bash
 ./.venv/bin/python scripts/encrypt_credentials.py --dry-run   # counts plaintext creds; changes nothing
 ./.venv/bin/python scripts/encrypt_credentials.py             # encrypts any plaintext, verify-before-persist
 ```
-New installs already store ciphertext, so the dry-run normally reports `plaintext=0`. The migration is
-**idempotent** (re-run → 0), **verifies** each new token round-trips **before** replacing the old value, and
-is **transactional** (any failure rolls the whole batch back).
+Idempotent (re-run → 0), verifies each new token round-trips **before** replacing the old value, transactional.
 
-## Key rotation (zero credential loss)
+## One-time migration off SECRET_KEY, and key rotation (same command)
 ```bash
 ./.venv/bin/python scripts/backup_db.py                       # 1) dated snapshot
-# 2) in .env: keep the CURRENT key as GO4IT_OLD_SECRET_KEY, set the NEW key as SECRET_KEY
-GO4IT_OLD_SECRET_KEY=<old> ./.venv/bin/python scripts/encrypt_credentials.py --rotate           # 3) dry-run
-GO4IT_OLD_SECRET_KEY=<old> ./.venv/bin/python scripts/encrypt_credentials.py --rotate --apply    # 4) apply
-# 5) remove GO4IT_OLD_SECRET_KEY once verified
+# 2) in .env, set the dedicated key list:
+#    migrating off SECRET_KEY:  CREDENTIAL_ENCRYPTION_KEYS=<new-key>     (SECRET_KEY is an automatic fallback)
+#    rotating a dedicated key:  CREDENTIAL_ENCRYPTION_KEYS=<new-key>,<old-key>
+./.venv/bin/python scripts/encrypt_credentials.py --rewrap            # 3) dry-run preview
+./.venv/bin/python scripts/encrypt_credentials.py --rewrap --apply    # 4) apply
+# 5) once every value is under the new key, drop <old-key> from CREDENTIAL_ENCRYPTION_KEYS
 ```
-Each token is decrypted with the **old** key and re-encrypted with the **new** key, proven decryptable
-**before** the row is written. Secrets are never printed by any command.
+`--rewrap` decrypts each token with whatever key still opens it (dedicated fallbacks or the legacy
+`SECRET_KEY`) and re-encrypts under the **current** key, proven decryptable **before** the row is written. A
+token no key can open is **left untouched** (never destroyed). Idempotent; secrets and keys are never printed.
 
 ## Guarantees under test (`tests/test_credentials.py`)
-Round-trip; ciphertext never contains the plaintext; the raw DB column holds no plaintext; fail-closed on a
-public deployment with the default key; dry-run detects planted plaintext; apply encrypts + is idempotent;
-rotation re-keys and the old key no longer decrypts.
+No plaintext in the DB · new writes use the dedicated current key · an old dedicated key still decrypts during
+rotation · SECRET_KEY-era ciphertext migrates · missing key fails closed in production · a wrong key never
+destroys data · repeated migration is a no-op · no secret/key appears in logs or errors.

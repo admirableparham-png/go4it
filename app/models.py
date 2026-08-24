@@ -394,7 +394,8 @@ class MailAccount(SQLModel, table=True):
     provider: str = "gmail"        # gmail | custom
     smtp_host: str = "smtp.gmail.com"
     smtp_port: int = 587
-    smtp_password_enc: str = ""     # Fernet-encrypted app password
+    smtp_password_enc: str = ""     # Fernet-encrypted app password (dedicated credential key — see outreach.py)
+    cred_enc_version: int = 1        # encryption-scheme version of the stored credentials (forward-compat)
     is_default: bool = False
     active: bool = True
     last_verified_at: Optional[datetime] = None
@@ -831,6 +832,9 @@ class CampaignSend(SQLModel, table=True):
     attempt_count: int = 0
     next_attempt_at: Optional[datetime] = None
     last_error: str = ""
+    # Durable RFC Message-ID generated + persisted BEFORE SMTP submission — the reply-correlation key. Reused
+    # verbatim on a safe retry, never regenerated for the same step. Distinct from the provider's own id.
+    rfc_message_id: str = Field(default="", index=True)
     provider_message_id: str = ""
     sent_at: Optional[datetime] = None
     outreach_id: Optional[int] = Field(default=None, foreign_key="outreach.id")
