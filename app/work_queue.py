@@ -13,8 +13,8 @@ from datetime import datetime, timedelta
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import select, func
 
-from .models import (CommandJob, DuplicateCandidate, IngestionRun, Lead, Outreach, Quote, ServiceRequest,
-                     SellerUpdate, WorkItem)
+from .models import (Campaign, CampaignRecipient, CommandJob, DuplicateCandidate, IngestionRun, Lead,
+                     MailAccount, Outreach, Quote, ServiceRequest, SellerUpdate, WorkItem)
 from .pipeline import audit
 
 logger = logging.getLogger("go4it.work_queue")
@@ -23,7 +23,10 @@ logger = logging.getLogger("go4it.work_queue")
 TYPES = ["review_new_request", "follow_up_buyer", "follow_up_seller", "follow_up_supplier", "review_reply",
          "requester_action_required", "admin_action_required", "data_enrichment", "replace_invalid_contact",
          "review_potential_duplicate", "prepare_quote", "approve_quote", "missing_document", "deliver_result",
-         "failed_system_job", "overdue_request", "other"]
+         "failed_system_job", "overdue_request",
+         # Phase 4 (Outreach) work-item types
+         "review_inbound_reply", "unmatched_inbound", "mailbox_auth_failure", "campaign_paused",
+         "spam_complaint", "high_bounce_rate", "other"]
 TYPE_LABELS = {
     "review_new_request": "Review new request", "follow_up_buyer": "Follow up with buyer",
     "follow_up_seller": "Follow up with seller", "follow_up_supplier": "Follow up with supplier",
@@ -32,7 +35,10 @@ TYPE_LABELS = {
     "replace_invalid_contact": "Replace invalid contact", "review_potential_duplicate": "Review potential duplicate",
     "prepare_quote": "Prepare quote", "approve_quote": "Approve quote", "missing_document": "Missing document",
     "deliver_result": "Deliver result", "failed_system_job": "Failed system job",
-    "overdue_request": "Overdue request", "other": "Other",
+    "overdue_request": "Overdue request",
+    "review_inbound_reply": "Review inbound reply", "unmatched_inbound": "Unmatched inbound message",
+    "mailbox_auth_failure": "Mailbox authentication failure", "campaign_paused": "Campaign paused by failure",
+    "spam_complaint": "Spam complaint", "high_bounce_rate": "High bounce-rate alert", "other": "Other",
 }
 STATUSES = ["open", "in_progress", "waiting", "completed", "dismissed"]
 NONTERMINAL = ("open", "in_progress", "waiting")
@@ -41,7 +47,10 @@ WAITING_PARTIES = ["buyer", "seller", "supplier", "requester", "internal", "serv
 # related-party category (for follow-up organization) derived from type/waiting_on
 PARTY_OF_TYPE = {"follow_up_buyer": "buyer", "follow_up_seller": "seller", "follow_up_supplier": "supplier",
                  "requester_action_required": "requester", "review_reply": "requester",
-                 "failed_system_job": "system"}
+                 "review_inbound_reply": "buyer", "replace_invalid_contact": "buyer",
+                 "failed_system_job": "system", "unmatched_inbound": "system",
+                 "mailbox_auth_failure": "system", "campaign_paused": "system",
+                 "spam_complaint": "system", "high_bounce_rate": "system"}
 PRIORITY_BADGE = {"low": "slate", "normal": "sky", "high": "amber", "urgent": "rose"}
 STATUS_BADGE = {"open": "queued", "in_progress": "running", "waiting": "amber",
                 "completed": "won", "dismissed": "slate"}
@@ -448,6 +457,70 @@ def sync_pending_quotes(session, actor=None, inferred=False, budget=None) -> int
     return n
 
 
+def sync_paused_campaigns(session, actor=None, inferred=False, budget=None) -> int:
+    """A campaign paused by a failure surfaces a work item; resumed/other campaigns resolve it."""
+    n = 0
+    for c in session.exec(select(Campaign)).all():
+        key = f"campaign_paused:{c.id}"
+        if c.status == "paused" and c.pause_reason:
+            if _capped(budget, n) or already_handled(session, key, c.pause_reason[:60]):
+                continue
+            if create_work_item_safe(session, actor=actor, type="campaign_paused", priority="high",
+                                     title=f"Campaign paused: {c.name[:60]}",
+                                     description=(c.pause_reason or "Campaign paused by failure.")[:300],
+                                     tenant_id=c.tenant_id, idempotency_key=key,
+                                     condition_version=c.pause_reason[:60], source="automatic",
+                                     inferred=inferred):
+                n += 1
+        elif c.status != "paused":
+            resolve_by_key(session, key, actor, note="campaign resumed")
+    return n
+
+
+def sync_high_bounce_rate(session, actor=None, inferred=False, budget=None) -> int:
+    """Alert when a campaign's hard-bounce rate exceeds 20% over a meaningful volume. Condition-versioned by
+    the current hard-bounce count so a genuinely new bounce spike re-alerts even after dismissal."""
+    counted = ("sent", "delivered", "hard_bounced", "soft_bounced", "replied", "positive_reply",
+               "negative_reply", "completed")
+    n = 0
+    for c in session.exec(select(Campaign).where(Campaign.status.in_(("running", "paused")))).all():
+        rc = session.exec(select(CampaignRecipient).where(CampaignRecipient.campaign_id == c.id)).all()
+        sent = sum(1 for r in rc if r.status in counted)
+        hard = sum(1 for r in rc if r.status == "hard_bounced")
+        if sent >= 10 and hard / sent >= 0.2:
+            key = f"high_bounce_rate:campaign:{c.id}"
+            if _capped(budget, n) or already_handled(session, key, f"hb:{hard}"):
+                continue
+            if create_work_item_safe(session, actor=actor, type="high_bounce_rate", priority="high",
+                                     title=f"High bounce rate on {c.name[:50]} ({hard}/{sent})",
+                                     description="Hard-bounce rate exceeded 20% — pause and review deliverability.",
+                                     tenant_id=c.tenant_id, idempotency_key=key,
+                                     condition_version=f"hb:{hard}", source="automatic", inferred=inferred):
+                n += 1
+    return n
+
+
+def sync_auth_failed_mailboxes(session, actor=None, inferred=False, budget=None) -> int:
+    """A paused Go4it mailbox whose last error looks like an auth failure surfaces an urgent task; a
+    recovered (un-paused) mailbox resolves it."""
+    n = 0
+    for m in session.exec(select(MailAccount).where(MailAccount.admin_owned == True)).all():   # noqa: E712
+        err = (m.last_send_error or "").lower()
+        key = f"mailbox_auth_failure:{m.id}"
+        if m.paused and any(k in err for k in ("auth", "login", "password", "credential", "535", "5.7.8")):
+            if _capped(budget, n) or already_handled(session, key, err[:60]):
+                continue
+            if create_work_item_safe(session, actor=actor, type="mailbox_auth_failure", priority="urgent",
+                                     title=f"Mailbox authentication failure: {m.email}",
+                                     description="A Go4it mailbox failed authentication and was paused — update credentials.",
+                                     idempotency_key=key, condition_version=err[:60], source="automatic",
+                                     inferred=inferred):
+                n += 1
+        elif not m.paused:
+            resolve_by_key(session, key, actor, note="mailbox recovered")
+    return n
+
+
 _SCANNERS = [
     ("review_new_request", sync_unreviewed_requests),
     ("requester_action_required", sync_open_seller_questions),
@@ -456,6 +529,9 @@ _SCANNERS = [
     ("approve_quote", sync_pending_quotes),
     ("failed_system_job", sync_failed_jobs),
     ("overdue_request", sync_overdue_requests),
+    ("campaign_paused", sync_paused_campaigns),
+    ("high_bounce_rate", sync_high_bounce_rate),
+    ("mailbox_auth_failure", sync_auth_failed_mailboxes),
 ]
 
 

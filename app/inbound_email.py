@@ -83,17 +83,35 @@ def handle_inbound(session: Session, from_addr: str, subject: str, body: str,
         return "duplicate"
     lead = _referenced_lead(session, in_reply_to) or find_lead_by_contact(session, email=from_addr)
     if lead is None:
+        # ambiguous / no safe match → an Unmatched Inbox queue item, never auto-attached across tenants
+        try:
+            from . import work_queue as WQ
+            WQ.create_work_item_safe(session, actor=None, type="unmatched_inbound",
+                                     title="Unmatched inbound message",
+                                     description="An inbound email could not be safely threaded to a buyer.",
+                                     idempotency_key=f"unmatched_inbound:{message_id or from_addr}",
+                                     condition_version="unmatched")
+            session.commit()
+        except Exception:  # noqa: BLE001
+            pass
         return "unmatched"
     session.add(Outreach(
         lead_id=lead.id, direction="in", channel="email", from_addr=from_addr,
         subject=subject[:200], body=(body or "")[:8000], message_id=message_id[:400],
-        status="received"))
+        in_reply_to=in_reply_to[:400], status="received"))
     if lead.buyer_replied_at is None:
         lead.buyer_replied_at = datetime.utcnow()
     lead.next_action_at = None            # a reply stops the auto follow-up sequence
     lead.next_action_note = "replied"
     session.add(lead)
     session.commit()
+    # Phase 4: reply effects (engaged-buyer / auto-reply / unsubscribe, stop campaigns, review task) —
+    # non-blocking; a failure here never breaks inbound threading.
+    try:
+        from . import outreach_events as OE
+        OE.on_reply(session, lead, subject, body)
+    except Exception:  # noqa: BLE001
+        session.rollback()
     try:
         notify_buyer_reply(lead, from_addr, subject, snippet=body)
     except Exception:  # noqa: BLE001 - alerts are best-effort
@@ -161,6 +179,13 @@ def handle_bounce(session: Session, failed_email: str, reason: str) -> str:
     lead.next_action_note = "bounced"
     session.add(lead)
     session.commit()
+    # Phase 4: bounce effects (classify → durable BounceRecord → suppress hard/spam, cancel pending campaign
+    # steps, retry-policy for soft) for the FAILED address — non-blocking, never breaks bounce handling.
+    try:
+        from . import outreach_events as OE
+        OE.on_bounce(session, lead, failed_email, reason)
+    except Exception:  # noqa: BLE001
+        session.rollback()
     new_email = ""
     try:
         enrich_lead(session, lead)                   # scrape the buyer's own site for a fresh mailbox

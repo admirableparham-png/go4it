@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% set active = 'campaigns' %}
+{% block content %}
+{% include "partials/admin_page_header.html" %}
+
+{% set sb = {'draft':'slate','ready_for_review':'amber','scheduled':'sky','running':'emerald','paused':'amber','completed':'ok','cancelled':'error','archived':'slate'} %}
+
+<div class="flex flex-wrap items-center gap-2 mb-4">
+  <form method="post" action="/outreach/pause-all">
+    <input type="hidden" name="on" value="{{ '0' if paused_all else '1' }}">
+    <button class="btn btn-sm {{ 'btn-primary' if paused_all else 'btn-neutral' }}">{{ '▶ Resume all outreach' if paused_all else '⏸ Pause all outreach' }}</button>
+  </form>
+  {% if paused_all %}<span class="badge badge-amber">All outreach paused</span>{% endif %}
+</div>
+
+<details class="mb-4 card !p-0">
+  <summary class="cursor-pointer px-4 py-2.5 text-sm text-emerald-400 font-medium">➕ New campaign</summary>
+  <form method="post" action="/campaigns" class="space-y-2 p-4 pt-0">
+    <input name="name" required placeholder="Campaign name" class="input">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+      <select name="context_kind" class="select">{% for k in ['request','product','market','segment','research','internal'] %}<option value="{{ k }}">{{ k }}</option>{% endfor %}</select>
+      <select name="request_id" class="select"><option value="">Linked request (optional)</option>{% for r in reqs %}<option value="{{ r.id }}">{{ r.tracking_code or r.id }} — {{ r.product[:24] }}</option>{% endfor %}</select>
+      <select name="mailbox_id" class="select"><option value="">Go4it mailbox</option>{% for m in mailboxes %}<option value="{{ m.id }}">{{ m.email }}</option>{% endfor %}</select>
+      <input name="target_countries" placeholder="Countries (CN,TR)" class="input">
+    </div>
+    <button class="btn btn-primary btn-block">Create campaign</button>
+  </form>
+</details>
+
+<div class="flex flex-wrap gap-1.5 mb-3">
+  <a href="/campaigns" class="btn btn-sm {{ 'btn-primary' if not f.status else 'btn-neutral' }}">All</a>
+  {% for s in STATUSES %}<a href="/campaigns?status={{ s }}" class="btn btn-sm {{ 'btn-primary' if f.status==s else 'btn-neutral' }}">{{ s }}</a>{% endfor %}
+</div>
+
+{% if campaigns %}
+<div class="table-wrap"><table class="data-table">
+  <thead><tr><th>Campaign</th><th>Context</th><th>Mailbox</th><th>Recipients</th><th>Seq</th><th>Status</th><th>Owner</th></tr></thead>
+  <tbody>{% for c in campaigns %}<tr>
+    <td><a href="/campaigns/{{ c.id }}" class="link font-medium">{{ c.name }}</a>{% if c.inferred %} <span class="badge badge-slate text-[9px]">migrated</span>{% endif %}</td>
+    <td class="text-xs text-slate-400">{{ c.context_kind }}{% if c.category %} · {{ c.category }}{% endif %}{% if c.target_countries %} · {{ c.target_countries }}{% endif %}</td>
+    <td class="text-xs">{{ (mailboxes|selectattr('id','equalto',c.mailbox_id)|first).email if c.mailbox_id else '—' }}</td>
+    <td class="text-center tabular-nums">{{ counts.get(c.id, 0) }}</td>
+    <td class="text-center text-xs">v{{ c.sequence_version }}</td>
+    <td><span class="badge badge-{{ sb.get(c.status,'slate') }}">{{ c.status }}</span></td>
+    <td class="text-xs text-slate-400">{{ (umap.get(c.owner_id).email if umap.get(c.owner_id) else '—') }}</td>
+  </tr>{% endfor %}</tbody>
+</table></div>
+{% else %}<div class="empty">No campaigns yet. Create one — recipients come from your Trade Network buyers.</div>{% endif %}
+{% endblock %}

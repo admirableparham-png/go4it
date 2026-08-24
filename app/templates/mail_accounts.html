@@ -19,6 +19,12 @@
           <div class="min-w-0">
             <div class="text-slate-100 font-medium truncate">{{ a.email }} {% if a.is_default %}<span class="badge badge-emerald text-[10px]">default</span>{% endif %}</div>
             <div class="text-[11px] text-slate-500 truncate">{{ a.from_name or '—' }} &middot; {{ a.provider }} &middot; {{ a.smtp_host }}:{{ a.smtp_port }}{% if a.last_verified_at %} &middot; verified{% endif %}</div>
+            <div class="text-[10px] text-slate-500 mt-0.5" title="No live SPF/DKIM/DMARC probe yet — saved values are never shown as passing">
+              {% for k, v in [('SPF', a.spf_status), ('DKIM', a.dkim_status), ('DMARC', a.dmarc_status)] %}
+              {% set label, tone = mail_auth_display(v, None) %}
+              <span>{{ k }}: <b class="{{ 'text-slate-400' if tone=='unknown' else ('text-emerald-400' if tone=='pass' else ('text-amber-400' if tone=='stale' else 'text-rose-400')) }}">{{ label }}</b></span>{% if not loop.last %} &middot; {% endif %}
+              {% endfor %}
+            </div>
           </div>
           <div class="flex gap-1 shrink-0">
             {% if not a.is_default %}<form method="post" action="/mail/{{ a.id }}/default"><button class="btn btn-neutral btn-sm">Make default</button></form>{% endif %}

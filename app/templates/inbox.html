@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% set active = 'inbox' %}
+{% block content %}
+{% include "partials/admin_page_header.html" %}
+<div class="flex flex-wrap gap-1.5 mb-3">
+  {% for v in VIEWS %}<a href="/inbox?view={{ v }}" class="btn btn-sm {{ 'btn-primary' if f.view==v else 'btn-neutral' }}">{{ v|replace('_',' ') }}</a>{% endfor %}
+  <form method="get" action="/inbox" class="ml-auto"><input type="hidden" name="view" value="{{ f.view }}"><input name="q" value="{{ f.q }}" placeholder="search company/email" class="input" style="width:14rem"></form>
+</div>
+{% if leads %}
+<div class="table-wrap"><table class="data-table">
+  <thead><tr><th>Company</th><th>Email</th><th>Last reply</th><th>Engagement</th><th>Outcome</th><th></th></tr></thead>
+  <tbody>{% for ld in leads %}{% set m = last_in.get(ld.id) %}<tr>
+    <td><a href="/inbox/{{ ld.id }}" class="link font-medium">{{ ld.buyer_company or 'Buyer #' ~ ld.id }}</a></td>
+    <td class="font-mono text-xs">{{ ld.email or '—' }}</td>
+    <td class="text-xs text-slate-400">{{ (m.body or '')[:60] if m else '' }}</td>
+    <td><span class="badge badge-{{ 'emerald' if ld.engagement_class=='engaged' else 'slate' }} text-[10px]">{{ ld.engagement_class or '—' }}</span></td>
+    <td class="text-xs">{{ ld.reply_outcome or '—' }}</td>
+    <td><a href="/inbox/{{ ld.id }}" class="btn btn-ghost-sky btn-sm">Open</a></td>
+  </tr>{% endfor %}</tbody>
+</table></div>
+{% else %}<div class="empty">No conversations{% if f.view!='all' %} in this view{% endif %} yet.</div>{% endif %}
+<p class="text-slate-500 text-xs mt-3">Buyer identities, addresses and threads are admin-only — never shown to sellers.</p>
+{% endblock %}

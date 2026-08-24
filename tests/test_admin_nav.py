@@ -18,15 +18,17 @@ from app.models import Deal, Lead, Product, Quote, User, WorkItem
 PRIMARY = ["Dashboard", "Work Queue", "Requests", "Network", "Outreach", "Products", "Commercial",
            "Intelligence", "Admin"]
 # every existing admin destination must remain reachable from the header (primary hrefs + mobile panel kids)
-REACHABLE = ["/admin/work-queue", "/admin/requests", "/leads", "/suppliers", "/campaign", "/mail",
+REACHABLE = ["/admin/work-queue", "/admin/requests", "/leads", "/suppliers",
+             "/campaigns", "/inbox", "/followups", "/templates", "/suppression", "/mail", "/outreach/analytics",
              "/catalog", "/rates", "/quotes", "/deals", "/research", "/intel", "/markets", "/lines/cd-dvd",
              "/command", "/ingest", "/admin/users", "/admin/activity",
-             "/sellers", "/data-quality", "/duplicates"]   # Phase 2 Trade Network
+             "/sellers", "/data-quality", "/duplicates"]   # Phase 2 Trade Network + Phase 4 Outreach
 # admin-only routes (unchanged backend gate) — a non-admin must still get 403
 ADMIN_ONLY = ["/command", "/research", "/suppliers", "/catalog", "/rates", "/ingest", "/admin/users",
               "/admin/activity", "/lines/cd-dvd", "/uae", "/intel", "/georgia", "/markets",
               "/sellers", "/data-quality", "/duplicates", "/export/buyers.csv",
-              "/admin/work-queue"]   # Phase 3 Work Queue
+              "/admin/work-queue",   # Phase 3 Work Queue
+              "/campaigns", "/inbox", "/followups", "/templates", "/suppression", "/outreach/analytics"]  # Phase 4
 
 
 @pytest.fixture

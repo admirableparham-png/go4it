@@ -236,6 +236,12 @@ class Outreach(SQLModel, table=True):
     status: str = "logged"         # logged | sent | failed | received
     error: str = ""
     user_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    # --- campaign send linkage (Phase 4, additive; the Outreach row stays the single event spine) ---
+    campaign_id: Optional[int] = Field(default=None, foreign_key="campaign.id", index=True)
+    campaign_recipient_id: Optional[int] = Field(default=None, foreign_key="campaignrecipient.id")
+    campaign_version: int = 0
+    campaign_step: int = 0
+    in_reply_to: str = ""          # inbound: the outbound Message-ID this reply threads to (header match)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
@@ -394,6 +400,22 @@ class MailAccount(SQLModel, table=True):
     last_verified_at: Optional[datetime] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     admin_owned: bool = False       # True = a Go4it-controlled mailbox used for confidential buyer outreach
+    # --- Phase 4 operational fields (additive) ---
+    daily_limit: int = 200          # max sends/day for this mailbox (never auto-increased)
+    sent_today: int = 0
+    sent_today_date: str = ""       # YYYY-MM-DD the counter is for (reset when the date rolls)
+    paused: bool = False            # admin paused sending on this mailbox
+    imap_host: str = ""             # optional per-mailbox inbound (else global IMAP_* is used)
+    imap_port: int = 993
+    imap_user: str = ""
+    imap_password_enc: str = ""     # Fernet-encrypted IMAP password (same cipher as smtp_password_enc)
+    last_inbound_at: Optional[datetime] = None
+    last_outbound_at: Optional[datetime] = None
+    last_send_error: str = ""
+    spf_status: str = ""            # display-only when known (pass|fail|unknown)
+    dkim_status: str = ""
+    dmarc_status: str = ""
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
 
 
 class StageEvent(SQLModel, table=True):
@@ -617,3 +639,200 @@ class RequestStatusEvent(SQLModel, table=True):
     reason: str = ""
     inferred: bool = False         # True = backfill-seeded from legacy status, not an observed transition
     created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+# ============================================================================
+# Outreach, Campaigns & Email (Phase 4) — an ADMIN-ONLY sales-communication
+# layer. Strictly additive: the Outreach event spine, MailAccount and Lead
+# stay the source of truth; these tables ORGANIZE campaigns, sequences,
+# templates, suppression and bounces around them. Two-way confidentiality is
+# enforced in the service layer (buyers never learn the seller; sellers never
+# learn the buyer). Recipients ALWAYS come from the Trade Network — a Campaign
+# is never an independent contact database.
+# ============================================================================
+
+
+class Campaign(SQLModel, table=True):
+    """One organized outreach effort, always linked to a meaningful context (request/product/segment/…).
+    tenant_id = the seller the outreach is FOR (confidentiality scope; NULL = internal Go4it initiative).
+    Sends go ONLY from an admin_owned mailbox. Never hard-deleted once it has message history."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)  # seller scope / NULL=internal
+    name: str = ""
+    context_kind: str = "request"   # request|product|market|segment|research|internal
+    request_id: Optional[int] = Field(default=None, foreign_key="servicerequest.id", index=True)
+    product_id: Optional[int] = Field(default=None, foreign_key="product.id")
+    category: str = ""
+    target_countries: str = ""      # CSV of ISO2 (structured facet, not free text)
+    segment_ref: str = ""           # Trade Network saved-segment key/query the audience was built from
+    owner_id: Optional[int] = Field(default=None, foreign_key="user.id")   # admin owner
+    mailbox_id: Optional[int] = Field(default=None, foreign_key="mailaccount.id")  # sending mailbox (admin_owned)
+    status: str = Field(default="draft", index=True)
+    # draft|ready_for_review|scheduled|running|paused|completed|cancelled|archived
+    timezone: str = "UTC"
+    send_window_start: int = 8      # hour 0-23 (campaign timezone)
+    send_window_end: int = 18
+    send_days: str = "0,1,2,3,4"    # allowed weekdays (Mon=0 .. Sun=6)
+    daily_limit: int = 50
+    max_followups: int = 3
+    sequence_version: int = 1       # the CURRENT sequence version; editing a running campaign bumps it
+    stop_on_reply: bool = True
+    stop_on_bounce: bool = True
+    stop_on_unsubscribe: bool = True
+    source_slug: str = ""           # legacy Lead.source this campaign maps to (backfill bridge)
+    pause_reason: str = ""
+    notes: str = ""                 # internal admin notes (never buyer/seller PII)
+    inferred: bool = False          # True = backfill-seeded from legacy source grouping
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    scheduled_at: Optional[datetime] = None
+    started_at: Optional[datetime] = None
+    paused_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class CampaignStep(SQLModel, table=True):
+    """One step of a campaign's sequence, versioned. A running campaign's sequence is IMMUTABLE — editing
+    creates a NEW version (new rows) so already-sent messages under the old version are preserved."""
+    __table_args__ = (UniqueConstraint("campaign_id", "version", "step_index", name="uq_campaignstep_cvs"),)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    campaign_id: int = Field(foreign_key="campaign.id", index=True)
+    version: int = 1
+    step_index: int = 0             # 0 = initial email, 1..N = follow-ups
+    subject: str = ""
+    body: str = ""                  # snapshot of the rendered-with-variables template body at version time
+    template_id: Optional[int] = Field(default=None, foreign_key="emailtemplate.id")
+    delay_days: int = 0             # days after the previous step
+    manual_review: bool = False     # pause here for an admin to approve before sending
+    status: str = "active"          # active|archived
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class CampaignRecipient(SQLModel, table=True):
+    """A durable enrolment of ONE Trade Network company/contact into a campaign. Buyer contact detail lives
+    on the linked Contact/Lead — only the structured send address is denormalized here (never into free
+    text). Uniqueness on (campaign_id, contact_id) prevents duplicate enrolment."""
+    __table_args__ = (UniqueConstraint("campaign_id", "contact_id", name="uq_camprcpt_campaign_contact"),)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    campaign_id: int = Field(foreign_key="campaign.id", index=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    company_id: Optional[int] = Field(default=None, foreign_key="company.id", index=True)
+    contact_id: Optional[int] = Field(default=None, foreign_key="contact.id")
+    lead_id: Optional[int] = Field(default=None, foreign_key="lead.id", index=True)
+    request_id: Optional[int] = Field(default=None, foreign_key="servicerequest.id")
+    to_email: str = ""              # resolved send target (structured, from the Contact)
+    sequence_version: int = 1       # the version this recipient is progressing through
+    current_step: int = 0
+    status: str = Field(default="pending", index=True)
+    # pending|ready|sent|delivered|soft_bounced|hard_bounced|replied|positive_reply|negative_reply|
+    # follow_up_later|unsubscribed|suppressed|completed|skipped
+    last_sent_at: Optional[datetime] = None
+    next_action_at: Optional[datetime] = None
+    reply_outcome: str = ""         # mirrors the Inbox reply outcome
+    suppressed: bool = False
+    soft_bounce_count: int = 0
+    inferred: bool = False
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class EmailTemplate(SQLModel, table=True):
+    """A reusable admin outreach template. tenant_id NULL = global. Only APPROVED variables render; never
+    seller PII / mailbox creds / raw HTML / headers. Editing a USED template creates a new version."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    name: str = ""
+    purpose: str = ""
+    product: str = ""
+    category: str = ""
+    country: str = ""
+    language: str = "en"
+    subject: str = ""
+    body: str = ""
+    allowed_vars: str = ""          # CSV of approved variable names
+    status: str = "active"          # active|archived
+    version: int = 1
+    created_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    updated_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class Suppression(SQLModel, table=True):
+    """Central do-not-contact list. Every send path checks this immediately before sending. scope 'platform'
+    applies to ALL tenants (enforced internally without revealing which tenant created it); scope 'tenant'
+    applies within one seller. Addresses are never deleted — suppression is durable."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    email_normalized: str = Field(default="", index=True)
+    email_hash: str = ""            # optional hashed lookup value
+    reason: str = ""                # hard_bounce|persistent_soft|unsubscribe|spam_complaint|manual|legal
+    scope: str = "platform"         # platform|tenant
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)  # set when scope=tenant
+    source_event: str = ""          # e.g. "outreach:123" | "bounce:45"
+    note: str = ""
+    suppressed_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    review_at: Optional[datetime] = None
+    active: bool = True
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class BounceRecord(SQLModel, table=True):
+    """Durable per-address bounce history (never deleted). Aggregates repeated bounces on one address with a
+    count and first/latest timestamps, the classification, and the suppression + replacement decisions."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    email_normalized: str = Field(default="", index=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    company_id: Optional[int] = Field(default=None, foreign_key="company.id")
+    contact_id: Optional[int] = Field(default=None, foreign_key="contact.id")
+    lead_id: Optional[int] = Field(default=None, foreign_key="lead.id")
+    mailbox_id: Optional[int] = Field(default=None, foreign_key="mailaccount.id")
+    campaign_id: Optional[int] = Field(default=None, foreign_key="campaign.id")
+    outreach_id: Optional[int] = Field(default=None, foreign_key="outreach.id")
+    bounce_type: str = "unknown"    # hard|soft|blocked|mailbox_full|domain_failure|policy|spam_complaint|unknown
+    smtp_status: str = ""
+    enhanced_status: str = ""       # e.g. 5.1.1
+    diagnostic: str = ""
+    bounce_count: int = 1
+    suppression_decision: str = ""  # suppressed|retry|manual_review
+    replacement_status: str = "none"  # none|pending|found|verified|active
+    first_bounce_at: datetime = Field(default_factory=datetime.utcnow)
+    last_bounce_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class OutreachControl(SQLModel, table=True):
+    """Single-row global outreach kill switch. When paused_all is True, EVERY send path refuses new sends
+    immediately (without deleting scheduled work). Admin-toggled + audited."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    paused_all: bool = False
+    updated_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class CampaignSend(SQLModel, table=True):
+    """Durable per-step send lifecycle (Phase 4 hardening) — the crash-safe unit of a campaign send. Exactly
+    ONE row per (campaign, recipient, version, step) (unique index). A worker CLAIMS the row with a
+    time-limited lease BEFORE touching SMTP; the Outreach event row is written only AFTER the provider
+    accepts, so a crash can never leave a phantom 'sent'. A crash mid-send (status 'sending', lease expired)
+    is flagged 'unknown_needs_review' rather than auto-resent — no silent duplicate. See campaign_service."""
+    __table_args__ = (UniqueConstraint("campaign_id", "recipient_id", "sequence_version", "step_index",
+                                       name="uq_campaignsend_crvs"),)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    campaign_id: int = Field(foreign_key="campaign.id", index=True)
+    recipient_id: int = Field(foreign_key="campaignrecipient.id", index=True)
+    sequence_version: int = 1
+    step_index: int = 0
+    status: str = Field(default="pending", index=True)
+    # pending|claimed|sending|sent|retryable|permanently_failed|unknown_needs_review
+    claim_token: str = ""
+    claimed_at: Optional[datetime] = None
+    lease_expires_at: Optional[datetime] = None
+    attempt_count: int = 0
+    next_attempt_at: Optional[datetime] = None
+    last_error: str = ""
+    provider_message_id: str = ""
+    sent_at: Optional[datetime] = None
+    outreach_id: Optional[int] = Field(default=None, foreign_key="outreach.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)

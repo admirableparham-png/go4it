@@ -99,6 +99,14 @@ FOLLOWUP_GRACE_BDAYS = int(os.getenv("FOLLOWUP_GRACE_BDAYS", "3"))  # business d
 REQUEST_REMINDER_HOURS = int(os.getenv("REQUEST_REMINDER_HOURS", "12"))       # a request pending this long -> ping
 REQUEST_REMINDER_INTERVAL = int(os.getenv("REQUEST_REMINDER_INTERVAL", "3600"))  # sweep cadence seconds; 0=off
 
+# --- Production canary (founder-only, allowlist-gated) ----------------------
+# The live canary is OFF unless CANARY_ENABLED is set AND an allowlist of permitted test addresses is given.
+# It refuses to send to anything outside the allowlist and never uses a production campaign audience.
+CANARY_ENABLED = os.getenv("CANARY_ENABLED", "").lower() in ("1", "true", "yes", "on")
+CANARY_ALLOWLIST = [e.strip().lower() for e in os.getenv("CANARY_ALLOWLIST", "").split(",") if e.strip()]
+CANARY_TEST_RECIPIENT = os.getenv("CANARY_TEST_RECIPIENT", "").strip().lower()   # must be inside the allowlist
+CANARY_BAD_RECIPIENT = os.getenv("CANARY_BAD_RECIPIENT", "").strip().lower()     # known-invalid addr for bounce test
+
 # --- Production safety -------------------------------------------------------
 # Refuse to boot on a PUBLIC BASE_URL while still using the shipped default secrets (a forgeable
 # admin session / open ingest key). Local dev (localhost/127.0.0.1) is exempt so nothing changes there.

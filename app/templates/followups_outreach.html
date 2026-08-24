@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% set active = 'followups' %}
+{% block content %}
+{% include "partials/admin_page_header.html" %}
+<div class="flex flex-wrap gap-1.5 mb-3">
+  {% for v in ['due','overdue','upcoming'] %}<a href="/followups?view={{ v }}" class="btn btn-sm {{ 'btn-primary' if f.view==v else 'btn-neutral' }}">{{ v }}</a>{% endfor %}
+  <a href="/admin/work-queue?type=follow_up_buyer" class="btn btn-sm btn-neutral ml-auto">Manual follow-ups (Work Queue) ↗</a>
+</div>
+{% if rows %}
+<div class="table-wrap"><table class="data-table text-[12px]">
+  <thead><tr><th>Company</th><th>To</th><th>Campaign</th><th>Step</th><th>Status</th><th>Next follow-up</th></tr></thead>
+  <tbody>{% for r in rows %}{% set ld = lmap.get(r.lead_id) %}{% set c = cmap.get(r.campaign_id) %}<tr>
+    <td>{{ (ld.buyer_company if ld else '') or ('#' ~ (r.lead_id or '')) }}</td>
+    <td class="font-mono">{{ r.to_email }}</td>
+    <td>{{ c.name if c else '—' }}</td>
+    <td>{{ r.current_step }}</td>
+    <td><span class="badge badge-slate">{{ r.status }}</span></td>
+    <td class="{{ 'text-rose-400' if r.next_action_at and r.next_action_at < now else 'text-slate-400' }}">{{ r.next_action_at.strftime('%b %d, %H:%M') if r.next_action_at else 'ready' }}</td>
+  </tr>{% endfor %}</tbody>
+</table></div>
+{% else %}<div class="empty">No {{ f.view }} follow-ups. Automated steps are driven by campaigns; manual actions live in the Work Queue.</div>{% endif %}
+{% endblock %}

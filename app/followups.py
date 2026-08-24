@@ -15,6 +15,8 @@ from .config import FOLLOWUP_BDAYS_2, FOLLOWUP_GRACE_BDAYS
 from .models import Lead, Outreach
 from .outreach import add_business_days, build_parts, followup_message, send_email
 from .telegram import notify_needs_call, notify_outreach_sent, notify_send_failed
+from . import send_guard as SG
+from . import suppression as SUP
 
 _STEPS = ["followup-1", "followup-2", "call"]
 
@@ -37,7 +39,10 @@ def process_followups(session: Session, now=None, log=print) -> dict:
     """One sweep of due follow-ups. Returns a summary dict. Does NOT check FOLLOWUP_ENABLED (the worker
     wrapper does) so it is directly unit-testable."""
     now = now or datetime.utcnow()
-    summary = {"due": 0, "sent": 0, "calls": 0, "failed": 0}
+    summary = {"due": 0, "sent": 0, "calls": 0, "failed": 0, "suppressed": 0}
+    if SG.outreach_paused(session):          # global Pause-all kill switch — no automated sends
+        log("followups: paused (Pause-all is on)")
+        return summary
     due = session.exec(select(Lead).where(
         Lead.next_action_at != None,                       # noqa: E711
         Lead.next_action_at <= now,
@@ -59,9 +64,16 @@ def process_followups(session: Session, now=None, log=print) -> dict:
             session.add(lead); session.commit()
             continue
 
+        if SUP.is_suppressed(session, lead.email, tenant_id=lead.seller_id):   # do-not-contact — stop sequence
+            lead.next_action_at, lead.next_action_note = None, "suppressed"
+            session.add(lead); session.commit(); summary["suppressed"] += 1
+            continue
+
         step = 1 if note == "followup-1" else 2
         last = _last_out_email(session, lead.id)
         subject, body = followup_message(lead, step, last.subject if last else "")
+        body = SG.guard_buyer_text(session, body, lead.seller_id)   # buyers never learn the seller
+        subject = SG.sanitize_header(subject)
         text, html = build_parts(body)
         ok, err, mid = send_email(lead.email, subject, text, html=html,
                                   in_reply_to=last.message_id if last else "")

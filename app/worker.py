@@ -36,6 +36,10 @@ WORKITEM_SYNC_INTERVAL = int(os.getenv("WORKITEM_SYNC_INTERVAL", "900"))
 # Max NEW work items one sync pass may create, so a large backlog can't make a single pass run unbounded
 # (the remainder is idempotently picked up on the next pass). Bounds "slow synchronization".
 WORKITEM_SYNC_MAX_PER_RUN = int(os.getenv("WORKITEM_SYNC_MAX_PER_RUN", "200"))
+# Campaign-send cycle (Phase 4): bounded by BOTH a count cap and a wall-clock deadline; cursor/batched.
+CAMPAIGN_SEND_INTERVAL = int(os.getenv("CAMPAIGN_SEND_INTERVAL", "300"))
+CAMPAIGN_SEND_MAX_PER_RUN = int(os.getenv("CAMPAIGN_SEND_MAX_PER_RUN", "200"))
+CAMPAIGN_SEND_DEADLINE_SEC = int(os.getenv("CAMPAIGN_SEND_DEADLINE_SEC", "60"))
 from .models import ServiceRequest, User
 from .telegram import send_message
 from .sources.go4world_csv import Go4WorldCsvSource
@@ -120,6 +124,89 @@ def run_work_item_sync():
         return {"error": str(e), "total": 0}
 
 
+def run_campaign_send():
+    """Isolated campaign-send cycle (Phase 4). ISOLATION: one campaign or mailbox failure can never stop the
+    others (per-item try/except + rollback) and the whole cycle never raises. BOUNDED: stops at both a count
+    cap (CAMPAIGN_SEND_MAX_PER_RUN) and a wall-clock deadline (CAMPAIGN_SEND_DEADLINE_SEC). CURSOR/BATCH:
+    processes due recipients ordered by id. CRASH-SAFE + IDEMPOTENT: each step is CLAIMED with a leased
+    CampaignSend row before SMTP and the Outreach event is written only after the provider accepts, so a crash
+    never leaves a phantom 'sent' and concurrent workers never send the same step twice. Abandoned claims are
+    recovered at the top of the cycle. Refuses everything while Pause-all is on."""
+    from sqlalchemy import func as _func, or_ as _or
+    from . import campaign_service as CS
+    from . import send_guard as SG
+    from .models import Campaign, CampaignRecipient, MailAccount
+    summary = {"campaigns": 0, "sent": 0, "skipped": 0, "failed": 0, "errors": 0, "capped": False}
+    start = time.time()
+
+    def _done():
+        return summary["sent"] >= CAMPAIGN_SEND_MAX_PER_RUN or (time.time() - start) >= CAMPAIGN_SEND_DEADLINE_SEC
+    try:
+        with Session(engine) as s:
+            if SG.outreach_paused(s):
+                summary["paused"] = True
+                return summary
+            # crash recovery FIRST: reclaim abandoned claims, flag ambiguous mid-send rows for review
+            try:
+                rec = CS.recover_stale_sends(s)
+                summary["recovered"] = rec.get("reclaimed", 0)
+                summary["needs_review"] = rec.get("needs_review", 0)
+            except Exception:  # noqa: BLE001 — recovery must never stop the send cycle
+                s.rollback()
+            for c in s.exec(select(Campaign).where(Campaign.status == "running")).all():
+                if _done():
+                    summary["capped"] = True
+                    break
+                summary["campaigns"] += 1
+                try:
+                    mb = s.get(MailAccount, c.mailbox_id) if c.mailbox_id else None
+                    ok, _why = SG.mailbox_ok(mb)
+                    if not ok:
+                        continue                       # unhealthy mailbox — skip this campaign, others go on
+                    now = datetime.utcnow()
+                    due = s.exec(select(CampaignRecipient).where(
+                        CampaignRecipient.campaign_id == c.id,
+                        CampaignRecipient.status.not_in(CS.TERMINAL_RECIPIENT),
+                        _or(CampaignRecipient.next_action_at.is_(None),
+                            CampaignRecipient.next_action_at <= now))
+                        .order_by(CampaignRecipient.id).limit(CAMPAIGN_SEND_MAX_PER_RUN)).all()
+                    for r in due:
+                        if _done():
+                            summary["capped"] = True
+                            break
+                        try:
+                            res = CS.send_step(s, c, r, mb, now)
+                            st = res.get("status")
+                            if st == "sent":
+                                summary["sent"] += 1
+                            elif st == "failed":
+                                summary["failed"] += 1
+                                if any(k in (res.get("reason") or "").lower()
+                                       for k in ("auth", "login", "password", "535", "5.7.8")):
+                                    mb.paused = True                       # mailbox auth failure → pause it
+                                    mb.last_send_error = (res.get("reason") or "")[:200]
+                                    s.add(mb); s.commit()
+                                    break                                  # stop this mailbox; others continue
+                            else:
+                                summary["skipped"] += 1
+                        except Exception:  # noqa: BLE001 — one recipient can't stop the batch
+                            summary["errors"] += 1
+                            s.rollback()
+                    remaining = s.exec(select(_func.count()).where(
+                        CampaignRecipient.campaign_id == c.id,
+                        CampaignRecipient.status.not_in(CS.TERMINAL_RECIPIENT))).one()
+                    if remaining == 0 and c.status == "running":
+                        c.status, c.completed_at = "completed", datetime.utcnow()
+                        s.add(c); s.commit()
+                except Exception:  # noqa: BLE001 — one campaign can't stop the others
+                    summary["errors"] += 1
+                    s.rollback()
+            return summary
+    except Exception as e:  # noqa: BLE001 — the cycle itself never propagates
+        logger.exception("campaign-send failed (isolated; other worker jobs continue)")
+        return {"error": str(e), **summary}
+
+
 def run_once():
     """One full pass: CSV inbox always, portal if creds set, enrich/inbound-email if enabled."""
     init_db()
@@ -134,6 +221,7 @@ def run_once():
         out.append(run_followups())
     out.append(run_request_reminders())
     out.append(run_work_item_sync())
+    out.append(run_campaign_send())
     return out
 
 
@@ -162,6 +250,10 @@ def main():
         init_db()
         print(run_work_item_sync())
         return
+    if "--campaigns" in sys.argv:
+        init_db()
+        print(run_campaign_send())
+        return
     if "--once" in sys.argv:
         for r in run_once():
             print(r)
@@ -175,6 +267,7 @@ def main():
                 f"every {IMAP_INTERVAL}s" if (IMAP_ENABLED and IMAP_INTERVAL > 0)
                 else "disabled (set IMAP_*)")
     last_portal = last_enrich = last_imap = last_followup = last_reminder = last_worksync = 0.0
+    last_campaign = 0.0
     while True:
         try:
             init_db()
@@ -204,6 +297,11 @@ def main():
                 if ws.get("total"):
                     logger.info("work-item sync %s", ws)
                 last_worksync = now
+            if CAMPAIGN_SEND_INTERVAL > 0 and now - last_campaign >= CAMPAIGN_SEND_INTERVAL:
+                cs = run_campaign_send()
+                if cs.get("sent") or cs.get("error"):
+                    logger.info("campaign-send %s", cs)
+                last_campaign = now
         except Exception:
             logger.exception("worker pass failed")
         time.sleep(INGEST_INTERVAL)

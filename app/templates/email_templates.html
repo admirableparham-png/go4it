@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% set active = 'templates' %}
+{% block content %}
+{% include "partials/admin_page_header.html" %}
+<details class="mb-4 card !p-0"><summary class="cursor-pointer px-4 py-2.5 text-sm text-emerald-400 font-medium">➕ New template</summary>
+  <form method="post" action="/templates" class="space-y-2 p-4 pt-0">
+    <input name="name" required placeholder="Template name" class="input">
+    <div class="grid grid-cols-4 gap-2">
+      <input name="product" placeholder="product" class="input"><input name="category" placeholder="category" class="input">
+      <input name="country" placeholder="country" class="input"><input name="language" value="en" class="input">
+    </div>
+    <input name="subject" placeholder="Subject" class="input">
+    <textarea name="body" rows="4" placeholder="Body — approved variables only (no raw HTML, no seller PII)" class="input"></textarea>
+    <div class="text-[11px] text-slate-500">Allowed variables: {% for v in ALLOWED_VARS %}<code>{{ '{{'+v+'}}' }}</code> {% endfor %}</div>
+    <button class="btn btn-primary btn-block">Save template</button>
+  </form>
+</details>
+{% if tpls %}
+<div class="table-wrap"><table class="data-table">
+  <thead><tr><th>Name</th><th>Subject</th><th>Product</th><th>Country</th><th>Lang</th><th>Ver</th></tr></thead>
+  <tbody>{% for t in tpls %}<tr>
+    <td class="font-medium">{{ t.name }}</td><td class="text-xs text-slate-400">{{ t.subject[:50] }}</td>
+    <td>{{ t.product or '—' }}</td><td>{{ t.country or '—' }}</td><td>{{ t.language }}</td><td>v{{ t.version }}</td>
+  </tr>{% endfor %}</tbody>
+</table></div>
+{% else %}<div class="empty">No templates yet.</div>{% endif %}
+{% endblock %}

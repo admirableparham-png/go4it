@@ -30,6 +30,7 @@ def init_db() -> None:
     _ensure_anon_ref_unique()
     _ensure_trade_network_indexes()
     _ensure_workitem_indexes()
+    _ensure_outreach_indexes()
 
 
 def _ensure_trade_network_indexes() -> None:
@@ -66,6 +67,26 @@ def _ensure_workitem_indexes() -> None:
             conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_workitem_idem_open "
                               "ON workitem(idempotency_key) "
                               "WHERE idempotency_key != '' AND status IN ('open','in_progress','waiting')"))
+            conn.commit()
+    except Exception:  # noqa: BLE001 — never block startup on the guard
+        pass
+
+
+def _ensure_outreach_indexes() -> None:
+    """Outreach/Campaigns (Phase 4) DB-level guards (idempotent, never block boot):
+    (a) the campaign-send idempotency index — a PARTIAL-unique index over (campaign, recipient, version, step)
+        so concurrent workers can NEVER send the same sequence step twice; and
+    (b) one ACTIVE suppression per (address, scope, tenant) so the do-not-contact list can't double-list."""
+    if not _is_sqlite:
+        return
+    try:
+        with engine.connect() as conn:
+            from sqlalchemy import text
+            conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_outreach_campaign_send "
+                              "ON outreach(campaign_id, campaign_recipient_id, campaign_version, campaign_step) "
+                              "WHERE campaign_id IS NOT NULL"))
+            conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_suppression_addr_scope "
+                              "ON suppression(email_normalized, scope, tenant_id) WHERE active = 1"))
             conn.commit()
     except Exception:  # noqa: BLE001 — never block startup on the guard
         pass

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% set active = 'analytics' %}
+{% block content %}
+{% include "partials/admin_page_header.html" %}
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+  {% for label,key in [('Attempted','attempted'),('Sent','sent'),('Human replies','human_replies'),('Positive','positive'),('Negative','negative'),('Hard bounces','hard_bounces'),('Soft bounces','soft_bounces'),('Unsubscribes','unsubscribes'),('Qualified','qualified'),('Deals','deals')] %}
+  <div class="card"><div class="text-2xl font-bold tabular-nums">{{ m[key] }}</div><div class="text-slate-500 text-xs">{{ label }}</div></div>
+  {% endfor %}
+</div>
+<div class="card">
+  <div class="eyebrow mb-2">Rates (explicit formulas)</div>
+  <ul class="text-sm space-y-1">
+    <li>Delivery rate = delivered ÷ sent — <b>{{ m.delivered }}</b> (no delivery events available)</li>
+    <li>Human response rate = human replies ÷ {{ m.response_denominator }} — <b>{{ m.human_response_rate }}%</b></li>
+    <li>Positive-response rate = positive ÷ human replies — <b>{{ m.positive_rate }}%</b></li>
+    <li>Qualification rate = qualified ÷ human replies — <b>{{ m.qualification_rate }}%</b></li>
+    <li>Hard-bounce rate = hard bounces ÷ sent — <b>{{ m.hard_bounce_rate }}%</b></li>
+  </ul>
+  <p class="text-slate-500 text-xs mt-2">Open tracking is not used as an engagement signal.</p>
+</div>
+{% endblock %}

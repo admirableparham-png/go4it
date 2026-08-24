@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% set active = 'inbox' %}
+{% block content %}
+{% include "partials/admin_page_header.html" %}
+<div class="card mb-4">
+  <div class="space-y-2 max-h-96 overflow-y-auto">
+    {% for m in msgs %}
+    <div class="text-sm {{ 'text-right' if m.direction=='out' else '' }}">
+      <span class="text-[10px] text-slate-500">{{ 'Go4it' if m.direction=='out' else (lead.buyer_company or 'Buyer') }} · {{ m.created_at.strftime('%b %d, %H:%M') }} · {{ m.status }}</span>
+      <div class="inline-block px-3 py-1.5 rounded-lg {{ 'bg-sky-900/40' if m.direction=='out' else 'bg-slate-800' }}">{{ (m.subject + ' — ') if m.subject else '' }}{{ m.body }}</div>
+    </div>
+    {% else %}<div class="text-slate-500 text-sm">No messages.</div>{% endfor %}
+  </div>
+</div>
+<div class="grid lg:grid-cols-2 gap-4">
+  <form method="post" action="/inbox/{{ lead.id }}/reply" class="card space-y-2">
+    <div class="eyebrow">Reply (from a Go4it mailbox)</div>
+    <div class="text-xs text-slate-500">To: <b>{{ lead.email or '— no address' }}</b> · from {{ mailbox.email if mailbox else '— connect a mailbox' }}</div>
+    <input name="subject" placeholder="Subject" class="input">
+    <textarea name="body" rows="4" placeholder="Your reply (the seller identity is auto-redacted)" class="input"></textarea>
+    <div class="text-xs text-slate-400" title="No file store / AV scan yet — see app/attachments.py">📎 Attachments are temporarily disabled for security.</div>
+    <button class="btn btn-primary btn-sm">Send reply</button>
+  </form>
+  <form method="post" action="/inbox/{{ lead.id }}/outcome" class="card space-y-2">
+    <div class="eyebrow">Confirm reply outcome</div>
+    <p class="text-xs text-slate-500">Deterministic suggestions — you decide. A human reply already made this an Engaged Buyer; a negative reply stays a valuable record.</p>
+    <select name="outcome" class="select">{% for o in OUTCOMES %}<option value="{{ o }}">{{ o|replace('_',' ') }}</option>{% endfor %}</select>
+    <button class="btn btn-secondary btn-sm">Record outcome</button>
+  </form>
+</div>
+{% endblock %}

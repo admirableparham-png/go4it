@@ -36,8 +36,16 @@ WORKSPACES = [
     ]},
 
     {"key": "outreach", "label": "Outreach", "icon": "send", "role": "admin", "children": [
-        {"key": "campaign", "label": "Campaigns", "endpoint": "campaign_dashboard", "paths": ("/campaign",)},
+        {"key": "campaigns", "label": "Campaigns", "endpoint": "campaigns_list",
+         "paths": ("/campaigns", "/campaign")},
+        {"key": "inbox", "label": "Inbox", "endpoint": "outreach_inbox", "paths": ("/inbox",)},
+        {"key": "followups", "label": "Follow-ups", "endpoint": "outreach_followups", "paths": ("/followups",)},
+        {"key": "templates", "label": "Templates", "endpoint": "templates_list", "paths": ("/templates",)},
+        {"key": "suppression", "label": "Bounces & Suppression", "endpoint": "suppression_page",
+         "paths": ("/suppression", "/bounces")},
         {"key": "mail", "label": "Email Accounts", "endpoint": "mail_accounts", "paths": ("/mail",)},
+        {"key": "analytics", "label": "Analytics", "endpoint": "outreach_analytics",
+         "paths": ("/outreach/analytics",)},
     ]},
 
     {"key": "products", "label": "Products", "icon": "box", "role": "admin", "children": [

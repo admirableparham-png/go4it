@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% set active = 'campaigns' %}
+{% block content %}
+{% include "partials/admin_page_header.html" %}
+{% set sb = {'draft':'slate','ready_for_review':'amber','scheduled':'sky','running':'emerald','paused':'amber','completed':'ok','cancelled':'error','archived':'slate'} %}
+
+<div class="flex flex-wrap items-center gap-2 mb-4">
+  <span class="badge badge-{{ sb.get(c.status,'slate') }}">{{ c.status }}</span>
+  <span class="text-slate-500 text-sm">Sequence v{{ c.sequence_version }} · mailbox {{ mailbox.email if mailbox else '— (assign one)' }}</span>
+  <form method="post" action="/campaigns/{{ c.id }}/status" class="flex gap-1 items-center ml-auto">
+    <select name="to" class="select" style="width:auto">{% for s in STATUSES %}<option value="{{ s }}" {% if s==c.status %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
+    <input name="reason" placeholder="reason" class="input" style="width:8rem">
+    <button class="btn btn-secondary btn-sm">Set status</button>
+  </form>
+</div>
+{% if paused_all %}<div class="alert-amber mb-3">All outreach is globally paused — no campaign will send until resumed.</div>{% endif %}
+
+<div class="grid lg:grid-cols-2 gap-4">
+  <div class="card">
+    <div class="eyebrow mb-2">Audience (from the Trade Network)</div>
+    <form method="post" action="/campaigns/{{ c.id }}/audience" class="space-y-2">
+      <input type="hidden" name="do" value="preview">
+      <div class="grid grid-cols-3 gap-2">
+        <input name="product" value="{{ f.product }}" placeholder="product" class="input">
+        <input name="country" value="{{ f.country }}" placeholder="country" class="input">
+        <select name="engagement" class="select"><option value="">any engagement</option>{% for e in ['prospect','engaged','qualified'] %}<option value="{{ e }}" {% if f.engagement==e %}selected{% endif %}>{{ e }}</option>{% endfor %}</select>
+      </div>
+      <div class="flex flex-wrap gap-3 text-xs text-slate-400">
+        <label><input type="checkbox" name="exclude_customers" value="1"> exclude customers</label>
+        <label><input type="checkbox" name="exclude_negative" value="1"> exclude negative</label>
+        <label><input type="checkbox" name="exclude_negotiating" value="1"> exclude active negotiations</label>
+        <label><input type="checkbox" name="exclude_recent" value="1"> exclude recently contacted</label>
+      </div>
+      <button class="btn btn-neutral btn-sm">Preview audience</button>
+    </form>
+    {% if preview %}
+    <div class="card-soft mt-3 text-[12px] grid grid-cols-2 gap-1">
+      <span>Total companies: <b>{{ preview.total_companies }}</b></span>
+      <span>Valid email: <b>{{ preview.valid_email }}</b></span>
+      <span>Missing email: <b>{{ preview.missing_email }}</b></span>
+      <span>Suppressed: <b class="text-rose-400">{{ preview.suppressed }}</b></span>
+      <span>Previously contacted: <b>{{ preview.previously_contacted }}</b></span>
+      <span>Already in campaign: <b>{{ preview.already_in_campaign }}</b></span>
+      <span>Duplicates: <b>{{ preview.duplicates }}</b></span>
+      <span>Final eligible: <b class="text-emerald-400">{{ preview.final_eligible }}</b></span>
+    </div>
+    <form method="post" action="/campaigns/{{ c.id }}/audience" class="mt-2">
+      <input type="hidden" name="do" value="enroll">
+      <input type="hidden" name="product" value="{{ f.product }}"><input type="hidden" name="country" value="{{ f.country }}"><input type="hidden" name="engagement" value="{{ f.engagement }}">
+      <button class="btn btn-primary btn-sm" onclick="return confirm('Create {{ preview.final_eligible }} recipient records?')">Confirm & enroll {{ preview.final_eligible }}</button>
+    </form>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="eyebrow mb-2">Sequence {% if c.status=='running' %}<span class="badge badge-amber text-[9px]">editing creates v{{ c.sequence_version + 1 }}</span>{% endif %}</div>
+    <form method="post" action="/campaigns/{{ c.id }}/sequence" class="space-y-2">
+      {% if c.status=='running' %}<input type="hidden" name="confirm" value="1">{% endif %}
+      {% for i in range(4) %}
+      {% set st = steps[i] if i < steps|length else None %}
+      <div class="card-soft space-y-1">
+        <div class="text-[10px] text-slate-500">{{ 'Initial email' if i==0 else 'Follow-up ' ~ i }}</div>
+        <input name="subjects" value="{{ st.subject if st else '' }}" placeholder="subject" class="input">
+        <textarea name="bodies" rows="2" placeholder="body (approved variables only)" class="input">{{ st.body if st else '' }}</textarea>
+        <input name="delays" value="{{ st.delay_days if st else (0 if i==0 else 3) }}" placeholder="delay days" class="input" style="width:8rem">
+      </div>
+      {% endfor %}
+      <div class="text-xs text-slate-400" title="No file store / AV scan yet — see app/attachments.py">📎 Attachments are temporarily disabled for security.</div>
+      <button class="btn btn-secondary btn-sm">Save sequence</button>
+    </form>
+  </div>
+</div>
+
+<div class="card mt-4">
+  <div class="eyebrow mb-2">Recipients ({{ rcpts|length }} shown)</div>
+  <div class="flex flex-wrap gap-2 mb-2 text-[11px]">{% for k,v in rc_status.items() %}<span class="badge badge-slate">{{ k }}: {{ v }}</span>{% endfor %}</div>
+  <div class="table-wrap"><table class="data-table text-[12px]">
+    <thead><tr><th>To</th><th>Step</th><th>Status</th><th>Last sent</th><th>Next</th><th>Outcome</th></tr></thead>
+    <tbody>{% for r in rcpts %}<tr>
+      <td class="font-mono">{{ r.to_email }}</td><td>{{ r.current_step }}</td>
+      <td><span class="badge badge-slate">{{ r.status }}</span></td>
+      <td class="text-slate-500">{{ r.last_sent_at.strftime('%b %d') if r.last_sent_at else '—' }}</td>
+      <td class="text-slate-500">{{ r.next_action_at.strftime('%b %d') if r.next_action_at else '—' }}</td>
+      <td>{{ r.reply_outcome or '—' }}</td>
+    </tr>{% endfor %}</tbody>
+  </table></div>
+</div>
+{% endblock %}

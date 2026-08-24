@@ -90,6 +90,29 @@ MIGRATIONS = [
     # durable-disposition column on the workitem table (only needed on DBs where workitem already existed
     # from an earlier boot; fresh DBs get it from create_all — the loop skips absent tables).
     ("workitem", "condition_version", "VARCHAR DEFAULT ''"),
+    # Outreach, Campaigns & Email (Phase 4) — additive columns on the existing outreach + mailaccount tables.
+    # The new Phase-4 tables (campaign/campaignstep/campaignrecipient/emailtemplate/suppression/bouncerecord/
+    # outreachcontrol) are made by create_all; the loop below skips their columns until the table exists.
+    ("outreach", "campaign_id", "INTEGER"),
+    ("outreach", "campaign_recipient_id", "INTEGER"),
+    ("outreach", "campaign_version", "INTEGER DEFAULT 0"),
+    ("outreach", "campaign_step", "INTEGER DEFAULT 0"),
+    ("outreach", "in_reply_to", "VARCHAR DEFAULT ''"),
+    ("mailaccount", "daily_limit", "INTEGER DEFAULT 200"),
+    ("mailaccount", "sent_today", "INTEGER DEFAULT 0"),
+    ("mailaccount", "sent_today_date", "VARCHAR DEFAULT ''"),
+    ("mailaccount", "paused", "BOOLEAN DEFAULT 0"),
+    ("mailaccount", "imap_host", "VARCHAR DEFAULT ''"),
+    ("mailaccount", "imap_port", "INTEGER DEFAULT 993"),
+    ("mailaccount", "imap_user", "VARCHAR DEFAULT ''"),
+    ("mailaccount", "imap_password_enc", "VARCHAR DEFAULT ''"),
+    ("mailaccount", "last_inbound_at", "TIMESTAMP"),
+    ("mailaccount", "last_outbound_at", "TIMESTAMP"),
+    ("mailaccount", "last_send_error", "VARCHAR DEFAULT ''"),
+    ("mailaccount", "spf_status", "VARCHAR DEFAULT ''"),
+    ("mailaccount", "dkim_status", "VARCHAR DEFAULT ''"),
+    ("mailaccount", "dmarc_status", "VARCHAR DEFAULT ''"),
+    ("mailaccount", "updated_at", "TIMESTAMP"),
 ]
 
 
@@ -136,7 +159,8 @@ def run():
                                ("ix_auditlog_tenant_id", "auditlog", "tenant_id"),
                                ("ix_lead_company_id", "lead", "company_id"),
                                ("ix_supplier_company_id", "supplier", "company_id"),
-                               ("ix_servicerequest_assigned_admin_id", "servicerequest", "assigned_admin_id")]:
+                               ("ix_servicerequest_assigned_admin_id", "servicerequest", "assigned_admin_id"),
+                               ("ix_outreach_campaign_id", "outreach", "campaign_id")]:
         if table in tables:
             cur.execute(f"CREATE INDEX IF NOT EXISTS {idx} ON {table}({column})")
     # DB-level anon_ref uniqueness: a PARTIAL unique index so blank refs never collide but two buyers in one

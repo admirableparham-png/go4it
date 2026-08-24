@@ -305,30 +305,56 @@ def send_email(to_addr, subject, body, html=None, in_reply_to="", references="")
 
 # --------------------------------------------------------------------------- per-user connected mailboxes
 
-def _fernet():
-    """A Fernet cipher keyed off SECRET_KEY — used to encrypt mailbox app-passwords at rest."""
+def _fernet_from_secret(secret_str):
+    """Build a Fernet (AES-128-CBC + HMAC-SHA256 — authenticated, reversible) cipher from an arbitrary secret
+    string. Used by the credential-encryption migration for KEY ROTATION (decrypt with old, encrypt with new)."""
     from cryptography.fernet import Fernet
-    key = base64.urlsafe_b64encode(hashlib.sha256((SECRET_KEY or "go4it").encode()).digest())
+    key = base64.urlsafe_b64encode(hashlib.sha256((secret_str or "").encode()).digest())
     return Fernet(key)
 
 
+_DEFAULT_SECRET_KEYS = {"dev-insecure-change-me", "go4it", "change-me", "changeme", "secret"}
+
+
+def _encryption_key_ok():
+    """(ok, reason). Fail CLOSED on a PUBLIC deployment still using a shipped-default/weak SECRET_KEY — refuse
+    to touch mailbox credentials rather than encrypt them under a forgeable key. Localhost dev is exempt.
+    Compares the CURRENT key directly (not config's boot-time snapshot) so it stays correct after rotation."""
+    from .config import IS_LOCAL
+    if not SECRET_KEY:
+        return False, "SECRET_KEY is empty — cannot derive the credential encryption key"
+    if not IS_LOCAL and SECRET_KEY in _DEFAULT_SECRET_KEYS:
+        return False, ("SECRET_KEY is the shipped default on a public deployment — set SECRET_KEY in .env "
+                       "(see docs/CREDENTIAL_ENCRYPTION.md) before handling mailbox credentials")
+    return True, ""
+
+
+def _fernet():
+    """The application credential cipher, keyed off SECRET_KEY. Fails closed in production (see
+    _encryption_key_ok) so credentials are never encrypted under the shipped default key."""
+    ok, why = _encryption_key_ok()
+    if not ok:
+        raise RuntimeError(f"credential encryption unavailable: {why}")
+    return _fernet_from_secret(SECRET_KEY)
+
+
 def mail_encrypt(secret):
-    """Encrypt a mailbox app-password for storage. Returns "" for empty input."""
+    """Encrypt a mailbox credential (SMTP/IMAP app-password) for storage. Returns "" for empty input.
+    Raises (fail-closed) if the encryption key is unavailable — never silently stores plaintext."""
     if not secret:
         return ""
-    try:
-        return _fernet().encrypt(secret.encode()).decode()
-    except Exception:  # noqa: BLE001
-        return ""
+    return _fernet().encrypt(secret.encode()).decode()
 
 
 def mail_decrypt(token):
-    """Decrypt a stored app-password. Returns "" if missing/undecryptable."""
+    """Decrypt a stored credential. Returns "" for a missing/undecryptable/rotated token; propagates the
+    fail-closed error if the key itself is unavailable (production + default key)."""
     if not token:
         return ""
+    f = _fernet()   # fail-closed error (bad key) propagates; a bad TOKEN below is tolerated
     try:
-        return _fernet().decrypt(token.encode()).decode()
-    except Exception:  # noqa: BLE001
+        return f.decrypt(token.encode()).decode()
+    except Exception:  # noqa: BLE001 — corrupt/rotated token, not a key problem
         return ""
 
 

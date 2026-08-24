@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% set active = 'suppression' %}
+{% block content %}
+{% include "partials/admin_page_header.html" %}
+<div class="flex flex-wrap gap-1.5 mb-3">
+  <a href="/suppression?tab=suppression" class="btn btn-sm {{ 'btn-primary' if tab!='bounces' else 'btn-neutral' }}">Suppression ({{ sups|length }})</a>
+  <a href="/suppression?tab=bounces" class="btn btn-sm {{ 'btn-primary' if tab=='bounces' else 'btn-neutral' }}">Bounces ({{ bounces|length }})</a>
+</div>
+{% if tab != 'bounces' %}
+<details class="mb-3 card !p-0"><summary class="cursor-pointer px-4 py-2 text-sm text-rose-400">➕ Suppress an address</summary>
+  <form method="post" action="/suppression" class="flex flex-wrap gap-2 p-4 pt-0">
+    <input name="email" placeholder="email" class="input" style="width:16rem">
+    <select name="reason" class="select" style="width:auto">{% for r in REASONS %}<option value="{{ r }}">{{ r }}</option>{% endfor %}</select>
+    <input name="note" placeholder="note" class="input" style="width:12rem">
+    <button class="btn btn-neutral btn-sm">Suppress</button>
+  </form>
+</details>
+<div class="card-soft mb-3 flex flex-wrap gap-3 text-xs">{% for r,n in by_reason.items() %}<span>{{ r }}: <b>{{ n }}</b></span>{% endfor %}</div>
+<div class="table-wrap"><table class="data-table text-[12px]">
+  <thead><tr><th>Address</th><th>Reason</th><th>Scope</th><th>When</th><th></th></tr></thead>
+  <tbody>{% for s in sups %}<tr>
+    <td class="font-mono">{{ s.email_normalized }}</td><td><span class="badge badge-slate">{{ s.reason }}</span></td>
+    <td>{{ s.scope }}</td><td class="text-slate-500">{{ s.created_at.strftime('%b %d, %Y') }}</td>
+    <td><form method="post" action="/suppression/{{ s.id }}/remove"><button class="text-slate-500 hover:text-emerald-400 text-xs" onclick="return confirm('Remove from suppression? They can be contacted again.')">remove</button></form></td>
+  </tr>{% endfor %}</tbody>
+</table></div>
+{% else %}
+<div class="table-wrap"><table class="data-table text-[12px]">
+  <thead><tr><th>Address</th><th>Type</th><th>Count</th><th>Decision</th><th>Replacement</th><th>Last</th></tr></thead>
+  <tbody>{% for b in bounces %}<tr>
+    <td class="font-mono">{{ b.email_normalized }}</td><td><span class="badge badge-{{ 'rose' if b.bounce_type in ('hard','domain_failure','spam_complaint') else 'amber' }}">{{ b.bounce_type }}</span></td>
+    <td>{{ b.bounce_count }}</td><td>{{ b.suppression_decision or '—' }}</td><td>{{ b.replacement_status }}</td>
+    <td class="text-slate-500">{{ b.last_bounce_at.strftime('%b %d') }}</td>
+  </tr>{% endfor %}</tbody>
+</table></div>
+{% endif %}
+{% endblock %}
