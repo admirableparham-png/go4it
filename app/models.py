@@ -1221,6 +1221,7 @@ class Contract(SQLModel, table=True):
     quote_id: Optional[int] = Field(default=None, foreign_key="quote.id", index=True)
     quote_version_id: Optional[int] = Field(default=None, foreign_key="quoteversion.id")
     deal_id: Optional[int] = Field(default=None, foreign_key="deal.id", index=True)
+    request_id: Optional[int] = Field(default=None, foreign_key="servicerequest.id", index=True)  # concierge link
     company_id: Optional[int] = Field(default=None, foreign_key="company.id")   # the counterparty company
     status: str = Field(default="draft", index=True)   # see contract_service.STATUSES
     current_version_id: Optional[int] = Field(default=None, foreign_key="contractversion.id")

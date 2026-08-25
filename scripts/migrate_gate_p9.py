@@ -36,6 +36,9 @@ _GATE_INDEXES = [
     ("ix_aiusage_owner", "aiusagerecord", "owner_id", False),
 ]
 _WORKITEM_COLS = {"related_conversation_id", "related_proposal_id", "related_automation_id"}
+# Additive columns on EXISTING tables: {table: {column: sql_type}} — links a concierge request to the specialized
+# record its intake scaffolds (contract mirrors remittancecase.request_id / freightrequest.request_id).
+_EXTRA_COLS = {"contract": {"request_id": "INTEGER"}}
 _OPERATIONAL = {"leads": Lead, "quotes": Quote, "deals": Deal, "requests": ServiceRequest,
                 "outreach": Outreach, "products": Product}
 
@@ -62,6 +65,11 @@ def _plan():
         cols = {c["name"] for c in insp.get_columns("workitem")}
         for col in sorted(_WORKITEM_COLS - cols):
             ops.append(f"ADD COLUMN workitem.{col}")
+    for table, coldefs in _EXTRA_COLS.items():
+        if table in tables:
+            have = {c["name"] for c in insp.get_columns(table)}
+            for col in sorted(set(coldefs) - have):
+                ops.append(f"ADD COLUMN {table}.{col}")
     for idx in _GATE_INDEXES:
         name, table = idx[0], idx[1]
         if table not in tables:
@@ -77,11 +85,18 @@ def _apply():
     for m in _NEW_TABLES:
         m.__table__.create(bind=engine, checkfirst=True)
     insp = inspect(engine)
-    if "workitem" in set(insp.get_table_names()):
+    tables_now = set(insp.get_table_names())
+    if "workitem" in tables_now:
         have = {c["name"] for c in insp.get_columns("workitem")}
         with engine.begin() as c:
             for col in sorted(_WORKITEM_COLS - have):
                 c.execute(text(f"ALTER TABLE workitem ADD COLUMN {col} INTEGER"))
+    for table, coldefs in _EXTRA_COLS.items():
+        if table in tables_now:
+            have = {col["name"] for col in insp.get_columns(table)}
+            with engine.begin() as c:
+                for col in sorted(set(coldefs) - have):
+                    c.execute(text(f"ALTER TABLE {table} ADD COLUMN {col} {coldefs[col]}"))
     with engine.begin() as c:
         for idx in _GATE_INDEXES:
             name, table, col, uniq = idx[0], idx[1], idx[2], idx[3]
@@ -98,6 +113,11 @@ def _verify():
         have = {c["name"] for c in insp.get_columns("workitem")}
         for col in sorted(_WORKITEM_COLS - have):
             problems.append(f"missing column workitem.{col}")
+    for table, coldefs in _EXTRA_COLS.items():
+        if table in tables:
+            have = {c["name"] for c in insp.get_columns(table)}
+            for col in sorted(set(coldefs) - have):
+                problems.append(f"missing column {table}.{col}")
     for idx in _GATE_INDEXES:
         name, table = idx[0], idx[1]
         if table not in tables:

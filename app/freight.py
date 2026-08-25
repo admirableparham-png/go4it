@@ -59,6 +59,22 @@ def create_freight_request(session, *, case: OperationCase = None, actor=None, n
     return fr, missing
 
 
+def ensure_request_for_request(session, req, *, case=None, actor=None, now=None):
+    """Idempotently scaffold a FreightRequest (status='draft') for a `freight` service request.
+
+    It captures the shipping NEED only — it NEVER creates a Shipment. A Shipment is booked later
+    (`shipments.book_shipment`), and only after a FreightOffer has been selected and the booking confirmed.
+    Critical physical facts are left NULL (never guessed); a missing one raises the existing incomplete-task.
+    Called twice for the same request → returns the existing draft request."""
+    existing = session.exec(select(FreightRequest).where(FreightRequest.request_id == req.id)).first()
+    if existing:
+        return existing, False
+    fr, _missing = create_freight_request(session, case=case, request_id=req.id, tenant_id=req.owner_id,
+                                          cargo_description=(req.product or ""), dest_country=(req.market or ""),
+                                          actor=actor, now=now)
+    return fr, True
+
+
 def _incomplete_task(session, fr, missing):
     try:
         from . import work_queue as WQ

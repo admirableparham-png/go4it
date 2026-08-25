@@ -11,6 +11,8 @@ required next action. Compliance rejection reasons stay internal unless an appro
 import json
 from datetime import datetime
 
+from sqlmodel import select
+
 from .models import RemittanceCase
 from .outreach import mail_decrypt, mail_encrypt
 from .pipeline import audit
@@ -53,6 +55,23 @@ def create_remittance(session, *, source_currency, dest_currency, source_amount=
           {"route": route_method_category, "src": rc.source_currency, "dst": rc.dest_currency},
           tenant_id=tenant_id)
     return rc
+
+
+def ensure_case_for_request(session, req, *, case=None, actor=None, now=None):
+    """Idempotently scaffold a RemittanceCase for a `remittance`/Sarafi service request.
+
+    It creates only the COORDINATION record (status='requested') with no amounts assumed. It NEVER creates a
+    PaymentMilestone — those are added later, and only once amount, currency, payer/payee, due date and the
+    compliance requirements are confirmed. Called twice for the same request → returns the existing case."""
+    from .models import RemittanceCase as _RC
+    existing = session.exec(select(_RC).where(_RC.request_id == req.id)).first()
+    if existing:
+        return existing, False
+    rc = create_remittance(session, source_currency="", dest_currency="", source_amount="0",
+                           request_id=req.id, operation_case_id=(case.id if case else None),
+                           tenant_id=req.owner_id, origin_country="", dest_country=(req.market or ""),
+                           actor=actor, now=now)
+    return rc, True
 
 
 def store_account_ref(session, rc: RemittanceCase, plaintext: str, *, actor=None):

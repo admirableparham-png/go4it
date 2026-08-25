@@ -76,6 +76,42 @@ def ensure_case_for_request(session, req: ServiceRequest, *, actor=None, deal_id
     return case, True
 
 
+def route_service_request(session, req, *, actor=None, now=None):
+    """Idempotently scaffold the correct SPECIALIZED record for an approved ServiceRequest, WITHOUT minting any
+    premature binding/operational record — never a PaymentMilestone, never a Shipment. It calls the EXISTING
+    domain constructors (an adapter, not a reimplementation) and is safe to call repeatedly:
+
+        remittance → OperationCase(category='remittance') + RemittanceCase(status='requested')
+        freight    → OperationCase(category='freight')    + FreightRequest(status='draft')
+        docs       → OperationCase(category='docs')        (DocumentRequirements are added later by the admin)
+        contract   → a linked, non-binding draft Contract (needs_review; no assumed parties) — Commercial, not Ops
+        buyer_hunt → handled by the existing Research pipeline (via the start_research adapter), not here
+
+    Payment milestones (remittance) and shipments (freight) are created only after their real prerequisites are
+    confirmed — amount/currency/payer/payee/due/compliance for a payment; a selected offer + booking for a
+    shipment. Returns a dict of the records that were ensured."""
+    now = now or datetime.utcnow()
+    rtype = (getattr(req, "request_type", "") or "").strip()
+    out = {"request_type": rtype}
+    if rtype in ("remittance", "freight", "docs"):
+        case, _created = ensure_case_for_request(session, req, actor=actor, now=now)
+        out["operation_case"] = case
+    if rtype == "remittance":
+        from . import remittance as _REMIT
+        rc, _ = _REMIT.ensure_case_for_request(session, req, case=out["operation_case"], actor=actor, now=now)
+        out["remittance_case"] = rc
+    elif rtype == "freight":
+        from . import freight as _FREIGHT
+        fr, _ = _FREIGHT.ensure_request_for_request(session, req, case=out["operation_case"], actor=actor,
+                                                    now=now)
+        out["freight_request"] = fr
+    elif rtype == "contract":
+        from . import contract_service as _CONTRACT
+        c, _ = _CONTRACT.ensure_draft_for_request(session, req, actor=actor)
+        out["contract"] = c
+    return out
+
+
 def create_standalone_case(session, *, tenant_id=None, actor=None, category="", origin_country="",
                            dest_country="", notes="", now=None):
     """A controlled standalone service case (no Deal/Request). Admin-created only."""

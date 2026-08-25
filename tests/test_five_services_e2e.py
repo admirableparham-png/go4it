@@ -131,81 +131,113 @@ def _seed_request(s, rtype):
     return sr, sa
 
 
-@pytest.mark.parametrize("rtype", ["remittance", "freight", "docs"])
-def test_operations_services_convert_idempotently(ctx, rtype):
-    """Remittance / Freight / Documentation route into Operations as ONE OperationCase categorized by the
-    request type — converting twice must NOT create a duplicate operational record."""
-    with Session(ctx) as s:
-        sr, sa = _seed_request(s, rtype)
-        admin = _u(s, "admin@t.local")
-        case1, created1 = OPS.ensure_case_for_request(s, sr, actor=admin); s.commit()
-        case2, created2 = OPS.ensure_case_for_request(s, sr, actor=admin); s.commit()
-        assert created1 is True and created2 is False           # idempotent conversion
-        assert case1.id == case2.id
-        assert case1.category == rtype                          # routed to the correct Operations section
-        assert case1.tenant_id == sa.id                         # ownership carried into Operations
-        n = s.exec(select(func.count()).select_from(OperationCase)
-                   .where(OperationCase.request_id == sr.id)).one()
-        assert n == 1                                           # exactly ONE operational case — no duplicate
+def _counts(s):
+    from app.models import Contract, FreightRequest, PaymentMilestone, RemittanceCase, Shipment
+    return {
+        "cases": s.exec(select(func.count()).select_from(OperationCase)).one(),
+        "remittance": s.exec(select(func.count()).select_from(RemittanceCase)).one(),
+        "freight_request": s.exec(select(func.count()).select_from(FreightRequest)).one(),
+        "contract": s.exec(select(func.count()).select_from(Contract)).one(),
+        "payment_milestone": s.exec(select(func.count()).select_from(PaymentMilestone)).one(),
+        "shipment": s.exec(select(func.count()).select_from(Shipment)).one(),
+    }
 
 
-def test_remittance_routes_to_payments_and_remittance(ctx):
-    from app.models import PaymentMilestone
+def test_remittance_conversion_creates_case_plus_remittancecase_no_payment(ctx):
+    """Remittance/Sarafi → OperationCase(category=remittance) + a RemittanceCase(status=requested). It must NOT
+    mint a PaymentMilestone — those come later, only after amount/currency/payer/payee/due/compliance."""
     with Session(ctx) as s:
         sr, sa = _seed_request(s, "remittance")
         admin = _u(s, "admin@t.local")
-        case, _ = OPS.ensure_case_for_request(s, sr, actor=admin); s.commit()
-        # the Payments & Remittance section hangs a payment milestone off the case
-        s.add(PaymentMilestone(operation_case_id=case.id, tenant_id=sa.id, kind="remittance",
-                               amount=15000, currency="USD", status="pending")); s.commit()
-        pays = s.exec(select(PaymentMilestone).where(PaymentMilestone.operation_case_id == case.id)).all()
-        assert len(pays) == 1 and pays[0].currency == "USD"     # remittance surfaces under the case
+        out = OPS.route_service_request(s, sr, actor=admin); s.commit()
+        c = _counts(s)
+        assert out["operation_case"].category == "remittance" and out["operation_case"].tenant_id == sa.id
+        assert out["remittance_case"].status == "requested"          # coordination record, not an executed transfer
+        assert out["remittance_case"].request_id == sr.id and out["remittance_case"].tenant_id == sa.id
+        assert c["cases"] == 1 and c["remittance"] == 1
+        assert c["payment_milestone"] == 0                           # *** no premature PaymentMilestone ***
 
 
-def test_freight_routes_to_shipments(ctx):
-    from app.models import Shipment
+def test_freight_conversion_creates_case_plus_freightrequest_no_shipment(ctx):
+    """Freight & shipping → OperationCase(category=freight) + a FreightRequest(status=draft). It must NOT mint a
+    Shipment — a Shipment is booked only after a FreightOffer is selected and booking is confirmed."""
     with Session(ctx) as s:
         sr, sa = _seed_request(s, "freight")
         admin = _u(s, "admin@t.local")
-        case, _ = OPS.ensure_case_for_request(s, sr, actor=admin); s.commit()
-        s.add(Shipment(operation_case_id=case.id, tenant_id=sa.id, mode="sea",
-                       current_milestone="booked", status="active")); s.commit()
-        sh = s.exec(select(Shipment).where(Shipment.operation_case_id == case.id)).all()
-        assert len(sh) == 1 and sh[0].mode == "sea"             # freight surfaces as a shipment on the case
+        out = OPS.route_service_request(s, sr, actor=admin); s.commit()
+        c = _counts(s)
+        assert out["operation_case"].category == "freight" and out["operation_case"].tenant_id == sa.id
+        assert out["freight_request"].status == "draft"             # captures the need, not a booked shipment
+        assert out["freight_request"].request_id == sr.id and out["freight_request"].tenant_id == sa.id
+        assert c["cases"] == 1 and c["freight_request"] == 1
+        assert c["shipment"] == 0                                    # *** no premature Shipment ***
 
 
-def test_docs_routes_to_documentation(ctx):
+def test_docs_conversion_creates_case_only(ctx):
+    """Documentation → OperationCase(category=docs). Individual DocumentRequirements are added later by the admin;
+    the conversion itself creates neither a payment nor a shipment."""
     from app import tradedocs as TD
+    from app.models import DocumentRequirement
     with Session(ctx) as s:
         sr, sa = _seed_request(s, "docs")
         admin = _u(s, "admin@t.local")
-        case, _ = OPS.ensure_case_for_request(s, sr, actor=admin); s.commit()
+        out = OPS.route_service_request(s, sr, actor=admin); s.commit()
+        c = _counts(s)
+        assert out["operation_case"].category == "docs"
+        assert c["cases"] == 1 and c["payment_milestone"] == 0 and c["shipment"] == 0
+        # a requirement is added later, on the case (the Documentation workspace)
         TD.create_requirement(s, doc_type="certificate_of_origin", required_from="seller",
-                              operation_case_id=case.id, tenant_id=sa.id, actor=admin); s.commit()
-        from app.models import DocumentRequirement
+                              operation_case_id=out["operation_case"].id, tenant_id=sa.id, actor=admin); s.commit()
         docs = s.exec(select(DocumentRequirement)
-                      .where(DocumentRequirement.operation_case_id == case.id)).all()
+                      .where(DocumentRequirement.operation_case_id == out["operation_case"].id)).all()
         assert len(docs) == 1 and docs[0].doc_type == "certificate_of_origin"
 
 
-def test_contract_routes_to_commercial_contracts(ctx):
-    """Contract drafting is a Commercial concern — it does NOT become an Operations case; the admin drafts it in
-    the Contracts workspace and the copilot may never auto-sign it."""
+def test_contract_conversion_creates_linked_draft_no_parties_no_binding(ctx):
+    """Contract drafting → a linked, NON-BINDING draft contract: needs_review status, no assumed counterparty,
+    linked to the request. It is a Commercial concern (no Operations case) and the AI can never sign it."""
     from app import ai_actions as AIACT
+    from app.models import Contract
     with Session(ctx) as s:
-        sr, _sa = _seed_request(s, "contract")
+        sr, sa = _seed_request(s, "contract")
         admin = _u(s, "admin@t.local")
-        # a contract request is a Commercial concern — the Contracts workspace creates the document
-        from app import contract_service as CONTRACT
-        c, _v = CONTRACT.create_contract(s, contract_type="buyer_sales", side="buyer", country="IQ",
-                                         terms="20 MT zinc sulphate CPT Basra", owner_id=admin.id, actor=admin)
-        s.commit()
-        assert c.id is not None and c.contract_type == "buyer_sales"
-        # signing a contract is on the NEVER list — the AI can never execute it
-        assert "sign_contract" in AIACT.NEVER
+        out = OPS.route_service_request(s, sr, actor=admin); s.commit()
+        c = out["contract"]
+        assert c.request_id == sr.id and c.tenant_id == sa.id       # linked to the request
+        assert c.status == "needs_review"                           # Needs Review — not a binding status
+        assert c.status not in ("approved", "sent", "signed")       # never binding on intake
+        assert c.company_id is None                                 # *** no assumed counterparty/party ***
+        cnt = _counts(s)
+        assert cnt["contract"] == 1 and cnt["cases"] == 0           # Commercial, not Operations
+        assert cnt["payment_milestone"] == 0 and cnt["shipment"] == 0
+        assert "sign_contract" in AIACT.NEVER                       # the AI can never sign
 
     admin_c = TestClient(main.app); _login(admin_c, "admin@t.local")
-    assert admin_c.get("/contracts").status_code == 200          # the Commercial → Contracts workspace
+    assert admin_c.get("/contracts").status_code == 200             # the Commercial → Contracts workspace
+
+
+@pytest.mark.parametrize("rtype", ["remittance", "freight", "contract", "docs"])
+def test_conversion_is_idempotent_no_duplicates(ctx, rtype):
+    """Converting the same request twice never creates a duplicate specialized record."""
+    with Session(ctx) as s:
+        sr, _sa = _seed_request(s, rtype)
+        admin = _u(s, "admin@t.local")
+        OPS.route_service_request(s, sr, actor=admin); s.commit()
+        first = _counts(s)
+        OPS.route_service_request(s, sr, actor=admin); s.commit()   # second conversion
+        assert _counts(s) == first                                  # nothing duplicated
+
+
+@pytest.mark.parametrize("rtype", ["remittance", "freight", "contract", "docs"])
+def test_conversion_never_creates_premature_binding_records(ctx, rtype):
+    """REGRESSION: intake conversion for ANY service must never create a PaymentMilestone or a Shipment."""
+    with Session(ctx) as s:
+        sr, _sa = _seed_request(s, rtype)
+        admin = _u(s, "admin@t.local")
+        OPS.route_service_request(s, sr, actor=admin); s.commit()
+        c = _counts(s)
+        assert c["payment_milestone"] == 0, "conversion created a premature PaymentMilestone"
+        assert c["shipment"] == 0, "conversion created a premature Shipment"
 
 
 def test_buyer_hunt_routes_to_existing_research_pipeline(ctx):

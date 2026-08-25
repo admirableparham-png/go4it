@@ -69,8 +69,8 @@ def _current_version(session, contract):
 
 def create_contract(session, *, contract_type, side, tenant_id=None, country="", jurisdiction="", category="",
                     product_id=None, quote_id=None, quote_version_id=None, deal_id=None, company_id=None,
-                    owner_id=None, terms="", payment_terms="", delivery_terms="", template_id=None,
-                    actor=None, inferred=False):
+                    request_id=None, owner_id=None, terms="", payment_terms="", delivery_terms="",
+                    template_id=None, actor=None, inferred=False):
     """Create a contract header + its immutable v1 version. Admin explicitly supplies type + side + parties."""
     from .models import Contract, ContractVersion
     if contract_type not in CONTRACT_TYPES:
@@ -79,8 +79,8 @@ def create_contract(session, *, contract_type, side, tenant_id=None, country="",
         side = "buyer"
     c = Contract(contract_type=contract_type, side=side, tenant_id=tenant_id, country=country,
                  jurisdiction=jurisdiction, category=category, product_id=product_id, quote_id=quote_id,
-                 quote_version_id=quote_version_id, deal_id=deal_id, company_id=company_id, owner_id=owner_id,
-                 status="draft", created_by=getattr(actor, "email", "") or "")
+                 quote_version_id=quote_version_id, deal_id=deal_id, company_id=company_id, request_id=request_id,
+                 owner_id=owner_id, status="draft", created_by=getattr(actor, "email", "") or "")
     session.add(c); session.commit(); session.refresh(c)
     c.tracking_code = f"C-{c.id:05d}"
     v = ContractVersion(contract_id=c.id, version=1, status="draft", contract_type=contract_type,
@@ -91,6 +91,37 @@ def create_contract(session, *, contract_type, side, tenant_id=None, country="",
     c.current_version_id = v.id; session.add(c); session.commit(); session.refresh(c)
     _audit(session, actor, c.id, "contract_create", {"type": contract_type, "side": side})
     return c, v
+
+
+def ensure_draft_for_request(session, req, *, actor=None):
+    """Idempotently create a linked, NON-BINDING draft contract for a `contract` service request.
+
+    It assumes NOTHING: no counterparty company (parties are chosen later by the admin), an unassigned type
+    ('other'), and a `needs_review` status (never approved/sent/signed — no binding state). It also raises a
+    `contract_needs_review` Work Queue task so the admin drafts the real terms + parties in the Contracts
+    workspace. Called twice for the same request → returns the existing draft (no duplicate)."""
+    from .models import Contract
+    existing = session.exec(select(Contract).where(Contract.request_id == req.id)).first()
+    if existing:
+        return existing, False
+    c, _v = create_contract(session, contract_type="other", side="internal", country=(req.market or ""),
+                            company_id=None, request_id=req.id, tenant_id=req.owner_id, owner_id=req.owner_id,
+                            actor=actor)
+    c.status = "needs_review"                 # Draft/Needs-Review — explicitly NOT a binding status
+    session.add(c); session.commit(); session.refresh(c)
+    try:
+        from . import work_queue as WQ
+        WQ.create_work_item_safe(
+            session, tenant_id=req.owner_id, type="contract_needs_review", source="automatic",
+            title=f"Draft contract for request {getattr(req, 'tracking_code', '') or req.id}",
+            description="A contract-drafting request created a draft. Choose the parties, type and terms, then "
+                        "review — nothing is binding until you approve it.",
+            related_request_id=req.id, related_contract_id=c.id,
+            idempotency_key=f"contract_needs_review:req:{req.id}", condition_version="draft")
+    except Exception:  # noqa: BLE001
+        pass
+    _audit(session, actor, c.id, "contract_draft_for_request", {"request_id": req.id})
+    return c, True
 
 
 def revise_contract(session, contract, actor=None, is_amendment=False):
