@@ -1788,12 +1788,20 @@ class DemandSignal(SQLModel, table=True):
     observed_at: Optional[datetime] = None
     expires_at: Optional[datetime] = None
     confidence: int = 0            # 0-100, from evidence tier (never from lead volume)
+    # observed = a directly recorded event; verified = admin/integration confirmed; derived = calculated
+    # deterministically from a recorded record (an accepted quote / a Deal); inferred = requires ASSUMPTIONS.
+    # A signal built from a recorded accepted quote or Deal is DERIVED, never inferred.
     verification_state: str = "observed"  # observed | verified | derived | inferred
     strength: str = "weak"         # weak | moderate | strong (accepted quote / Deal = strong)
     evidence_ref: str = ""
     tenant_id: Optional[int] = Field(default=None, foreign_key="user.id")  # seller the demand may serve; NULL=global
-    dedup_key: str = Field(default="", index=True)
-    inferred: bool = False         # True = backfill-seeded from historical evidence, not an observed live event
+    dedup_key: str = Field(default="", index=True)   # one row per underlying source event
+    # commercial_event_key groups signals that are the SAME commercial demand event (an accepted quote and the
+    # Deal created from it share it), so counting never double-counts one event as two signals.
+    commercial_event_key: str = Field(default="", index=True)
+    backfilled: bool = False       # True = seeded by the historical backfill (NOT an assumption — provenance kept)
+    history_complete: bool = True  # False = derived from incomplete history
+    inferred: bool = False         # RESERVED: True only for evidence that required assumptions (not backfill)
     created_by: Optional[int] = Field(default=None, foreign_key="user.id")
     created_at: datetime = Field(default_factory=datetime.utcnow)
 

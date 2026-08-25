@@ -1018,21 +1018,21 @@ def sync_demand_signals(session, actor=None, inferred=False, budget=None) -> int
     for q in session.exec(select(Quote).where(Quote.status == "accepted")).all():
         if _capped(budget, n) or datetime.utcnow() > stop:
             return n
-        sig, created = DEM.from_accepted_quote(session, q, actor=actor, inferred=inferred)
+        sig, created = DEM.from_accepted_quote(session, q, actor=actor, backfilled=inferred)
         if created and sig:
             OPP.ensure_from_signal(session, sig, actor=actor)
             n += 1
     for d in session.exec(select(Deal)).all():
         if _capped(budget, n) or datetime.utcnow() > stop:
             return n
-        sig, created = DEM.from_deal(session, d, actor=actor, inferred=inferred)
+        sig, created = DEM.from_deal(session, d, actor=actor, backfilled=inferred)
         if created and sig:
             OPP.ensure_from_signal(session, sig, actor=actor)
             n += 1
     for ld in session.exec(select(Lead).where(Lead.reply_outcome == "positive")).all():
         if _capped(budget, n) or datetime.utcnow() > stop:
             return n
-        sig, created = DEM.from_positive_reply(session, ld, actor=actor, inferred=inferred)
+        sig, created = DEM.from_positive_reply(session, ld, actor=actor, backfilled=inferred)
         if created and sig:
             OPP.ensure_from_signal(session, sig, actor=actor)
             n += 1

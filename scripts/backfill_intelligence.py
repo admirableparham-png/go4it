@@ -8,11 +8,12 @@
 RUN ORDER (prod): backup_db.py -> migrate.py -> migrate_gate_p8.py -> THIS.
 
 What it does — strictly additive, conservative. Creates positive demand ONLY from deterministic evidence:
-  * accepted quotes + Deals -> STRONG derived signals,
-  * admin-confirmed positive replies -> inferred demand (with provenance),
+  * accepted quotes + Deals -> STRONG DERIVED signals (calculated from recorded records, NOT inferred),
+  * admin-confirmed positive replies -> VERIFIED signals,
 and groups them into Opportunities (matched to supply). It NEVER creates demand from scraped leads, email
 opens/deliveries, bounces or negative/auto replies, NEVER invents quantities/market size/seasonality, preserves
-original timestamps, and marks everything inferred. Operational counts (leads/quotes/deals/requests/outreach/
+original timestamps, and marks everything `backfilled=True` (provenance kept — the reserved `inferred` flag is
+NOT set, because none of this required assumptions). Operational counts (leads/quotes/deals/requests/outreach/
 products) never change. Ambiguous evidence -> one aggregate review task.
 """
 import os
@@ -42,7 +43,8 @@ def _apply(s) -> dict:
     from app import work_queue as WQ
     before_sig = s.exec(select(func.count()).select_from(DemandSignal)).one()
     before_opp = s.exec(select(func.count()).select_from(Opportunity)).one()
-    # reuse the tested live demand-generation pass, marking everything inferred=True (backfill-seeded)
+    # reuse the tested live demand-generation pass; the scanner's `inferred` flag means "backfill-seeded" and is
+    # routed to DemandSignal.backfilled (NOT the reserved assumption flag). Signals stay derived/verified.
     WQ.sync_demand_signals(s, actor=None, inferred=True, budget=100000)
     after_sig = s.exec(select(func.count()).select_from(DemandSignal)).one()
     after_opp = s.exec(select(func.count()).select_from(Opportunity)).one()
@@ -88,7 +90,7 @@ def _untouched(s, opp) -> bool:
     if not sig_ids:
         return True
     sigs = s.exec(select(DemandSignal).where(DemandSignal.id.in_(sig_ids))).all()
-    return all(sg.inferred for sg in sigs)
+    return all(sg.backfilled for sg in sigs)
 
 
 def _delete_opp(s, opp):
@@ -107,7 +109,7 @@ def rollback():
         opps = [o for o in s.exec(select(Opportunity)).all() if _untouched(s, o)]
         for o in opps:
             _delete_opp(s, o)
-        for sg in s.exec(select(DemandSignal).where(DemandSignal.inferred == True)).all():  # noqa: E712
+        for sg in s.exec(select(DemandSignal).where(DemandSignal.backfilled == True)).all():  # noqa: E712
             # only delete a signal if it no longer links to any surviving opportunity
             if not s.exec(select(OpportunitySignal).where(
                     OpportunitySignal.demand_signal_id == sg.id)).first():
@@ -127,7 +129,7 @@ def recover():
         for o in s.exec(select(Opportunity)).all():
             if _untouched(s, o):
                 _delete_opp(s, o); removed += 1
-        for sg in s.exec(select(DemandSignal).where(DemandSignal.inferred == True)).all():  # noqa: E712
+        for sg in s.exec(select(DemandSignal).where(DemandSignal.backfilled == True)).all():  # noqa: E712
             if not s.exec(select(OpportunitySignal).where(
                     OpportunitySignal.demand_signal_id == sg.id)).first():
                 s.delete(sg)

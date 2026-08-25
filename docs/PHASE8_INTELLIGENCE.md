@@ -39,10 +39,14 @@ log or cache key. Header nav only; no sidebar.
   lead volume — with min-sample gating (unranked otherwise).
 
 ## Checkpoint B — demand, opportunities, scoring, alerts, reports
-- **`demand.py`** — `DemandSignal` service. Signals only from deterministic evidence; `dedup_key` (partial-
-  unique) counts one underlying event once even across surfaces; documented counting methods (unique event /
-  buyer / requirement / company / product-market). **Seasonality** requires ≥ 3 comparable periods else
-  "Insufficient history" (no single-season claims).
+- **`demand.py`** — `DemandSignal` service. Signals only from deterministic evidence. A signal from a recorded
+  accepted quote or Deal is **Derived** (calculated), never **Inferred** (which is reserved for evidence needing
+  assumptions); historical seeding is recorded separately as `backfilled=True` (with `history_complete`).
+  `dedup_key` (partial-unique) keeps one row per source event; a shared **`commercial_event_key`** groups an
+  accepted quote and the Deal made from it (same `quote_version_id`) so the pair is counted as **one** commercial
+  demand event while both rows are preserved as evidence. Counting methods (unique event / buyer / requirement /
+  company / product-market) are documented. **Seasonality** claims a pattern only when the **same season recurs
+  across ≥ 3 different years** (not three consecutive months/weeks) — else "Insufficient history".
 - **`opportunity_scoring.py`** — deterministic, **versioned** scoring with a fully visible breakdown (**no
   hidden weights**). Weights are env-configurable (`config.OPP_SCORE_WEIGHTS`) and the `score_version` is
   derived from them, so a weight change yields a new version and **never rewrites a historical snapshot**.
@@ -74,15 +78,17 @@ backup_db.py → migrate.py → migrate_gate_p8.py [--dry-run] → backfill_inte
 ```
 `migrate_gate_p8.py` idempotently creates the 7 tables + partial-unique indexes + the additive WorkItem columns,
 runs `PRAGMA integrity_check`, and asserts operational counts (leads/quotes/deals/requests/outreach/products)
-invariant. `backfill_intelligence.py` is **conservative**: demand only from deterministic evidence (accepted
-quotes/Deals → strong derived; positive replies → inferred with provenance), everything marked `inferred`, never
-inventing quantities/market size/seasonality, timestamps preserved; ambiguous → one aggregate review task.
-`--rollback` (pre-go-live) removes inferred/backfill-only rows; `--recover` (post-go-live) preserves every real
-admin decision, alert and report.
+invariant. `backfill_intelligence.py` is **conservative**: demand only from deterministic evidence (accepted quotes/Deals →
+strong **Derived**; confirmed positive replies → **Verified**), everything marked **`backfilled=True`** (the
+reserved `inferred` flag is never set — no assumptions), never inventing quantities/market size/seasonality,
+timestamps preserved; ambiguous → one aggregate review task. `--rollback` (pre-go-live) removes backfill-only
+rows; `--recover` (post-go-live) preserves every real admin decision, alert and report.
 
-**Proven on a WAL-safe dev-DB snapshot:** gate dry-run→apply→re-run idempotent; backfill dry-run→apply→re-run→
-rollback created 2 signals + 1 opportunity from the real accepted quote/Deal; operational counts invariant
-(leads 4581 / quotes 56 / deals 1 / requests 1 / outreach 197 / products 96); app boots.
+**Proven on a WAL-safe dev-DB snapshot** (`backups/data-20260825-114900.db`): gate dry-run→apply→re-run
+idempotent; backfill dry-run→apply→re-run→rollback created **2 demand signals** (a Deal → derived; a positive
+reply → verified — both `backfilled=True`, `inferred=False`) + **1 opportunity**; unique commercial events = 2;
+0 alerts / 0 snapshots / 0 reports (created at runtime, not by backfill); operational counts invariant (leads
+4581 / quotes 56 / deals 1 / requests 1 / outreach 197 / products 96); app boots.
 
 ## Intelligence canary (`scripts/intel_canary.py`, also `tests/test_intel_canary.py`)
 On a disposable DB, no external service: an accepted quote → a **strong deduped** demand signal (a negative

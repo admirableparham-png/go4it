@@ -171,6 +171,11 @@ MIGRATIONS = [
     # scripts/migrate_gate_p8.py.
     ("workitem", "related_opportunity_id", "INTEGER"),
     ("workitem", "related_alert_id", "INTEGER"),
+    # Phase 8 correction: separate the SAME-commercial-event grouping + backfilled provenance from the reserved
+    # 'inferred' (assumption) flag on demand signals.
+    ("demandsignal", "commercial_event_key", "VARCHAR DEFAULT ''"),
+    ("demandsignal", "backfilled", "BOOLEAN DEFAULT 0"),
+    ("demandsignal", "history_complete", "BOOLEAN DEFAULT 1"),
 ]
 
 

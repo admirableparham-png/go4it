@@ -72,7 +72,9 @@ def test_backfill_from_deterministic_evidence_only(diskdb):
     B.migrate(dry=False)
     with Session(engine) as s:
         sigs = s.exec(select(DemandSignal)).all()
-        assert len(sigs) == 1 and sigs[0].signal_type == "accepted_quote" and sigs[0].inferred is True
+        assert len(sigs) == 1 and sigs[0].signal_type == "accepted_quote"
+        # a signal from a recorded accepted quote is DERIVED + backfilled — NEVER inferred (no assumptions)
+        assert sigs[0].verification_state == "derived" and sigs[0].backfilled is True and sigs[0].inferred is False
         assert len(s.exec(select(Opportunity)).all()) == 1
         assert len(s.exec(select(Quote)).all()) == 1                 # operational rows untouched
     B.migrate(dry=False)   # idempotent — no duplicate signal
@@ -88,5 +90,5 @@ def test_rollback_removes_backfill_only(diskdb):
     B.rollback()
     with Session(engine) as s:
         assert s.exec(select(Opportunity)).all() == []              # backfill-only opportunity removed
-        assert s.exec(select(DemandSignal).where(DemandSignal.inferred == True)).all() == []  # noqa: E712
+        assert s.exec(select(DemandSignal).where(DemandSignal.backfilled == True)).all() == []  # noqa: E712
         assert len(s.exec(select(Quote)).all()) == nq               # operational rows preserved

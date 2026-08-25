@@ -49,14 +49,38 @@ def test_accepted_quote_and_deal_are_strong_and_deduped(ops_engine):
     with Session(ops_engine) as s:
         lead, q = _quote(s)
         sig, created = DEM.from_accepted_quote(s, q); s.commit()
+        # a signal from a recorded accepted quote is DERIVED (calculated), never inferred (assumption)
         assert created and sig.strength == "strong" and sig.verification_state == "derived"
+        assert sig.inferred is False
         # a second call is a no-op (one accepted version = one signal)
         _, again = DEM.from_accepted_quote(s, q); s.commit()
         assert again is False
-        d = Deal(lead_id=lead.id, owner_id=1, tracking_code="D", stage="won"); s.add(d); s.commit(); s.refresh(d)
+
+
+def test_quote_to_deal_is_one_countable_demand_event(ops_engine):
+    """An accepted quote and the Deal created FROM it are ONE commercial demand event. Both are preserved as
+    evidence, but they must not count as two independent demand signals."""
+    with Session(ops_engine) as s:
+        lead, q = _quote(s)                                     # q.current_version_id == 1
+        qsig, _ = DEM.from_accepted_quote(s, q); s.commit()
+        # the Deal was created FROM this accepted quote version (Phase 6: one Deal per version)
+        d = Deal(lead_id=lead.id, owner_id=1, tracking_code="D", stage="won", quote_version_id=1)
+        s.add(d); s.commit(); s.refresh(d)
         dsig, dc = DEM.from_deal(s, d); s.commit()
-        assert dc and dsig.signal_type == "deal" and dsig.strength == "strong"
-        assert len(s.exec(select(DemandSignal)).all()) == 2      # accepted_quote + deal, each once
+        assert dc and dsig.signal_type == "deal"
+        # BOTH rows are kept as evidence...
+        assert len(s.exec(select(DemandSignal)).all()) == 2
+        # ...but they share a commercial_event_key, so they count as ONE demand event
+        assert qsig.commercial_event_key == dsig.commercial_event_key == "qv:1"
+        assert DEM.count(s, "unique_event") == 1
+        # two unrelated positive replies remain two distinct events
+        for i in range(2):
+            l = Lead(product="Y", tracking_code=f"R{i}", owner_id=1, reply_outcome="positive",
+                     buyer_replied_at=datetime.utcnow())
+            s.add(l); s.commit(); s.refresh(l)
+            DEM.from_positive_reply(s, l)
+        s.commit()
+        assert DEM.count(s, "unique_event") == 3               # 1 (quote+deal) + 2 replies
 
 
 def test_counting_methods(ops_engine):
@@ -72,16 +96,22 @@ def test_counting_methods(ops_engine):
         assert DEM.count(s, "unique_product_market") == 1
 
 
-def test_seasonality_requires_minimum_history(ops_engine):
+def test_seasonality_needs_same_season_across_three_years(ops_engine):
+    """A seasonal claim requires the SAME season across >= 3 different YEARS — not three consecutive months of
+    one year, and not three weeks."""
     with Session(ops_engine) as s:
-        # one period of data → insufficient
-        DEM._create(s, signal_type="rfq", dedup_key="s1", product="Tea",
-                    observed_at=datetime(2026, 1, 5)); s.commit()
-        r = DEM.seasonality(s, "Tea")
-        assert r["sufficient"] is False and "Insufficient history" in r["message"]
-        # three distinct months → sufficient
-        DEM._create(s, signal_type="rfq", dedup_key="s2", product="Tea", observed_at=datetime(2026, 2, 5))
-        DEM._create(s, signal_type="rfq", dedup_key="s3", product="Tea", observed_at=datetime(2026, 3, 5))
+        # three DIFFERENT months in ONE year → NOT a seasonal cycle → insufficient
+        for i, m in enumerate((1, 2, 3)):
+            DEM._create(s, signal_type="rfq", dedup_key=f"a{i}", product="Tea",
+                        observed_at=datetime(2026, m, 5))
         s.commit()
-        r2 = DEM.seasonality(s, "Tea")
-        assert r2["sufficient"] is True and r2["sample_periods"] == 3
+        r = DEM.seasonality(s, "Tea")
+        assert r["sufficient"] is False and "at least 3 years" in r["message"]
+        # the SAME month (January) across THREE years → a real seasonal cycle → sufficient
+        for i, y in enumerate((2024, 2025, 2026)):
+            DEM._create(s, signal_type="rfq", dedup_key=f"jan{i}", product="Saffron",
+                        observed_at=datetime(y, 1, 15))
+        s.commit()
+        r2 = DEM.seasonality(s, "Saffron")
+        assert r2["sufficient"] is True and r2["best_season_years"] == 3
+        assert "Jan" in r2["seasons"] and r2["seasons"]["Jan"] == [2024, 2025, 2026]
