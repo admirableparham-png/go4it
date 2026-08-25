@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-6">
+  <div class="eyebrow mb-1">Intelligence · Command</div>
+  <h2 class="text-2xl font-extrabold tracking-tight font-display">Intelligence brief</h2>
+  <p class="text-slate-400 text-sm mt-1">{{ brief.period|capitalize }} · in-app only (never auto-emailed) · generated {{ brief.generated_at }} · {{ brief.metric_version }}. Every figure links to its evidence.</p>
+</div>
+
+<div class="grid md:grid-cols-2 gap-4">
+  {% for sec in brief.sections %}
+    <div class="card">
+      <div class="eyebrow mb-2">{{ sec.title }}</div>
+      {% for it in sec['items'] %}
+        <div class="flex items-center justify-between text-sm py-0.5">
+          <span class="text-slate-400">{{ it.label }}</span>
+          <span class="tabular-nums text-slate-100">{% if it.value is mapping %}{% for c,a in it.value.items() %}{{ c }} {{ a }} {% endfor %}{% else %}{{ it.value }}{% endif %}</span>
+        </div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+</div>
+
+{% if brief.recommendations %}
+<div class="card mt-4">
+  <div class="eyebrow mb-2">Recommended admin actions</div>
+  <ul class="list-disc pl-5 text-sm text-slate-300 space-y-0.5">{% for r in brief.recommendations %}<li>{{ r }}</li>{% endfor %}</ul>
+</div>
+{% endif %}
+{% endblock %}

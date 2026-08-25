@@ -212,6 +212,33 @@ def answer(session, conversation, user_text, user, *, now=None):
             citations.extend(out.get("citations", []))
 
     text = _compose(user_text, results)
+
+    # intent: a weekly/daily intelligence brief (read-only, cited, in-app)
+    tl = user_text.lower()
+    if "brief" in tl and ("intelligence" in tl or "weekly" in tl or "daily" in tl or "prepare" in tl):
+        from . import ai_brief
+        b = ai_brief.generate_brief(session, period="weekly" if "week" in tl else "daily")
+        recs = "; ".join(b["recommendations"]) or "no urgent recommendations"
+        text = (f"Intelligence brief ({b['period']}, in-app only). Sections: "
+                + ", ".join(sec["title"] for sec in b["sections"]) + f". Recommended: {recs}.")
+        for sec in b["sections"]:
+            for it in sec["items"]:
+                citations.extend(it.get("citations", []) or ([it["citation"]] if it.get("citation") else []))
+
+    # intent: propose a buyer-research job (never launched without approval)
+    proposals = []
+    if "research" in tl and ("start" in tl or "proposal" in tl or "find buyers" in tl or "buyer-research" in tl):
+        from . import ai_actions
+        scope = user_text
+        prop, _err = ai_actions.propose(
+            session, conversation, action_type="start_research",
+            payload={"prompt": scope}, reason="Admin asked to start buyer research.",
+            target_summary=f"Buyer-research job for: {scope[:120]}", actor=user, message_id=None)
+        if prop:
+            proposals.append(prop.id)
+            text += ("\n\nI've prepared a Research proposal (interpreted scope shown). It will run through the "
+                     "existing Research pipeline ONLY after you approve it — I won't claim results before then.")
+
     # optional LLM phrasing (facts unchanged) — only if configured, allowed, within budget and not paused
     provider_name, model_name = "", ""
     prov = PROV.get_provider()
@@ -233,7 +260,7 @@ def answer(session, conversation, user_text, user, *, now=None):
         conversation.title = (user_text or "Conversation").strip()[:60]
     session.add(conversation)
     return {"message_id": msg.id, "text": text, "citations": citations, "refused": False, "injection": False,
-            "tools": [t for t, _ in results]}
+            "tools": [t for t, _ in results], "proposals": proposals}
 
 
 def _special_display(tool):

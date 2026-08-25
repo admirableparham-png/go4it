@@ -1724,7 +1724,121 @@ def command_pause_all(request: Request, paused: str = Form("1")):
         if not is_admin(current_user(request, session)):
             return _forbidden()
     AIPROV.pause_all(paused == "1")
+    from . import automation as _AUTO
+    _AUTO.pause_all(paused == "1")
     return RedirectResponse("/command", status_code=303)
+
+
+@app.post("/command/proposals/{prop_id}/approve")
+def command_approve_proposal(request: Request, prop_id: int, background: BackgroundTasks, nonce: str = Form("")):
+    """Approve an AI action proposal. Safe execution: nonce + revalidation + payload-hash + idempotent execute
+    via an existing domain service. Double-click is a no-op."""
+    from . import ai_actions as AIACT
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        p = session.get(AIActionProposal, prop_id)
+        if not p or (p.conversation_id and session.get(AIConversation, p.conversation_id).owner_id != user.id):
+            return _not_found()
+        cid = p.conversation_id
+        ok, result = AIACT.approve(session, p, nonce=nonce, actor=user)
+        session.commit()
+        # a start_research approval created a queued CommandJob via the existing pipeline; run it in the
+        # background (the existing harvest path) — never before approval.
+        job_id = result.get("command_job_id") if ok and isinstance(result, dict) else None
+    if job_id:
+        background.add_task(run_command_job, job_id)
+    return RedirectResponse(f"/command?c={cid}", status_code=303)
+
+
+@app.post("/command/proposals/{prop_id}/decline")
+def command_decline_proposal(request: Request, prop_id: int):
+    from . import ai_actions as AIACT
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        p = session.get(AIActionProposal, prop_id)
+        if not p:
+            return _not_found()
+        cid = p.conversation_id
+        AIACT.decline(session, p, actor=user)
+        session.commit()
+    return RedirectResponse(f"/command?c={cid}", status_code=303)
+
+
+@app.get("/command/brief", response_class=HTMLResponse)
+def command_brief(request: Request, period: str = "daily"):
+    from . import ai_brief
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        brief = ai_brief.generate_brief(session, period="weekly" if period == "weekly" else "daily")
+    return templates.TemplateResponse("command_brief.html", {"request": request, "user": user, "brief": brief})
+
+
+@app.get("/command/automation", response_class=HTMLResponse)
+def command_automation(request: Request):
+    from . import automation as AUTO
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        rules = session.exec(select(AutomationRule).order_by(AutomationRule.id.desc()).limit(50)).all()
+        paused = AUTO.is_paused()
+    return templates.TemplateResponse("command_automation.html", {
+        "request": request, "user": user, "rules": rules, "triggers": AUTO.TRIGGERS, "actions": AUTO.ACTIONS,
+        "paused": paused})
+
+
+@app.post("/command/automation")
+def command_automation_create(request: Request, name: str = Form(""), trigger_type: str = Form(""),
+                              action_type: str = Form(""), min_score: str = Form("")):
+    from . import automation as AUTO
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        conditions = {"min_score": int(min_score)} if min_score.strip().isdigit() else {}
+        rule, err = AUTO.create_rule(session, name=name or "rule", trigger_type=trigger_type,
+                                     action_type=action_type, conditions=conditions, actor=user)
+        session.commit()
+        if err:
+            return HTMLResponse(f"Cannot create rule: {err}", 400)
+    return RedirectResponse("/command/automation", status_code=303)
+
+
+@app.post("/command/automation/{rule_id}/toggle")
+def command_automation_toggle(request: Request, rule_id: int, enabled: str = Form("")):
+    from . import automation as AUTO
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        rule = session.get(AutomationRule, rule_id)
+        if not rule:
+            return _not_found()
+        AUTO.set_enabled(session, rule, enabled == "1", actor=user)
+        session.commit()
+    return RedirectResponse("/command/automation", status_code=303)
+
+
+@app.post("/command/automation/{rule_id}/dry-run")
+def command_automation_dryrun(request: Request, rule_id: int):
+    from . import automation as AUTO
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        rule = session.get(AutomationRule, rule_id)
+        if not rule:
+            return _not_found()
+        run, _did = AUTO.run_rule(session, rule, dry_run=True, actor=user)
+        session.commit()
+        preview = run.output_summary if run else "condition not currently met"
+    return HTMLResponse(f"<div class='card'>Dry-run: {preview}</div>")
 
 
 @app.post("/command/run", response_class=HTMLResponse)

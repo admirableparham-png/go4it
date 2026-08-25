@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex items-end justify-between mb-6">
+  <div>
+    <div class="eyebrow mb-1">Intelligence · Command</div>
+    <h2 class="text-2xl font-extrabold tracking-tight font-display">Automation</h2>
+    <p class="text-slate-400 text-sm mt-1">Deterministic rules. Actions are internal only — automation never sends email, starts campaigns, issues quotes/contracts, advances Deals, moves funds, or publishes without existing approval.</p>
+  </div>
+  <form method="post" action="/command/pause-all"><input type="hidden" name="paused" value="{{ '0' if paused else '1' }}"><button class="btn btn-sm">{{ 'Resume automation' if paused else 'Pause all' }}</button></form>
+</div>
+
+<details class="card mb-6">
+  <summary class="cursor-pointer font-semibold font-display">New rule</summary>
+  <form method="post" action="/command/automation" class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+    <input name="name" placeholder="Rule name" class="input" />
+    <select name="trigger_type" class="input"><option value="">Trigger…</option>{% for t in triggers %}<option value="{{ t }}">{{ t.replace('_',' ') }}</option>{% endfor %}</select>
+    <select name="action_type" class="input"><option value="">Action…</option>{% for a in actions %}<option value="{{ a }}">{{ a.replace('_',' ') }}</option>{% endfor %}</select>
+    <input name="min_score" placeholder="min score (opt)" class="input" />
+    <button class="btn">Create</button>
+  </form>
+</details>
+
+{% if rules %}
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Name</th><th>Trigger</th><th>Action</th><th>Enabled</th><th>Last run</th><th>Failures</th><th></th></tr></thead>
+      <tbody>
+        {% for r in rules %}
+          <tr>
+            <td class="text-slate-200">{{ r.name }}</td>
+            <td class="text-slate-400">{{ r.trigger_type.replace('_',' ') }}</td>
+            <td class="text-slate-400">{{ r.action_type.replace('_',' ') }}</td>
+            <td><span class="badge {{ 'badge-emerald' if r.enabled else 'badge-slate' }}">{{ 'on' if r.enabled else 'off' }}</span></td>
+            <td class="text-slate-500">{{ r.last_run.strftime('%Y-%m-%d %H:%M') if r.last_run else '—' }}</td>
+            <td class="tabular-nums {{ 'text-rose-400' if r.failure_count else 'text-slate-500' }}">{{ r.failure_count }}</td>
+            <td class="flex gap-1">
+              <form method="post" action="/command/automation/{{ r.id }}/toggle"><input type="hidden" name="enabled" value="{{ '0' if r.enabled else '1' }}"><button class="btn btn-sm">{{ 'Pause' if r.enabled else 'Enable' }}</button></form>
+              <form method="post" action="/command/automation/{{ r.id }}/dry-run" hx-post="/command/automation/{{ r.id }}/dry-run" hx-swap="none"><button class="btn btn-sm">Dry-run</button></form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}<div class="empty">No automation rules yet.</div>{% endif %}
+{% endblock %}

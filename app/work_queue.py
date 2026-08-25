@@ -1081,6 +1081,34 @@ def sync_stale_sources(session, actor=None, inferred=False, budget=None) -> int:
     return n
 
 
+# --- Phase 9 AI/automation scanners (bounded, condition-versioned) ------------------------------------
+def sync_stale_ai_proposals(session, actor=None, inferred=False, budget=None) -> int:
+    """Expire AI action proposals past their TTL (they can no longer be approved) and close the awaiting task."""
+    from .models import AIActionProposal
+    n = 0
+    now = datetime.utcnow()
+    stop = _deadline(now)
+    for p in session.exec(select(AIActionProposal).where(AIActionProposal.status == "proposed",
+                                                         AIActionProposal.expires_at != None)).all():  # noqa: E711
+        if _capped(budget, n) or datetime.utcnow() > stop:
+            break
+        if p.expires_at and now > p.expires_at:
+            p.status = "expired"
+            session.add(p)
+            resolve_by_key(session, f"ai_action_awaiting_approval:prop:{p.id}", note="expired", actor=actor)
+            n += 1
+    return n
+
+
+def sync_automation(session, actor=None, inferred=False, budget=None) -> int:
+    """Run due deterministic automation rules (bounded). Never sends/publishes — internal actions only."""
+    try:
+        from . import automation as AUTO
+        return AUTO.run_due(session, budget=budget if budget is not None else 200, actor=actor)
+    except Exception:  # noqa: BLE001
+        return 0
+
+
 _SCANNERS = [
     ("review_new_request", sync_unreviewed_requests),
     ("requester_action_required", sync_open_seller_questions),
@@ -1113,6 +1141,9 @@ _SCANNERS = [
     ("demand_signals", sync_demand_signals),
     ("opportunity_needs_review", sync_opportunities_needing_review),
     ("source_stale_failed", sync_stale_sources),
+    # Phase 9 AI/automation scanners
+    ("stale_ai_proposal", sync_stale_ai_proposals),
+    ("automation", sync_automation),
 ]
 
 
