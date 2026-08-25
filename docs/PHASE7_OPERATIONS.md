@@ -50,6 +50,12 @@ ServiceRequest, both, or be a controlled standalone case — a Deal may have **m
   auto buyer-facing. An admin document reaches a seller only after it is marked seller-safe and published via
   the owner-scoped `RequestDeliverable`. Missing docs are requested from the seller through the sanitized
   `SellerUpdate` flow (PII in instructions is refused).
+- **Honest malware status**: a document leaves quarantine either by **admin attestation** (`admin_attested` —
+  human review, **never** shown as "scanned" or "malware-free") or by a **configured** anti-virus scanner
+  (`scanned_clean` / `infected`, via `record_scan`). Quarantined/infected documents are never publishable or
+  reused. When a real scanner IS configured (`OPS_MALWARE_SCANNER`), seller-facing release requires a clean
+  scan — attestation alone is not enough. The UI shows a "not configured — admin-attested only" banner until a
+  scanner is wired.
 - **Providers**: freight/customs/remittance providers are canonical Trade Network `Company` rows with the new
   additive roles `freight_provider` / `customs_broker` / `remittance_provider` — no separate provider DB.
 
@@ -104,6 +110,15 @@ references), preserving every real record.
 **Proven on a snapshot of the dev DB:** gate dry-run→apply→re-run idempotent, backfill dry-run→apply→re-run→
 rollback, operational counts invariant (quotes 56 / deals 1 / requests 1 / outreach 197 / products 96), app
 boots.
+
+## Operations staging canary (`scripts/ops_canary.py`, also `tests/test_operations_canary.py`)
+Runs the full flow against a **disposable** DB, **no real funds moved, no external provider called**: submit a
+freight request → OperationCase + freight offer (selected) → book a shipment (2 legs) → request + upload a
+seller document (quarantined → admin-attested, never "scanned") → record tracking + delivery events → assert
+**monotonic** Deal-stage advancement `won → freight_booked → export_cleared → in_transit → import_cleared →
+delivered` (and a no-regression re-projection) → confirm an **authenticated** second seller is refused the deal
+(404) and every operations page/document (403) → exercise a payment confirmation (evidence-gated) and a
+remittance status change. Prints an evidence inventory (entity counts, Work Queue items, seller updates).
 
 ## Deferred / production-config (NOT production-ready — gates unchanged)
 - Carrier-tracking / freight-quote / customs / payment / remittance provider integrations = **"Not

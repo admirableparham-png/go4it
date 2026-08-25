@@ -35,17 +35,54 @@ def test_store_rejects_dangerous_file(ops_engine, tmp_path):
         assert doc2 is None and err2
 
 
-def test_scan_clear_then_seller_safe_gate(ops_engine, tmp_path):
+def test_attest_then_seller_safe_gate(ops_engine, tmp_path):
     with Session(ops_engine) as s:
         owner = _seller(s)
         doc, _ = TD.store_document(s, files_dir=tmp_path, data=b"%PDF-1.4", original_filename="coo.pdf",
                                    content_type="application/pdf", doc_type="certificate_of_origin",
                                    tenant_id=owner.id); s.commit()
         ok, err = TD.mark_seller_safe(s, doc)                       # refused while quarantined
-        assert ok is False and "scan-cleared" in err
-        TD.scan_clear(s, doc); s.commit()
+        assert ok is False and "quarantine" in err
+        assert TD.publishable_to_seller(doc) is False              # quarantined → never publishable
+        _d, aerr = TD.admin_attest(s, doc); s.commit()
+        assert aerr == "" and doc.quarantine == "admin_attested"   # honest state — NOT "scanned"
+        # the honest label never claims a malware scan
+        label, detail = TD.scan_status(doc)
+        assert label == "Admin-attested" and "scan" not in label.lower() and "NOT malware-scanned" in detail
+        ok2, _ = TD.mark_seller_safe(s, doc); s.commit()           # attestation is enough when no AV configured
+        assert ok2 and doc.seller_safe is True and TD.publishable_to_seller(doc) is True
+
+
+def test_attested_is_never_labelled_scanned_or_malware_free(ops_engine, tmp_path):
+    with Session(ops_engine) as s:
+        owner = _seller(s)
+        doc, _ = TD.store_document(s, files_dir=tmp_path, data=b"%PDF-1.4", original_filename="x.pdf",
+                                   content_type="application/pdf", doc_type="other", tenant_id=owner.id)
+        s.commit()
+        TD.admin_attest(s, doc); s.commit()
+        label, detail = TD.scan_status(doc)
+        blob = (label + " " + detail).lower()
+        assert "scanned" not in label.lower() and "malware-free" not in blob
+
+
+def test_configured_scanner_gates_seller_release(ops_engine, tmp_path, monkeypatch):
+    monkeypatch.setenv("OPS_MALWARE_SCANNER", "clamav")            # a real scanner is configured
+    with Session(ops_engine) as s:
+        owner = _seller(s)
+        doc, _ = TD.store_document(s, files_dir=tmp_path, data=b"%PDF-1.4", original_filename="c.pdf",
+                                   content_type="application/pdf", doc_type="commercial_invoice",
+                                   tenant_id=owner.id); s.commit()
+        TD.admin_attest(s, doc); s.commit()
+        ok, err = TD.mark_seller_safe(s, doc)                       # attestation alone is NOT enough now
+        assert ok is False and "scanned clean" in err
+        TD.record_scan(s, doc, clean=True, actor=owner, provider="clamav"); s.commit()
+        assert doc.quarantine == "scanned_clean"
         ok2, _ = TD.mark_seller_safe(s, doc); s.commit()
         assert ok2 and doc.seller_safe is True
+        # an infected verdict blocks + force-unpublishes
+        TD.record_scan(s, doc, clean=False, actor=owner); s.commit()
+        assert doc.quarantine == "infected" and doc.seller_safe is False
+        assert TD.publishable_to_seller(doc) is False
 
 
 def test_requirement_and_upload_link(ops_engine, tmp_path):

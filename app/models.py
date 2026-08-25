@@ -1571,7 +1571,9 @@ class TradeDocument(SQLModel, table=True):
     content_type: str = ""
     size_bytes: int = 0
     sha256: str = ""
-    quarantine: str = "quarantined"  # quarantined | scanned
+    # quarantined | admin_attested (human review, NOT a malware scan) | scanned_clean | infected. 'admin_attested'
+    # is never displayed as "scanned"/"malware-free"; quarantined/infected docs are never publishable.
+    quarantine: str = "quarantined"
     status: str = "active"         # active | archived
     seller_safe: bool = False      # admin-confirmed no-PII → publishable to the owning seller
     uploaded_by: Optional[int] = Field(default=None, foreign_key="user.id")

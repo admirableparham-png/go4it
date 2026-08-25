@@ -4268,6 +4268,7 @@ def operations_documentation(request: Request, status: str = "", doc_type: str =
                            .order_by(TradeDocument.id.desc()).limit(50)).all()
     return templates.TemplateResponse("operations_documentation.html", {
         "request": request, "user": user, "reqs": reqs, "docs": docs, "doc_types": TDOCS.DOC_TYPES,
+        "av_configured": TDOCS.av_configured(), "scan_status": TDOCS.scan_status,
         "total": total, "page": page, "pages": pages, "f": {"status": status, "doc_type": doc_type}})
 
 
@@ -4313,8 +4314,10 @@ async def operations_upload_document(request: Request, doc_type: str = Form(""),
     return RedirectResponse("/operations/documentation", status_code=303)
 
 
-@app.post("/operations/documents/{doc_id}/scan-clear")
-def operations_scan_clear(request: Request, doc_id: int):
+@app.post("/operations/documents/{doc_id}/attest")
+def operations_attest_document(request: Request, doc_id: int):
+    """Admin ATTESTATION (human review) — releases a document from quarantine. This is NOT a malware scan and is
+    never presented as one; a real AV scan uses a configured provider (tradedocs.record_scan)."""
     with Session(engine) as session:
         user, deny = _ops_admin(request, session)
         if deny:
@@ -4322,8 +4325,10 @@ def operations_scan_clear(request: Request, doc_id: int):
         doc = session.get(TradeDocument, doc_id)
         if not doc:
             return _not_found()
-        TDOCS.scan_clear(session, doc, actor=user)
+        _doc, err = TDOCS.admin_attest(session, doc, actor=user)
         session.commit()
+        if err:
+            return HTMLResponse(f"Cannot attest: {err}", 400)
     return RedirectResponse("/operations/documentation", status_code=303)
 
 

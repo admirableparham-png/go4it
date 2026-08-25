@@ -5,6 +5,11 @@ on-disk filename, sha256, quarantine-by-default, archive-not-delete, admin-downl
 document is linked to the seller's own request/op, quarantined, and can never become buyer-facing automatically.
 An admin document reaches a seller ONLY after being marked seller_safe and published through the owner-scoped
 RequestDeliverable mechanism. Buyer identity/documents never leak to a seller.
+
+Malware status is HONEST: a quarantined document is released either by admin ATTESTATION (human review — never
+labelled "scanned"/"malware-free") or by a CONFIGURED anti-virus scanner (scanned_clean/infected). Quarantined
+or infected documents are never publishable or reused, and when a real scanner is configured, seller-facing
+release requires a clean scan, not attestation alone.
 """
 import os
 import re
@@ -17,6 +22,43 @@ from .pipeline import audit, sanitize_scan
 DOC_TYPES = ("commercial_invoice", "packing_list", "certificate_of_origin", "inspection_certificate",
              "insurance_certificate", "export_declaration", "import_declaration", "bill_of_lading",
              "airway_bill", "cmr", "customs_document", "proof_of_delivery", "other")
+
+# --- malware / quarantine status — HONEST by construction -----------------------------------------
+# A document is 'quarantined' on upload. It leaves quarantine one of two ways, which are NEVER conflated:
+#   * 'admin_attested' — a human admin visually reviewed it. This is NOT a malware scan and must never be
+#     displayed as "scanned" or "malware-free".
+#   * 'scanned_clean' / 'infected' — the verdict of a CONFIGURED anti-virus scanner (record_scan()).
+# 'quarantined' and 'infected' documents can never be marked seller-safe, published, or reused.
+QUARANTINE_DEFAULT = "quarantined"
+RELEASED_STATES = ("admin_attested", "scanned_clean")   # out of quarantine (still not necessarily seller-safe)
+
+_SCAN_STATUS = {
+    "quarantined": ("Quarantined", "Not yet reviewed — quarantined."),
+    "admin_attested": ("Admin-attested", "Reviewed by an admin. NOT malware-scanned (no AV configured)."),
+    "scanned_clean": ("Scanned clean", "Cleared by the configured malware scanner."),
+    "infected": ("Infected", "Flagged by the malware scanner — blocked."),
+}
+
+
+def av_configured() -> bool:
+    """True only when a real anti-virus scanner is wired in (env OPS_MALWARE_SCANNER). Until then documents are
+    admin-attested only, never claimed as scanned."""
+    return bool(os.environ.get("OPS_MALWARE_SCANNER", "").strip())
+
+
+def scan_status(doc: TradeDocument):
+    """(label, detail) — an HONEST status. Admin attestation is never labelled as a malware scan."""
+    return _SCAN_STATUS.get(doc.quarantine, ("Unknown", ""))
+
+
+def is_released(doc: TradeDocument) -> bool:
+    return doc.quarantine in RELEASED_STATES
+
+
+def publishable_to_seller(doc: TradeDocument) -> bool:
+    """A document may reach a seller ONLY if it is active, released from quarantine, and admin-confirmed
+    seller-safe. A quarantined/infected document is never publishable or reusable."""
+    return bool(doc.seller_safe and doc.status == "active" and is_released(doc))
 
 
 def _safe_name(name: str) -> str:
@@ -101,28 +143,56 @@ def _uploaded_review_task(session, doc, requirement):
         pass
 
 
-def scan_clear(session, doc: TradeDocument, *, actor=None):
-    """Admin attestation that the quarantined document is clean (a real AV scanner slots in here later)."""
-    doc.quarantine = "scanned"
+def admin_attest(session, doc: TradeDocument, *, actor=None):
+    """A human admin attests they reviewed the document. This releases it from quarantine but is NOT a malware
+    scan — it is recorded and displayed as 'admin_attested', never as 'scanned' or 'malware-free'. An infected
+    document (if a scanner ran) cannot be attested away."""
+    if doc.quarantine == "infected":
+        return None, "document was flagged infected by the scanner — it cannot be attested"
+    doc.quarantine = "admin_attested"
     session.add(doc)
     try:
         from . import work_queue as WQ
-        WQ.resolve_by_key(session, f"uploaded_document_needs_review:doc:{doc.id}", note="scan cleared",
+        WQ.resolve_by_key(session, f"uploaded_document_needs_review:doc:{doc.id}", note="admin-attested",
                           actor=actor)
     except Exception:  # noqa: BLE001
         pass
-    audit(session, actor, "trade_document", doc.id, "document_scan_clear", {}, tenant_id=doc.tenant_id)
+    audit(session, actor, "trade_document", doc.id, "document_admin_attested",
+          {"note": "admin review only — not an AV scan"}, tenant_id=doc.tenant_id)
+    return doc, ""
+
+
+def record_scan(session, doc: TradeDocument, *, clean: bool, actor=None, provider=""):
+    """Record the verdict of a CONFIGURED anti-virus scanner. clean → 'scanned_clean'; otherwise 'infected'
+    (and the document is force-unpublished). This is the only path that may claim a document is scanned."""
+    doc.quarantine = "scanned_clean" if clean else "infected"
+    if not clean:
+        doc.seller_safe = False
+    session.add(doc)
+    try:
+        from . import work_queue as WQ
+        WQ.resolve_by_key(session, f"uploaded_document_needs_review:doc:{doc.id}",
+                          note=f"scan: {'clean' if clean else 'INFECTED'}", actor=actor)
+    except Exception:  # noqa: BLE001
+        pass
+    audit(session, actor, "trade_document", doc.id, "document_scanned",
+          {"clean": clean, "provider": provider}, tenant_id=doc.tenant_id)
     return doc
 
 
 def mark_seller_safe(session, doc: TradeDocument, *, actor=None):
     """Admin confirms the document carries NO buyer/provider PII → it may be published to the owning seller.
-    Refused while still quarantined."""
-    if doc.quarantine != "scanned":
-        return False, "document must be scan-cleared before it can be marked seller-safe"
+    Refused while quarantined/infected. When a real AV scanner IS configured, admin attestation alone is not
+    enough — the document must be 'scanned_clean' before it can go to a seller (real scanning gates production
+    seller-facing exchange)."""
+    if not is_released(doc):
+        return False, "document must be released from quarantine (admin-attested or scanned clean) first"
+    if av_configured() and doc.quarantine != "scanned_clean":
+        return False, "a malware scanner is configured — the document must be scanned clean before seller release"
     doc.seller_safe = True
     session.add(doc)
-    audit(session, actor, "trade_document", doc.id, "document_seller_safe", {}, tenant_id=doc.tenant_id)
+    audit(session, actor, "trade_document", doc.id, "document_seller_safe",
+          {"basis": doc.quarantine}, tenant_id=doc.tenant_id)
     return True, ""
 
 

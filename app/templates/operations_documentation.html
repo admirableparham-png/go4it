@@ -53,21 +53,27 @@
   </div>
 {% else %}<div class="empty mb-8">No document requirements yet.</div>{% endif %}
 
-<div class="eyebrow mb-2">Stored documents</div>
+<div class="flex items-center justify-between mb-2">
+  <div class="eyebrow">Stored documents</div>
+  {% if not av_configured %}
+    <span class="text-[11px] px-2 py-1 rounded-full" style="background:rgba(251,191,36,.14); color:#fcd34d; border:1px solid rgba(251,191,36,.3)">Malware scanning: <b>not configured</b> — documents are admin-attested only, never scanned</span>
+  {% endif %}
+</div>
 {% if docs %}
   <div class="table-wrap">
     <table class="data-table">
-      <thead><tr><th>Type</th><th>File</th><th>Quarantine</th><th>Seller-safe</th><th></th></tr></thead>
+      <thead><tr><th>Type</th><th>File</th><th>Status</th><th>Seller-safe</th><th></th></tr></thead>
       <tbody>
         {% for d in docs %}
+          {% set st = scan_status(d) %}
           <tr>
             <td class="text-slate-200">{{ d.doc_type.replace('_',' ') }}</td>
             <td class="text-slate-400">{{ d.original_filename }}</td>
-            <td><span class="badge {{ 'badge-emerald' if d.quarantine == 'scanned' else 'badge-amber' }}">{{ d.quarantine }}</span></td>
+            <td><span class="badge {{ 'badge-emerald' if d.quarantine == 'scanned_clean' else 'badge-rose' if d.quarantine == 'infected' else 'badge-sky' if d.quarantine == 'admin_attested' else 'badge-amber' }}" title="{{ st[1] }}">{{ st[0] }}</span></td>
             <td>{{ 'yes' if d.seller_safe else '—' }}</td>
             <td class="flex gap-2">
               <a href="/operations/documents/{{ d.id }}/download" class="link text-sm">Download</a>
-              {% if d.quarantine != 'scanned' %}<form method="post" action="/operations/documents/{{ d.id }}/scan-clear"><button class="btn btn-sm">Scan-clear</button></form>{% endif %}
+              {% if d.quarantine == 'quarantined' %}<form method="post" action="/operations/documents/{{ d.id }}/attest"><button class="btn btn-sm" title="Human review only — NOT a malware scan">Admin-attest</button></form>{% endif %}
             </td>
           </tr>
         {% endfor %}
