@@ -87,6 +87,10 @@ from . import demand as INTEL_DEMAND
 from . import opportunities as INTEL_OPP
 from . import alerts as INTEL_ALERTS
 from . import reports as INTEL_REPORTS
+from . import ai_command as AICMD
+from . import ai_provider as AIPROV
+from . import ai_tools as AITOOLS
+from .models import (AIActionProposal, AICitation, AIConversation, AIMessage, AutomationRule)
 from .models import (AnalyticsReport, AnalyticsSnapshot, DemandSignal, IntelAlert, Opportunity,
                      OpportunityMatch, OpportunitySignal)
 from .models import (CustomsCase, DocumentRequirement, FreightOffer, FreightRequest, OperationCase,
@@ -1630,15 +1634,97 @@ def research_scan(request: Request, reporter: str = Form(...), sources: str = Fo
 # ----------------------------------------------------------------------------- command box
 
 @app.get("/command", response_class=HTMLResponse)
-def command_page(request: Request):
-    """The dashboard command box: type what to find, it harvests real buyers into leads."""
+def command_page(request: Request, c: int = 0):
+    """The AI Command copilot: an evidence-based admin assistant over Go4it data. Admin-only. The legacy buyer-
+    harvest box remains available (a collapsible affordance) and its routes are unchanged."""
     with Session(engine) as session:
         user = current_user(request, session)
-        if not is_admin(user):          # buyer search is the founder's moat — admin only
+        if not is_admin(user):          # the copilot is the founder's moat — admin only
             return _forbidden()
-        jobs = session.exec(select(CommandJob).order_by(CommandJob.id.desc()).limit(25)).all()
-    ctx = {"request": request, "user": user, "active": "command", "jobs": jobs, "can_run": True}
+        convos = session.exec(select(AIConversation).where(
+            AIConversation.owner_id == user.id, AIConversation.status == "active")
+            .order_by(AIConversation.updated_at.desc()).limit(30)).all()
+        active = session.get(AIConversation, c) if c else (convos[0] if convos else None)
+        if active and active.owner_id != user.id:        # cross-admin ownership guard
+            return _not_found()
+        messages, proposals = [], []
+        if active:
+            msgs = session.exec(select(AIMessage).where(AIMessage.conversation_id == active.id)
+                                .order_by(AIMessage.id.asc())).all()
+            for m in msgs:
+                cites = session.exec(select(AICitation).where(AICitation.message_id == m.id)).all()
+                messages.append({"m": m, "text": AICMD.message_text(m), "citations": cites})
+            proposals = session.exec(select(AIActionProposal).where(
+                AIActionProposal.conversation_id == active.id,
+                AIActionProposal.status == "proposed").order_by(AIActionProposal.id.desc())).all()
+        jobs = session.exec(select(CommandJob).order_by(CommandJob.id.desc()).limit(10)).all()
+    ctx = {"request": request, "user": user, "active": "command", "convos": convos, "conv": active,
+           "messages": messages, "proposals": proposals, "suggested": AICMD.SUGGESTED,
+           "provider": AIPROV.provider_status(), "jobs": jobs}
     return templates.TemplateResponse("command.html", ctx)
+
+
+@app.post("/command/ask", response_class=HTMLResponse)
+def command_ask(request: Request, prompt: str = Form(""), conversation_id: str = Form("")):
+    """Ask the copilot. Creates/continues a conversation, runs the deterministic (or provider) answer, and
+    returns the rendered turn. Never mutates business data."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return HTMLResponse("Forbidden", status_code=403)
+        prompt = (prompt or "").strip()
+        if not prompt:
+            return HTMLResponse("", status_code=204)
+        conv = session.get(AIConversation, int(conversation_id)) if conversation_id.strip() else None
+        if conv and conv.owner_id != user.id:
+            return _not_found()
+        if not conv:
+            conv = AICMD.new_conversation(session, user)
+        res = AICMD.answer(session, conv, prompt, user)
+        session.commit()
+        cid = conv.id
+    # re-render the full conversation area (HTMX swaps it in)
+    return RedirectResponse(f"/command?c={cid}", status_code=303)
+
+
+@app.post("/command/conversations/{conv_id}/rename")
+def command_rename(request: Request, conv_id: int, title: str = Form("")):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        conv = session.get(AIConversation, conv_id)
+        if not conv or conv.owner_id != user.id:
+            return _not_found()
+        conv.title = (title or conv.title).strip()[:80]
+        conv.updated_at = datetime.utcnow()
+        session.add(conv); session.commit()
+    return RedirectResponse(f"/command?c={conv_id}", status_code=303)
+
+
+@app.post("/command/conversations/{conv_id}/archive")
+def command_archive(request: Request, conv_id: int):
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        conv = session.get(AIConversation, conv_id)
+        if not conv or conv.owner_id != user.id:
+            return _not_found()
+        conv.status = "archived"
+        conv.archived_at = datetime.utcnow()
+        session.add(conv); session.commit()
+    return RedirectResponse("/command", status_code=303)
+
+
+@app.post("/command/pause-all")
+def command_pause_all(request: Request, paused: str = Form("1")):
+    """Emergency Pause-All for AI provider work (deterministic answers still available)."""
+    with Session(engine) as session:
+        if not is_admin(current_user(request, session)):
+            return _forbidden()
+    AIPROV.pause_all(paused == "1")
+    return RedirectResponse("/command", status_code=303)
 
 
 @app.post("/command/run", response_class=HTMLResponse)

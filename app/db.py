@@ -35,6 +35,7 @@ def init_db() -> None:
     _ensure_commercial_indexes()
     _ensure_operations_indexes()
     _ensure_intelligence_indexes()
+    _ensure_ai_indexes()
 
 
 def _ensure_trade_network_indexes() -> None:
@@ -174,6 +175,27 @@ def _ensure_intelligence_indexes() -> None:
                               "ON demandsignal(dedup_key) WHERE dedup_key != ''"))
             conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_intelalert_key "
                               "ON intelalert(alert_key, condition_version) WHERE alert_key != ''"))
+            conn.commit()
+    except Exception:  # noqa: BLE001 — never block startup on the guard
+        pass
+
+
+def _ensure_ai_indexes() -> None:
+    """AI Command (Phase 9) DB-level guards (idempotent, never block boot):
+    (a) one active proposal per idempotency_key (partial-unique) so a repeated approval/creation can't run
+        twice; (b) unique prompt version; (c) one automation run per (rule, condition_version) so an unchanged
+        condition never fires a duplicate."""
+    if not _is_sqlite:
+        return
+    try:
+        with engine.connect() as conn:
+            from sqlalchemy import text
+            conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_aiproposal_idem "
+                              "ON aiactionproposal(idempotency_key) WHERE idempotency_key != ''"))
+            conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_aipromptversion "
+                              "ON aipromptversion(version) WHERE version != ''"))
+            conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_automationrun_key "
+                              "ON automationrun(rule_id, condition_version) WHERE condition_version != ''"))
             conn.commit()
     except Exception:  # noqa: BLE001 — never block startup on the guard
         pass

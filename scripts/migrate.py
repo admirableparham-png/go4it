@@ -176,6 +176,11 @@ MIGRATIONS = [
     ("demandsignal", "commercial_event_key", "VARCHAR DEFAULT ''"),
     ("demandsignal", "backfilled", "BOOLEAN DEFAULT 0"),
     ("demandsignal", "history_complete", "BOOLEAN DEFAULT 1"),
+    # AI Command (Phase 9) — additive WorkItem linkage columns. New Phase-9 tables are made by create_all +
+    # scripts/migrate_gate_p9.py.
+    ("workitem", "related_conversation_id", "INTEGER"),
+    ("workitem", "related_proposal_id", "INTEGER"),
+    ("workitem", "related_automation_id", "INTEGER"),
 ]
 
 

@@ -656,6 +656,9 @@ class WorkItem(SQLModel, table=True):
     related_exception_id: Optional[int] = Field(default=None, foreign_key="operationalexception.id") # Phase 7
     related_opportunity_id: Optional[int] = Field(default=None, foreign_key="opportunity.id")        # Phase 8
     related_alert_id: Optional[int] = Field(default=None, foreign_key="intelalert.id")               # Phase 8
+    related_conversation_id: Optional[int] = Field(default=None, foreign_key="aiconversation.id")    # Phase 9
+    related_proposal_id: Optional[int] = Field(default=None, foreign_key="aiactionproposal.id")      # Phase 9
+    related_automation_id: Optional[int] = Field(default=None, foreign_key="automationrule.id")      # Phase 9
     parent_id: Optional[int] = Field(default=None, foreign_key="workitem.id")
     idempotency_key: str = Field(default="", index=True)   # de-dups automatic items (partial-unique over OPEN)
     condition_version: str = ""    # identifies the underlying-condition INSTANCE+version; once a task for a
@@ -1921,3 +1924,197 @@ class AnalyticsReport(SQLModel, table=True):
     tenant_id: Optional[int] = Field(default=None, foreign_key="user.id")
     generated_by: Optional[int] = Field(default=None, foreign_key="user.id")
     generated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+# ============================================================================
+# AI Command (Phase 9) — an ADMIN-ONLY AI copilot over the Go4it data. STRICTLY
+# ADDITIVE. Conversations are tenant/owner-scoped and never seller-accessible.
+# Message content is ENCRYPTED at rest with a DEDICATED key (AI_DATA_ENCRYPTION_
+# KEYS — never SECRET_KEY / credential keys). The AI is evidence-based (every
+# material claim cites a record), permission-controlled and CANNOT send outreach
+# or change critical state without an explicit, revalidated runtime approval. No
+# provider credentials, banking passwords, private keys or seeds are ever stored
+# here. Retrieved content (docs, replies, tool output) is untrusted evidence,
+# never instructions.
+# ============================================================================
+
+
+class AIPromptVersion(SQLModel, table=True):
+    """A VERSIONED trusted system-instruction record. Exactly one is active; changes are audited and covered by
+    the evaluation suite. The content establishes role/permissions, confidentiality, evidence requirements and
+    tool restrictions — retrieved content can never override it."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    version: str = Field(default="", index=True)   # e.g. "p1"
+    checksum: str = ""             # sha256 of content
+    purpose: str = ""
+    content: str = ""              # the trusted system prompt (no secrets)
+    active: bool = False
+    change_note: str = ""
+    created_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class AIConversation(SQLModel, table=True):
+    """An admin AI-copilot conversation. tenant_id = the seller it concerns (NULL = platform/global); owner_id =
+    the admin who owns it. Never seller-accessible. Cross-admin access is owner-scoped where required."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    owner_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    title: str = "New conversation"
+    status: str = "active"         # active | archived
+    imported: bool = False         # True = backfill-seeded from a historical CommandJob (never re-executed)
+    sensitivity: str = "normal"    # normal | sensitive (contains buyer/commercial detail)
+    archived_at: Optional[datetime] = None
+    retention_at: Optional[datetime] = None   # optional configured retention cutoff
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class AIMessage(SQLModel, table=True):
+    """One turn in a conversation. `content_enc` is ENCRYPTED at rest (AI_DATA_ENCRYPTION_KEYS). Secrets are
+    redacted BEFORE encryption; no raw credential/key/seed/password is ever persisted, and no message content is
+    written to application logs."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    conversation_id: int = Field(foreign_key="aiconversation.id", index=True)
+    role: str = "user"             # user | assistant | tool | system
+    content_enc: str = ""          # ciphertext (Fernet token); "" for empty
+    status: str = "complete"       # pending | running | complete | failed | cancelled
+    partial: bool = False          # True = a labelled partial response
+    prompt_version: str = ""
+    provider: str = ""             # "" when answered deterministically (no LLM)
+    model: str = ""
+    sensitivity: str = "normal"
+    citation_count: int = 0
+    tool_count: int = 0
+    error: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    completed_at: Optional[datetime] = None
+
+
+class AICitation(SQLModel, table=True):
+    """Evidence for a material claim in a message. A safe record reference + provenance/freshness; an authorized
+    internal link only. Never a fabricated company/price/stat."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    message_id: int = Field(foreign_key="aimessage.id", index=True)
+    conversation_id: int = Field(foreign_key="aiconversation.id")
+    record_type: str = ""          # metric | quote | deal | opportunity | demand_signal | source | ...
+    record_ref: str = ""           # safe reference (e.g. "OPP-202608-0001", "metric:positive_replies")
+    record_id: Optional[int] = None
+    record_at: Optional[datetime] = None
+    source: str = ""
+    freshness: str = ""            # Current | Aging | Stale | Unknown | Not configured
+    provenance_class: str = ""     # observed | verified | derived | inferred
+    link: str = ""                 # authorized internal link ("" when not linkable)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class AIToolInvocation(SQLModel, table=True):
+    """An audited record of a tool call. Summaries only — never full sensitive payloads/credentials in logs."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    conversation_id: int = Field(foreign_key="aiconversation.id", index=True)
+    message_id: Optional[int] = Field(default=None, foreign_key="aimessage.id")
+    tool_name: str = ""
+    risk_level: str = "read_only"
+    params_summary: str = ""       # redacted/short — no secrets
+    status: str = "ok"             # ok | error | denied
+    result_summary: str = ""       # short — no full private payloads
+    duration_ms: int = 0
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class AIActionProposal(SQLModel, table=True):
+    """A PROPOSED material change the AI prepared but must NOT execute without explicit admin approval. Approval
+    revalidates authz/target/tenant/freshness, compares payload_hash (rejects stale), executes idempotently via
+    an existing domain service, and is fully audited. The AI never replays free-form text — only this validated
+    structured payload runs."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    conversation_id: int = Field(foreign_key="aiconversation.id", index=True)
+    message_id: Optional[int] = Field(default=None, foreign_key="aimessage.id")
+    action_type: str = ""          # create_work_item | assign_owner | start_research | create_draft_* | ...
+    target_summary: str = ""       # human-readable target (safe)
+    payload: str = ""              # validated JSON structured payload (no secrets)
+    payload_hash: str = Field(default="", index=True)   # sha256 of the canonical payload (staleness guard)
+    reason: str = ""
+    risk_level: str = "internal_reversible"  # read_only|draft|internal_reversible|external_comm|commercial|prohibited
+    requires_approval: bool = True
+    status: str = "proposed"       # proposed | approved | declined | executed | expired | failed
+    approval_nonce: str = ""       # server-side one-time approval token (constant-time compared)
+    idempotency_key: str = Field(default="", index=True)
+    expires_at: Optional[datetime] = None
+    proposed_by: str = ""          # "" (deterministic) or provider/model
+    approved_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    executed_at: Optional[datetime] = None
+    result: str = ""
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class AIUsageRecord(SQLModel, table=True):
+    """Per-response usage/cost for budgets + telemetry. Never stores full sensitive prompts."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    conversation_id: Optional[int] = Field(default=None, foreign_key="aiconversation.id", index=True)
+    message_id: Optional[int] = Field(default=None, foreign_key="aimessage.id")
+    provider: str = ""
+    model: str = ""
+    input_tokens: int = 0
+    output_tokens: int = 0
+    latency_ms: int = 0
+    tool_calls: int = 0
+    est_cost: str = "0"            # Decimal-as-text (USD)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    owner_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    success: bool = True
+    cache_hit: bool = False
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class AutomationRule(SQLModel, table=True):
+    """A DETERMINISTIC safe-automation rule. AI may RECOMMEND rules (as proposals) but never secretly creates
+    them. Actions are limited to internal, reversible outputs — automation NEVER sends email, starts campaigns,
+    issues quotes/contracts, advances Deals, moves funds or publishes without existing safe approval."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    owner_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    name: str = ""
+    trigger_type: str = ""         # work_queue_overdue | source_stale | new_opportunity | demand_no_supply | ...
+    conditions: str = ""           # JSON
+    action_type: str = ""          # create_work_item | create_alert | draft_report | draft_summary | assign_review
+    action_params: str = ""        # JSON
+    enabled: bool = True
+    cadence: str = "event"         # event | daily | weekly | monthly
+    schedule_tz: str = "UTC"
+    condition_version: str = ""
+    max_frequency_hours: int = 24  # never fire more often than this per condition instance
+    last_run: Optional[datetime] = None
+    next_run: Optional[datetime] = None
+    failure_count: int = 0
+    created_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    updated_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class AutomationRun(SQLModel, table=True):
+    """A single (idempotent, bounded) automation-rule execution. dry_run previews without side effects."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    rule_id: int = Field(foreign_key="automationrule.id", index=True)
+    status: str = "ok"             # ok | failed | skipped | dry_run
+    condition_version: str = ""
+    output_summary: str = ""
+    related_workitem_id: Optional[int] = Field(default=None, foreign_key="workitem.id")
+    error: str = ""
+    started_at: datetime = Field(default_factory=datetime.utcnow)
+    finished_at: Optional[datetime] = None
+
+
+class AIEvaluationResult(SQLModel, table=True):
+    """A durable evaluation-suite result (deterministic; no live provider). Prompt/model changes re-run the
+    suite; a regression raises a Work Queue item."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    suite_version: str = ""
+    scenario: str = Field(default="", index=True)
+    passed: bool = True
+    detail: str = ""
+    prompt_version: str = ""
+    model: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)

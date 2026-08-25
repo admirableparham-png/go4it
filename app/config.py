@@ -149,3 +149,27 @@ OPP_SCORE_WEIGHTS = {
     "feasibility": float(os.getenv("OPP_W_FEASIBILITY", "8")),
     "missing_data_penalty": float(os.getenv("OPP_W_MISSING_PENALTY", "20")),   # subtracted, not added
 }
+
+# --- AI Command (Phase 9) — provider-neutral copilot config ------------------------------------------
+# No API key ever lives in source. Credentials come from the environment / a secret manager. The copilot works
+# DETERMINISTICALLY (internal search + metric lookup + citations + proposals) even with NO provider configured;
+# an LLM provider is an OPTIONAL orchestration/phrasing layer. A paid/live provider is NEVER called in tests.
+AI_PROVIDER = os.getenv("AI_PROVIDER", "").strip().lower()          # "" | mock | anthropic | openai
+AI_MODEL = os.getenv("AI_MODEL", "").strip()
+AI_API_KEY = os.getenv("AI_API_KEY", "").strip()                    # read only; NEVER rendered or logged
+AI_API_BASE = os.getenv("AI_API_BASE", "").strip()                 # optional custom endpoint (no invented ones)
+AI_MODEL_ALLOWLIST = [m.strip() for m in os.getenv("AI_MODEL_ALLOWLIST", "").split(",") if m.strip()]
+AI_ENABLED = os.getenv("AI_ENABLED", "false").strip().lower() == "true"
+AI_TIMEOUT_S = float(os.getenv("AI_TIMEOUT_S", "30"))
+AI_MAX_OUTPUT_TOKENS = int(os.getenv("AI_MAX_OUTPUT_TOKENS", "1500"))
+AI_MAX_TOOL_STEPS = int(os.getenv("AI_MAX_TOOL_STEPS", "6"))
+AI_MAX_RETRIES = int(os.getenv("AI_MAX_RETRIES", "1"))              # read/draft work only — never retry a write
+AI_DAILY_TOKEN_LIMIT = int(os.getenv("AI_DAILY_TOKEN_LIMIT", "500000"))     # per-admin/day
+AI_CONVERSATION_TOKEN_LIMIT = int(os.getenv("AI_CONVERSATION_TOKEN_LIMIT", "80000"))
+AI_TENANT_DAILY_BUDGET_USD = float(os.getenv("AI_TENANT_DAILY_BUDGET_USD", "10"))
+AI_CONCURRENCY = int(os.getenv("AI_CONCURRENCY", "4"))
+# A dedicated, rotating key set for encrypting AI conversation content at rest — kept SEPARATE from SECRET_KEY
+# and CREDENTIAL_ENCRYPTION_KEYS. keys[0] encrypts; the rest are decrypt-only rotation fallbacks.
+AI_DATA_ENCRYPTION_KEYS = [k.strip() for k in os.getenv("AI_DATA_ENCRYPTION_KEYS", "").split(",") if k.strip()]
+# Live-provider allowlist — only these admin emails may use a REAL provider (the live canary gate).
+AI_LIVE_ALLOWLIST = [e.strip().lower() for e in os.getenv("AI_LIVE_ALLOWLIST", "").split(",") if e.strip()]

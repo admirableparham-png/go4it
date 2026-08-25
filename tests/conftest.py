@@ -16,6 +16,18 @@ def _disable_outreach_smtp(monkeypatch):
 
 
 @pytest.fixture(autouse=True)
+def _ai_provider_off(monkeypatch):
+    """Force the AI provider OFF for every test — a paid/live model is NEVER called in the suite. Tests that
+    want the deterministic mock provider set app.config.AI_PROVIDER='mock' explicitly."""
+    import app.config
+    monkeypatch.setattr(app.config, "AI_PROVIDER", "", raising=False)
+    monkeypatch.setattr(app.config, "AI_ENABLED", False, raising=False)
+    monkeypatch.setattr(app.config, "AI_API_KEY", "", raising=False)
+    import app.ai_provider
+    app.ai_provider.pause_all(False)
+
+
+@pytest.fixture(autouse=True)
 def _disable_telegram(monkeypatch):
     """Neutralize the Telegram bot in tests. send_message() (the single choke point every notify_*
     routes through) is a no-op when the token is blank — so blanking it here kills ALL alerts, however
@@ -41,6 +53,12 @@ _OPS_INDEXES = (
     "CREATE UNIQUE INDEX IF NOT EXISTS uq_demandsignal_dedup ON demandsignal(dedup_key) WHERE dedup_key != ''",
     "CREATE UNIQUE INDEX IF NOT EXISTS uq_intelalert_key ON intelalert(alert_key, condition_version) "
     "WHERE alert_key != ''",
+    # Phase 9 AI-command guards
+    "CREATE UNIQUE INDEX IF NOT EXISTS uq_aiproposal_idem ON aiactionproposal(idempotency_key) "
+    "WHERE idempotency_key != ''",
+    "CREATE UNIQUE INDEX IF NOT EXISTS uq_aipromptversion ON aipromptversion(version) WHERE version != ''",
+    "CREATE UNIQUE INDEX IF NOT EXISTS uq_automationrun_key ON automationrun(rule_id, condition_version) "
+    "WHERE condition_version != ''",
 )
 
 

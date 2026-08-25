@@ -1,44 +1,99 @@
 {% extends "base.html" %}
 {% set active = 'command' %}
 {% block content %}
-
-<div class="flex items-end justify-between mb-1">
-  <h2 class="text-xl font-bold tracking-tight">&#9889; Command &mdash; tell it what to find</h2>
-  <span id="cmdspin" class="htmx-indicator text-xs text-sky-400">dispatching&hellip;</span>
-</div>
-<p class="text-slate-500 text-sm mb-4">
-  Type what you want in plain words &mdash; the system goes and harvests real businesses into your Leads.
-  <b>UAE</b> uses the phone-rich trade directory; <b>Georgia, Qatar, Turkey, the Gulf</b> and more come
-  from OpenStreetMap. Pair it with <a href="/research" class="text-sky-400 hover:underline">Research</a>
-  to see which market is worth chasing first.
-</p>
-
-{% if can_run %}
-<form hx-post="/command/run" hx-target="#jobs" hx-swap="afterbegin"
-      hx-indicator="#cmdspin" hx-disabled-elt="find button"
-      hx-on::after-request="this.reset()" class="mb-3">
-  <div class="flex gap-2">
-    <input id="cmd" name="prompt" autocomplete="off" required
-           placeholder="e.g. find hotel suppliers in UAE"
-           class="input flex-1">
-    <button class="btn btn-primary px-6">Run</button>
+<div class="flex items-end justify-between mb-4">
+  <div>
+    <div class="eyebrow mb-1">Intelligence</div>
+    <h2 class="text-2xl font-extrabold tracking-tight font-display">Command <span class="text-slate-500 font-normal text-base">· AI copilot</span></h2>
+    <p class="text-slate-400 text-sm mt-1">Evidence-based, admin-only. Every figure links to its source. The copilot proposes actions — it never sends, publishes or changes critical state without your approval.</p>
   </div>
-</form>
-<div class="flex flex-wrap gap-1.5 mb-8 text-[11px]">
-  <span class="text-slate-600">try:</span>
-  {% for ex in ["hotel suppliers in UAE", "perfume buyers in UAE", "furniture shops in Georgia", "hardware in Turkey", "tile shops in Qatar", "supermarkets in Kuwait"] %}
-    <button type="button" onclick="document.getElementById('cmd').value=this.textContent.trim();document.getElementById('cmd').focus()"
-            class="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded px-2 py-0.5 text-slate-300">{{ ex }}</button>
-  {% endfor %}
-</div>
-{% else %}
-<div class="alert-amber mb-6">Agent role or higher is required to run commands. You can view past runs below.</div>
-{% endif %}
-
-<h3 class="text-sm font-semibold text-slate-300 mb-2">Recent commands</h3>
-<div id="jobs" class="space-y-2">
-  {% for job in jobs %}{% include 'partials/command_job.html' %}{% endfor %}
-  {% if not jobs %}<p class="text-slate-600 text-sm">No commands run yet. Type one above.</p>{% endif %}
+  <div class="flex items-center gap-2">
+    {% if not provider.configured %}<span class="badge badge-amber" title="Deterministic search + metrics still work">AI provider not configured</span>{% else %}<span class="badge badge-emerald">{{ provider.provider }} · {{ provider.model }}</span>{% endif %}
+    {% if provider.paused %}<span class="badge badge-rose">Paused</span>{% endif %}
+    <form method="post" action="/command/pause-all"><input type="hidden" name="paused" value="{{ '0' if provider.paused else '1' }}"><button class="btn btn-sm" title="Emergency stop for AI provider jobs">{{ 'Resume' if provider.paused else 'Pause all' }}</button></form>
+  </div>
 </div>
 
+<div class="grid md:grid-cols-4 gap-4">
+  <!-- history drawer (in-page, not a global sidebar) -->
+  <aside class="md:col-span-1">
+    <div class="card-soft">
+      <div class="flex items-center justify-between mb-2"><div class="eyebrow">Conversations</div><a href="/command" class="text-xs link">+ New</a></div>
+      <div class="space-y-1 max-h-72 overflow-y-auto">
+        {% for cv in convos %}
+          <a href="/command?c={{ cv.id }}" class="block text-sm truncate rounded px-2 py-1 {{ 'bg-slate-800 text-slate-100' if conv and cv.id == conv.id else 'text-slate-400 hover:bg-slate-800/50' }}" title="{{ cv.title }}">{{ cv.title }}</a>
+        {% else %}<p class="text-slate-600 text-xs">No conversations yet.</p>{% endfor %}
+      </div>
+    </div>
+  </aside>
+
+  <!-- main conversation area -->
+  <section class="md:col-span-3">
+    {% if conv %}
+    <div class="flex items-center justify-between mb-3">
+      <form method="post" action="/command/conversations/{{ conv.id }}/rename" class="flex items-center gap-2">
+        <input name="title" value="{{ conv.title }}" class="input input-sm" style="min-width:16rem"><button class="btn btn-sm">Rename</button>
+      </form>
+      <form method="post" action="/command/conversations/{{ conv.id }}/archive"><button class="btn btn-sm">Archive</button></form>
+    </div>
+    <div class="space-y-3 mb-4">
+      {% for row in messages %}
+        {% set m = row.m %}
+        <div class="card {{ 'bg-slate-900/40' if m.role == 'user' else '' }}">
+          <div class="flex items-center gap-2 mb-1"><span class="eyebrow">{{ 'You' if m.role == 'user' else 'Copilot' }}</span>{% if m.partial %}<span class="badge badge-amber text-[10px]">partial</span>{% endif %}<span class="text-[11px] text-slate-600">{{ m.created_at.strftime('%H:%M') }}</span>{% if m.provider %}<span class="text-[11px] text-slate-600">· {{ m.provider }}/{{ m.model }}</span>{% endif %}</div>
+          <div class="text-slate-200 text-sm whitespace-pre-line">{{ row.text }}</div>
+          {% if row.citations %}
+            <div class="mt-2 flex flex-wrap gap-1.5">
+              {% for c in row.citations %}
+                <span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-800/70 text-slate-300 border border-slate-700" title="{{ c.record_type }} · {{ c.provenance_class }}{% if c.freshness %} · {{ c.freshness }}{% endif %}">
+                  {% if c.link %}<a href="{{ c.link }}" class="link">{{ c.record_ref }}</a>{% else %}{{ c.record_ref }}{% endif %}</span>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if proposals %}
+    <div class="space-y-2 mb-4">
+      {% for p in proposals %}
+        <div class="card" style="border-color:rgba(251,191,36,.35)">
+          <div class="flex items-center justify-between"><div class="font-semibold text-slate-100">Proposed: {{ p.action_type.replace('_',' ') }}</div><span class="badge badge-amber">{{ p.risk_level.replace('_',' ') }}</span></div>
+          <div class="text-slate-300 text-sm mt-1">{{ p.target_summary }}</div>
+          {% if p.reason %}<div class="text-slate-500 text-xs mt-0.5">{{ p.reason }}</div>{% endif %}
+          <div class="flex gap-2 mt-2">
+            <form method="post" action="/command/proposals/{{ p.id }}/approve"><input type="hidden" name="nonce" value="{{ p.approval_nonce }}"><button class="btn btn-sm btn-primary">Approve</button></form>
+            <form method="post" action="/command/proposals/{{ p.id }}/decline"><button class="btn btn-sm">Decline</button></form>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% else %}
+      <div class="card-soft mb-4"><p class="text-slate-400 text-sm">Ask a question about Go4it data. Answers are evidence-based and cite their sources. Start with a suggestion below.</p></div>
+    {% endif %}
+
+    <form method="post" action="/command/ask" class="flex gap-2 mb-3">
+      {% if conv %}<input type="hidden" name="conversation_id" value="{{ conv.id }}">{% endif %}
+      <input name="prompt" placeholder="Ask the copilot…" class="input flex-1" autofocus>
+      <button class="btn btn-primary" data-busy="Thinking">Ask</button>
+    </form>
+
+    <div class="flex flex-wrap gap-1.5">
+      {% for q in suggested %}
+        <form method="post" action="/command/ask">{% if conv %}<input type="hidden" name="conversation_id" value="{{ conv.id }}">{% endif %}<input type="hidden" name="prompt" value="{{ q }}"><button class="text-[11px] px-2 py-1 rounded-full bg-slate-800/60 text-slate-300 border border-slate-700 hover:border-slate-500">{{ q }}</button></form>
+      {% endfor %}
+    </div>
+
+    <details class="mt-6">
+      <summary class="cursor-pointer text-sm text-slate-500">Quick buyer harvest (legacy)</summary>
+      <form hx-post="/command/run" hx-target="#jobs" hx-swap="afterbegin" class="flex gap-2 mt-2">
+        <input name="prompt" placeholder="e.g. honey buyers in Georgia" class="input input-sm flex-1"><button class="btn btn-sm">Harvest</button>
+      </form>
+      <div id="jobs" class="space-y-1 mt-2">
+        {% for job in jobs %}{% include 'partials/command_job.html' %}{% endfor %}
+      </div>
+    </details>
+  </section>
+</div>
 {% endblock %}

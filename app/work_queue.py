@@ -50,7 +50,12 @@ TYPES = ["review_new_request", "follow_up_buyer", "follow_up_seller", "follow_up
          "opportunity_needs_review", "opportunity_needs_research", "high_demand_no_supply",
          "supplier_product_verification", "source_stale_failed", "demand_signal_ambiguous",
          "demand_signal_duplicate", "data_quality_anomaly", "report_generation_failed",
-         "scheduled_report_review", "seasonal_preparation_due", "other"]
+         "scheduled_report_review", "seasonal_preparation_due",
+         # Phase 9 (AI Command) work-item types
+         "ai_provider_failure", "ai_budget_threshold", "research_job_failed", "research_result_needs_review",
+         "ai_action_awaiting_approval", "ai_action_failed", "automation_failed", "automation_auto_paused",
+         "prompt_injection_review", "stale_ai_proposal", "brief_generation_failed", "ai_evaluation_regression",
+         "other"]
 TYPE_LABELS = {
     "review_new_request": "Review new request", "follow_up_buyer": "Follow up with buyer",
     "follow_up_seller": "Follow up with seller", "follow_up_supplier": "Follow up with supplier",
@@ -102,7 +107,14 @@ TYPE_LABELS = {
     "source_stale_failed": "Data source stale/failed", "demand_signal_ambiguous": "Demand signal ambiguous",
     "demand_signal_duplicate": "Demand signal possible duplicate", "data_quality_anomaly": "Data-quality anomaly",
     "report_generation_failed": "Report generation failed", "scheduled_report_review": "Scheduled report review",
-    "seasonal_preparation_due": "Seasonal preparation due", "other": "Other",
+    "seasonal_preparation_due": "Seasonal preparation due",
+    "ai_provider_failure": "AI provider failure", "ai_budget_threshold": "AI budget threshold reached",
+    "research_job_failed": "Research job failed", "research_result_needs_review": "Research result needs review",
+    "ai_action_awaiting_approval": "AI action awaiting approval", "ai_action_failed": "AI action failed",
+    "automation_failed": "Automation failed", "automation_auto_paused": "Automation auto-paused",
+    "prompt_injection_review": "Prompt-injection review", "stale_ai_proposal": "Stale AI proposal",
+    "brief_generation_failed": "Brief generation failed", "ai_evaluation_regression": "AI evaluation regression",
+    "other": "Other",
 }
 STATUSES = ["open", "in_progress", "waiting", "completed", "dismissed"]
 NONTERMINAL = ("open", "in_progress", "waiting")
@@ -146,7 +158,13 @@ PARTY_OF_TYPE = {"follow_up_buyer": "buyer", "follow_up_seller": "seller", "foll
                  "source_stale_failed": "system", "demand_signal_ambiguous": "internal",
                  "demand_signal_duplicate": "internal", "data_quality_anomaly": "internal",
                  "report_generation_failed": "system", "scheduled_report_review": "internal",
-                 "seasonal_preparation_due": "internal"}
+                 "seasonal_preparation_due": "internal",
+                 "ai_provider_failure": "system", "ai_budget_threshold": "system",
+                 "research_job_failed": "system", "research_result_needs_review": "internal",
+                 "ai_action_awaiting_approval": "internal", "ai_action_failed": "system",
+                 "automation_failed": "system", "automation_auto_paused": "system",
+                 "prompt_injection_review": "internal", "stale_ai_proposal": "internal",
+                 "brief_generation_failed": "system", "ai_evaluation_regression": "internal"}
 PRIORITY_BADGE = {"low": "slate", "normal": "sky", "high": "amber", "urgent": "rose"}
 STATUS_BADGE = {"open": "queued", "in_progress": "running", "waiting": "amber",
                 "completed": "won", "dismissed": "slate"}
@@ -167,6 +185,7 @@ def create_work_item(session, *, type, title, description="", tenant_id=None, pr
                      related_seller_update_id=None, related_product_id=None, related_contract_id=None,
                      related_operation_case_id=None, related_shipment_id=None, related_payment_id=None,
                      related_exception_id=None, related_opportunity_id=None, related_alert_id=None,
+                     related_conversation_id=None, related_proposal_id=None, related_automation_id=None,
                      parent_id=None, idempotency_key="", condition_version="", inferred=False,
                      due_at=None) -> WorkItem:
     """Create a WorkItem (does not commit). status defaults to 'waiting' when waiting_on is set, else 'open'.
@@ -185,6 +204,8 @@ def create_work_item(session, *, type, title, description="", tenant_id=None, pr
                   related_operation_case_id=related_operation_case_id, related_shipment_id=related_shipment_id,
                   related_payment_id=related_payment_id, related_exception_id=related_exception_id,
                   related_opportunity_id=related_opportunity_id, related_alert_id=related_alert_id,
+                  related_conversation_id=related_conversation_id, related_proposal_id=related_proposal_id,
+                  related_automation_id=related_automation_id,
                   parent_id=parent_id, idempotency_key=idempotency_key, condition_version=condition_version,
                   inferred=inferred, due_at=due_at)
     session.add(wi)
