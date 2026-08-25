@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-6">
+  <div class="eyebrow mb-1">Intelligence</div>
+  <h2 class="text-2xl font-extrabold tracking-tight font-display flex items-center gap-2">Alerts <span class="badge badge-slate">{{ alerts|length }}</span></h2>
+  <p class="text-slate-400 text-sm mt-1">Admin-only in-app alerts. Idempotent — the same condition never alerts twice. No alert ever sends an automatic email or triggers outreach.</p>
+</div>
+
+{% if alerts %}
+  <div class="space-y-3">
+    {% for a in alerts %}
+      <div class="card flex items-start justify-between gap-4">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2"><span class="badge {{ 'badge-rose' if a.severity=='critical' else 'badge-amber' if a.severity=='warning' else 'badge-slate' }}">{{ a.severity }}</span><span class="font-semibold text-slate-100">{{ a.title }}</span></div>
+          <p class="text-slate-400 text-sm mt-0.5">{{ a.body }}</p>
+          <div class="text-[11px] text-slate-600 mt-1">{{ a.alert_type.replace('_',' ') }} · {{ a.cadence }} · {{ a.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+        </div>
+        <div class="flex gap-2 shrink-0">
+          {% if a.related_opportunity_id %}<a href="/intelligence/opportunities/{{ a.related_opportunity_id }}" class="btn btn-sm">Open</a>{% endif %}
+          <form method="post" action="/intelligence/alerts/{{ a.id }}/reviewed"><button class="btn btn-sm">Reviewed</button></form>
+          <form method="post" action="/intelligence/alerts/{{ a.id }}/snoozed"><button class="btn btn-sm">Snooze</button></form>
+          <form method="post" action="/intelligence/alerts/{{ a.id }}/dismissed"><button class="btn btn-sm">Dismiss</button></form>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty">No active alerts.</div>
+{% endif %}
+{% endblock %}

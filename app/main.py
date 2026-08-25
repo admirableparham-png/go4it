@@ -83,6 +83,10 @@ from . import analytics as ANALYTICS
 from . import charts as CHARTS
 from . import data_sources as DATASRC
 from . import provenance_view as PROV
+from . import demand as INTEL_DEMAND
+from . import opportunities as INTEL_OPP
+from . import alerts as INTEL_ALERTS
+from . import reports as INTEL_REPORTS
 from .models import (AnalyticsReport, AnalyticsSnapshot, DemandSignal, IntelAlert, Opportunity,
                      OpportunityMatch, OpportunitySignal)
 from .models import (CustomsCase, DocumentRequirement, FreightOffer, FreightRequest, OperationCase,
@@ -4801,6 +4805,144 @@ def intelligence_reports(request: Request):
         reports = session.exec(select(AnalyticsReport).order_by(AnalyticsReport.id.desc()).limit(50)).all()
     return templates.TemplateResponse("intelligence_reports.html", {
         "request": request, "user": user, "reports": reports})
+
+
+REPORT_FILES_DIR = BASE_DIR.parent / "report_files"   # PRIVATE, outside /static
+
+
+@app.get("/intelligence/opportunities/{opp_id}", response_class=HTMLResponse)
+def intelligence_opportunity_detail(request: Request, opp_id: int):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        opp = session.get(Opportunity, opp_id)
+        if not opp:
+            return _not_found()
+        d = INTEL_OPP.detail(session, opp)
+        users = session.exec(select(User).where(User.role.in_(("admin", "manager", "agent")))).all()
+    return templates.TemplateResponse("intelligence_opportunity_detail.html", {
+        "request": request, "user": user, "opp": opp, "detail": d, "statuses": INTEL_OPP.STATUSES,
+        "transitions": INTEL_OPP.TRANSITIONS.get(opp.status, ()), "users": users})
+
+
+@app.post("/intelligence/opportunities/{opp_id}/status")
+def intelligence_opp_status(request: Request, opp_id: int, to_status: str = Form(""), reason: str = Form("")):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        opp = session.get(Opportunity, opp_id)
+        if not opp:
+            return _not_found()
+        ok, err = INTEL_OPP.set_status(session, opp, to_status, reason=reason, actor=user)
+        session.commit()
+        if not ok:
+            return HTMLResponse(f"Cannot change status: {err}", 400)
+    return RedirectResponse(f"/intelligence/opportunities/{opp_id}", status_code=303)
+
+
+@app.post("/intelligence/opportunities/{opp_id}/assign")
+def intelligence_opp_assign(request: Request, opp_id: int, owner_id: str = Form("")):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        opp = session.get(Opportunity, opp_id)
+        if not opp:
+            return _not_found()
+        INTEL_OPP.assign(session, opp, int(owner_id) if owner_id.strip() else None, actor=user)
+        session.commit()
+    return RedirectResponse(f"/intelligence/opportunities/{opp_id}", status_code=303)
+
+
+@app.post("/intelligence/opportunities/{opp_id}/rescore")
+def intelligence_opp_rescore(request: Request, opp_id: int):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        opp = session.get(Opportunity, opp_id)
+        if not opp:
+            return _not_found()
+        INTEL_OPP.match_supply(session, opp, actor=user)
+        INTEL_OPP.rescore(session, opp, actor=user)
+        session.commit()
+    return RedirectResponse(f"/intelligence/opportunities/{opp_id}", status_code=303)
+
+
+@app.post("/intelligence/refresh")
+def intelligence_refresh(request: Request):
+    """Regenerate demand signals + opportunities from deterministic evidence (accepted quotes, Deals, confirmed
+    positive replies). Idempotent + bounded. Admin action, not a GET."""
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        WQ.sync_demand_signals(session, actor=user, budget=500)
+        session.commit()
+    return RedirectResponse("/intelligence/demand", status_code=303)
+
+
+@app.post("/intelligence/reports")
+def intelligence_generate_report(request: Request, report_type: str = Form(""), days: str = Form("30"),
+                                 fmt: str = Form("csv")):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        since, until, _ = _intel_window(days)
+        rpt, err = INTEL_REPORTS.generate(session, report_type=report_type, files_dir=REPORT_FILES_DIR,
+                                          since=since, until=until, fmt=fmt, actor=user)
+        session.commit()
+        if err and (rpt is None or rpt.status == "failed"):
+            return HTMLResponse(f"Report generation issue: {err}", 400 if rpt is None else 200)
+    return RedirectResponse("/intelligence/reports", status_code=303)
+
+
+@app.get("/intelligence/reports/{rpt_id}/download")
+def intelligence_download_report(request: Request, rpt_id: int):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny                                    # admin-only export (server-side authz)
+        rpt = session.get(AnalyticsReport, rpt_id)
+        if not rpt or not rpt.file_path or rpt.status != "generated":
+            return _not_found()
+        path = (REPORT_FILES_DIR / rpt.file_path).resolve()
+        if not str(path).startswith(str(REPORT_FILES_DIR.resolve()) + os.sep) or not path.exists():
+            return _not_found()
+        pipeline.audit(session, user, "analytics_report", rpt.id, "report_downloaded", {})
+        session.commit()
+        return FileResponse(str(path), media_type=rpt.content_type or "application/octet-stream",
+                            filename=f"{rpt.reference}{os.path.splitext(rpt.file_path)[1]}",
+                            headers={"Cache-Control": "no-store", "X-Robots-Tag": "noindex"})
+
+
+@app.get("/intelligence/alerts", response_class=HTMLResponse)
+def intelligence_alerts(request: Request):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        alerts = INTEL_ALERTS.active_alerts(session)
+    return templates.TemplateResponse("intelligence_alerts.html", {
+        "request": request, "user": user, "alerts": alerts})
+
+
+@app.post("/intelligence/alerts/{alert_id}/{action}")
+def intelligence_alert_action(request: Request, alert_id: int, action: str):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        alert = session.get(IntelAlert, alert_id)
+        if not alert or action not in ("reviewed", "dismissed", "snoozed"):
+            return _not_found()
+        snooze = datetime.utcnow() + timedelta(days=7) if action == "snoozed" else None
+        INTEL_ALERTS.set_status(session, alert, action, snooze_until=snooze, actor=user)
+        session.commit()
+    return RedirectResponse("/intelligence/alerts", status_code=303)
 
 
 # ----------------------------------------------------------------------------- ingestion

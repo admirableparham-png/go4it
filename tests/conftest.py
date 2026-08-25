@@ -37,6 +37,10 @@ _OPS_INDEXES = (
     "WHERE reference != ''",
     "CREATE UNIQUE INDEX IF NOT EXISTS uq_opcase_deal_primary ON operationcase(deal_id) "
     "WHERE case_type = 'deal' AND deal_id IS NOT NULL",
+    # Phase 8 intelligence guards
+    "CREATE UNIQUE INDEX IF NOT EXISTS uq_demandsignal_dedup ON demandsignal(dedup_key) WHERE dedup_key != ''",
+    "CREATE UNIQUE INDEX IF NOT EXISTS uq_intelalert_key ON intelalert(alert_key, condition_version) "
+    "WHERE alert_key != ''",
 )
 
 

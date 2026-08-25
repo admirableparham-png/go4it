@@ -45,7 +45,12 @@ TYPES = ["review_new_request", "follow_up_buyer", "follow_up_seller", "follow_up
          "seller_document_required", "uploaded_document_needs_review", "payment_due", "payment_overdue",
          "payment_confirmation_required", "remittance_compliance_review", "remittance_delayed",
          "delivery_confirmation_required", "cargo_damage_shortage", "settlement_review_required",
-         "operational_handoff_required", "external_integration_failure", "other"]
+         "operational_handoff_required", "external_integration_failure",
+         # Phase 8 (Intelligence) work-item types
+         "opportunity_needs_review", "opportunity_needs_research", "high_demand_no_supply",
+         "supplier_product_verification", "source_stale_failed", "demand_signal_ambiguous",
+         "demand_signal_duplicate", "data_quality_anomaly", "report_generation_failed",
+         "scheduled_report_review", "seasonal_preparation_due", "other"]
 TYPE_LABELS = {
     "review_new_request": "Review new request", "follow_up_buyer": "Follow up with buyer",
     "follow_up_seller": "Follow up with seller", "follow_up_supplier": "Follow up with supplier",
@@ -89,7 +94,15 @@ TYPE_LABELS = {
     "delivery_confirmation_required": "Delivery confirmation required",
     "cargo_damage_shortage": "Cargo damage / shortage", "settlement_review_required": "Settlement review required",
     "operational_handoff_required": "Operational handoff required",
-    "external_integration_failure": "External integration failure", "other": "Other",
+    "external_integration_failure": "External integration failure",
+    "opportunity_needs_review": "Opportunity needs review",
+    "opportunity_needs_research": "Opportunity needs research",
+    "high_demand_no_supply": "High demand without matching supply",
+    "supplier_product_verification": "Supplier/product verification required",
+    "source_stale_failed": "Data source stale/failed", "demand_signal_ambiguous": "Demand signal ambiguous",
+    "demand_signal_duplicate": "Demand signal possible duplicate", "data_quality_anomaly": "Data-quality anomaly",
+    "report_generation_failed": "Report generation failed", "scheduled_report_review": "Scheduled report review",
+    "seasonal_preparation_due": "Seasonal preparation due", "other": "Other",
 }
 STATUSES = ["open", "in_progress", "waiting", "completed", "dismissed"]
 NONTERMINAL = ("open", "in_progress", "waiting")
@@ -127,7 +140,13 @@ PARTY_OF_TYPE = {"follow_up_buyer": "buyer", "follow_up_seller": "seller", "foll
                  "payment_confirmation_required": "internal", "remittance_compliance_review": "internal",
                  "remittance_delayed": "service_provider", "delivery_confirmation_required": "internal",
                  "cargo_damage_shortage": "service_provider", "settlement_review_required": "internal",
-                 "operational_handoff_required": "internal", "external_integration_failure": "system"}
+                 "operational_handoff_required": "internal", "external_integration_failure": "system",
+                 "opportunity_needs_review": "internal", "opportunity_needs_research": "internal",
+                 "high_demand_no_supply": "supplier", "supplier_product_verification": "supplier",
+                 "source_stale_failed": "system", "demand_signal_ambiguous": "internal",
+                 "demand_signal_duplicate": "internal", "data_quality_anomaly": "internal",
+                 "report_generation_failed": "system", "scheduled_report_review": "internal",
+                 "seasonal_preparation_due": "internal"}
 PRIORITY_BADGE = {"low": "slate", "normal": "sky", "high": "amber", "urgent": "rose"}
 STATUS_BADGE = {"open": "queued", "in_progress": "running", "waiting": "amber",
                 "completed": "won", "dismissed": "slate"}
@@ -147,7 +166,7 @@ def create_work_item(session, *, type, title, description="", tenant_id=None, pr
                      related_outreach_id=None, related_quote_id=None, related_deal_id=None,
                      related_seller_update_id=None, related_product_id=None, related_contract_id=None,
                      related_operation_case_id=None, related_shipment_id=None, related_payment_id=None,
-                     related_exception_id=None,
+                     related_exception_id=None, related_opportunity_id=None, related_alert_id=None,
                      parent_id=None, idempotency_key="", condition_version="", inferred=False,
                      due_at=None) -> WorkItem:
     """Create a WorkItem (does not commit). status defaults to 'waiting' when waiting_on is set, else 'open'.
@@ -165,6 +184,7 @@ def create_work_item(session, *, type, title, description="", tenant_id=None, pr
                   related_contract_id=related_contract_id,
                   related_operation_case_id=related_operation_case_id, related_shipment_id=related_shipment_id,
                   related_payment_id=related_payment_id, related_exception_id=related_exception_id,
+                  related_opportunity_id=related_opportunity_id, related_alert_id=related_alert_id,
                   parent_id=parent_id, idempotency_key=idempotency_key, condition_version=condition_version,
                   inferred=inferred, due_at=due_at)
     session.add(wi)
@@ -963,6 +983,83 @@ def sync_settlements_review(session, actor=None, inferred=False, budget=None) ->
     return n
 
 
+# --- Phase 8 intelligence scanners (bounded by count + wall-clock; condition-versioned) ---------------
+def sync_opportunities_needing_review(session, actor=None, inferred=False, budget=None) -> int:
+    """A new/ready opportunity → a review task. condition_version is a score bucket so a materially changed
+    score regenerates the task, while an unchanged one never does."""
+    from .models import Opportunity
+    n = 0
+    stop = _deadline()
+    for o in session.exec(select(Opportunity).where(
+            Opportunity.status.in_(("new", "ready_for_review")))).all():
+        if _capped(budget, n) or datetime.utcnow() > stop:
+            break
+        bucket = f"s{o.score // 10 * 10}"
+        key = f"opportunity_needs_review:opp:{o.id}"
+        if already_handled(session, key, bucket):
+            continue
+        if create_work_item_safe(session, actor=actor, type="opportunity_needs_review",
+                                 title=f"Opportunity {o.reference or o.id} needs review",
+                                 tenant_id=o.tenant_id, related_opportunity_id=o.id,
+                                 idempotency_key=key, condition_version=bucket, inferred=inferred):
+            n += 1
+    return n
+
+
+def sync_demand_signals(session, actor=None, inferred=False, budget=None) -> int:
+    """Generate DemandSignals + Opportunities from DETERMINISTIC positive evidence (accepted quotes, Deals,
+    admin-confirmed positive replies) that don't have one yet. Idempotent (dedup_key), bounded. Never touches a
+    scraped lead, a negative reply, an open/delivery or a bounce. Runs as the live demand-generation pass."""
+    from . import demand as DEM
+    from . import opportunities as OPP
+    from .models import Deal, Lead, Quote
+    n = 0
+    stop = _deadline()
+    for q in session.exec(select(Quote).where(Quote.status == "accepted")).all():
+        if _capped(budget, n) or datetime.utcnow() > stop:
+            return n
+        sig, created = DEM.from_accepted_quote(session, q, actor=actor, inferred=inferred)
+        if created and sig:
+            OPP.ensure_from_signal(session, sig, actor=actor)
+            n += 1
+    for d in session.exec(select(Deal)).all():
+        if _capped(budget, n) or datetime.utcnow() > stop:
+            return n
+        sig, created = DEM.from_deal(session, d, actor=actor, inferred=inferred)
+        if created and sig:
+            OPP.ensure_from_signal(session, sig, actor=actor)
+            n += 1
+    for ld in session.exec(select(Lead).where(Lead.reply_outcome == "positive")).all():
+        if _capped(budget, n) or datetime.utcnow() > stop:
+            return n
+        sig, created = DEM.from_positive_reply(session, ld, actor=actor, inferred=inferred)
+        if created and sig:
+            OPP.ensure_from_signal(session, sig, actor=actor)
+            n += 1
+    return n
+
+
+def sync_stale_sources(session, actor=None, inferred=False, budget=None) -> int:
+    """A stale/failed configured data source → a source_stale_failed task."""
+    from . import data_sources as DS
+    n = 0
+    stop = _deadline()
+    for h in DS.source_health(session):
+        if _capped(budget, n) or datetime.utcnow() > stop:
+            break
+        if h["freshness"] not in ("Stale", "Failed"):
+            continue
+        key = f"source_stale_failed:src:{h['key']}"
+        if already_handled(session, key, h["freshness"]):
+            continue
+        if create_work_item_safe(session, actor=actor, type="source_stale_failed",
+                                 title=f"Data source {h['label']} is {h['freshness'].lower()}",
+                                 description=(h.get("error") or "")[:300],
+                                 idempotency_key=key, condition_version=h["freshness"], inferred=inferred):
+            n += 1
+    return n
+
+
 _SCANNERS = [
     ("review_new_request", sync_unreviewed_requests),
     ("requester_action_required", sync_open_seller_questions),
@@ -991,6 +1088,10 @@ _SCANNERS = [
     ("delivery_confirmation_required", sync_delivery_confirmation),
     ("payment_overdue", sync_overdue_payments),
     ("settlement_review_required", sync_settlements_review),
+    # Phase 8 intelligence scanners
+    ("demand_signals", sync_demand_signals),
+    ("opportunity_needs_review", sync_opportunities_needing_review),
+    ("source_stale_failed", sync_stale_sources),
 ]
 
 

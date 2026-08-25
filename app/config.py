@@ -134,3 +134,18 @@ CORS_ORIGINS = [o.strip() for o in os.getenv(
     "CORS_ORIGINS",
     "https://www.go4worldbusiness.com,https://go4worldbusiness.com,http://localhost:8400"
 ).split(",") if o.strip()]
+
+# Phase 8 — opportunity scoring weights (points on a 0-100 scale). CONFIGURABLE + AUDITED: each score records a
+# version derived from these weights, so changing a weight produces a NEW score_version and never silently
+# rewrites a historical snapshot. Every component is visible in the score breakdown — no hidden weights.
+OPP_SCORE_WEIGHTS = {
+    "demand_strength": float(os.getenv("OPP_W_DEMAND_STRENGTH", "22")),
+    "signal_quality": float(os.getenv("OPP_W_SIGNAL_QUALITY", "14")),
+    "signal_freshness": float(os.getenv("OPP_W_SIGNAL_FRESHNESS", "10")),
+    "independent_sources": float(os.getenv("OPP_W_INDEPENDENT_SOURCES", "10")),
+    "supply_available": float(os.getenv("OPP_W_SUPPLY", "16")),
+    "supplier_readiness": float(os.getenv("OPP_W_SUPPLIER_READINESS", "8")),
+    "quote_deal_evidence": float(os.getenv("OPP_W_QUOTE_DEAL", "12")),
+    "feasibility": float(os.getenv("OPP_W_FEASIBILITY", "8")),
+    "missing_data_penalty": float(os.getenv("OPP_W_MISSING_PENALTY", "20")),   # subtracted, not added
+}

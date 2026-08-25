@@ -76,3 +76,30 @@ def test_get_does_not_mutate_business_data(ctx):
         c.get(p)
     with Session(ctx) as s:
         assert len(s.exec(select(Lead)).all()) == before   # no leads created/changed by a GET
+
+
+def test_report_generate_and_download_admin_only(ctx, monkeypatch, tmp_path):
+    monkeypatch.setattr(main, "REPORT_FILES_DIR", tmp_path / "reports")
+    admin = TestClient(main.app); _login(admin, "admin@t.local")
+    r = admin.post("/intelligence/reports", data={"report_type": "weekly_exec", "days": "30", "fmt": "csv"},
+                   follow_redirects=False)
+    assert r.status_code == 303
+    from app.models import AnalyticsReport
+    with Session(ctx) as s:
+        rpt = s.exec(select(AnalyticsReport)).one()
+        rid = rpt.id
+    assert admin.get(f"/intelligence/reports/{rid}/download").status_code == 200
+    # a seller can neither generate nor download a report
+    seller = TestClient(main.app); _login(seller, "seller@t.local")
+    assert seller.post("/intelligence/reports", data={"report_type": "weekly_exec"},
+                       follow_redirects=False).status_code == 403
+    assert seller.get(f"/intelligence/reports/{rid}/download").status_code == 403
+
+
+def test_opportunity_actions_admin_only(ctx):
+    # a seller cannot touch opportunity actions or alerts
+    seller = TestClient(main.app); _login(seller, "seller@t.local")
+    assert seller.post("/intelligence/opportunities/1/status", data={"to_status": "approved"},
+                       follow_redirects=False).status_code == 403
+    assert seller.post("/intelligence/refresh", follow_redirects=False).status_code == 403
+    assert seller.get("/intelligence/alerts").status_code == 403

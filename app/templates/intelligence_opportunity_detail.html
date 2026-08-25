@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-6">
+  <div class="eyebrow mb-1">Intelligence · Opportunity</div>
+  <h2 class="text-2xl font-extrabold tracking-tight font-display">{{ opp.title or opp.product }}</h2>
+  <p class="text-slate-400 text-sm mt-1"><span class="font-mono">{{ opp.reference }}</span> · {{ opp.dest_market or '—' }} · <span class="badge badge-sky">{{ opp.status.replace('_',' ') }}</span></p>
+</div>
+
+<div class="grid md:grid-cols-3 gap-4 mb-6">
+  <div class="card"><div class="eyebrow">Score</div><div class="text-3xl font-extrabold tabular-nums {{ 'text-emerald-400' if opp.score>=70 else 'text-slate-100' }}">{{ opp.score }}</div><div class="text-xs text-slate-500">confidence {{ opp.confidence }} · {{ detail.scoring_version }}</div></div>
+  <div class="card"><div class="eyebrow">Recommended</div><div class="text-sm text-slate-200 mt-1">{{ opp.recommended_action or '—' }}</div></div>
+  <div class="card"><div class="eyebrow">Missing</div><div class="text-sm text-amber-300 mt-1">{{ detail.missing_info|join(', ') if detail.missing_info else 'nothing outstanding' }}</div></div>
+</div>
+
+<div class="card mb-6">
+  <div class="eyebrow mb-2">Score breakdown <span class="text-slate-500 normal-case">— transparent, no hidden weights ({{ detail.scoring_version }})</span></div>
+  <table class="data-table">
+    <thead><tr><th>Component</th><th class="text-right">Weight</th><th class="text-right">Factor</th><th class="text-right">Points</th><th>Note</th></tr></thead>
+    <tbody>{% for c in detail.breakdown %}<tr><td class="text-slate-200">{{ c.component.replace('_',' ') }}</td><td class="text-right tabular-nums text-slate-400">{{ c.weight }}</td><td class="text-right tabular-nums text-slate-400">{{ c.factor }}</td><td class="text-right tabular-nums {{ 'text-rose-400' if c.points<0 else 'text-slate-200' }}">{{ c.points }}</td><td class="text-slate-500 text-xs">{{ c.note }}</td></tr>{% endfor %}</tbody>
+  </table>
+</div>
+
+<div class="grid md:grid-cols-2 gap-6 mb-6">
+  <div class="card">
+    <div class="eyebrow mb-2">Why it exists — demand signals ({{ detail.signals|length }})</div>
+    {% if detail.signals %}<table class="data-table"><thead><tr><th>Type</th><th>Strength</th><th>Conf</th><th>Basis</th></tr></thead><tbody>
+      {% for s in detail.signals %}<tr><td class="text-slate-200">{{ s.signal_type.replace('_',' ') }}</td><td><span class="badge {{ 'badge-emerald' if s.strength=='strong' else 'badge-sky' if s.strength=='moderate' else 'badge-slate' }}">{{ s.strength }}</span></td><td class="tabular-nums text-slate-400">{{ s.confidence }}</td><td class="text-slate-500 text-xs">{{ s.verification_state }}</td></tr>{% endfor %}
+    </tbody></table>{% else %}<p class="text-slate-600 text-sm">No signals linked.</p>{% endif %}
+  </div>
+  <div class="card">
+    <div class="eyebrow mb-2">Matched supply ({{ detail.matches|length }}) — every match explained</div>
+    {% if detail.matches %}<table class="data-table"><thead><tr><th class="text-right">Score</th><th>Why</th><th>Missing</th></tr></thead><tbody>
+      {% for m in detail.matches %}<tr><td class="text-right tabular-nums text-slate-200">{{ m.match_score }}</td><td class="text-slate-400 text-xs">{{ m.explanation }}</td><td class="text-amber-300 text-xs">{{ m.missing_requirements or ('verified' if m.verified else '—') }}</td></tr>{% endfor %}
+    </tbody></table>{% else %}<p class="text-amber-300 text-sm">No matched supply — a Work Queue action was raised. No seller is contacted automatically.</p>{% endif %}
+  </div>
+</div>
+
+<div class="card">
+  <div class="eyebrow mb-3">Actions <span class="text-slate-500 normal-case">— admin decides; nothing auto-contacts a buyer or seller</span></div>
+  <div class="flex flex-wrap gap-3">
+    <form method="post" action="/intelligence/opportunities/{{ opp.id }}/status" class="flex gap-2">
+      <select name="to_status" class="input input-sm">{% for st in transitions %}<option value="{{ st }}">{{ st.replace('_',' ') }}</option>{% endfor %}</select>
+      <input name="reason" placeholder="Reason (optional)" class="input input-sm" />
+      <button class="btn btn-sm">Set status</button>
+    </form>
+    <form method="post" action="/intelligence/opportunities/{{ opp.id }}/assign" class="flex gap-2">
+      <select name="owner_id" class="input input-sm"><option value="">Assign…</option>{% for u in users %}<option value="{{ u.id }}">{{ u.name or u.email }}</option>{% endfor %}</select>
+      <button class="btn btn-sm">Assign</button>
+    </form>
+    <form method="post" action="/intelligence/opportunities/{{ opp.id }}/rescore"><button class="btn btn-sm">Re-match + rescore</button></form>
+  </div>
+</div>
+{% endblock %}
