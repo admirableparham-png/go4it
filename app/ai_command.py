@@ -7,7 +7,7 @@ Prompt-injection is detected on user input and any retrieved content is treated 
 instructions). The loop is bounded (max tool steps) and never runs a write/approval tool automatically.
 """
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from sqlmodel import select
 
@@ -50,6 +50,78 @@ _INJECTION = [
 
 def detect_injection(text: str) -> list:
     return [p.pattern for p in _INJECTION if p.search(text or "")]
+
+
+# cooperative cancellation for a running provider turn (checked between bounded tool steps)
+_CANCELLED = set()
+
+
+def cancel(conversation_id):
+    _CANCELLED.add(int(conversation_id))
+
+
+def clear_cancel(conversation_id):
+    _CANCELLED.discard(int(conversation_id))
+
+
+def is_cancelled(conversation_id) -> bool:
+    return int(conversation_id) in _CANCELLED
+
+
+def _provider_loop(session, conversation, user_text, user, prov, now):
+    """A BOUNDED conversational read/tool/answer cycle: the model may call registered READ-ONLY tools (structured
+    calls, validated); results are fed back MINIMIZED (buyer PII redacted before leaving the platform); iterations
+    are capped; a wall-clock deadline + cooperative cancel stop it. Write/PII/unknown tools are never executed
+    here. Facts + citations come from the tools, not the model."""
+    from . import ai_tools as TOOLS
+    system = PROMPTS.SYSTEM_PROMPT
+    msgs = [{"role": "system", "content": system},
+            {"role": "user", "content": ENC.minimize_pii(user_text)}]   # PII minimized before any external send
+    tools = TOOLS.provider_tools(getattr(prov, "name", "anthropic"))
+    citations, tool_count, text = [], 0, ""
+    deadline = now + timedelta(seconds=config.AI_TIMEOUT_S * (config.AI_MAX_TOOL_STEPS + 1))
+    partial = False
+    for _step in range(config.AI_MAX_TOOL_STEPS + 1):
+        if is_cancelled(conversation.id) or datetime.utcnow() > deadline:
+            partial = True
+            break
+        res = prov.complete(messages=msgs, tools=tools, max_tokens=config.AI_MAX_OUTPUT_TOKENS,
+                            timeout=config.AI_TIMEOUT_S)
+        PROV.record_usage(session, conversation_id=conversation.id, provider=res.provider, model=res.model,
+                          owner_id=conversation.owner_id, tenant_id=conversation.tenant_id,
+                          input_tokens=res.input_tokens, output_tokens=res.output_tokens,
+                          tool_calls=len(res.tool_calls),
+                          est_cost=PROV.est_cost(res.model, res.input_tokens, res.output_tokens))
+        if res.tool_calls:
+            msgs.append({"role": "assistant", "content": res.text or "(requesting tools)"})
+            for tc in res.tool_calls[: config.AI_MAX_TOOL_STEPS]:
+                out = TOOLS.run_tool(session, tc.get("tool"), tc.get("params", {}), user,
+                                     conversation_id=conversation.id)
+                tool_count += 1
+                if out.get("ok"):
+                    citations.extend(out.get("citations", []))
+                    payload = ENC.minimize_pii(str(out.get("result"))[:2000])   # never send raw PII to a model
+                    msgs.append({"role": "user", "content": f"tool {tc.get('tool')} result: {payload}"})
+                else:
+                    msgs.append({"role": "user", "content": f"tool {tc.get('tool')} refused: {out.get('error')}"})
+            continue
+        text = res.text or ""
+        break
+    return {"text": text, "citations": citations, "tool_count": tool_count,
+            "provider": getattr(prov, "name", ""), "model": getattr(prov, "model", ""), "partial": partial}
+
+
+def _provider_failure_task(session, conversation, err):
+    try:
+        from . import work_queue as WQ
+        WQ.create_work_item_safe(
+            session, tenant_id=conversation.tenant_id, type="ai_provider_failure", source="automatic",
+            title="AI provider failure", description=(err or "")[:300],
+            related_conversation_id=conversation.id,
+            idempotency_key=f"ai_provider_failure:conv:{conversation.id}",
+            condition_version=datetime.utcnow().strftime("%Y%m%d%H"))
+    except Exception:  # noqa: BLE001
+        pass
 
 
 def neutralize(text: str) -> str:
@@ -198,20 +270,36 @@ def answer(session, conversation, user_text, user, *, now=None):
         return {"message_id": msg.id, "text": txt, "citations": [], "refused": True, "injection": True,
                 "tools": []}
 
-    # deterministic plan → bounded read-only tool loop
-    plan = _plan(user_text)
-    results, citations, tool_count = [], [], 0
-    for tool, params in plan:
-        if tool.startswith("_"):
-            out = _resolve_special(session, tool, params, user)
-        else:
-            out = TOOLS.run_tool(session, tool, params, user, conversation_id=conversation.id)
-        tool_count += 1
-        if out.get("ok", True) and out.get("result") is not None:
-            results.append((tool if not tool.startswith("_") else _special_display(tool), out))
-            citations.extend(out.get("citations", []))
-
-    text = _compose(user_text, results)
+    citations, tool_count, results = [], 0, []
+    provider_name, model_name, partial = "", "", False
+    prov = PROV.get_provider()
+    use_provider = getattr(prov, "configured", False) and not PROV.is_paused() \
+        and not is_cancelled(conversation.id)
+    if use_provider and not PROV.budget_status(session, owner_id=conversation.owner_id, now=now)["within"]:
+        use_provider = False        # over budget → deterministic answer (never blocks the admin)
+    if use_provider:
+        try:
+            loop = _provider_loop(session, conversation, user_text, user, prov, now)
+            text = loop["text"] or "I could not verify this from current Go4it data."
+            citations.extend(loop["citations"])
+            tool_count = loop["tool_count"]
+            provider_name, model_name, partial = loop["provider"], loop["model"], loop["partial"]
+        except (PROV.ProviderError, PROV.ProviderPaused, PROV.ProviderNotConfigured, Exception) as ex:  # noqa: BLE001
+            use_provider = False
+            _provider_failure_task(session, conversation, str(ex))
+    if not use_provider:
+        # deterministic plan → bounded read-only tool loop (facts from tools, honest fallback when unmapped)
+        plan = _plan(user_text)
+        for tool, params in plan:
+            if tool.startswith("_"):
+                out = _resolve_special(session, tool, params, user)
+            else:
+                out = TOOLS.run_tool(session, tool, params, user, conversation_id=conversation.id)
+            tool_count += 1
+            if out.get("ok", True) and out.get("result") is not None:
+                results.append((tool if not tool.startswith("_") else _special_display(tool), out))
+                citations.extend(out.get("citations", []))
+        text = _compose(user_text, results)
 
     # intent: a weekly/daily intelligence brief (read-only, cited, in-app)
     tl = user_text.lower()
@@ -239,18 +327,7 @@ def answer(session, conversation, user_text, user, *, now=None):
             text += ("\n\nI've prepared a Research proposal (interpreted scope shown). It will run through the "
                      "existing Research pipeline ONLY after you approve it — I won't claim results before then.")
 
-    # optional LLM phrasing (facts unchanged) — only if configured, allowed, within budget and not paused
-    provider_name, model_name = "", ""
-    prov = PROV.get_provider()
-    if getattr(prov, "configured", False) and not PROV.is_paused():
-        bud = PROV.budget_status(session, owner_id=conversation.owner_id, now=now)
-        if bud["within"]:
-            provider_name, model_name = getattr(prov, "name", ""), getattr(prov, "model", "")
-            PROV.record_usage(session, conversation_id=conversation.id, provider=provider_name,
-                              model=model_name, owner_id=conversation.owner_id,
-                              tenant_id=conversation.tenant_id, input_tokens=len(user_text) // 4,
-                              output_tokens=len(text) // 4, tool_calls=tool_count, success=True)
-
+    # NOTE: usage is recorded inside _provider_loop (per provider call). The deterministic path records none.
     msg = store_message(session, conversation, role="assistant", content=text, provider=provider_name,
                         model=model_name, prompt_version=PROMPTS.PROMPT_VERSION,
                         citation_count=len(citations), tool_count=tool_count, now=now)

@@ -102,3 +102,26 @@ def redact_secrets(text: str) -> str:
 
 def contains_secret(text: str) -> bool:
     return redact_secrets(text or "") != (text or "")
+
+
+# --------------------------------------------------------------------- PII minimization (before external send)
+# Anything sent to an EXTERNAL AI provider is minimized by default: contact PII (emails, phones, URLs) is
+# redacted so a buyer's identifiers never leave the platform in a provider payload or in telemetry.
+_PII_PATTERNS = [
+    (re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}"), "[email]"),
+    (re.compile(r"\b(?:https?://|www\.)\S+", re.I), "[url]"),
+    (re.compile(r"(?:\+|00)\d[\d\s().\-]{6,}\d|\b\d[\d\s().\-]{8,}\d\b"), "[phone]"),
+]
+
+
+def minimize_pii(text: str) -> str:
+    """Redact contact PII (email/phone/url) for anything leaving the platform to an external provider or telemetry.
+    Also runs secret redaction first."""
+    t = redact_secrets(text or "")
+    for pat, repl in _PII_PATTERNS:
+        t = pat.sub(repl, t)
+    return t
+
+
+def contains_pii(text: str) -> bool:
+    return minimize_pii(text or "") != redact_secrets(text or "")

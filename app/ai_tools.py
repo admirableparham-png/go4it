@@ -35,6 +35,8 @@ class ToolDef:
     requires_approval: bool = False
     result_limit: int = 50
     external: bool = False
+    contains_pii: bool = False   # True = may return buyer/contact PII → admin-only, EXCLUDED from provider,
+    #                              redacted in telemetry
 
 
 def _need(params, *keys):
@@ -165,6 +167,37 @@ def _t_overdue_work_items(session, params, user):
             "citations": [CIT.record_citation("work_queue", i) for i in items[:10]]}
 
 
+def _t_lookup_contact(session, params, user):
+    """ADMIN-ONLY buyer/company contact lookup. Authorized admins legitimately need buyer contact details; this
+    returns them to the admin but the tool is EXCLUDED from any external provider payload and its result is
+    redacted in telemetry. Never available to sellers (the whole copilot is admin-only)."""
+    from .models import Company, Contact
+    from .tenant import is_admin, owns, scoped
+    if not is_admin(user):
+        # buyer contact PII is admin-only (defense-in-depth beyond the admin-only route gate)
+        return {"result": {"error": "buyer contact details are available to authorized admins only"},
+                "citations": []}
+    q = (params.get("query") or "").strip()
+    cid = params.get("company_id")
+    company = None
+    if cid:
+        company = session.get(Company, int(cid))
+        if company and not owns(company.tenant_id, user):
+            company = None                              # cross-tenant id probe → treated as not found
+    elif q:
+        company = session.exec(scoped(select(Company).where(Company.name.ilike(f"%{q}%")),
+                                      Company.tenant_id, user)).first()
+    if not company:
+        return {"result": {"error": "no matching company"}, "citations": []}
+    contacts = session.exec(select(Contact).where(Contact.company_id == company.id).limit(10)).all()
+    return {"result": {"company": company.name, "country": company.country,
+                       "contacts": [{"name": c.name, "title": c.title, "email": c.email, "phone": c.phone}
+                                    for c in contacts]},
+            "citations": [{"record_type": "company", "record_ref": f"company:{company.id}",
+                           "record_id": company.id, "record_at": None, "source": "trade_network",
+                           "provenance_class": "observed", "freshness": "", "link": f"/companies/{company.id}"}]}
+
+
 def _t_compare_markets(session, params, user):
     rows = session.exec(select(DemandSignal.dest_country, func.count()).where(DemandSignal.dest_country != "")
                         .group_by(DemandSignal.dest_country).order_by(func.count().desc()).limit(10)).all()
@@ -196,7 +229,28 @@ TOOLS = {
                                   "read_only", {}, _t_overdue_work_items),
     "compare_markets": ToolDef("compare_markets", "Compare markets by real demand evidence.", "read",
                                "read_only", {}, _t_compare_markets),
+    "lookup_contact": ToolDef("lookup_contact", "Admin-only: retrieve a company's buyer contact details.",
+                              "read", "read_only", {"query": "optional", "company_id": "optional"},
+                              _t_lookup_contact, contains_pii=True),
 }
+
+
+def provider_tools(provider="anthropic"):
+    """Tool schemas exposed to an EXTERNAL provider — PII tools are excluded so a buyer's contact details can
+    never be requested by or returned to a model. Draft/write tools are excluded too (they go through approval)."""
+    out = []
+    for t in TOOLS.values():
+        if t.contains_pii or t.mode != "read":
+            continue
+        props = {k: {"type": "string"} for k in t.params}
+        required = [k for k, v in t.params.items() if v == "required"]
+        if provider == "openai":
+            out.append({"type": "function", "function": {"name": t.name, "description": t.purpose,
+                        "parameters": {"type": "object", "properties": props, "required": required}}})
+        else:
+            out.append({"name": t.name, "description": t.purpose,
+                        "input_schema": {"type": "object", "properties": props, "required": required}})
+    return out
 
 
 def register(tool: ToolDef):
@@ -241,9 +295,14 @@ def run_tool(session, name, params, user, *, conversation_id=None, message_id=No
     try:
         out = t.run(session, params or {}, user)
         dur = ai_provider.elapsed_ms(start)
-        _audit_tool(session, conversation_id, message_id, name, t.risk, params, "ok",
-                    _result_summary(out.get("result")), dur)
-        return {"ok": True, "result": out.get("result"), "citations": out.get("citations", []), "error": ""}
+        # telemetry NEVER stores PII: a PII tool's result summary is minimized before it is audited
+        summary = _result_summary(out.get("result"))
+        if t.contains_pii:
+            from . import ai_encryption as _ENC
+            summary = _ENC.minimize_pii(summary)
+        _audit_tool(session, conversation_id, message_id, name, t.risk, params, "ok", summary, dur)
+        return {"ok": True, "result": out.get("result"), "citations": out.get("citations", []),
+                "error": "", "contains_pii": t.contains_pii}
     except Exception as ex:  # noqa: BLE001
         dur = ai_provider.elapsed_ms(start)
         _audit_tool(session, conversation_id, message_id, name, t.risk, params, "error", str(ex)[:200], dur)

@@ -168,6 +168,16 @@ AI_DAILY_TOKEN_LIMIT = int(os.getenv("AI_DAILY_TOKEN_LIMIT", "500000"))     # pe
 AI_CONVERSATION_TOKEN_LIMIT = int(os.getenv("AI_CONVERSATION_TOKEN_LIMIT", "80000"))
 AI_TENANT_DAILY_BUDGET_USD = float(os.getenv("AI_TENANT_DAILY_BUDGET_USD", "10"))
 AI_CONCURRENCY = int(os.getenv("AI_CONCURRENCY", "4"))
+# Per-request/per-conversation cost ceiling (USD). A request is refused before calling the provider if its
+# projected cost would exceed the per-request cap; the deterministic answer is always still available.
+AI_MAX_REQUEST_COST_USD = float(os.getenv("AI_MAX_REQUEST_COST_USD", "0.50"))
+# Rough per-model USD price per 1K tokens (input, output). Used only for cost estimation/limits — not billing.
+AI_MODEL_PRICES = {
+    "claude-3-5-haiku": (0.0008, 0.004), "claude-3-5-sonnet": (0.003, 0.015),
+    "gpt-4o-mini": (0.00015, 0.0006), "gpt-4o": (0.0025, 0.01), "mock-1": (0.0, 0.0),
+}
+AI_PRICE_DEFAULT = (float(os.getenv("AI_PRICE_IN_PER_1K", "0.003")),
+                    float(os.getenv("AI_PRICE_OUT_PER_1K", "0.015")))
 # A dedicated, rotating key set for encrypting AI conversation content at rest — kept SEPARATE from SECRET_KEY
 # and CREDENTIAL_ENCRYPTION_KEYS. keys[0] encrypts; the rest are decrypt-only rotation fallbacks.
 AI_DATA_ENCRYPTION_KEYS = [k.strip() for k in os.getenv("AI_DATA_ENCRYPTION_KEYS", "").split(",") if k.strip()]

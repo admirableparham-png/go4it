@@ -146,7 +146,11 @@ def search(session, entity, *, filters=None, query="", sort=None, limit=20, page
         stmt = stmt.where(getattr(e.model, f) == v)
     if query and e.text_field:
         stmt = stmt.where(getattr(e.model, e.text_field).ilike(f"%{str(query).strip()}%"))
-    # tenant scope: the copilot is admin-only (admins see all), but scope stays available for correctness.
+    # tenant scope (defense-in-depth): the copilot is admin-only (admin → no-op, sees all), but a non-admin
+    # caller is fail-closed to their own rows so cross-tenant access can never succeed through search.
+    if e.scope_col:
+        from .tenant import scoped
+        stmt = scoped(stmt, getattr(e.model, e.scope_col), user)
     total = session.exec(select(func.count()).select_from(stmt.subquery())).one()
     order_col = getattr(e.model, (sort or "id").lstrip("-"))
     stmt = stmt.order_by(order_col.desc() if (sort or "").startswith("-") or not sort else order_col.asc())

@@ -17,7 +17,7 @@ def test_search_is_allowlisted_and_safe(ops_engine):
     with Session(ops_engine) as s:
         s.add(Lead(product="Zinc", category="chem", dest_country="GE", tracking_code="L1", owner_id=1,
                    status="new")); s.commit()
-        r = SEARCH.search(s, "leads", query="zinc")
+        r = SEARCH.search(s, "leads", query="zinc", user=_admin(s))
         assert r["total"] == 1
         # unregistered entity (e.g. a credential-bearing table) is rejected — never searchable
         assert "users" not in SEARCH.entities() and "mailaccount" not in SEARCH.entities()
@@ -43,7 +43,7 @@ def test_projection_never_leaks_secret_columns(ops_engine):
         s.add(Shipment(reference="SH-1", mode="sea", booking_reference="SECRET-BK",
                        container_reference="MSKU-999", carrier_name_cache="Maersk internal",
                        current_milestone="in_transit", status="active")); s.commit()
-        row = SEARCH.search(s, "shipments")["rows"][0]
+        row = SEARCH.search(s, "shipments", user=_admin(s))["rows"][0]
         blob = str(row).lower()
         assert "secret-bk" not in blob and "msku-999" not in blob and "maersk" not in blob
 

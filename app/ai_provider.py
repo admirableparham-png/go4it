@@ -7,14 +7,54 @@ is NEVER called in tests). It also owns usage recording, budgets and the emergen
 
 No API key is ever rendered or logged. Credentials come from the environment only.
 """
+import json
 import time
+import urllib.error
+import urllib.request
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
+from decimal import Decimal
 
 from sqlmodel import select
 
 from . import config
 from .models import AIUsageRecord
+
+# The single HTTP choke point for ALL provider calls. Tests replace this with a mock so NO real network I/O ever
+# happens in development/tests. It is only ever invoked when a real provider is explicitly configured + enabled.
+_TRANSPORT = None
+
+
+class ProviderError(RuntimeError):
+    pass
+
+
+class ProviderCancelled(RuntimeError):
+    pass
+
+
+def _default_transport(url, headers, body, timeout):
+    req = urllib.request.Request(url, data=body, headers=headers, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:   # noqa: S310 — url is a fixed provider host
+            return resp.status, json.loads(resp.read().decode() or "{}")
+    except urllib.error.HTTPError as e:  # noqa: BLE001
+        try:
+            return e.code, json.loads(e.read().decode() or "{}")
+        except Exception:  # noqa: BLE001
+            return e.code, {}
+
+
+def _post(url, headers, payload, timeout):
+    fn = _TRANSPORT or _default_transport
+    return fn(url, headers, json.dumps(payload).encode(), timeout)
+
+
+def est_cost(model, in_tokens, out_tokens) -> str:
+    """Rough USD cost estimate (Decimal-as-text) for budget/limit checks — not billing."""
+    pin, pout = config.AI_MODEL_PRICES.get(model, config.AI_PRICE_DEFAULT)
+    c = (Decimal(str(pin)) * Decimal(in_tokens) + Decimal(str(pout)) * Decimal(out_tokens)) / Decimal(1000)
+    return str(c.quantize(Decimal("0.000001")))
 
 # emergency Pause-All (runtime, in-process). A real deployment would persist this; honored by every AI entry point.
 _PAUSED = False
@@ -72,31 +112,95 @@ class MockProvider:
                               output_tokens=len(text) // 4, model=self.model, provider=self.name)
 
 
-class _LiveProviderStub:
-    """A real provider (anthropic/openai/…). Wiring a live client is a documented PRODUCTION-CONFIG item; this
-    build never calls a paid endpoint (and never during tests). `complete` fails closed until a client is wired."""
+class AnthropicProvider:
+    """Real Anthropic Messages API adapter. Structured tool calls, strict timeout, sanitized payloads. All I/O
+    goes through the mockable `_TRANSPORT`, so no live call happens in dev/tests."""
     configured = True
+    name = "anthropic"
 
-    def __init__(self, name, model):
-        self.name = name
+    def __init__(self, model):
         self.model = model
 
     def complete(self, *, messages, tools=None, max_tokens=None, timeout=None):
-        raise ProviderNotConfigured(
-            f"live provider '{self.name}' is not wired in this build — configure it via the production AI canary")
+        if is_paused():
+            raise ProviderPaused("AI is paused")
+        base = (config.AI_API_BASE or "https://api.anthropic.com").rstrip("/")
+        system, conv = "", []
+        for m in messages:
+            if m["role"] == "system":
+                system = m["content"]
+            else:
+                conv.append({"role": "assistant" if m["role"] == "assistant" else "user",
+                             "content": m["content"]})
+        payload = {"model": self.model, "max_tokens": max_tokens or config.AI_MAX_OUTPUT_TOKENS,
+                   "system": system, "messages": conv}
+        if tools:
+            payload["tools"] = tools
+        headers = {"content-type": "application/json", "x-api-key": config.AI_API_KEY,
+                   "anthropic-version": "2023-06-01"}
+        status, data = _post(base + "/v1/messages", headers, payload, timeout or config.AI_TIMEOUT_S)
+        if status != 200:
+            raise ProviderError(f"anthropic {status}: {str(data)[:150]}")
+        text, tool_calls = "", []
+        for block in data.get("content", []):
+            if block.get("type") == "text":
+                text += block.get("text", "")
+            elif block.get("type") == "tool_use":
+                tool_calls.append({"tool": block.get("name"), "params": block.get("input", {}),
+                                   "id": block.get("id", "")})
+        u = data.get("usage", {})
+        return ProviderResult(text=text, tool_calls=tool_calls, input_tokens=u.get("input_tokens", 0),
+                              output_tokens=u.get("output_tokens", 0), model=self.model, provider=self.name)
+
+
+class OpenAIProvider:
+    """Real OpenAI Chat Completions adapter (structured tools). Same mockable transport; no live call in tests."""
+    configured = True
+    name = "openai"
+
+    def __init__(self, model):
+        self.model = model
+
+    def complete(self, *, messages, tools=None, max_tokens=None, timeout=None):
+        if is_paused():
+            raise ProviderPaused("AI is paused")
+        base = (config.AI_API_BASE or "https://api.openai.com").rstrip("/")
+        payload = {"model": self.model, "max_tokens": max_tokens or config.AI_MAX_OUTPUT_TOKENS,
+                   "messages": [{"role": m["role"], "content": m["content"]} for m in messages]}
+        if tools:
+            payload["tools"] = tools
+            payload["tool_choice"] = "auto"
+        headers = {"content-type": "application/json", "authorization": f"Bearer {config.AI_API_KEY}"}
+        status, data = _post(base + "/v1/chat/completions", headers, payload, timeout or config.AI_TIMEOUT_S)
+        if status != 200:
+            raise ProviderError(f"openai {status}: {str(data)[:150]}")
+        choice = (data.get("choices") or [{}])[0].get("message", {})
+        text = choice.get("content") or ""
+        tool_calls = []
+        for tc in choice.get("tool_calls", []) or []:
+            fn = tc.get("function", {})
+            try:
+                params = json.loads(fn.get("arguments") or "{}")
+            except Exception:  # noqa: BLE001
+                params = {}
+            tool_calls.append({"tool": fn.get("name"), "params": params, "id": tc.get("id", "")})
+        u = data.get("usage", {})
+        return ProviderResult(text=text, tool_calls=tool_calls, input_tokens=u.get("prompt_tokens", 0),
+                              output_tokens=u.get("completion_tokens", 0), model=self.model, provider=self.name)
 
 
 def get_provider():
-    """Resolve the configured provider. '' → NotConfigured; 'mock' → MockProvider; a real name (with AI_ENABLED +
-    a key + an allowlisted model) → a live stub. Never returns a provider that would silently call a paid model."""
+    """Resolve the configured provider. '' → NotConfigured; 'mock' → MockProvider; 'anthropic'/'openai' (with
+    AI_ENABLED + a key + an allowlisted model) → the real adapter. A non-allowlisted model is treated as not
+    configured, so an off-list model can never be called."""
     p = (config.AI_PROVIDER or "").lower()
     if p == "mock":
         return MockProvider()
     if p in ("anthropic", "openai") and config.AI_ENABLED and config.AI_API_KEY:
         model = config.AI_MODEL or ""
         if config.AI_MODEL_ALLOWLIST and model not in config.AI_MODEL_ALLOWLIST:
-            return NotConfiguredProvider()          # model not allowlisted → treat as not configured
-        return _LiveProviderStub(p, model)
+            return NotConfiguredProvider()          # model not allowlisted → refuse (never call off-list)
+        return AnthropicProvider(model) if p == "anthropic" else OpenAIProvider(model)
     return NotConfiguredProvider()
 
 
