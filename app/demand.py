@@ -6,12 +6,12 @@ NEVER created from a scraped lead, an email open/delivery, a bounce, a negative/
 membership, or a stale tender. Deduplication (`dedup_key`, partial-unique) guarantees one underlying event is
 counted once even when it surfaces in several places.
 """
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from sqlalchemy.exc import IntegrityError
-from sqlmodel import func, select
+from sqlmodel import select
 
-from .models import DemandSignal, Deal, Lead, Quote, QuoteVersion
+from .models import DemandSignal, Deal, Lead, Quote
 from .pipeline import audit
 
 SIGNAL_TYPES = ("positive_reply", "buyer_requirement", "rfq", "quote_request", "accepted_quote",

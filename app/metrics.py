@@ -9,9 +9,9 @@ currencies. All timestamps are naive UTC (matching the rest of the app).
 The registry is DATA, not magic: `compute(key, session, ...)` runs the metric's deterministic function. Nothing
 here mutates data.
 """
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Callable, Optional
+from typing import Callable
 
 from sqlmodel import func, select
 

@@ -7,7 +7,7 @@ admin Work Queue action.
 """
 from datetime import datetime
 
-from sqlmodel import func, select
+from sqlmodel import select
 
 from . import matching
 from . import opportunity_scoring as SCORING
