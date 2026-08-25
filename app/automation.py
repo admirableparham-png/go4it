@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 
 from sqlmodel import func, select
 
-from .models import AutomationRule, AutomationRun, DemandSignal, Opportunity, WorkItem
+from .models import AutomationRule, AutomationRun, Opportunity, WorkItem
 from .pipeline import audit
 
 TRIGGERS = ("work_queue_overdue", "source_stale", "new_opportunity", "demand_no_supply", "quote_expiring",

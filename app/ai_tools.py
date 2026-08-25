@@ -7,7 +7,7 @@ contract signing, or accepting a quote as a buyer. Read-only tools run without a
 limits + audited, no full-payload logging). Write/draft tools (Checkpoint B) require an explicit action approval
 and are never auto-executed by the copilot loop.
 """
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Callable
 

@@ -11,7 +11,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
-from sqlmodel import func, select
+from sqlmodel import select
 
 from . import config
 from .models import AIUsageRecord

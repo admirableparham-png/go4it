@@ -8,7 +8,7 @@ from datetime import datetime
 
 from sqlalchemy import text
 from sqlalchemy.pool import StaticPool
-from sqlmodel import Session, SQLModel, create_engine, select
+from sqlmodel import Session, SQLModel, create_engine
 
 SUITE_VERSION = "e1"
 
@@ -24,7 +24,7 @@ _IDX = (
 def _seed():
     import app.models  # noqa: F401
     from app.auth import hash_password
-    from app.models import Deal, Lead, Opportunity, Quote, Settlement, User
+    from app.models import Lead, Settlement, User
     e = create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
     SQLModel.metadata.create_all(e)
     with e.connect() as c:
