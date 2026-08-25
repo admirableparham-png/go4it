@@ -78,6 +78,13 @@ from . import ops_providers as OPSPROV
 from . import payments as PAY
 from . import remittance as REMIT
 from . import seller_progress as SP
+from . import metrics as METRICS
+from . import analytics as ANALYTICS
+from . import charts as CHARTS
+from . import data_sources as DATASRC
+from . import provenance_view as PROV
+from .models import (AnalyticsReport, AnalyticsSnapshot, DemandSignal, IntelAlert, Opportunity,
+                     OpportunityMatch, OpportunitySignal)
 from .models import (CustomsCase, DocumentRequirement, FreightOffer, FreightRequest, OperationCase,
                      OperationalException, PaymentMilestone, RemittanceCase, Settlement, Shipment,
                      ShipmentEvent, ShipmentLeg, TradeDocument)
@@ -446,6 +453,16 @@ def dashboard(request: Request):
             "offer_lines": _offer_lines(),
             "due_leads": due_leads, "today": datetime.utcnow().date(),
         }
+        # Phase 8 — the admin intelligence layer on the dashboard (metric-registry KPIs + the commercial funnel).
+        # Computed live, read-only; the trader branch is untouched. GET never mutates business data.
+        if is_admin(user):
+            since = datetime.utcnow() - timedelta(days=30)
+            ctx["intel_kpis"] = ANALYTICS.dashboard_kpis(session)
+            ctx["funnel"] = ANALYTICS.funnel(session)
+            ctx["funnel_rows"] = CHARTS.funnel_rows(ctx["funnel"]["stages"])
+            ctx["replies_outcome"] = ANALYTICS.replies_by_outcome(session, since=since)
+            ctx["deals_stage_bars"] = CHARTS.bar_rows(ANALYTICS.deals_by_stage(session))
+            ctx["wq_priority_bars"] = CHARTS.bar_rows(ANALYTICS.work_queue_by(session, "priority"))
     return templates.TemplateResponse("index.html", ctx)
 
 
@@ -4613,6 +4630,177 @@ async def ops_webhook_tracking(request: Request, x_signature: str = Header(""),
     # a configured provider would parse `raw` and call shipments.record_event(source="webhook:<provider>", ...);
     # that ingestion is idempotent on (source, external_event_id). No provider is configured in this build.
     return JSONResponse({"ok": True})
+
+
+# ============================================================================= INTELLIGENCE (Phase 8)
+# Admin-only analytics/demand/opportunity/reports. Every route is is_admin-gated; GETs never mutate business
+# data; no buyer identity / contact / internal pricing / provider / margin ever reaches a chart, label or export.
+
+def _intel_window(days: str):
+    """A bounded (since, until) window from a `days` query param (default 30, capped 365). Open-ended only when
+    days == 'all'."""
+    if (days or "").strip() == "all":
+        return None, None, "all-time"
+    try:
+        d = min(365, max(1, int(days or "30")))
+    except ValueError:
+        d = 30
+    until = datetime.utcnow()
+    return until - timedelta(days=d), until, f"{d}d"
+
+
+@app.get("/intelligence", response_class=HTMLResponse)
+def intelligence_overview(request: Request, days: str = "30"):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        since, until, rng = _intel_window(days)
+        kpis = ANALYTICS.dashboard_kpis(session, since=since, until=until)
+        fnl = ANALYTICS.funnel(session, since=since, until=until)
+        replies = ANALYTICS.replies_by_outcome(session, since=since, until=until)
+        sources = DATASRC.source_health(session)
+        stale_sources = [s for s in sources if s["freshness"] in ("Stale", "Failed")]
+        # evidence-based rankings (populated once demand signals exist; honest "insufficient" until then)
+        demand_by_product = {k: v for k, v in session.exec(
+            select(DemandSignal.product, func.count()).where(DemandSignal.product != "")
+            .group_by(DemandSignal.product).order_by(func.count().desc()).limit(8)).all()}
+        demand_by_market = {k: v for k, v in session.exec(
+            select(DemandSignal.dest_country, func.count()).where(DemandSignal.dest_country != "")
+            .group_by(DemandSignal.dest_country).order_by(func.count().desc()).limit(8)).all()}
+        opp_open = session.exec(select(func.count()).select_from(Opportunity)
+                                .where(Opportunity.status.notin_(("archived", "rejected", "converted")))).one()
+    return templates.TemplateResponse("intelligence_overview.html", {
+        "request": request, "user": user, "range": rng, "days": days, "kpis": kpis, "funnel": fnl,
+        "funnel_rows": CHARTS.funnel_rows(fnl["stages"]), "replies": replies,
+        "reply_bars": CHARTS.bar_rows(replies), "sources": sources, "stale_sources": stale_sources,
+        "demand_product_bars": CHARTS.bar_rows(demand_by_product),
+        "demand_market_bars": CHARTS.bar_rows(demand_by_market), "opp_open": opp_open})
+
+
+@app.get("/intelligence/sources", response_class=HTMLResponse)
+def intelligence_sources(request: Request):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        sources = DATASRC.source_health(session)
+    return templates.TemplateResponse("intelligence_sources.html", {
+        "request": request, "user": user, "sources": sources})
+
+
+def _performance_rows(session, *, min_activity=5):
+    """Quality-weighted per-user performance. Rewards completed work, positive commercial outcomes, resolved
+    exceptions and response time — NEVER raw email/lead volume. Users below the minimum activity are shown but
+    'Not yet ranked'."""
+    users = session.exec(select(User).order_by(User.id.asc())).all()
+
+    def by_owner(model, owner_col, *conds):
+        stmt = select(owner_col, func.count(model.id))
+        for c in conds:
+            stmt = stmt.where(c)
+        return dict(session.exec(stmt.group_by(owner_col)).all())
+
+    accepted = by_owner(Quote, Quote.owner_id, Quote.status == "accepted")
+    deals_delivered = by_owner(Deal, Deal.owner_id, Deal.stage.in_(("delivered", "settled", "closed")))
+    completed_wi = dict(session.exec(select(WorkItem.resolved_by, func.count(WorkItem.id))
+                        .where(WorkItem.status == "completed").group_by(WorkItem.resolved_by)).all())
+    exc_resolved = by_owner(OperationalException, OperationalException.owner_id,
+                            OperationalException.status.in_(("resolved", "dismissed")))
+    leads_by = by_owner(Lead, Lead.owner_id)
+    # avg response hours (first_response_at - created_at) over owned leads with both timestamps
+    resp = {}
+    for ld in session.exec(select(Lead).where(Lead.first_response_at != None)).all():  # noqa: E711
+        if ld.owner_id and ld.created_at and ld.first_response_at >= ld.created_at:
+            resp.setdefault(ld.owner_id, []).append((ld.first_response_at - ld.created_at).total_seconds() / 3600.0)
+    rows = []
+    for u in users:
+        acc = accepted.get(u.id, 0); dd = deals_delivered.get(u.id, 0)
+        cw = completed_wi.get(u.id, 0); ex = exc_resolved.get(u.id, 0)
+        activity = acc + dd + cw + ex + leads_by.get(u.id, 0)
+        avg_resp = round(sum(resp[u.id]) / len(resp[u.id]), 1) if resp.get(u.id) else None
+        # quality score: outcomes + resolved work, NOT volume. Response-time factor rewards speed when sampled.
+        quality = acc * 4 + dd * 5 + cw * 1 + ex * 2
+        rows.append({"u": u, "accepted": acc, "deals_delivered": dd, "completed_work": cw,
+                     "exceptions_resolved": ex, "avg_response_h": avg_resp, "activity": activity,
+                     "quality": quality, "ranked": activity >= min_activity})
+    # rank only sufficiently-active users; keep others listed but unranked
+    ranked = sorted([r for r in rows if r["ranked"]], key=lambda r: -r["quality"])
+    unranked = [r for r in rows if not r["ranked"]]
+    return ranked, unranked
+
+
+@app.get("/intelligence/performance", response_class=HTMLResponse)
+def intelligence_performance(request: Request):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        ranked, unranked = _performance_rows(session)
+    return templates.TemplateResponse("intelligence_performance.html", {
+        "request": request, "user": user, "ranked": ranked, "unranked": unranked})
+
+
+@app.get("/intelligence/demand", response_class=HTMLResponse)
+def intelligence_demand(request: Request, period: str = "month", product: str = "", country: str = "",
+                        page: int = 1):
+    per = 50
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        stmt = select(DemandSignal)
+        if product:
+            stmt = stmt.where(DemandSignal.product.ilike(f"%{product.strip()}%"))
+        if country:
+            stmt = stmt.where(DemandSignal.dest_country == country.upper())
+        total = session.exec(select(func.count()).select_from(stmt.subquery())).one()
+        pages = max(1, (total + per - 1) // per)
+        page = min(max(1, page), pages)
+        signals = session.exec(stmt.order_by(DemandSignal.id.desc())
+                               .offset((page - 1) * per).limit(per)).all()
+        by_product = {k: v for k, v in session.exec(
+            select(DemandSignal.product, func.count()).where(DemandSignal.product != "")
+            .group_by(DemandSignal.product).order_by(func.count().desc()).limit(10)).all()}
+        by_type = {k: v for k, v in session.exec(
+            select(DemandSignal.signal_type, func.count()).group_by(DemandSignal.signal_type)).all()}
+    return templates.TemplateResponse("intelligence_demand.html", {
+        "request": request, "user": user, "signals": signals, "total": total, "page": page, "pages": pages,
+        "period": period, "product_bars": CHARTS.bar_rows(by_product), "by_type": by_type,
+        "f": {"product": product, "country": country}})
+
+
+@app.get("/intelligence/opportunities", response_class=HTMLResponse)
+def intelligence_opportunities(request: Request, status: str = "", q: str = "", page: int = 1):
+    per = 50
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        stmt = select(Opportunity)
+        if status:
+            stmt = stmt.where(Opportunity.status == status)
+        if q:
+            stmt = stmt.where(Opportunity.title.ilike(f"%{q.strip()}%"))
+        total = session.exec(select(func.count()).select_from(stmt.subquery())).one()
+        pages = max(1, (total + per - 1) // per)
+        page = min(max(1, page), pages)
+        opps = session.exec(stmt.order_by(Opportunity.score.desc(), Opportunity.id.desc())
+                            .offset((page - 1) * per).limit(per)).all()
+    return templates.TemplateResponse("intelligence_opportunities.html", {
+        "request": request, "user": user, "opps": opps, "total": total, "page": page, "pages": pages,
+        "f": {"status": status, "q": q}})
+
+
+@app.get("/intelligence/reports", response_class=HTMLResponse)
+def intelligence_reports(request: Request):
+    with Session(engine) as session:
+        user, deny = _ops_admin(request, session)
+        if deny:
+            return deny
+        reports = session.exec(select(AnalyticsReport).order_by(AnalyticsReport.id.desc()).limit(50)).all()
+    return templates.TemplateResponse("intelligence_reports.html", {
+        "request": request, "user": user, "reports": reports})
 
 
 # ----------------------------------------------------------------------------- ingestion

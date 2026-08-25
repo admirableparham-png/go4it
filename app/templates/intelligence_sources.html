@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-6">
+  <div class="eyebrow mb-1">Intelligence</div>
+  <h2 class="text-2xl font-extrabold tracking-tight font-display">Data Sources</h2>
+  <p class="text-slate-400 text-sm mt-1">Which sources are fresh and reliable. Data is never labelled "Current" unless it was actually refreshed inside its window; an unconfigured integration reads "Not configured", not "Stale".</p>
+</div>
+
+<div class="table-wrap">
+  <table class="data-table">
+    <thead><tr><th>Source</th><th>Category</th><th>Freshness</th><th>Last success</th><th>Last failure</th><th class="text-right">Received</th><th class="text-right">Dups</th><th class="text-right">Rejected</th><th>Owner</th></tr></thead>
+    <tbody>
+      {% for s in sources %}
+        {% set badge = 'badge-emerald' if s.freshness=='Current' else 'badge-amber' if s.freshness=='Aging' else 'badge-rose' if s.freshness in ['Stale','Failed'] else 'badge-slate' %}
+        <tr>
+          <td class="text-slate-200 font-medium">{{ s.label }}</td>
+          <td class="text-slate-400">{{ s.category }}</td>
+          <td><span class="badge {{ badge }}">{{ s.freshness }}</span></td>
+          <td class="text-slate-400">{{ s.last_success.strftime('%Y-%m-%d %H:%M') if s.last_success else '—' }}</td>
+          <td class="text-slate-400">{% if s.last_failure %}<span class="text-rose-400" title="{{ s.error }}">{{ s.last_failure.strftime('%Y-%m-%d') }}</span>{% else %}—{% endif %}</td>
+          <td class="text-right tabular-nums text-slate-300">{{ s.records_received }}</td>
+          <td class="text-right tabular-nums text-slate-500">{{ s.duplicates }}</td>
+          <td class="text-right tabular-nums text-slate-500">{{ s.rejected }}</td>
+          <td class="text-slate-400">{{ s.owner }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

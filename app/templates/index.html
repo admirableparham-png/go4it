@@ -48,7 +48,61 @@
   </div>
 </div>
 
-<!-- KPI cards -->
+<!-- Phase 8 · intelligence KPIs (metric-registry backed; each card carries its exact definition on hover) -->
+{% macro ikpi(m) %}
+  {% set d = m.def %}
+  <div class="card" title="{{ d.label }} — {{ d.definition }} · Formula: {{ d.formula }} · Excludes: {{ d.excluded }}">
+    <div class="eyebrow flex items-center gap-1">{{ d.label }}<span class="text-slate-600 cursor-help">ⓘ</span></div>
+    {% if m.value is mapping %}
+      <div class="mt-1 space-y-0.5">
+        {% for ccy, amt in m.value.items() %}<div class="text-sm font-bold text-slate-100 tabular-nums">{{ ccy }} {{ amt }}</div>{% else %}<div class="text-slate-600 text-sm">—</div>{% endfor %}
+      </div>
+    {% else %}
+      <div class="text-[26px] font-bold leading-tight mt-1 tabular-nums {{ 'text-amber-300' if (d.key in ['overdue_work_items','operational_exceptions'] and m.value) else 'text-slate-100' }}">{{ '—' if m.value is none else m.value }}</div>
+    {% endif %}
+  </div>
+{% endmacro %}
+{% if intel_kpis %}
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+  {{ ikpi(intel_kpis.active_requests) }}
+  {{ ikpi(intel_kpis.open_work_queue) }}
+  {{ ikpi(intel_kpis.overdue_work_items) }}
+  {{ ikpi(intel_kpis.researched_prospects) }}
+  {{ ikpi(intel_kpis.contactable_prospects) }}
+  {{ ikpi(intel_kpis.human_replies) }}
+  {{ ikpi(intel_kpis.positive_replies) }}
+  {{ ikpi(intel_kpis.quotes_awaiting) }}
+  {{ ikpi(intel_kpis.quotes_accepted) }}
+  {{ ikpi(intel_kpis.active_deals) }}
+  {{ ikpi(intel_kpis.active_shipments) }}
+  {{ ikpi(intel_kpis.settled_value) }}
+</div>
+
+<!-- Commercial funnel — real events; a negative reply never enters positive interest -->
+{% if funnel_rows %}
+<div class="card-soft mb-6">
+  <div class="flex items-center justify-between mb-3">
+    <h3 class="text-sm font-semibold text-slate-200">Commercial funnel</h3>
+    <a href="/intelligence" class="text-xs link">Intelligence →</a>
+  </div>
+  <div class="space-y-1.5" role="img" aria-label="Commercial funnel from research prospect to settled">
+    {% for r in funnel_rows %}
+      <div class="flex items-center gap-3 text-xs">
+        <div class="w-32 truncate text-slate-400">{{ r.label }}</div>
+        <div class="flex-1 bg-slate-800/70 rounded-full h-3 overflow-hidden">
+          <div class="h-3 rounded-full bg-gradient-to-r from-indigo-500 to-sky-400" style="width: {{ r.pct }}%"></div>
+        </div>
+        <div class="w-10 text-right tabular-nums text-slate-200 font-medium">{{ r.count }}</div>
+        <div class="w-14 text-right tabular-nums text-slate-500">{% if r.insufficient %}<span title="previous stage below minimum sample">n/a</span>{% elif r.conversion is not none %}{{ r.conversion }}%{% else %}—{% endif %}</div>
+      </div>
+    {% endfor %}
+  </div>
+  <p class="text-[11px] text-slate-600 mt-2">{{ funnel.basis }}</p>
+</div>
+{% endif %}
+{% endif %}
+
+<!-- Legacy pipeline KPI cards (kept) -->
 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
   {{ kpi('Total leads', total, contactable ~ ' contactable', icon='🎯') }}
   {{ kpi('Open pipeline', open_pipeline, 'new + quoted + negotiating', 'text-sky-300', icon='📊') }}

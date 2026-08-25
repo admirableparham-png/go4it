@@ -167,6 +167,10 @@ MIGRATIONS = [
     ("workitem", "related_shipment_id", "INTEGER"),
     ("workitem", "related_payment_id", "INTEGER"),
     ("workitem", "related_exception_id", "INTEGER"),
+    # Intelligence (Phase 8) — additive WorkItem linkage columns. New Phase-8 tables are made by create_all +
+    # scripts/migrate_gate_p8.py.
+    ("workitem", "related_opportunity_id", "INTEGER"),
+    ("workitem", "related_alert_id", "INTEGER"),
 ]
 
 

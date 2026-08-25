@@ -654,6 +654,8 @@ class WorkItem(SQLModel, table=True):
     related_shipment_id: Optional[int] = Field(default=None, foreign_key="shipment.id")              # Phase 7
     related_payment_id: Optional[int] = Field(default=None, foreign_key="paymentmilestone.id")       # Phase 7
     related_exception_id: Optional[int] = Field(default=None, foreign_key="operationalexception.id") # Phase 7
+    related_opportunity_id: Optional[int] = Field(default=None, foreign_key="opportunity.id")        # Phase 8
+    related_alert_id: Optional[int] = Field(default=None, foreign_key="intelalert.id")               # Phase 8
     parent_id: Optional[int] = Field(default=None, foreign_key="workitem.id")
     idempotency_key: str = Field(default="", index=True)   # de-dups automatic items (partial-unique over OPEN)
     condition_version: str = ""    # identifies the underlying-condition INSTANCE+version; once a task for a
@@ -1748,3 +1750,166 @@ class SettlementAdjustment(SQLModel, table=True):
     reason: str = ""
     approved_by: Optional[int] = Field(default=None, foreign_key="user.id")
     created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+# ============================================================================
+# Intelligence (Phase 8) — an ADMIN-ONLY analytics + demand + opportunity layer.
+# STRICTLY ADDITIVE and READ-mostly over the operational tables: it never
+# mutates a Lead/Quote/Deal, never exposes buyer identity/contact, internal
+# pricing, provider details or Go4it margin, and never conflates a scraped lead
+# or a negative reply with demand. DemandSignals are built ONLY from
+# deterministic positive evidence (a confirmed positive reply, a buyer
+# acceptance, a Deal, a verified RFQ/tender) and carry their provenance +
+# observed/verified/derived/inferred state. Opportunities connect demand to
+# Go4it supply with a transparent, VERSIONED score. Snapshots are immutable so
+# a later source/weight change never silently rewrites a historical report.
+# ============================================================================
+
+
+class DemandSignal(SQLModel, table=True):
+    """A single piece of REAL demand evidence. Never created from a scraped lead, an email open/delivery, a
+    bounce, a negative/auto reply, generic directory membership or a stale tender. `dedup_key` (partial-unique)
+    ensures one underlying event is counted once even when it surfaces in several places (Inbox + Outreach, an
+    accepted quote + its Deal, a re-imported tender)."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    signal_type: str = ""          # positive_reply|buyer_requirement|rfq|quote_request|accepted_quote|
+    # repeat_interest|deal|verified_tender|customs_trend|inbound_account_request|admin_market_observation
+    product: str = ""
+    category: str = ""
+    hs_code: str = ""
+    dest_country: str = ""         # destination market
+    origin_pref: str = ""
+    quantity: str = ""             # only when actually known — never invented
+    unit: str = ""
+    company_id: Optional[int] = Field(default=None, foreign_key="company.id")  # internal buyer ref (admin-only)
+    lead_id: Optional[int] = Field(default=None, foreign_key="lead.id")
+    source: str = ""               # provenance source type
+    source_event: str = ""         # e.g. "quote_status_event:123" — the exact underlying record
+    observed_at: Optional[datetime] = None
+    expires_at: Optional[datetime] = None
+    confidence: int = 0            # 0-100, from evidence tier (never from lead volume)
+    verification_state: str = "observed"  # observed | verified | derived | inferred
+    strength: str = "weak"         # weak | moderate | strong (accepted quote / Deal = strong)
+    evidence_ref: str = ""
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id")  # seller the demand may serve; NULL=global
+    dedup_key: str = Field(default="", index=True)
+    inferred: bool = False         # True = backfill-seeded from historical evidence, not an observed live event
+    created_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class Opportunity(SQLModel, table=True):
+    """A structured opportunity connecting demand to Go4it's supply capabilities. Carries a TRANSPARENT, versioned
+    score (breakdown stored). Never auto-contacts a buyer or seller. Buyer identity is never exposed to sellers."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    reference: str = Field(default="", index=True)   # OPP-YYYYMM-####
+    title: str = ""
+    product: str = ""
+    category: str = ""
+    hs_code: str = ""
+    dest_market: str = ""
+    estimated_size: str = ""       # Decimal-as-text, ONLY when real data supports it
+    size_currency: str = ""
+    confidence: int = 0            # 0-100 (lowered by missing evidence)
+    freshness_at: Optional[datetime] = None   # newest supporting signal
+    competition: str = ""          # low|medium|high|unknown (only when supported)
+    feasibility: str = "unknown"   # operational feasibility
+    missing_info: str = ""         # JSON list of what's missing
+    owner_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    status: str = "new"            # new|needs_research|needs_supply|ready_for_review|approved|monitoring|
+    # pursuing|converted|rejected|expired|archived
+    recommended_action: str = ""
+    score: int = 0
+    score_version: str = ""
+    score_breakdown: str = ""      # JSON component→points (no hidden weights)
+    signal_count: int = 0
+    created_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class OpportunitySignal(SQLModel, table=True):
+    """Links an Opportunity to a DemandSignal that supports it (many-to-many)."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    opportunity_id: int = Field(foreign_key="opportunity.id", index=True)
+    demand_signal_id: int = Field(foreign_key="demandsignal.id", index=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class OpportunityMatch(SQLModel, table=True):
+    """A matched Go4it supply candidate (Product / Supplier / Seller) for an Opportunity, with an EXPLANATION and
+    the missing requirements. Never invents supplier capability; never exposes buyer identity to a seller."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    opportunity_id: int = Field(foreign_key="opportunity.id", index=True)
+    product_id: Optional[int] = Field(default=None, foreign_key="product.id")
+    company_id: Optional[int] = Field(default=None, foreign_key="company.id")  # supplier/seller (admin-only)
+    match_score: int = 0
+    explanation: str = ""          # why this matched (reasons)
+    missing_requirements: str = ""  # what's missing/unverified for a firm match
+    verified: bool = False
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class AnalyticsSnapshot(SQLModel, table=True):
+    """An IMMUTABLE computed-analytics snapshot — both a metric cache and a historical record. A later source or
+    scoring-weight change never rewrites it (it carries its own metric/scoring version + source cutoff). Used to
+    serve dashboards fast and to make period-over-period comparisons honest."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    kind: str = Field(default="", index=True)   # cache key kind, e.g. "dashboard" | "funnel" | "source_health"
+    cache_key: str = Field(default="", index=True)  # tenant-scoped, NO sensitive identifiers
+    metric_version: str = ""
+    scoring_version: str = ""
+    time_range: str = ""           # e.g. "30d" | "2026-01..2026-03"
+    filters: str = ""              # JSON (country/category/product/owner) — no buyer identifiers
+    source_cutoff: Optional[datetime] = None
+    source_freshness: str = ""     # JSON freshness summary
+    result: str = ""               # JSON payload
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id")  # NULL = global/admin
+    derived: bool = True
+    inferred: bool = False
+    generated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class IntelAlert(SQLModel, table=True):
+    """An admin-only in-app intelligence alert. Idempotent on (alert_key, condition_version): the same unchanged
+    condition never spawns a duplicate; a material change (new condition_version) may create a fresh alert. No
+    automatic external email/outreach is ever sent from here."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    alert_type: str = ""           # new_high_demand|rising_category|market_spike|requirement_no_supply|
+    # match_no_outreach|seasonal_window|expiring_opportunity|stale_data|source_failure|data_anomaly
+    alert_key: str = Field(default="", index=True)
+    condition_version: str = ""
+    severity: str = "info"         # info | warning | critical
+    title: str = ""
+    body: str = ""                 # admin-facing summary (no buyer PII)
+    related_opportunity_id: Optional[int] = Field(default=None, foreign_key="opportunity.id")
+    owner_id: Optional[int] = Field(default=None, foreign_key="user.id")  # recipient/team; NULL = all admins
+    cadence: str = "custom"        # daily | weekly | monthly | seasonal | custom
+    schedule_tz: str = "UTC"       # tz used only to decide the local scheduled hour; stored times stay naive UTC
+    status: str = "new"            # new | reviewed | snoozed | dismissed
+    snooze_until: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class AnalyticsReport(SQLModel, table=True):
+    """A generated internal admin report (CSV/PDF) stored PRIVATELY. Records its metric/scoring version, range,
+    filters, source freshness and a sha256; generation + download are audited and admin-only. No auto emailing."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    reference: str = Field(default="", index=True)   # RPT-YYYYMM-####
+    report_type: str = ""          # weekly_exec|monthly_demand|market|category|source_quality|funnel|operations|team_performance
+    title: str = ""
+    time_range: str = ""
+    filters: str = ""              # JSON
+    params: str = ""               # JSON
+    metric_version: str = ""
+    scoring_version: str = ""
+    source_freshness: str = ""     # JSON appendix
+    file_path: str = ""            # relative under REPORT_FILES_DIR (private)
+    content_type: str = ""
+    sha256: str = ""
+    status: str = "generated"      # generated | failed
+    tenant_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    generated_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    generated_at: datetime = Field(default_factory=datetime.utcnow)

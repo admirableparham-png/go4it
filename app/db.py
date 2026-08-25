@@ -34,6 +34,7 @@ def init_db() -> None:
     _ensure_product_indexes()
     _ensure_commercial_indexes()
     _ensure_operations_indexes()
+    _ensure_intelligence_indexes()
 
 
 def _ensure_trade_network_indexes() -> None:
@@ -153,6 +154,26 @@ def _ensure_operations_indexes() -> None:
                               "ON operationcase(reference) WHERE reference != ''"))
             conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_opcase_deal_primary "
                               "ON operationcase(deal_id) WHERE case_type = 'deal' AND deal_id IS NOT NULL"))
+            conn.commit()
+    except Exception:  # noqa: BLE001 — never block startup on the guard
+        pass
+
+
+def _ensure_intelligence_indexes() -> None:
+    """Intelligence (Phase 8) DB-level guards (idempotent, never block boot):
+    (a) demand-signal deduplication — a PARTIAL-unique index over dedup_key so one underlying event (a reply, an
+        accepted quote, a re-imported tender) is counted exactly once (blank keys never collide); and
+    (b) alert idempotency — a PARTIAL-unique index over (alert_key, condition_version) so an unchanged condition
+        never spawns a duplicate alert while a material change (new condition_version) may."""
+    if not _is_sqlite:
+        return
+    try:
+        with engine.connect() as conn:
+            from sqlalchemy import text
+            conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_demandsignal_dedup "
+                              "ON demandsignal(dedup_key) WHERE dedup_key != ''"))
+            conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_intelalert_key "
+                              "ON intelalert(alert_key, condition_version) WHERE alert_key != ''"))
             conn.commit()
     except Exception:  # noqa: BLE001 — never block startup on the guard
         pass

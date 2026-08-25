@@ -24,6 +24,8 @@ REACHABLE = ["/admin/work-queue", "/admin/requests", "/leads", "/suppliers",
              "/commercial/analytics", "/research", "/intel", "/markets",
              "/operations", "/operations/freight", "/operations/shipments", "/operations/documentation",
              "/operations/payments", "/operations/exceptions",   # Phase 7 Operations
+             "/intelligence", "/intelligence/demand", "/intelligence/opportunities", "/intelligence/performance",
+             "/intelligence/reports", "/intelligence/sources",   # Phase 8 Intelligence
              "/lines/cd-dvd", "/command", "/ingest", "/admin/users", "/admin/activity",
              "/sellers", "/data-quality", "/duplicates"]   # + Phase 5: Suppliers/Categories/Pricing under Products
 # admin-only routes (unchanged backend gate) — a non-admin must still get 403
@@ -35,7 +37,9 @@ ADMIN_ONLY = ["/command", "/research", "/suppliers", "/catalog", "/rates", "/ing
               "/categories", "/pricing",  # Phase 5 Products/Pricing
               "/contracts", "/contract-templates", "/commercial/analytics",  # Phase 6 Commercial
               "/operations", "/operations/freight", "/operations/shipments", "/operations/documentation",
-              "/operations/payments", "/operations/exceptions"]  # Phase 7 Operations
+              "/operations/payments", "/operations/exceptions",  # Phase 7 Operations
+              "/intelligence", "/intelligence/demand", "/intelligence/opportunities", "/intelligence/performance",
+              "/intelligence/reports", "/intelligence/sources"]  # Phase 8 Intelligence
 
 
 @pytest.fixture
@@ -117,7 +121,9 @@ def test_each_workspace_has_its_own_contextual_row(ctx):
         "/quotes": ("Commercial pages", ["Quotes", "Contracts", "Deals", "Commercial Analytics"]),
         "/operations": ("Operations pages", ["Overview", "Freight", "Shipments", "Documentation",
                                              "Payments &amp; Remittance", "Exceptions"]),
-        "/research": ("Intelligence pages", ["Research", "Market Intel", "Markets", "Product Lines", "Command"]),
+        "/research": ("Intelligence pages", ["Overview", "Demand", "Opportunities", "Markets", "Performance",
+                                             "Reports", "Data Sources", "Research", "Market Intel",
+                                             "Product Lines", "Command"]),
         "/ingest": ("Admin pages", ["Data Imports", "Accounts &amp; Access", "Team Activity"]),
     }
     for path, (aria, children) in cases.items():

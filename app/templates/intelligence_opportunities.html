@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-6">
+  <div class="eyebrow mb-1">Intelligence</div>
+  <h2 class="text-2xl font-extrabold tracking-tight font-display flex items-center gap-2">Opportunities <span class="badge badge-slate">{{ total }}</span></h2>
+  <p class="text-slate-400 text-sm mt-1">Demand matched to Go4it supply, with a transparent, versioned score. Nothing here auto-contacts a buyer or seller.</p>
+</div>
+
+<form method="get" class="flex flex-wrap gap-2 mb-4">
+  <input name="q" value="{{ f.q }}" placeholder="Search…" class="input input-sm" />
+  <select name="status" class="input input-sm">
+    <option value="">Any status</option>
+    {% for st in ['new','needs_research','needs_supply','ready_for_review','approved','monitoring','pursuing','converted','rejected','expired','archived'] %}
+      <option value="{{ st }}" {{ 'selected' if f.status == st }}>{{ st.replace('_',' ') }}</option>
+    {% endfor %}
+  </select>
+  <button class="btn btn-sm">Filter</button>
+</form>
+
+{% if opps %}
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Reference</th><th>Opportunity</th><th>Market</th><th class="text-right">Score</th><th class="text-right">Confidence</th><th>Status</th><th>Freshness</th></tr></thead>
+      <tbody>
+        {% for o in opps %}
+          <tr>
+            <td><a href="/intelligence/opportunities/{{ o.id }}" class="font-mono link">{{ o.reference }}</a></td>
+            <td class="text-slate-100 font-medium">{{ o.title or o.product }}</td>
+            <td class="text-slate-400">{{ o.dest_market or '—' }}</td>
+            <td class="text-right tabular-nums font-semibold {{ 'text-emerald-400' if o.score >= 70 else 'text-slate-200' }}">{{ o.score }}</td>
+            <td class="text-right tabular-nums text-slate-400">{{ o.confidence }}</td>
+            <td><span class="badge badge-sky">{{ o.status.replace('_',' ') }}</span></td>
+            <td class="text-slate-500">{{ o.freshness_at.strftime('%Y-%m-%d') if o.freshness_at else '—' }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="empty">No opportunities yet. They are created from demand signals with matched supply.</div>
+{% endif %}
+{% endblock %}

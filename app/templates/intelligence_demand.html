@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-6">
+  <div class="eyebrow mb-1">Intelligence</div>
+  <h2 class="text-2xl font-extrabold tracking-tight font-display flex items-center gap-2">Demand <span class="badge badge-slate">{{ total }}</span></h2>
+  <p class="text-slate-400 text-sm mt-1">Real demand signals only — a confirmed positive reply, a buyer requirement, an RFQ, an accepted quote or a Deal. Scraped leads, opens, deliveries and negative replies are never demand.</p>
+</div>
+
+<form method="get" class="flex flex-wrap gap-2 mb-4">
+  <input name="product" value="{{ f.product }}" placeholder="Product…" class="input input-sm" />
+  <input name="country" value="{{ f.country }}" placeholder="Market ISO" class="input input-sm" />
+  <button class="btn btn-sm">Filter</button>
+</form>
+
+{% if product_bars %}
+<div class="card-soft mb-6">
+  <h3 class="text-sm font-semibold text-slate-200 mb-3">High-demand products</h3>
+  <div class="space-y-2">{% for it in product_bars %}<div class="flex items-center gap-3 text-xs"><div class="w-28 truncate text-slate-400" title="{{ it.label }}">{{ it.label }}</div><div class="flex-1 bg-slate-800/70 rounded-full h-2.5 overflow-hidden"><div class="h-2.5 rounded-full bg-sky-500" style="width: {{ it.pct }}%"></div></div><div class="w-8 text-right tabular-nums text-slate-300">{{ it.count }}</div></div>{% endfor %}</div>
+</div>
+{% endif %}
+
+{% if signals %}
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Type</th><th>Product</th><th>Market</th><th>Strength</th><th>Confidence</th><th>Basis</th><th>Observed</th></tr></thead>
+      <tbody>
+        {% for s in signals %}
+          <tr>
+            <td class="text-slate-200">{{ s.signal_type.replace('_',' ') }}</td>
+            <td class="text-slate-300">{{ s.product or '—' }}</td>
+            <td class="text-slate-400">{{ s.dest_country or '—' }}</td>
+            <td><span class="badge {{ 'badge-emerald' if s.strength=='strong' else 'badge-sky' if s.strength=='moderate' else 'badge-slate' }}">{{ s.strength }}</span></td>
+            <td class="tabular-nums text-slate-300">{{ s.confidence }}</td>
+            <td><span class="badge badge-slate" title="{{ s.source_event }}">{{ s.verification_state }}</span></td>
+            <td class="text-slate-400">{{ s.observed_at.strftime('%Y-%m-%d') if s.observed_at else '—' }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="empty">No demand signals yet. They are created from deterministic positive evidence (accepted quotes, Deals, confirmed positive replies, verified RFQs).</div>
+{% endif %}
+{% endblock %}

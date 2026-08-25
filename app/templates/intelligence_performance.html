@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-6">
+  <div class="eyebrow mb-1">Intelligence</div>
+  <h2 class="text-2xl font-extrabold tracking-tight font-display">Performance</h2>
+  <p class="text-slate-400 text-sm mt-1">Team performance rewarded by <b class="text-slate-200">quality</b> — completed work, positive commercial outcomes, resolved exceptions and response time. Never ranked by raw emails or leads added. Users below the minimum activity are shown but not ranked.</p>
+</div>
+
+<div class="table-wrap mb-6">
+  <table class="data-table">
+    <thead><tr><th>#</th><th>User</th><th class="text-right">Accepted quotes</th><th class="text-right">Deals delivered</th><th class="text-right">Completed work</th><th class="text-right">Exceptions resolved</th><th class="text-right">Avg response (h)</th><th class="text-right">Quality</th></tr></thead>
+    <tbody>
+      {% for r in ranked %}
+        <tr>
+          <td class="text-slate-500 tabular-nums">{{ loop.index }}</td>
+          <td class="text-slate-200">{{ r.u.name or r.u.email }} <span class="badge badge-slate">{{ r.u.role }}</span></td>
+          <td class="text-right tabular-nums text-emerald-400">{{ r.accepted }}</td>
+          <td class="text-right tabular-nums text-slate-200">{{ r.deals_delivered }}</td>
+          <td class="text-right tabular-nums text-slate-300">{{ r.completed_work }}</td>
+          <td class="text-right tabular-nums text-slate-300">{{ r.exceptions_resolved }}</td>
+          <td class="text-right tabular-nums text-slate-400">{{ r.avg_response_h if r.avg_response_h is not none else '—' }}</td>
+          <td class="text-right tabular-nums font-semibold text-slate-100">{{ r.quality }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="8" class="text-slate-500 text-center py-4">Not enough activity to rank anyone yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if unranked %}
+<div class="eyebrow mb-2">Not yet ranked <span class="text-slate-600 normal-case">(insufficient activity — avoids unfair ranking of new/inactive users)</span></div>
+<div class="flex flex-wrap gap-2">
+  {% for r in unranked %}<span class="badge badge-slate">{{ r.u.name or r.u.email }} · {{ r.activity }} actions</span>{% endfor %}
+</div>
+{% endif %}
+{% endblock %}
