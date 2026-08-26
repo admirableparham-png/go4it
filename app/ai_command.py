@@ -299,6 +299,11 @@ def answer(session, conversation, user_text, user, *, now=None):
     prov = PROV.get_provider()
     use_provider = getattr(prov, "configured", False) and not PROV.is_paused() \
         and not is_cancelled(conversation.id)
+    # A REAL (paid) provider is used ONLY for an allowlisted founder/admin — AI_LIVE_ALLOWLIST is enforced here,
+    # so enabling Claude never opens live calls to every admin. The deterministic 'mock' provider is unaffected
+    # (offline canary/tests). A non-allowlisted admin silently falls back to the deterministic answer.
+    if use_provider and getattr(prov, "name", "") in ("anthropic", "openai") and not PROV.live_allowed(user):
+        use_provider = False
     if use_provider and not PROV.budget_status(session, owner_id=conversation.owner_id, now=now)["within"]:
         use_provider = False        # over budget → deterministic answer (never blocks the admin)
     if use_provider:

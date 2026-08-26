@@ -91,6 +91,8 @@ def _enable(monkeypatch, provider, transport, *, model="claude-3-5-haiku"):
     monkeypatch.setattr(CFG, "AI_API_KEY", "test-key-not-real", raising=False)
     monkeypatch.setattr(CFG, "AI_MODEL", model, raising=False)
     monkeypatch.setattr(CFG, "AI_MODEL_ALLOWLIST", [model], raising=False)
+    # the admin the copilot tests answer as must be on the live allowlist, else the real provider is gated off
+    monkeypatch.setattr(CFG, "AI_LIVE_ALLOWLIST", ["admin@t.local"], raising=False)
     monkeypatch.setattr(PROV, "_TRANSPORT", transport, raising=False)
 
 
@@ -192,6 +194,22 @@ def test_bounded_loop_runs_tool_then_answers(monkeypatch, db):
         # usage recorded for BOTH provider calls, tagged with the model
         usage = s.exec(select(AIUsageRecord).where(AIUsageRecord.conversation_id == conv.id)).all()
         assert len(usage) == 2 and all(u.provider == "anthropic" for u in usage)
+
+
+def test_non_allowlisted_admin_never_calls_live_provider(monkeypatch, db):
+    """AI_LIVE_ALLOWLIST is enforced: an admin NOT on the allowlist gets the deterministic answer and the real
+    provider transport is never touched — enabling Claude does not open live calls to every admin."""
+    tr = _Transport([_ANTHROPIC_TOOL, _ANTHROPIC_TEXT])
+    _enable(monkeypatch, "anthropic", tr)
+    monkeypatch.setattr(CFG, "AI_LIVE_ALLOWLIST", ["someone-else@t.local"], raising=False)  # not our admin
+    with Session(db) as s:
+        admin = _u(s, "admin@t.local")
+        conv = CMD.new_conversation(s, admin); s.commit()
+        res = CMD.answer(s, conv, "What needs my attention today?", admin); s.commit()
+        assert len(tr.calls) == 0                              # *** no live Anthropic call ***
+        assert res["refused"] is False and res["text"]        # deterministic answer still served
+        msg = s.exec(select(AIUsageRecord).where(AIUsageRecord.conversation_id == conv.id)).all()
+        assert msg == []                                       # no provider usage recorded
 
 
 def test_loop_is_bounded_when_model_never_stops(monkeypatch, db):
