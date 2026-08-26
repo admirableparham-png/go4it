@@ -17,6 +17,11 @@ services:
       - go4it-data:/app/var
       - go4it-docs:/app/deal_docs
       - go4it-files:/app/request_files
+      - go4it-product:/app/product_files
+      - go4it-operation:/app/operation_files
+      - go4it-report:/app/report_files
+      - go4it-contract:/app/contract_files
+      - go4it-quote:/app/quote_files
       - ./backups:/app/backups
     networks: [go4it-net]
     restart: unless-stopped
@@ -35,6 +40,18 @@ services:
       - go4it-data:/app/var
       - go4it-docs:/app/deal_docs
       - go4it-files:/app/request_files
+      - go4it-product:/app/product_files
+      - go4it-operation:/app/operation_files
+      - go4it-report:/app/report_files
+      - go4it-contract:/app/contract_files
+      - go4it-quote:/app/quote_files
+    # the worker serves no HTTP — check its loop HEARTBEAT, not the app's curl endpoint (which always failed here)
+    healthcheck:
+      test: ["CMD", "python", "scripts/worker_healthcheck.py"]
+      interval: 60s
+      timeout: 15s
+      start_period: 40s
+      retries: 3
     networks: [go4it-net]
     depends_on: [app]
     restart: unless-stopped
@@ -47,3 +64,8 @@ volumes:
   go4it-data:
   go4it-docs:
   go4it-files:
+  go4it-product:
+  go4it-operation:
+  go4it-report:
+  go4it-contract:
+  go4it-quote:

@@ -14,11 +14,20 @@ RUN apt-get update \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Pinned Chromium (matches playwright==1.60.0 in requirements) + its system libraries, installed to a shared,
+# world-readable path so the non-root app user can launch it for Catalog/quote/report/contract PDF generation.
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+RUN python -m playwright install --with-deps chromium \
+    && chmod -R a+rx /ms-playwright
+
 COPY . .
 
-# Run unprivileged; give the app writable data dirs (mount volumes on these in prod so the DB,
-# uploaded compliance docs (deal_docs) and delivered concierge files (request_files) all persist).
-RUN useradd -m app && mkdir -p /app/var /app/backups /app/deal_docs /app/request_files \
+# Run unprivileged; give the app writable data dirs. Every private-file dir is created + chowned to `app` HERE so
+# that when named volumes mount onto them, the (empty) volumes inherit app ownership — no manual host chown, and
+# the fix survives every redeploy. Mount persistent volumes on all of these in prod.
+RUN useradd -m app \
+    && mkdir -p /app/var /app/backups /app/deal_docs /app/request_files \
+       /app/product_files /app/operation_files /app/report_files /app/contract_files /app/quote_files \
     && chown -R app:app /app
 USER app
 

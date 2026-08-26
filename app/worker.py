@@ -49,6 +49,17 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 logger = logging.getLogger("go4it.worker")
 
 
+def _heartbeat() -> None:
+    """Write a liveness timestamp the container HEALTHCHECK reads (scripts/worker_healthcheck.py). Proves the
+    background LOOP is alive — the worker serves no HTTP, so the app's curl health check never applied to it."""
+    try:
+        from . import ai_provider as _p
+        with open(os.path.join(_p._control_dir(), "worker_heartbeat"), "w") as fh:
+            fh.write(str(int(time.time())))
+    except Exception:  # noqa: BLE001 — never let heartbeat IO crash a worker pass
+        pass
+
+
 def run_inbox() -> dict:
     return ingest_source(Go4WorldCsvSource(INBOX_DIR))
 
@@ -266,6 +277,7 @@ def main():
                 else "disabled (set ENRICH_INTERVAL)",
                 f"every {IMAP_INTERVAL}s" if (IMAP_ENABLED and IMAP_INTERVAL > 0)
                 else "disabled (set IMAP_*)")
+    _heartbeat()      # first beat at startup so the container is healthy before the first full pass completes
     last_portal = last_enrich = last_imap = last_followup = last_reminder = last_worksync = 0.0
     last_campaign = 0.0
     while True:
@@ -304,6 +316,7 @@ def main():
                 last_campaign = now
         except Exception:
             logger.exception("worker pass failed")
+        _heartbeat()      # mark the loop alive AFTER each pass (even a failed one) for the health check
         time.sleep(INGEST_INTERVAL)
 
 

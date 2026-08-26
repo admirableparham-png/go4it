@@ -56,17 +56,58 @@ def est_cost(model, in_tokens, out_tokens) -> str:
     c = (Decimal(str(pin)) * Decimal(in_tokens) + Decimal(str(pout)) * Decimal(out_tokens)) / Decimal(1000)
     return str(c.quantize(Decimal("0.000001")))
 
-# emergency Pause-All (runtime, in-process). A real deployment would persist this; honored by every AI entry point.
+# emergency Pause-All — CROSS-PROCESS. The flag is a sentinel file on the shared control dir (co-located with the
+# DB volume in prod), so every gunicorn worker AND the separate worker container observe the same state. The
+# in-process `_PAUSED` is only a fast-path fallback used if the filesystem is unreadable. Honored by every entry point.
 _PAUSED = False
 
 
+def _control_dir() -> str:
+    import os
+    d = config.AI_CONTROL_DIR
+    if not d:
+        from .config import DATABASE_URL, IS_LOCAL
+        if not IS_LOCAL and DATABASE_URL.startswith("sqlite:///"):
+            d = os.path.dirname(DATABASE_URL.replace("sqlite:///", "", 1)) or "/app/var"
+        else:
+            import tempfile
+            d = tempfile.gettempdir()
+    try:
+        os.makedirs(d, exist_ok=True)
+    except OSError:
+        pass
+    return d
+
+
+def _flag_path(name: str) -> str:
+    import os
+    return os.path.join(_control_dir(), name)
+
+
 def pause_all(paused: bool = True):
+    """Set the emergency Pause-All flag for ALL processes. Writes the shared sentinel + the local fast-path."""
     global _PAUSED
     _PAUSED = bool(paused)
+    import os
+    path = _flag_path("ai_paused")
+    try:
+        if paused:
+            with open(path, "w") as fh:
+                fh.write("1")
+        elif os.path.exists(path):
+            os.remove(path)
+    except OSError:
+        pass          # filesystem unavailable → the in-process flag still applies within this process
 
 
 def is_paused() -> bool:
-    return _PAUSED
+    """True if AI is paused. The shared sentinel file is authoritative (cross-process); fall back to the
+    in-process flag only if the filesystem can't be read."""
+    import os
+    try:
+        return os.path.exists(_flag_path("ai_paused")) or _PAUSED
+    except OSError:
+        return _PAUSED
 
 
 class ProviderNotConfigured(RuntimeError):

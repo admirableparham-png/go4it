@@ -52,19 +52,43 @@ def detect_injection(text: str) -> list:
     return [p.pattern for p in _INJECTION if p.search(text or "")]
 
 
-# cooperative cancellation for a running provider turn (checked between bounded tool steps)
+# cooperative cancellation for a running provider turn (checked between bounded tool steps). CROSS-PROCESS: the
+# cancel request may land on a different gunicorn worker than the one running the turn, so the flag is a shared
+# sentinel file (co-located with the DB volume). `_CANCELLED` is an in-process fast-path fallback only.
 _CANCELLED = set()
+
+
+def _cancel_flag(conversation_id) -> str:
+    return PROV._flag_path(f"ai_cancel_{int(conversation_id)}")
 
 
 def cancel(conversation_id):
     _CANCELLED.add(int(conversation_id))
+    try:
+        with open(_cancel_flag(conversation_id), "w") as fh:
+            fh.write("1")
+    except OSError:
+        pass
 
 
 def clear_cancel(conversation_id):
     _CANCELLED.discard(int(conversation_id))
+    try:
+        import os
+        p = _cancel_flag(conversation_id)
+        if os.path.exists(p):
+            os.remove(p)
+    except OSError:
+        pass
 
 
 def is_cancelled(conversation_id) -> bool:
+    try:
+        import os
+        if os.path.exists(_cancel_flag(conversation_id)):
+            return True
+    except OSError:
+        pass
     return int(conversation_id) in _CANCELLED
 
 

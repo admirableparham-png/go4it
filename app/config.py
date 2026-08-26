@@ -172,12 +172,21 @@ AI_CONCURRENCY = int(os.getenv("AI_CONCURRENCY", "4"))
 # projected cost would exceed the per-request cap; the deterministic answer is always still available.
 AI_MAX_REQUEST_COST_USD = float(os.getenv("AI_MAX_REQUEST_COST_USD", "0.50"))
 # Rough per-model USD price per 1K tokens (input, output). Used only for cost estimation/limits — not billing.
+# Current Claude lineup from Anthropic's model overview (per-MTok /1000): sonnet-5 $2/$10, opus-5 $5/$25,
+# haiku-4.5 $1/$5. Claude 3.5 is DEPRECATED — kept only so a pinned legacy deployment still costs correctly.
 AI_MODEL_PRICES = {
-    "claude-3-5-haiku": (0.0008, 0.004), "claude-3-5-sonnet": (0.003, 0.015),
+    "claude-sonnet-5": (0.002, 0.010), "claude-opus-5": (0.005, 0.025), "claude-fable-5": (0.010, 0.050),
+    "claude-haiku-4-5": (0.001, 0.005), "claude-haiku-4-5-20251001": (0.001, 0.005),
+    "claude-sonnet-4-6": (0.003, 0.015), "claude-sonnet-4-5": (0.003, 0.015),   # legacy, still available
+    "claude-3-5-haiku": (0.0008, 0.004), "claude-3-5-sonnet": (0.003, 0.015),   # deprecated
     "gpt-4o-mini": (0.00015, 0.0006), "gpt-4o": (0.0025, 0.01), "mock-1": (0.0, 0.0),
 }
 AI_PRICE_DEFAULT = (float(os.getenv("AI_PRICE_IN_PER_1K", "0.003")),
                     float(os.getenv("AI_PRICE_OUT_PER_1K", "0.015")))
+# Where cross-process AI control flags (Pause-All + per-conversation cancel) live. Empty => derived: the DB
+# directory on a public sqlite deployment (a shared volume, so every gunicorn worker AND the worker container
+# observe the same flag), else the system temp dir (dev/tests). Shared state, never process-local memory.
+AI_CONTROL_DIR = os.getenv("AI_CONTROL_DIR", "").strip()
 # A dedicated, rotating key set for encrypting AI conversation content at rest — kept SEPARATE from SECRET_KEY
 # and CREDENTIAL_ENCRYPTION_KEYS. keys[0] encrypts; the rest are decrypt-only rotation fallbacks.
 AI_DATA_ENCRYPTION_KEYS = [k.strip() for k in os.getenv("AI_DATA_ENCRYPTION_KEYS", "").split(",") if k.strip()]

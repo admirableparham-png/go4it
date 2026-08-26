@@ -80,19 +80,31 @@ def _derive_requests(s) -> int:
 
 def migrate(dry=False):
     init_db()
+    if dry:
+        # A dry-run must mutate nothing even though run_all_sync uses inner SAVEPOINTs (create_work_item_safe).
+        # Bind the Session to a dedicated CONNECTION-level transaction and roll THAT back — robust to the inner
+        # savepoints (an outer session.begin_nested() gets invalidated when an inner savepoint rolls back on a
+        # duplicate-key IntegrityError, which is common once work items already exist).
+        conn = engine.connect()
+        trans = conn.begin()
+        try:
+            ds = Session(bind=conn)
+            pre = _counts(ds)
+            print("PRE :", pre)
+            seeded = _derive_requests(ds)
+            summary = WQ.run_all_sync(ds, None, inferred=True)
+            post = _counts(ds)
+            ds.close()
+        finally:
+            trans.rollback()               # discard EVERYTHING done on this connection — nothing persisted
+            conn.close()
+        print(f"[dry-run] would seed {seeded} baseline status event(s); create {summary['total']} work "
+              f"item(s): " + ", ".join(f"{k}={v}" for k, v in summary.items() if k != "total" and v))
+        print("POST:", post, "(rolled back — nothing persisted)")
+        return
     with Session(engine) as s:
         pre = _counts(s)
         print("PRE :", pre)
-        if dry:
-            sp = s.begin_nested()          # outer savepoint so a dry-run mutates nothing
-            seeded = _derive_requests(s)
-            summary = WQ.run_all_sync(s, None, inferred=True)
-            post = _counts(s)
-            sp.rollback()
-            print(f"[dry-run] would seed {seeded} baseline status event(s); create {summary['total']} work "
-                  f"item(s): " + ", ".join(f"{k}={v}" for k, v in summary.items() if k != "total" and v))
-            print("POST:", post, "(rolled back — nothing persisted)")
-            return
         try:
             seeded = _derive_requests(s)
             summary = WQ.run_all_sync(s, None, inferred=True)
@@ -101,11 +113,13 @@ def migrate(dry=False):
             for k in _OPERATIONAL:
                 if pre[k] != post[k]:
                     raise RuntimeError(f"operational count changed for {k}: {pre[k]} -> {post[k]}")
-            # every work item resolves to a real tenant-or-system + at least a related record or 'other'
+            # every work item resolves to a real tenant-or-system + at least a related record or 'other'.
+            # Check EVERY related_* column (request/lead/company/quote/outreach AND the newer deal/product/
+            # contract/operation_case/shipment/payment/exception/opportunity/alert/conversation/proposal/
+            # automation links) so newer work-item types are never mis-flagged as unrelated.
+            _related_cols = [c for c in WorkItem.__table__.columns.keys() if c.startswith("related_")]
             for wi in s.exec(select(WorkItem)).all():
-                if wi.type != "other" and not any([wi.related_request_id, wi.related_lead_id,
-                                                    wi.related_company_id, wi.related_quote_id,
-                                                    wi.related_outreach_id]):
+                if wi.type != "other" and not any(getattr(wi, c) for c in _related_cols):
                     raise RuntimeError(f"work item {wi.id} has no related record")
             s.commit()
             print(f"OK — seeded {seeded} baseline status event(s); created {summary['total']} work item(s): "

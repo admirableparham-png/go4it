@@ -25,6 +25,11 @@ services:
       - go4it-data:/app/var              # DB + inbox
       - go4it-docs:/app/deal_docs        # uploaded compliance documents
       - go4it-files:/app/request_files   # delivered concierge files
+      - go4it-product:/app/product_files      # product/catalog documents
+      - go4it-operation:/app/operation_files  # operations trade documents
+      - go4it-report:/app/report_files        # generated reports
+      - go4it-contract:/app/contract_files    # contract PDFs / signed copies
+      - go4it-quote:/app/quote_files          # quote PDFs
       - ./backups:/app/backups
     expose:
       - "8400"
@@ -43,6 +48,17 @@ services:
       - go4it-data:/app/var
       - go4it-docs:/app/deal_docs
       - go4it-files:/app/request_files
+      - go4it-product:/app/product_files
+      - go4it-operation:/app/operation_files
+      - go4it-report:/app/report_files
+      - go4it-contract:/app/contract_files
+      - go4it-quote:/app/quote_files
+    healthcheck:
+      test: ["CMD", "python", "scripts/worker_healthcheck.py"]
+      interval: 60s
+      timeout: 15s
+      start_period: 40s
+      retries: 3
     depends_on:
       - app
     restart: unless-stopped
