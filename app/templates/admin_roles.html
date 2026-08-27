@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-6">
+  <div class="eyebrow"><a class="link" href="/admin/users">Administration</a></div>
+  <h1 class="text-xl font-bold tracking-tight">Roles &amp; Access</h1>
+  <p class="text-slate-500 text-sm mt-0.5">The permission templates you assign to users. Authorization always uses permissions + scope — never the role name alone.</p>
+</div>
+<div class="grid md:grid-cols-2 gap-4">
+  {% for key, t in templates_.items() %}
+  <div class="card">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="text-sm font-semibold">{{ t.name }}
+        <span class="badge {{ 'badge-emerald' if t.account_class=='internal' else 'badge-slate' }}">{{ t.account_class }}</span></h3>
+      <span class="text-xs text-slate-500">{{ counts.get(key, 0) }} user(s) · scope: {{ scope_labels[t.scope] }}</span>
+    </div>
+    {% if t.permissions %}
+    <div class="flex flex-wrap gap-1">
+      {% for perm in t.permissions|sort %}
+      <span class="badge {{ 'badge-rose' if perm_meta.get(perm,{}).get('high_risk') else 'badge-slate' }}" style="font-size:.6rem">{{ perm_meta.get(perm,{}).get('label', perm) }}</span>
+      {% endfor %}
+    </div>
+    {% else %}<p class="text-slate-500 text-xs">No internal permissions — sanitized seller dashboard only.</p>{% endif %}
+  </div>
+  {% endfor %}
+</div>
+<p class="text-slate-500 text-xs mt-4">High-risk permissions are shown in red. An employee who can view a workspace does not automatically get to export, send, approve, publish or confirm money.</p>
+{% endblock %}

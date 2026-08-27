@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-4 flex items-center justify-between flex-wrap gap-2">
+  <div>
+    <div class="eyebrow"><a class="link" href="/admin/users">Users</a> / {{ u.email }}</div>
+    <h1 class="text-xl font-bold tracking-tight">{{ u.name or u.email }}
+      <span class="badge {{ 'badge-emerald' if p.account_class=='internal' else 'badge-slate' }}">{{ p.account_class }}</span>
+      {% if p.account_status!='active' %}<span class="badge badge-rose">{{ p.account_status }}</span>{% endif %}
+    </h1>
+  </div>
+</div>
+{% if ok %}<div class="alert-emerald mb-4">{{ ok }}</div>{% endif %}
+{% if error %}<div class="alert-rose mb-4">{{ error }}</div>{% endif %}
+
+<div class="flex gap-1 border-b border-slate-700 mb-4 text-sm">
+  {% for t in ['profile','access','assigned','activity','security'] %}
+  <a href="/admin/users/{{ u.id }}?tab={{ t }}" class="px-3 py-2 {{ 'border-b-2 border-emerald-400 text-white font-medium' if tab==t else 'text-slate-400' }}">{{ t|capitalize }}</a>
+  {% endfor %}
+</div>
+
+{% if tab=='access' %}
+  <div class="grid lg:grid-cols-3 gap-4">
+    <div class="card h-fit">
+      <h3 class="text-sm font-semibold mb-3">Role &amp; scope</h3>
+      <form method="post" action="/admin/users/{{ u.id }}/access" class="space-y-3">
+        <div><label class="field-label">Role template</label>
+          <select class="select" name="role_key">
+            {% for k in assignable %}<option value="{{ k }}" {{ 'selected' if k==p.role_key }}>{{ role_templates[k].name }}</option>{% endfor %}
+            {% if p.role_key not in assignable %}<option value="{{ p.role_key }}" selected>{{ role_templates.get(p.role_key,{}).get('name',p.role_key) }} (current)</option>{% endif %}
+          </select></div>
+        <div><label class="field-label">Data scope</label>
+          <select class="select" name="scope">{% for s in scopes %}<option value="{{ s }}" {{ 'selected' if s==p.scope }}>{{ scope_labels[s] }}</option>{% endfor %}</select></div>
+        <input class="input" name="reason" placeholder="Reason (audited)">
+        <button class="btn btn-primary btn-block">Update role</button>
+        {% if is_last_founder %}<p class="text-amber-400 text-xs">This is the last active Founder — role cannot be reduced.</p>{% endif %}
+      </form>
+      <div class="mt-4 pt-3 border-t border-slate-700 text-xs text-slate-500">
+        <div class="font-semibold text-slate-300 mb-1">Why this user has access</div>
+        {{ eff|length }} effective permission(s). Sellers can never hold buyer-PII/internal permissions regardless of overrides.
+      </div>
+    </div>
+
+    <div class="card lg:col-span-2">
+      <h3 class="text-sm font-semibold mb-3">Effective permissions <span class="text-slate-500 font-normal">(preview — no impersonation)</span></h3>
+      {% for group, items in groups.items() %}
+      <div class="mb-3">
+        <div class="text-xs uppercase tracking-wide text-slate-500 mb-1">{{ group }}</div>
+        <div class="grid sm:grid-cols-2 gap-1">
+          {% for it in items %}
+          <div class="flex items-center justify-between gap-2 rounded px-2 py-1 {{ 'bg-emerald-900/20' if it.granted else 'bg-slate-800/40' }}">
+            <div class="text-xs">
+              <span class="{{ 'text-white' if it.granted else 'text-slate-500' }}">{{ it.label }}</span>
+              {% if it.high_risk %}<span class="badge badge-rose" style="font-size:.6rem">high-risk</span>{% endif %}
+              <div class="text-slate-600" style="font-size:.65rem">{{ it.why }}</div>
+            </div>
+            <form method="post" action="/admin/users/{{ u.id }}/permission" class="flex gap-1">
+              <input type="hidden" name="permission_key" value="{{ it.key }}">
+              {% if it.override %}<button name="effect" value="clear" class="btn btn-neutral" style="font-size:.6rem;padding:.15rem .4rem">clear</button>{% endif %}
+              {% if not it.granted %}<button name="effect" value="grant" class="btn btn-ghost-emerald" style="font-size:.6rem;padding:.15rem .4rem">grant</button>
+              {% else %}<button name="effect" value="deny" class="btn btn-neutral" style="font-size:.6rem;padding:.15rem .4rem">deny</button>{% endif %}
+            </form>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+{% elif tab=='profile' %}
+  <div class="card max-w-2xl">
+    <dl class="grid grid-cols-2 gap-y-2 text-sm">
+      {% for label, val in [('Full name', p.full_name), ('Display name', p.display_name), ('Job title', p.job_title), ('Department', p.department), ('Company', p.company), ('Country', p.country), ('Timezone', p.timezone), ('Language', p.preferred_language), ('Phone', p.phone)] %}
+      <dt class="text-slate-500">{{ label }}</dt><dd>{{ val or '—' }}</dd>
+      {% endfor %}
+    </dl>
+    {% if p.account_class=='seller' %}<p class="text-slate-500 text-xs mt-3">Seller-provided profile fields never grant access to buyer data.</p>{% endif %}
+  </div>
+
+{% elif tab=='assigned' %}
+  <div class="card max-w-md"><h3 class="text-sm font-semibold mb-2">Assigned workload</h3>
+    <div class="text-sm">{{ assigned.leads }} owned lead(s) · {{ assigned.requests }} request(s)</div>
+    <p class="text-slate-500 text-xs mt-2">Counts only — sensitive records are shown only to admins with the right permission.</p>
+  </div>
+
+{% elif tab=='activity' %}
+  <div class="table-wrap"><table class="data-table"><thead><tr><th>When</th><th>Action</th><th>Field</th><th>Change</th><th>By</th><th>Reason</th></tr></thead><tbody>
+    {% for a in activity %}<tr><td class="text-xs">{{ a.created_at.strftime('%Y-%m-%d %H:%M') if a.created_at }}</td><td class="text-xs">{{ a.action }}</td><td class="text-xs">{{ a.field }}</td><td class="text-xs">{{ a.before }} → {{ a.after }}</td><td class="text-xs">{{ umap.get(a.actor_id).email if a.actor_id in umap else '—' }}</td><td class="text-xs text-slate-500">{{ a.reason }}</td></tr>{% endfor %}
+    {% if not activity %}<tr><td colspan="6" class="text-slate-500 text-sm">No access changes recorded.</td></tr>{% endif %}
+  </tbody></table></div>
+
+{% elif tab=='security' %}
+  <div class="grid md:grid-cols-2 gap-4 max-w-3xl">
+    <div class="card">
+      <h3 class="text-sm font-semibold mb-2">Account status</h3>
+      <div class="text-sm mb-2">Current: <span class="badge {{ 'badge-emerald' if p.account_status=='active' else 'badge-rose' }}">{{ p.account_status }}</span></div>
+      <form method="post" action="/admin/users/{{ u.id }}/status" class="flex gap-2 items-center flex-wrap">
+        <select class="select" name="status" style="max-width:9rem"><option value="active">active</option><option value="disabled">disabled</option><option value="archived">archived</option></select>
+        <input class="input" name="reason" placeholder="Reason (audited)" style="max-width:10rem">
+        <button class="btn btn-neutral btn-sm">Apply</button>
+      </form>
+      {% if is_last_founder %}<p class="text-amber-400 text-xs mt-2">Last active Founder — cannot be disabled or archived.</p>{% endif %}
+      <p class="text-slate-500 text-xs mt-2">Disabling revokes active sessions immediately. Accounts with history are archived, never hard-deleted.</p>
+    </div>
+    <div class="card">
+      <h3 class="text-sm font-semibold mb-2">Password &amp; sessions</h3>
+      <form method="post" action="/admin/users/{{ u.id }}/password" class="flex gap-2 items-center">
+        <input class="input" name="password" placeholder="new password" minlength="6" style="max-width:11rem">
+        <button class="btn btn-neutral btn-sm">Set</button>
+      </form>
+      <dl class="grid grid-cols-2 gap-y-1 text-xs mt-3">
+        <dt class="text-slate-500">Last login</dt><dd>{{ p.last_login_at.strftime('%Y-%m-%d %H:%M') if p.last_login_at else '—' }}</dd>
+        <dt class="text-slate-500">Password changed</dt><dd>{{ p.password_changed_at.strftime('%Y-%m-%d') if p.password_changed_at else '—' }}</dd>
+        <dt class="text-slate-500">Sessions revoked</dt><dd>{{ p.sessions_revoked_at.strftime('%Y-%m-%d %H:%M') if p.sessions_revoked_at else '—' }}</dd>
+      </dl>
+      <p class="text-slate-500 text-xs mt-2">MFA is not implemented in this phase.</p>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

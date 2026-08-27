@@ -124,7 +124,8 @@ def test_each_workspace_has_its_own_contextual_row(ctx):
         "/research": ("Intelligence pages", ["Overview", "Demand", "Opportunities", "Markets", "Performance",
                                              "Reports", "Data Sources", "Research", "Market Intel",
                                              "Product Lines", "Command"]),
-        "/ingest": ("Admin pages", ["Data Imports", "Accounts &amp; Access", "Team Activity"]),
+        "/ingest": ("Admin pages", ["Data Imports", "Users", "Roles &amp; Access", "Access Activity",
+                                    "Team Activity"]),
     }
     for path, (aria, children) in cases.items():
         region = _region(client.get(path).text, aria)

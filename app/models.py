@@ -202,10 +202,89 @@ class User(SQLModel, table=True):
     email: str = Field(index=True, unique=True)
     name: str = ""
     password_hash: str = ""
-    role: str = "agent"            # admin | manager | agent | viewer
+    role: str = "agent"            # admin | manager | agent | viewer (LEGACY tier; Phase-10 authz is via UserProfile.role_key)
     active: bool = True
     telegram_user_id: str = ""
     created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+# --------------------------------------------------------------------- Phase 10: profiles, roles, access control
+class UserProfile(SQLModel, table=True):
+    """One professional profile + access record per User (1:1). Additive — legacy code keeps using User.role/
+    active; Phase-10 authorization resolves through `role_key` + `PermissionOverride` here. `account_class`
+    ('internal' | 'seller') is the HARD boundary a seller can never cross. Seller-provided profile fields never
+    grant access to buyer data."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="user.id", index=True, unique=True)
+    account_class: str = Field(default="internal", index=True)   # internal | seller
+    role_key: str = Field(default="", index=True)                # RoleTemplate.key (e.g. 'founder','seller')
+    scope: str = "own"                                           # platform|tenant|assigned|own|aggregate (override of template default)
+    account_status: str = Field(default="active", index=True)    # active | disabled | archived
+    # profile
+    full_name: str = ""
+    display_name: str = ""
+    job_title: str = ""
+    department: str = ""
+    company: str = ""
+    country: str = ""
+    timezone: str = ""
+    preferred_language: str = "en"
+    phone: str = ""                # internal contact phone (NEVER a buyer's)
+    avatar_url: str = ""           # metadata only (path/URL); no binary blobs here
+    notification_prefs: str = ""   # JSON
+    # seller-only profile facets (nullable; never expose to buyer data)
+    trading_interests: str = ""    # JSON list (categories/products the seller trades)
+    preferred_markets: str = ""    # JSON list
+    # security timestamps
+    last_login_at: Optional[datetime] = None
+    password_changed_at: Optional[datetime] = None
+    sessions_revoked_at: Optional[datetime] = None   # sessions issued before this are invalid (disable/critical change)
+    disabled_at: Optional[datetime] = None
+    disabled_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class RoleTemplate(SQLModel, table=True):
+    """An editable bundle of permissions the founder assigns. Seeded from permissions.ROLE_TEMPLATES; system
+    templates cannot be deleted. Authorization uses the resolved permission SET, never the template name."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    key: str = Field(index=True, unique=True)
+    name: str = ""
+    account_class: str = "internal"          # internal | seller
+    scope_default: str = "own"
+    permissions: str = ""                    # JSON list of permission keys
+    is_system: bool = False                  # system templates are protected from deletion
+    editable: bool = True
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class PermissionOverride(SQLModel, table=True):
+    """A per-user grant/deny of a single permission on top of the role template. A 'deny' always wins. A seller
+    can never be granted a seller-forbidden permission (enforced in authz, not here)."""
+    __table_args__ = (UniqueConstraint("user_id", "permission_key", name="uq_permoverride_user_perm"),)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="user.id", index=True)
+    permission_key: str = Field(index=True)
+    effect: str = "grant"                    # grant | deny
+    reason: str = ""
+    granted_by: Optional[int] = Field(default=None, foreign_key="user.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class AccessAuditLog(SQLModel, table=True):
+    """Immutable, append-only history of every access change (who/what/when/why). NEVER stores passwords, API
+    keys, mailbox credentials or tokens."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    actor_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    target_user_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    action: str = Field(default="", index=True)   # role_changed|permission_granted|permission_revoked|scope_changed|account_disabled|account_enabled|account_archived|profile_updated|user_created
+    field: str = ""
+    before: str = ""
+    after: str = ""
+    reason: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow, index=True)
 
 
 class Activity(SQLModel, table=True):

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-6">
+  <div class="eyebrow"><a class="link" href="/admin/users">Administration</a></div>
+  <h1 class="text-xl font-bold tracking-tight">Access Activity</h1>
+  <p class="text-slate-500 text-sm mt-0.5">Immutable history of every access change — who changed what, when and why. Passwords, keys and tokens are never recorded.</p>
+</div>
+<div class="table-wrap">
+  <table class="data-table">
+    <thead><tr><th>When</th><th>Actor</th><th>Target</th><th>Action</th><th>Field</th><th>Change</th><th>Reason</th></tr></thead>
+    <tbody>
+      {% for a in logs %}
+      <tr>
+        <td class="text-xs">{{ a.created_at.strftime('%Y-%m-%d %H:%M') if a.created_at }}</td>
+        <td class="text-xs">{{ umap.get(a.actor_id).email if a.actor_id in umap else '—' }}</td>
+        <td class="text-xs">{{ umap.get(a.target_user_id).email if a.target_user_id in umap else '—' }}</td>
+        <td class="text-xs"><span class="badge badge-slate">{{ a.action }}</span></td>
+        <td class="text-xs">{{ a.field }}</td>
+        <td class="text-xs">{{ a.before }} {% if a.after %}→ {{ a.after }}{% endif %}</td>
+        <td class="text-xs text-slate-500">{{ a.reason }}</td>
+      </tr>
+      {% endfor %}
+      {% if not logs %}<tr><td colspan="7" class="text-slate-500 text-sm">No access changes recorded yet.</td></tr>{% endif %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

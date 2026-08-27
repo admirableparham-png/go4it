@@ -39,9 +39,25 @@ def role_at_least(user, minimum: str) -> bool:
 
 
 def current_user(request, session):
-    """Load the logged-in, active User from the signed session cookie, or None."""
+    """Load the logged-in, active User from the signed session cookie, or None.
+
+    Phase 10: also honors the profile's `account_status` (disabled/archived → no access) and session revocation
+    (`sessions_revoked_at`) — so disabling an account or making a critical security change logs the user out on
+    their very next request."""
     uid = request.session.get("user_id")
     if not uid:
         return None
     user = session.get(User, uid)
-    return user if (user and user.active) else None
+    if not user or not user.active:
+        return None
+    from sqlmodel import select
+    from .models import UserProfile
+    p = session.exec(select(UserProfile).where(UserProfile.user_id == user.id)).first()
+    if p is not None:
+        if p.account_status != "active":
+            return None
+        if p.sessions_revoked_at is not None:
+            issued = request.session.get("login_at") or 0
+            if issued < p.sessions_revoked_at.timestamp():
+                return None
+    return user

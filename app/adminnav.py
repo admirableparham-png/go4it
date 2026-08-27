@@ -103,9 +103,12 @@ WORKSPACES = [
         {"key": "command", "label": "Command", "endpoint": "command_page", "paths": ("/command",)},
     ]},
 
-    {"key": "admin", "label": "Admin", "icon": "shield", "role": "admin", "children": [
+    {"key": "admin", "label": "Administration", "icon": "shield", "role": "admin", "children": [
         {"key": "ingest", "label": "Data Imports", "endpoint": "ingest_page", "paths": ("/ingest",)},
-        {"key": "users", "label": "Accounts & Access", "endpoint": "admin_users", "paths": ("/admin/users",)},
+        {"key": "users", "label": "Users", "endpoint": "admin_users", "paths": ("/admin/users",)},
+        {"key": "roles", "label": "Roles & Access", "endpoint": "admin_roles", "paths": ("/admin/roles",)},
+        {"key": "access_log", "label": "Access Activity", "endpoint": "admin_access_log",
+         "paths": ("/admin/access-log",)},
         {"key": "activity", "label": "Team Activity", "endpoint": "admin_activity", "paths": ("/admin/activity",)},
     ]},
 ]

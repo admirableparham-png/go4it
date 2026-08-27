@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="mb-6">
-  <div class="eyebrow">Admin</div>
-  <h1 class="text-xl font-bold tracking-tight">Accounts &amp; Access</h1>
-  <p class="text-slate-500 text-sm mt-0.5">You create every account &mdash; there is no public sign-up. Each trader sees only their own data.</p>
+  <div class="eyebrow">Administration</div>
+  <h1 class="text-xl font-bold tracking-tight">Users</h1>
+  <p class="text-slate-500 text-sm mt-0.5">Internal Go4it staff and external sellers. Access is by role &amp; permission — sellers only ever see their own sanitized progress.</p>
 </div>
 
 {% if ok %}<div class="alert-emerald mb-4">Done: {{ ok }}.</div>{% endif %}
-{% if error %}<div class="alert-rose mb-4">Could not complete ({{ error }}). Email must be unique and passwords at least 6 characters.</div>{% endif %}
+{% if error %}<div class="alert-rose mb-4">Could not complete: {{ error }}.</div>{% endif %}
 
 <div class="grid md:grid-cols-3 gap-4">
   <div class="card md:col-span-1 h-fit">
@@ -15,47 +15,47 @@
     <form method="post" action="/admin/users" class="space-y-3">
       <div><label class="field-label">Name</label><input class="input" name="name" placeholder="Full name"></div>
       <div><label class="field-label">Email (their login)</label><input class="input" name="email" type="email" required placeholder="person@email.com"></div>
-      <div><label class="field-label">Role</label>
-        <select class="select" name="role">
-          {% for r in roles %}<option value="{{ r }}">{{ 'Founder (full admin)' if r == 'admin' else 'Trader (isolated)' }}</option>{% endfor %}
+      <div><label class="field-label">Account class</label>
+        <select class="select" name="account_class" onchange="this.form.role_key.value=''">
+          <option value="internal">Internal staff</option>
+          <option value="seller" selected>External seller</option>
+        </select></div>
+      <div><label class="field-label">Role template</label>
+        <select class="select" name="role_key">
+          <option value="">(default for class)</option>
+          {% for k, t in role_templates.items() %}<option value="{{ k }}">{{ t.name }} — {{ t.account_class }}</option>{% endfor %}
         </select></div>
       <div><label class="field-label">Password</label><input class="input" name="password" type="text" required minlength="6" placeholder="min 6 characters"></div>
       <button class="btn btn-primary btn-block" data-busy="Creating">Create user</button>
-      <p class="text-slate-500 text-xs">You set the password and share it with them. They can't create or change their own account.</p>
+      <p class="text-slate-500 text-xs">You set the password. Founder-level roles can only be granted by a Founder.</p>
     </form>
   </div>
 
   <div class="md:col-span-2">
+    <form method="get" action="/admin/users" class="flex gap-2 mb-3 flex-wrap items-end">
+      <input class="input" name="q" value="{{ f.q }}" placeholder="Search name/email" style="max-width:12rem">
+      <select class="select" name="account_class" style="max-width:9rem"><option value="">All classes</option><option value="internal" {{ 'selected' if f.account_class=='internal' }}>Internal</option><option value="seller" {{ 'selected' if f.account_class=='seller' }}>Seller</option></select>
+      <select class="select" name="status" style="max-width:9rem"><option value="">Any status</option><option value="active" {{ 'selected' if f.status=='active' }}>Active</option><option value="disabled" {{ 'selected' if f.status=='disabled' }}>Disabled</option><option value="archived" {{ 'selected' if f.status=='archived' }}>Archived</option></select>
+      <button class="btn btn-neutral btn-sm">Filter</button>
+      <a class="link text-xs" href="/admin/roles">Roles &amp; Access &rarr;</a>
+    </form>
     <div class="table-wrap">
       <table class="data-table">
-        <thead><tr><th>User</th><th>Role</th><th>Buyers</th><th>Deals</th><th>Status</th><th class="text-right">Manage</th></tr></thead>
+        <thead><tr><th>User</th><th>Class</th><th>Role</th><th>Workload</th><th>Status</th><th class="text-right"></th></tr></thead>
         <tbody>
           {% for r in rows %}
           <tr>
             <td><div class="font-medium">{{ r.u.name or '—' }}</div><div class="text-xs text-slate-500">{{ r.u.email }}</div></td>
-            <td><span class="badge {{ 'badge-emerald' if r.u.role == 'admin' else 'badge-slate' }}">{{ 'founder' if r.u.role == 'admin' else 'trader' }}</span></td>
-            <td class="tabular-nums">{{ r.leads }}</td>
-            <td class="tabular-nums">{{ r.deals }}</td>
-            <td>{% if r.u.active %}<span class="badge badge-emerald">active</span>{% else %}<span class="badge badge-rose">disabled</span>{% endif %}</td>
-            <td>
-              <div class="flex gap-1 justify-end items-center flex-wrap">
-                <form method="post" action="/admin/users/{{ r.u.id }}/password" class="flex gap-1 items-center">
-                  <input class="input" name="password" placeholder="new password" minlength="6" style="width:9rem;padding:.3rem .5rem;font-size:.75rem">
-                  <button class="btn btn-neutral btn-sm" data-busy="…">Set</button>
-                </form>
-                {% if r.u.id != user.id %}
-                <form method="post" action="/admin/users/{{ r.u.id }}/toggle">
-                  <button class="btn btn-sm {{ 'btn-ghost-emerald' if not r.u.active else 'btn-neutral' }}">{{ 'Enable' if not r.u.active else 'Disable' }}</button>
-                </form>
-                {% endif %}
-              </div>
-            </td>
+            <td><span class="badge {{ 'badge-emerald' if r.class=='internal' else 'badge-slate' }}">{{ r.class }}</span></td>
+            <td class="text-xs">{{ r.role_name }}</td>
+            <td class="text-xs tabular-nums text-slate-500">{{ r.leads }} leads · {{ r.requests }} reqs</td>
+            <td>{% if r.status=='active' %}<span class="badge badge-emerald">active</span>{% elif r.status=='disabled' %}<span class="badge badge-rose">disabled</span>{% else %}<span class="badge badge-slate">archived</span>{% endif %}</td>
+            <td class="text-right"><a class="btn btn-neutral btn-sm" href="/admin/users/{{ r.u.id }}">Manage &rarr;</a></td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
-    <p class="text-slate-500 text-xs mt-3"><a class="link" href="/admin/activity">See what each user is doing &rarr;</a></p>
   </div>
 </div>
 {% endblock %}

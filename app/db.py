@@ -36,6 +36,24 @@ def init_db() -> None:
     _ensure_operations_indexes()
     _ensure_intelligence_indexes()
     _ensure_ai_indexes()
+    _ensure_access_indexes()
+
+
+def _ensure_access_indexes() -> None:
+    """Phase 10 access-control guards (SQLite-only, idempotent, never blocks boot)."""
+    if not _is_sqlite:
+        return
+    try:
+        from sqlalchemy import text
+        with engine.begin() as c:
+            c.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_userprofile_user ON userprofile(user_id) "
+                           "WHERE user_id IS NOT NULL"))
+            c.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_roletemplate_key ON roletemplate(key) "
+                           "WHERE key != ''"))
+            c.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_permoverride_user_perm ON "
+                           "permissionoverride(user_id, permission_key)"))
+    except Exception:  # noqa: BLE001
+        pass
 
 
 def _ensure_trade_network_indexes() -> None:

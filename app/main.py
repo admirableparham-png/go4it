@@ -103,6 +103,10 @@ from .sources.go4world_csv import Go4WorldCsvSource
 from .telegram import (notify_outreach_sent, notify_quote_ready, notify_request_message, notify_request_update,
                        notify_send_failed, notify_service_request, notify_status_change, send_message)
 from .tenant import is_admin, owns, scoped
+from . import authz
+from . import access_service as ACCESS
+from . import permissions as P
+from .models import AccessAuditLog, PermissionOverride, RoleTemplate, UserProfile
 
 logger = logging.getLogger("go4it")
 BASE_DIR = Path(__file__).parent
@@ -140,10 +144,16 @@ SAMPLE_CSV = (
 
 @app.middleware("http")
 async def auth_gate(request: Request, call_next):
-    """Require a logged-in session for everything except public paths."""
+    """Require a logged-in, still-valid session for everything except public paths. Phase 10: a disabled/archived
+    account or a revoked session (critical security change) is logged out on its very next request, everywhere."""
     path = request.url.path
-    if not any(path.startswith(p) for p in PUBLIC_PREFIXES) and not request.session.get("user_id"):
-        return RedirectResponse("/login", status_code=303)
+    if not any(path.startswith(p) for p in PUBLIC_PREFIXES):
+        if not request.session.get("user_id"):
+            return RedirectResponse("/login", status_code=303)
+        with Session(engine) as _s:
+            if current_user(request, _s) is None:      # disabled / archived / session revoked
+                request.session.clear()
+                return RedirectResponse("/login", status_code=303)
     return await call_next(request)
 
 
@@ -356,8 +366,16 @@ def login(request: Request, email: str = Form(...), password: str = Form(...)):
     with Session(engine) as session:
         user = session.exec(select(User).where(User.email == email.strip().lower())).first()
         if user and user.active and verify_password(password, user.password_hash):
+            from .models import UserProfile
+            prof = session.exec(select(UserProfile).where(UserProfile.user_id == user.id)).first()
+            if prof is not None and prof.account_status != "active":   # disabled/archived cannot sign in
+                _login_fail(key)
+                return RedirectResponse("/login?error=1", status_code=303)
             _LOGIN_FAILS.pop(key, None)
             request.session["user_id"] = user.id
+            request.session["login_at"] = datetime.utcnow().timestamp()
+            if prof is not None:
+                prof.last_login_at = datetime.utcnow(); session.add(prof); session.commit()
             return RedirectResponse("/", status_code=303)
     _login_fail(key)
     return RedirectResponse("/login?error=1", status_code=303)
@@ -721,10 +739,11 @@ def unlist_lead(request: Request, lead_id: int, relist: str = ""):
 @app.post("/leads/bulk/email")
 def leads_bulk_email(request: Request, account_id: int = Form(0), subject: str = Form(""),
                      body: str = Form(""), ids: List[int] = Form(default=[])):
-    """Admin-only buyer outreach: send from a Go4it-controlled mailbox to the selected buyers."""
+    """Buyer outreach send — requires outreach.email.send (separate from drafting/viewing). Confidential:
+    only internal staff with the send permission may contact buyers; sellers never reach this."""
     with Session(engine) as session:
         user = current_user(request, session)
-        if not is_admin(user):              # confidential model: only the admin contacts buyers
+        if not is_admin(user) or not authz.has_permission(session, user, "outreach.email.send"):
             return _forbidden()
         acct = session.get(MailAccount, account_id)
         if not acct or acct.user_id != user.id or not acct.active:
@@ -1114,10 +1133,10 @@ def seller_archive(request: Request, company_id: int, restore: str = Form("")):
 
 @app.get("/companies/{company_id}", response_class=HTMLResponse)
 def company_detail(request: Request, company_id: int):
-    """Admin-only canonical company view. Never shows seller-facing anon refs as an identifier."""
+    """Canonical company view — requires buyer.pii.view (contact PII lives here). Never shows anon refs as an id."""
     with Session(engine) as session:
         user = current_user(request, session)
-        if not is_admin(user):
+        if not is_admin(user) or not authz.has_permission(session, user, "buyer.pii.view"):
             return _forbidden()
         co = session.get(Company, company_id)
         if not co:
@@ -1283,10 +1302,11 @@ def lead_classify(request: Request, lead_id: int, engagement_class: str = Form("
 
 @app.get("/export/{kind}.csv")
 def export_csv(request: Request, kind: str):
-    """Audited, admin-only, CSV-injection-safe export of a Trade Network slice. NEVER seller-reachable."""
+    """Audited, CSV-injection-safe export of a Trade Network slice. Requires buyer.pii.export (a separate
+    high-risk capability from merely viewing a workspace). NEVER seller-reachable."""
     with Session(engine) as session:
         user = current_user(request, session)
-        if not is_admin(user):
+        if not is_admin(user) or not authz.has_permission(session, user, "buyer.pii.export"):
             return _forbidden()
         if kind == "buyers":
             leads = session.exec(select(Lead).where(Lead.buyer_company != "").order_by(Lead.id)).all()
@@ -4710,6 +4730,8 @@ def operations_confirm_payment(request: Request, pm_id: int, confirmed_amount: s
         user, deny = _ops_admin(request, session)
         if deny:
             return deny
+        if not authz.has_permission(session, user, "payment.confirm"):   # confirming money is high-risk
+            return _forbidden()
         pm = session.get(PaymentMilestone, pm_id)
         if not pm:
             return _not_found()
@@ -5836,10 +5858,10 @@ def _managed_leads(session, req_id):
 
 @app.get("/admin/requests/{req_id}/pipeline", response_class=HTMLResponse)
 def admin_pipeline(request: Request, req_id: int):
-    """Admin-only board of the managed (confidential) buyers for a request — FULL PII + stage controls."""
+    """Board of the managed (confidential) buyers for a request — FULL PII, so it requires buyer.pii.view."""
     with Session(engine) as session:
         user = current_user(request, session)
-        if not is_admin(user):
+        if not is_admin(user) or not authz.has_permission(session, user, "buyer.pii.view"):
             return _forbidden()
         sr = session.get(ServiceRequest, req_id)
         if not sr:
@@ -6790,68 +6812,226 @@ def outreach_analytics(request: Request):
 ASSIGNABLE_ROLES = ("agent", "admin")   # this model has just two: trader (agent) + founder (admin)
 
 
+def _require(session, user, perm):
+    """Central route guard: returns a 403 response if the user lacks `perm`, else None."""
+    return None if (user is not None and authz.has_permission(session, user, perm)) else _forbidden()
+
+
 @app.get("/admin/users", response_class=HTMLResponse)
-def admin_users(request: Request, error: str = "", ok: str = ""):
+def admin_users(request: Request, error: str = "", ok: str = "", q: str = "", account_class: str = "",
+                role: str = "", status: str = ""):
+    """Administration → Users. Requires users.manage. Internal staff and sellers are clearly distinguished."""
     with Session(engine) as session:
         user = current_user(request, session)
-        if not is_admin(user):
-            return _forbidden()
+        deny = _require(session, user, "users.manage")
+        if deny:
+            return deny
+        from .models import UserProfile
+        profs = {p.user_id: p for p in session.exec(select(UserProfile)).all()}
         users = session.exec(select(User).order_by(User.id.asc())).all()
-        lead_counts = dict(session.exec(
-            select(Lead.owner_id, func.count(Lead.id)).group_by(Lead.owner_id)).all())
-        deal_counts = dict(session.exec(
-            select(Deal.owner_id, func.count(Deal.id)).group_by(Deal.owner_id)).all())
-        rows = [{"u": u, "leads": lead_counts.get(u.id, 0), "deals": deal_counts.get(u.id, 0)}
-                for u in users]
+        lead_counts = dict(session.exec(select(Lead.owner_id, func.count(Lead.id)).group_by(Lead.owner_id)).all())
+        req_counts = dict(session.exec(select(ServiceRequest.owner_id, func.count(ServiceRequest.id))
+                                       .group_by(ServiceRequest.owner_id)).all())
+        rows = []
+        for u in users:
+            p = profs.get(u.id)
+            ac = p.account_class if p else ("internal" if u.role == "admin" else "seller")
+            rk = p.role_key if p else ("founder" if u.role == "admin" else "seller")
+            st = p.account_status if p else ("active" if u.active else "disabled")
+            if q and q.lower() not in (u.email + " " + (u.name or "")).lower():
+                continue
+            if account_class and ac != account_class:
+                continue
+            if role and rk != role:
+                continue
+            if status and st != status:
+                continue
+            rows.append({"u": u, "class": ac, "role_key": rk, "role_name": P.ROLE_TEMPLATES.get(rk, {}).get("name", rk),
+                         "status": st, "leads": lead_counts.get(u.id, 0), "requests": req_counts.get(u.id, 0),
+                         "last_login": p.last_login_at if p else None})
     return templates.TemplateResponse("admin_users.html", {
         "request": request, "user": user, "active": "users", "rows": rows,
-        "roles": ASSIGNABLE_ROLES, "error": error, "ok": ok})
+        "role_templates": P.ROLE_TEMPLATES, "f": {"q": q, "account_class": account_class, "role": role,
+        "status": status}, "error": error, "ok": ok})
 
 
 @app.post("/admin/users")
 def admin_user_create(request: Request, email: str = Form(...), name: str = Form(""),
-                      role: str = Form("agent"), password: str = Form(...)):
+                      account_class: str = Form("seller"), role_key: str = Form(""), password: str = Form(...)):
     with Session(engine) as session:
-        if not is_admin(current_user(request, session)):
+        actor = current_user(request, session)
+        if _require(session, actor, "users.manage"):
             return _forbidden()
-        email = (email or "").strip().lower()
-        role = role if role in ASSIGNABLE_ROLES else "agent"
-        if not email or len(password) < 6:
-            return RedirectResponse("/admin/users?error=input", status_code=303)
-        if session.exec(select(User).where(User.email == email)).first():
-            return RedirectResponse("/admin/users?error=exists", status_code=303)
-        session.add(User(email=email, name=name.strip(), role=role,
-                         password_hash=hash_password(password)))
+        ok, msg = ACCESS.create_user(session, actor, email=email, name=name, account_class=account_class,
+                                     role_key=role_key, password=password)
         session.commit()
-    return RedirectResponse("/admin/users?ok=created", status_code=303)
+    return RedirectResponse(f"/admin/users?{'ok=created' if ok else 'error=' + msg[:40]}", status_code=303)
 
 
 @app.post("/admin/users/{user_id}/password")
 def admin_user_password(request: Request, user_id: int, password: str = Form(...)):
     with Session(engine) as session:
-        if not is_admin(current_user(request, session)):
+        actor = current_user(request, session)
+        if _require(session, actor, "users.manage"):
             return _forbidden()
         u = session.get(User, user_id)
         if not u or len(password) < 6:
             return RedirectResponse("/admin/users?error=input", status_code=303)
         u.password_hash = hash_password(password)
-        session.add(u)
-        session.commit()
-    return RedirectResponse("/admin/users?ok=password", status_code=303)
+        p = session.exec(select(UserProfile).where(UserProfile.user_id == u.id)).first()
+        if p:
+            p.password_changed_at = datetime.utcnow(); p.sessions_revoked_at = datetime.utcnow(); session.add(p)
+        authz.audit(session, actor, u.id, "password_reset", field="password_hash", reason="admin reset")
+        session.add(u); session.commit()
+    return RedirectResponse(f"/admin/users/{user_id}?ok=password", status_code=303)
 
 
-@app.post("/admin/users/{user_id}/toggle")
-def admin_user_toggle(request: Request, user_id: int):
+@app.get("/admin/users/{user_id}", response_class=HTMLResponse)
+def admin_user_detail(request: Request, user_id: int, tab: str = "profile", ok: str = "", error: str = ""):
+    """User workspace: Profile · Access · Assigned work · Activity · Security tabs. No impersonation."""
     with Session(engine) as session:
-        admin = current_user(request, session)
-        if not is_admin(admin):
+        actor = current_user(request, session)
+        deny = _require(session, actor, "users.manage")
+        if deny:
+            return deny
+        u = session.get(User, user_id)
+        if not u:
+            return _not_found()
+        p = authz.ensure_profile(session, u); session.commit()
+        eff = sorted(authz.effective_permissions(session, u))
+        overrides = {o.permission_key: o for o in session.exec(
+            select(PermissionOverride).where(PermissionOverride.user_id == u.id)).all()}
+        # effective-permission preview grouped by permission group, with high-risk + 'why'
+        groups = {}
+        for key, meta in P.PERMISSIONS.items():
+            groups.setdefault(meta["group"], []).append({
+                "key": key, "label": meta["label"], "high_risk": meta["high_risk"],
+                "granted": key in eff, "override": overrides.get(key).effect if overrides.get(key) else "",
+                "why": authz.why(session, u, key)})
+        assignable = [rk for rk, t in P.ROLE_TEMPLATES.items()
+                      if t["account_class"] == p.account_class and authz.can_assign_role(session, actor, rk)]
+        assigned = {
+            "leads": session.exec(select(func.count()).select_from(Lead).where(Lead.owner_id == u.id)).one(),
+            "requests": session.exec(select(func.count()).select_from(ServiceRequest)
+                                     .where(ServiceRequest.owner_id == u.id)).one(),
+        }
+        activity = session.exec(select(AccessAuditLog).where(AccessAuditLog.target_user_id == u.id)
+                                .order_by(AccessAuditLog.id.desc()).limit(50)).all()
+        umap = {x.id: x for x in session.exec(select(User)).all()}
+    return templates.TemplateResponse("admin_user_detail.html", {
+        "request": request, "user": actor, "active": "users", "tab": tab, "u": u, "p": p, "eff": eff,
+        "groups": groups, "assignable": assignable, "scopes": P.SCOPES, "scope_labels": P.SCOPE_LABELS,
+        "assigned": assigned, "activity": activity, "umap": umap, "role_templates": P.ROLE_TEMPLATES,
+        "is_last_founder": authz.is_last_founder(session, u.id), "ok": ok, "error": error})
+
+
+@app.post("/admin/users/{user_id}/access")
+def admin_user_access(request: Request, user_id: int, role_key: str = Form(""), scope: str = Form(""),
+                      reason: str = Form("")):
+    with Session(engine) as session:
+        actor = current_user(request, session)
+        if _require(session, actor, "users.manage"):
             return _forbidden()
         u = session.get(User, user_id)
-        if u and u.id != admin.id:          # never lock yourself out
-            u.active = not u.active
-            session.add(u)
-            session.commit()
-    return RedirectResponse("/admin/users?ok=toggled", status_code=303)
+        if not u:
+            return _not_found()
+        ok, msg = ACCESS.set_role(session, actor, u, role_key, scope=scope, reason=reason)
+        session.commit()
+    return RedirectResponse(f"/admin/users/{user_id}?tab=access&{'ok' if ok else 'error'}={msg[:40]}",
+                            status_code=303)
+
+
+@app.post("/admin/users/{user_id}/permission")
+def admin_user_permission(request: Request, user_id: int, permission_key: str = Form(...),
+                          effect: str = Form("grant"), reason: str = Form("")):
+    with Session(engine) as session:
+        actor = current_user(request, session)
+        if _require(session, actor, "users.manage"):
+            return _forbidden()
+        u = session.get(User, user_id)
+        if not u:
+            return _not_found()
+        ok, msg = ACCESS.set_override(session, actor, u, permission_key, effect, reason=reason)
+        session.commit()
+    return RedirectResponse(f"/admin/users/{user_id}?tab=access&{'ok' if ok else 'error'}={msg[:40]}",
+                            status_code=303)
+
+
+@app.post("/admin/users/{user_id}/status")
+def admin_user_status(request: Request, user_id: int, status: str = Form(...), reason: str = Form("")):
+    with Session(engine) as session:
+        actor = current_user(request, session)
+        if _require(session, actor, "users.manage"):
+            return _forbidden()
+        u = session.get(User, user_id)
+        if not u:
+            return _not_found()
+        ok, msg = ACCESS.set_status(session, actor, u, status, reason=reason)
+        session.commit()
+    return RedirectResponse(f"/admin/users/{user_id}?tab=security&{'ok' if ok else 'error'}={msg[:40]}",
+                            status_code=303)
+
+
+@app.get("/admin/roles", response_class=HTMLResponse)
+def admin_roles(request: Request):
+    """Administration → Roles & Access: the role templates + their permissions. Requires users.manage."""
+    with Session(engine) as session:
+        actor = current_user(request, session)
+        deny = _require(session, actor, "users.manage")
+        if deny:
+            return deny
+        counts = dict(session.exec(select(UserProfile.role_key, func.count(UserProfile.id))
+                                   .group_by(UserProfile.role_key)).all())
+    return templates.TemplateResponse("admin_roles.html", {
+        "request": request, "user": actor, "active": "roles", "templates_": P.ROLE_TEMPLATES,
+        "perm_meta": P.PERMISSIONS, "counts": counts, "scope_labels": P.SCOPE_LABELS})
+
+
+@app.get("/admin/access-log", response_class=HTMLResponse)
+def admin_access_log(request: Request):
+    """Administration → Activity: the immutable access-change audit trail. Requires audit.view."""
+    with Session(engine) as session:
+        actor = current_user(request, session)
+        deny = _require(session, actor, "audit.view")
+        if deny:
+            return deny
+        logs = session.exec(select(AccessAuditLog).order_by(AccessAuditLog.id.desc()).limit(300)).all()
+        umap = {u.id: u for u in session.exec(select(User)).all()}
+    return templates.TemplateResponse("admin_access_log.html", {
+        "request": request, "user": actor, "active": "access_log", "logs": logs, "umap": umap})
+
+
+@app.get("/me/profile", response_class=HTMLResponse)
+def my_profile(request: Request, ok: str = ""):
+    """Self-service profile for any signed-in user (internal or seller). Internal-only fields are never shown
+    to sellers; a seller's profile never grants access to buyer data."""
+    with Session(engine) as session:
+        u = current_user(request, session)
+        if not u:
+            return _forbidden()
+        p = authz.ensure_profile(session, u); session.commit()
+        eff = sorted(authz.effective_permissions(session, u)) if authz.account_class(session, u) == "internal" else []
+    return templates.TemplateResponse("profile.html", {
+        "request": request, "user": u, "active": "profile", "p": p, "eff": eff,
+        "is_seller": (p.account_class == "seller"), "role_name": P.ROLE_TEMPLATES.get(p.role_key, {}).get("name", p.role_key)})
+
+
+@app.post("/me/profile")
+def my_profile_save(request: Request, full_name: str = Form(""), display_name: str = Form(""),
+                    job_title: str = Form(""), department: str = Form(""), company: str = Form(""),
+                    country: str = Form(""), timezone: str = Form(""), preferred_language: str = Form("en"),
+                    phone: str = Form(""), trading_interests: str = Form(""), preferred_markets: str = Form("")):
+    with Session(engine) as session:
+        u = current_user(request, session)
+        if not u:
+            return _forbidden()
+        ACCESS.update_profile(session, u, u, {
+            "full_name": full_name, "display_name": display_name, "job_title": job_title,
+            "department": department, "company": company, "country": country, "timezone": timezone,
+            "preferred_language": preferred_language, "phone": phone,
+            "trading_interests": trading_interests, "preferred_markets": preferred_markets}, self_edit=True)
+        session.commit()
+    return RedirectResponse("/me/profile?ok=1", status_code=303)
 
 
 @app.get("/admin/activity", response_class=HTMLResponse)

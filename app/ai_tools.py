@@ -173,9 +173,10 @@ def _t_lookup_contact(session, params, user):
     redacted in telemetry. Never available to sellers (the whole copilot is admin-only)."""
     from .models import Company, Contact
     from .tenant import is_admin, owns, scoped
-    if not is_admin(user):
-        # buyer contact PII is admin-only (defense-in-depth beyond the admin-only route gate)
-        return {"result": {"error": "buyer contact details are available to authorized admins only"},
+    from . import authz
+    if not is_admin(user) or not authz.has_permission(session, user, "buyer.pii.view"):
+        # buyer contact PII requires the buyer.pii.view permission (never a seller; never an analyst)
+        return {"result": {"error": "buyer contact details require the buyer.pii.view permission"},
                 "citations": []}
     q = (params.get("query") or "").strip()
     cid = params.get("company_id")
