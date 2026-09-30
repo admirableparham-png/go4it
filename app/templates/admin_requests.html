@@ -96,5 +96,5 @@
 {% else %}
 <div class="empty">No requests match these filters. <a href="/admin/requests" class="link">Clear</a>.</div>
 {% endif %}
-<p class="text-slate-500 text-xs mt-3">Deliver buyers for a request by running the research, then <span class="text-slate-400" style="font-family:monospace">scripts/deliver_request.py &lt;id&gt; buyers.json</span> — buyers land in that trader's account and the request closes as <b>done</b>. Full delivery + status controls are on each request's <b>Open</b> workspace.</p>
+<p class="text-slate-500 text-xs mt-3">Deliver buyers for a request by running the research, then <span class="text-slate-400" style="font-family:monospace">scripts/load_managed_buyers.py --request &lt;SR-code&gt; buyers.json --dry-run</span> (then without --dry-run) — buyers are loaded as <b>confidential managed buyers</b>: the seller only sees anonymized progress, never a buyer's identity. Full delivery + status controls are on each request's <b>Open</b> workspace.</p>
 {% endblock %}

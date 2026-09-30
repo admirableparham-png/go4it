@@ -17,3 +17,7 @@ inbox/*.csv
 debug/
 docs/research/market/
 *.md
+# Phase 11 — never ship buyer PII or ops notes into the image (the app never reads these at runtime;
+# docs/research/ and docs/userscript/ ARE read/served at runtime and must stay)
+docs/prospects/
+docs/*.md

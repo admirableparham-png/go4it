@@ -41,8 +41,8 @@ def ctx():
         s.add(User(email="kim@t.local", name="K", role="agent", active=True, password_hash="x"))
         s.commit()
         ids = {u.email.split("@")[0]: u.id for u in s.exec(select(User)).all()}
-        mb = MailAccount(user_id=ids["admin"], email="hunt@go4it.vip", admin_owned=True, active=True,
-                         daily_limit=100)
+        mb = MailAccount(user_id=ids["admin"], email="hunt@sender.example", admin_owned=True, active=True,
+                         daily_limit=100, sender_company="Sender Trading LLC", postal_address="1 Test Street, Dubai")
         s.add(mb); s.commit(); s.refresh(mb)
         ids["mailbox"] = mb.id
     return engine, ids
@@ -67,15 +67,15 @@ def _recipient(s, c, ids, email="b@x.com"):
     return r
 
 
-def _ok(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references=""):
+def _ok(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references="", **kw):
     return True, "", ""                       # SMTP: no distinct provider id
 
 
-def _prov(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references=""):
+def _prov(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references="", **kw):
     return True, "", "<provider-xyz@relay>"   # provider returns its OWN id
 
 
-def _fail(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references=""):
+def _fail(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references="", **kw):
     return False, "451 try again later", ""
 
 
@@ -84,7 +84,7 @@ def test_message_id_persisted_before_provider_invocation(ctx):
     engine, ids = ctx
     captured = {}
 
-    def spy(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references=""):
+    def spy(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references="", **kw):
         # at the moment SMTP would be invoked, the id is ALREADY persisted + the row is 'sending'
         with Session(engine) as s2:
             cs = s2.exec(select(CampaignSend)).one()
@@ -113,7 +113,7 @@ def test_retry_reuses_same_message_id(ctx):
         cs.next_attempt_at = datetime.utcnow() - timedelta(seconds=1); s.add(cs); s.commit()
         seen = {}
 
-        def spy(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references=""):
+        def spy(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references="", **kw):
             seen["id"] = message_id
             return True, "", ""
 

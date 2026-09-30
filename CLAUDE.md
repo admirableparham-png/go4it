@@ -8,8 +8,9 @@ state, what is deployed, and the next tasks.
 
 ```bash
 make install        # venv + deps (Python 3.9 .venv already exists)
-make run            # dev server → http://localhost:8400
-make test           # ./.venv/bin/python -m pytest -q   (617 tests at Phase 10)
+make test           # ./.venv/bin/python -m pytest -q   (721 tests at Phase 11)
+# no `make run`: the founder wants no local ports (if one is ever needed: a free non-standard
+# 127.0.0.1 port, never 3300/8400, stopped afterwards)
 make db-migrate     # scripts/migrate.py (idempotent)
 make backup         # scripts/backup_db.py (WAL-safe online backup + integrity_check)
 ./save.sh           # daily save: DB backup → git add -A → commit → push current branch
@@ -35,5 +36,7 @@ Local DB = `data.db` (gitignored). Secrets = `.env` (gitignored). Never commit e
   bulk/wholesale buyers; bulk rows in a different colour; website always shown; **source never in the client
   report** (separate `_ADMIN` csv); no retail/junk; deep-sweep B2B RFQ platforms, not LLM guesses.
 - **Email:** only from a connected Go4it mailbox; respect the suppression list; small batches; canary first.
+- **Buyer-facing = qmatalsaha.com.** g4it.vip/go4it is an internal tool: no "g4it/go4it" in anything a buyer
+  sees (the campaign renderer fails closed). Campaign emails only via /campaigns (footer + unsubscribe).
 - Tags are immutable — never move a tag. Don't modify `main` without the founder's say-so.
 - Reply to the founder short and direct, in English.

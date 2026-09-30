@@ -56,7 +56,10 @@ def test_handle_inbound_dedupes_on_message_id(session):
 
 
 def test_handle_inbound_unmatched_is_skipped(session):
-    assert handle_inbound(session, "stranger@nowhere.com", "hi", "body", "<x@y>") == "unmatched"
+    # Phase 11: a shared inbox gets newsletters — only reply-like unmatched mail becomes a task
+    assert handle_inbound(session, "stranger@nowhere.com", "hi", "body", "<x@y>") == "ignored"
+    assert handle_inbound(session, "stranger@nowhere.com", "Re: hi", "body", "<x2@y>") == "unmatched"
+    assert handle_inbound(session, "stranger@nowhere.com", "hi", "body", "<x3@y>", "<ours@q>") == "unmatched"
     assert session.exec(select(Outreach)).all() == []      # not threaded, not auto-created
 
 

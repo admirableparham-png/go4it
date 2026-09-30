@@ -11,7 +11,7 @@ from datetime import datetime
 from sqlmodel import select
 
 from . import pipeline
-from .models import MailAccount, OutreachControl, User
+from .models import MailAccount, OutreachControl, User, UserProfile
 
 
 def sanitize_header(value: str) -> str:
@@ -66,6 +66,14 @@ def mailbox_take_slot(mailbox, now=None) -> bool:
     return True
 
 
+def mailbox_refund_slot(mailbox, now=None) -> None:
+    """Give back today's slot when a send failed at the MAILBOX level (auth / quota / config) — nothing left the
+    building, so it must not count against the daily limit."""
+    today = (now or datetime.utcnow()).strftime("%Y-%m-%d")
+    if mailbox.sent_today_date == today and mailbox.sent_today > 0:
+        mailbox.sent_today -= 1
+
+
 def within_window(campaign, now=None) -> bool:
     """True if now is inside the campaign's allowed weekday + hour window (campaign timezone approximated as
     server time; deterministic for tests). No campaign → always allowed (manual/quote sends)."""
@@ -89,7 +97,9 @@ def guard_buyer_text(session, text, seller_id):
         return text
     emails = [m.email for m in session.exec(select(MailAccount).where(MailAccount.user_id == seller_id)).all()
               if m.email]
-    return pipeline.strip_seller_identity(text, seller, seller_emails=emails)
+    prof = session.exec(select(UserProfile).where(UserProfile.user_id == seller_id)).first()
+    names = [prof.company, prof.full_name, prof.display_name] if prof else []
+    return pipeline.strip_seller_identity(text, seller, seller_emails=emails, extra_names=names)
 
 
 # --- honest email-authentication status (Phase 4 hardening) ---------------------------------------

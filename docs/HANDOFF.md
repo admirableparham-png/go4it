@@ -1,4 +1,4 @@
-# go4it — Handoff (2026-09-29)
+# go4it — Handoff (2026-09-29, updated 2026-09-30)
 
 Written when go4it moved out of the PULSE-LOCALHOST (TradeSitter) workspace into its own VS Code window.
 Engineering facts below are as of **2026-08-31** (last go4it work). Anything about production is a month
@@ -23,12 +23,26 @@ Nothing needs cloning or installing: the repo, `.venv`, `.env` and `data.db` are
 | Working branch | `work/phase-9-ai-command-automation` (Phases 7–10 + this handoff) |
 | `main` | `26f05cd` — 25 commits behind the working branch. Do not merge without a founder decision. |
 | Latest tag | `phase-10-profiles-roles-access-control` → `3bfebe0` |
-| Deployed tag | `phase-9-ai-command-automation-v5` → `5b91101` |
+| Deployed tag | `phase-10-profiles-roles-access-control` → `3bfebe0` (deployed 2026-09-30) |
+| Next tag | `phase-11-outreach-readiness` — built + tested, NOT deployed (see docs/PHASE11_OUTREACH.md) |
 | Remote | `origin` = github.com/admirableparham-png/go4it (private). All branches + tags pushed 2026-09-29. |
 
 Tags are immutable. New work = new commits + a new tag.
 
-## 3. Production (https://g4it.vip) — as of 2026-08-31
+## 2b. 2026-09-30 update
+
+- **Phase 10 deployed** (gate OK, 11 role templates + 6 profiles, access canary 16/16, counts unchanged). Rollback:
+  `backups/pre-p10-20260930-121529.db` + image `go4it:pre-p10-rollback`.
+- **Security:** demo users `sara@go4it.local` (manager) and `ali@go4it.local` (agent) still had seed passwords on prod —
+  both DISABLED with random passwords. SSH is key-only (one key: pstudio@mac-studio).
+- **Mac worker stopped:** launchd `com.kimiel.go4it.worker` (old code, live Gmail, follow-ups on) killed +
+  `launchctl disable`d. Re-enable only after it is moved to the latest code.
+- **Phase 11 (outreach readiness)** built on this branch — 721 tests. Runbook + what changed: `docs/PHASE11_OUTREACH.md`.
+- **Founder rules:** g4it.vip is internal-only; buyer-facing = qmatalsaha.com. Founder pastes server commands (or says
+  "you run it"). Never touch tradesitter; never `docker compose down`; never `docker image prune` (shared box).
+- `make run` is no longer used (no local ports); verify with `make test`.
+
+## 3. Production (https://g4it.vip) — as of 2026-08-31 (Phase 10 since deployed — see 2b)
 
 - Running **v5** (Phases 1–9). Phase 10 (roles & access control) is **tagged but NOT deployed**.
 - Claude copilot **live, founder-only**: `AI_MODEL=claude-sonnet-5`, `AI_LIVE_ALLOWLIST=admin@go4it.local`,

@@ -45,6 +45,7 @@ services:
       - go4it-report:/app/report_files
       - go4it-contract:/app/contract_files
       - go4it-quote:/app/quote_files
+      - ./backups:/app/backups          # Phase 11: optional automatic backups (BACKUP_INTERVAL) land next to manual ones
     # the worker serves no HTTP — check its loop HEARTBEAT, not the app's curl endpoint (which always failed here)
     healthcheck:
       test: ["CMD", "python", "scripts/worker_healthcheck.py"]

@@ -1,5 +1,9 @@
-"""Deliver a trader's buyer-search request: load the researched buyers into the REQUESTER's own account
-(owned by them, tagged req-<id>), close the request as done, and notify them.
+"""RETIRED (Phase 11). This script loaded researched buyers into the REQUESTER's own account (owner_id = the
+seller) — that hands buyer identities to the seller and breaks the confidential model. It now refuses; use
+scripts/load_managed_buyers.py, which loads them as confidential managed buyers (admin pool, anonymized funnel).
+
+Original description: deliver a trader's buyer-search request: load the researched buyers into the REQUESTER's
+own account (owned by them, tagged req-<id>), close the request as done, and notify them.
 
     ./.venv/bin/python scripts/deliver_request.py <request_id> <buyers.json>
 
@@ -28,7 +32,16 @@ def slug(s):
     return re.sub(r"[^a-z0-9]+", "-", (s or "").lower()).strip("-")[:60]
 
 
+RETIRED = ("REFUSED: scripts/deliver_request.py is retired — it would give the buyers to the seller's own account. "
+           "Use: python scripts/load_managed_buyers.py --request <SR-code|id> <buyers.json> [--dry-run]")
+
+
 def run(req_id, buyers_path):
+    print(RETIRED)
+    return
+
+
+def _legacy_run(req_id, buyers_path):   # kept for reference only — never called
     if not os.path.exists(buyers_path):
         print(f"{buyers_path} not found")
         return

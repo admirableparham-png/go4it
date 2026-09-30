@@ -48,8 +48,8 @@ def ctx(monkeypatch):
             s.add(User(email=email, name=name, role=role, active=True, password_hash=hash_password("pw")))
         s.commit()
         ids = {u.email.split("@")[0]: u.id for u in s.exec(select(User)).all()}
-        mb = MailAccount(user_id=ids["admin"], email="hunt@go4it.vip", admin_owned=True, active=True,
-                         daily_limit=100)
+        mb = MailAccount(user_id=ids["admin"], email="hunt@sender.example", admin_owned=True, active=True,
+                         daily_limit=100, sender_company="Sender Trading LLC", postal_address="1 Test Street, Dubai")
         s.add(mb); s.commit()
         ids["mailbox"] = s.exec(select(MailAccount)).first().id
     return TestClient(main.app), engine, ids
@@ -76,7 +76,7 @@ def _running_campaign(s, ids):
     return c
 
 
-def _ok_sender(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references=""):
+def _ok_sender(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references="", **kw):
     return True, "", f"<mid-{to}>"
 
 

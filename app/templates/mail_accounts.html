@@ -31,6 +31,33 @@
             <form method="post" action="/mail/{{ a.id }}/delete" onsubmit="return confirm('Remove {{ a.email }}?')"><button class="btn btn-neutral btn-sm">Remove</button></form>
           </div>
         </div>
+        <div class="flex flex-wrap gap-1 text-[10px] -mt-1 mb-1 px-1">
+          {% if a.admin_owned %}<span class="badge badge-emerald">Go4it-owned</span>{% else %}<span class="badge badge-slate">not Go4it-owned — campaigns can't use it</span>{% endif %}
+          {% if a.paused %}<span class="badge badge-amber">paused</span>{% endif %}
+          <span class="badge badge-slate">sent today {{ a.sent_today if a.sent_today_date == today else 0 }} / {{ a.daily_limit }}</span>
+          {% if a.last_send_error %}<span class="badge badge-error" title="{{ a.last_send_error }}">last error: {{ a.last_send_error[:60] }}</span>{% endif %}
+          {% if missing[a.id] %}<span class="badge badge-amber" title="{{ missing[a.id]|join('; ') }}">footer incomplete</span>{% endif %}
+        </div>
+        {% if can_manage %}
+        <details class="px-1 mb-2">
+          <summary class="text-[11px] text-slate-400 cursor-pointer">Sending controls &amp; buyer-facing footer</summary>
+          <form method="post" action="/mail/{{ a.id }}/controls" class="space-y-2 mt-2">
+            <div class="flex flex-wrap gap-3 text-xs text-slate-300">
+              <label><input type="checkbox" name="admin_owned" value="1" {% if a.admin_owned %}checked{% endif %}> Go4it-owned outreach mailbox</label>
+              <label><input type="checkbox" name="paused" value="1" {% if a.paused %}checked{% endif %}> paused</label>
+              <label>daily limit <input name="daily_limit" value="{{ a.daily_limit }}" class="input" style="width:5rem;display:inline-block"></label>
+            </div>
+            <input name="from_name" value="{{ a.from_name }}" placeholder="From name buyers see (company brand)" class="input">
+            <input name="sender_company" value="{{ a.sender_company }}" placeholder="Registered company name (footer)" class="input">
+            <textarea name="postal_address" rows="2" placeholder="Postal address (footer, required by law)" class="input">{{ a.postal_address }}</textarea>
+            <button class="btn btn-secondary btn-sm">Save controls</button>
+          </form>
+          <form method="post" action="/mail/{{ a.id }}/credentials" class="flex gap-2 mt-2">
+            <input name="app_password" placeholder="New App Password" class="input" autocomplete="off">
+            <button class="btn btn-neutral btn-sm" data-busy="Verifying&hellip;">Re-connect</button>
+          </form>
+        </details>
+        {% endif %}
         {% endfor %}
       </div>
     {% else %}
@@ -46,7 +73,7 @@
         <option value="custom">Other (custom SMTP)</option>
       </select>
       <input name="email" type="email" required placeholder="you@gmail.com" class="input">
-      <input name="from_name" placeholder="Display name (optional, e.g. Kimiel Trading)" class="input">
+      <input name="from_name" placeholder="Display name buyers see (e.g. your company brand)" class="input">
       <input name="app_password" required placeholder="App password" class="input" autocomplete="off">
       <div id="custom-smtp" class="grid grid-cols-2 gap-2" style="display:none">
         <input name="smtp_host" placeholder="smtp host" class="input">

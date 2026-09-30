@@ -4,6 +4,7 @@ Network (managed buyer Leads + their canonical Company/Contact). Two-way confide
 enforced on every send here (buyers never learn the seller; suppressed/replied addresses are never sent).
 """
 import os
+import re
 import secrets
 from datetime import datetime, timedelta
 
@@ -11,6 +12,7 @@ from sqlalchemy import update as _sa_update
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import func, select
 
+from . import campaign_render as CR
 from . import pipeline
 from . import send_guard as SG
 from . import suppression as SUP
@@ -82,17 +84,24 @@ def _last_out(session, lead_id, since=None):
     return session.exec(stmt).one() > 0
 
 
+_EMAIL_RE = re.compile(r"^[^@\s,;<>]+@[^@\s,;<>]+\.[a-z]{2,}$", re.I)
+
+
 def audience_preview(session, campaign, f: dict) -> dict:
     """The pre-launch breakdown an admin confirms before recipient records are created."""
     leads = audience_leads(session, campaign.tenant_id, f)
     existing = {r.lead_id for r in session.exec(select(CampaignRecipient)
                 .where(CampaignRecipient.campaign_id == campaign.id)).all()}
     seen_email, dupes, valid, missing, suppressed, prev_contacted, already = set(), 0, 0, 0, 0, 0, 0
+    invalid = 0
     eligible = []
     for ld in leads:
         em = SUP.normalize_email(ld.email)
         if not em:
             missing += 1
+            continue
+        if not _EMAIL_RE.match(em):          # a phone/URL/two addresses in the email field never becomes a send
+            invalid += 1
             continue
         if em in seen_email:
             dupes += 1
@@ -109,16 +118,21 @@ def audience_preview(session, campaign, f: dict) -> dict:
             continue
         eligible.append(ld)
     return {"total_companies": len(leads), "valid_email": valid, "missing_email": missing,
-            "suppressed": suppressed, "previously_contacted": prev_contacted,
+            "invalid_email": invalid, "suppressed": suppressed, "previously_contacted": prev_contacted,
             "already_in_campaign": already, "duplicates": dupes, "final_eligible": len(eligible),
             "eligible_lead_ids": [ld.id for ld in eligible]}
 
 
-def enroll(session, campaign, actor, f: dict) -> dict:
+def enroll(session, campaign, actor, f: dict, expected=None) -> dict:
     """Create durable recipient records for the eligible audience — idempotent (unique campaign_id+contact/
     lead), never enrolling a suppressed or duplicate address. Requires the admin to have confirmed the
-    preview. Returns {created, skipped_suppressed, skipped_existing}."""
+    preview: when `expected` (the count the admin saw) no longer matches, nothing is enrolled.
+    Returns {created, skipped_suppressed, skipped_existing[, error]}."""
     prev = audience_preview(session, campaign, f)
+    if expected is not None and prev["final_eligible"] != expected:
+        return {"created": 0, "skipped_suppressed": 0, "skipped_existing": 0,
+                "error": f"the audience changed since the preview ({expected} → {prev['final_eligible']}) — "
+                         "preview again"}
     created = skipped_sup = skipped_dupe = 0
     for lid in prev["eligible_lead_ids"]:
         ld = session.get(Lead, lid)
@@ -167,9 +181,13 @@ def set_sequence(session, campaign, steps: list, actor=None) -> int:
         for st in steps_for(session, campaign, version):   # draft edit: clear the current version's steps
             session.delete(st)
     for i, s in enumerate(steps):
+        raw_html = (s.get("body_html") or "")[:100_000]
+        body_html = CR.sanitize_html(raw_html) if raw_html.strip() else ""
+        # the text part is required; an HTML-only step gets its text part derived from the design
+        body = (s.get("body") or "")[:8000] or (CR.html_to_text(body_html)[:8000] if body_html else "")
         session.add(CampaignStep(campaign_id=campaign.id, version=version, step_index=i,
                                  subject=SG.sanitize_header((s.get("subject") or "")[:200]),
-                                 body=(s.get("body") or "")[:8000], template_id=s.get("template_id"),
+                                 body=body, body_html=body_html, template_id=s.get("template_id"),
                                  delay_days=int(s.get("delay_days") or 0),
                                  manual_review=bool(s.get("manual_review"))))
     session.commit()
@@ -179,6 +197,38 @@ def set_sequence(session, campaign, steps: list, actor=None) -> int:
     except Exception:  # noqa: BLE001
         pass
     return version
+
+
+def start_problems(session, campaign) -> list:
+    """Everything that must hold before a campaign may RUN — the start route refuses (and the dry-run reports)
+    while this list is non-empty: a healthy Go4it mailbox with its footer, valid steps, a daily limit, and reply
+    reading switched on (the 'reply unsubscribe' promise in every footer depends on it)."""
+    from . import config
+    from .models import MailAccount
+    probs = []
+    if not campaign.request_id:
+        probs.append("the campaign is not linked to a request — its audience would not be scoped to one seller")
+    mb = session.get(MailAccount, campaign.mailbox_id) if campaign.mailbox_id else None
+    ok, why = SG.mailbox_ok(mb)
+    if not ok:
+        probs.append(f"mailbox: {why}")
+    steps = steps_for(session, campaign)
+    if not steps:
+        probs.append("no email sequence yet")
+        if mb is not None:
+            probs += CR.validate_sender(mb)
+    for st in steps:
+        for e in CR.template_problems(session, campaign, st, mb):
+            p = f"email {st.step_index + 1}: {e}" if not e.startswith(("the mailbox", "no sending")) else e
+            if p not in probs:
+                probs.append(p)
+    if campaign.daily_limit <= 0:
+        probs.append("the campaign's daily limit is 0")
+    if not (config.IMAP_ENABLED and config.IMAP_INTERVAL > 0):
+        probs.append("reply reading (IMAP) is off — the footer promises 'reply unsubscribe', so it must be on")
+    elif mb is not None and (mb.email or "").strip().lower() != (config.IMAP_USER or "").strip().lower():
+        probs.append(f"replies to {mb.email} are not read — IMAP polls {config.IMAP_USER or 'another mailbox'}")
+    return probs
 
 
 # --------------------------------------------------------------------- send safety + idempotent send
@@ -227,6 +277,96 @@ def classify_send_error(err) -> str:
     if any(k in e for k in permanent):
         return "permanent"
     return "retryable"
+
+
+# Phase 11: failures of the MAILBOX, not the recipient — checked before classify_send_error. Gmail's
+# "550 5.4.5 daily sending quota exceeded" contains "550" and would otherwise permanently fail every buyer it hits.
+_MAILBOX_ERRORS = (
+    ("auth", re.compile(r"\(53[045],|\b5\.7\.(?:8|9|14)\b|username and password not accepted|"
+                        r"application-specific password|authentication (?:failed|required|unsuccessful)", re.I)),
+    ("quota", re.compile(r"\b5\.4\.5\b|\b4\.7\.28\b|sending (?:quota|limit)|unusual rate|too many messages|"
+                         r"too many login attempts|\(454,", re.I)),
+    ("config", re.compile(r"mailbox not connected|no stored password|credential encryption|sender error|"
+                          r"\b5\.7\.26\b|^login error:", re.I)),
+    # never reached the handover (DNS, refused, timeout, STARTTLS, 421 on connect): not the buyer's fault and not a
+    # reason to stop the mailbox — retry later, charge nothing
+    ("transient", re.compile(r"^connect error:", re.I)),
+)
+
+
+def classify_mailbox_error(err) -> str:
+    """'auth' | 'quota' | 'config' | 'transient' when the failure is the sending mailbox's (every later send would
+    fail the same way right now), else '' (a buyer-level failure)."""
+    for kind, pat in _MAILBOX_ERRORS:
+        if pat.search(err or ""):
+            return kind
+    return ""
+
+
+# can_send reasons that hold for the whole campaign/mailbox this cycle — the worker stops the campaign's loop
+CAMPAIGN_LEVEL_SKIPS = ("outreach paused", "campaign not running", "no mailbox", "not a Go4it admin mailbox",
+                        "mailbox paused or disabled", "outside sending window", "daily limit reached")
+# can_send reasons that are permanent for the recipient — settled to a terminal status so the campaign can finish
+_TERMINAL_SKIP = {"suppressed": "suppressed", "already replied": "replied", "no active contact email": "skipped",
+                  "sequence complete": "completed"}
+
+
+def is_campaign_level_skip(reason) -> bool:
+    return (reason or "").startswith(CAMPAIGN_LEVEL_SKIPS)
+
+
+def _settle_skip(session, rcpt, reason, now):
+    status = _TERMINAL_SKIP.get(reason)
+    if status and rcpt.status != status:
+        rcpt.status = status
+        rcpt.suppressed = rcpt.suppressed or status == "suppressed"
+        rcpt.next_action_at = None
+        rcpt.updated_at = now
+        session.add(rcpt); session.commit()
+
+
+BOUNCE_BREAKER_MIN_SENT = int(os.getenv("CAMPAIGN_BOUNCE_BREAKER_MIN_SENT", "20"))
+BOUNCE_BREAKER_RATE = float(os.getenv("CAMPAIGN_BOUNCE_BREAKER_RATE", "0.08"))
+_COUNTED = ("sent", "delivered", "hard_bounced", "soft_bounced", "replied", "positive_reply", "negative_reply",
+            "completed", "unsubscribed")
+
+
+def _bounce_counts(session, campaign):
+    rows = session.exec(select(CampaignRecipient.status).where(CampaignRecipient.campaign_id == campaign.id)).all()
+    return sum(1 for st in rows if st == "hard_bounced"), sum(1 for st in rows if st in _COUNTED)
+
+
+def bounce_breaker(session, campaign) -> bool:
+    """Pause a running campaign whose hard-bounce rate is too high (a scraped list gone bad burns the sending
+    domain). Judged on what was sent SINCE the campaign was last (re)started (bounce_baseline), so an admin who
+    resumes after cleaning the list isn't re-paused by the old bounces. Returns True if it paused the campaign."""
+    if campaign.status != "running":
+        return False
+    hard, sent = _bounce_counts(session, campaign)
+    try:
+        h0, s0 = (int(x) for x in (campaign.bounce_baseline or "0:0").split(":"))
+    except ValueError:
+        h0, s0 = 0, 0
+    hard, sent = hard - h0, sent - s0
+    if sent < BOUNCE_BREAKER_MIN_SENT or hard / sent < BOUNCE_BREAKER_RATE:
+        return False
+    _pause_with_item(session, campaign, f"bounce breaker: {hard} hard bounces in {sent} sent — check the list")
+    return True
+
+
+def _pause_with_item(session, campaign, reason):
+    """Pause the campaign and surface the same work item the paused-campaign sweep would (same key/version)."""
+    transition(session, campaign, "paused", reason=reason)
+    session.commit()
+    try:
+        from . import work_queue as WQ
+        WQ.create_work_item_safe(
+            session, type="campaign_paused", priority="high", title=f"Campaign paused: {campaign.name[:60]}",
+            description=campaign.pause_reason[:300], tenant_id=campaign.tenant_id,
+            idempotency_key=f"campaign_paused:{campaign.id}", condition_version=campaign.pause_reason[:60])
+        session.commit()
+    except Exception:  # noqa: BLE001 — the pause is what matters; the task is best-effort
+        session.rollback()
 
 
 def _send_row(session, campaign, rcpt, step_index):
@@ -289,13 +429,22 @@ def send_step(session, campaign, rcpt, mailbox, now=None, sender=None) -> dict:
     Honest limitation: SMTP offers no true exactly-once. We guarantee no AUTOMATIC duplicate — the residual
     crash-during-provider-accept window is surfaced to an admin ('unknown_needs_review'), not blindly resent.
 
-    Confidentiality: seller identity stripped + headers sanitized before send. `sender` is injectable for tests.
+    Phase 11: the message is RENDERED (campaign_render — merge fields, footer, List-Unsubscribe, seller + internal-
+    brand guards) BEFORE anything is claimed: a message that can't be rendered safely never takes a claim or a daily
+    slot. A mailbox-level failure (auth/quota/config) refunds the slot, pauses the mailbox and never counts against
+    the recipient. `sender` is injectable for tests.
     """
     now = now or datetime.utcnow()
     ok, reason = can_send(session, campaign, rcpt, mailbox, now)
     if not ok:
+        _settle_skip(session, rcpt, reason, now)
         return {"status": "skipped", "reason": reason}
     step_index = rcpt.current_step
+    step = steps_for(session, campaign, rcpt.sequence_version)[step_index]
+    ld = session.get(Lead, rcpt.lead_id) if rcpt.lead_id else None
+    msg = CR.render_campaign_message(session, campaign, step, ld, mailbox)
+    if not msg["ok"]:
+        return _render_failed(session, campaign, rcpt, msg, now)
     cs = claim_send(session, campaign, rcpt, step_index, now)
     if cs is None:
         return {"status": "already_sent", "reason": "claimed/sent by another worker or terminal"}
@@ -311,15 +460,17 @@ def send_step(session, campaign, rcpt, mailbox, now=None, sender=None) -> dict:
         cs.next_attempt_at = now + timedelta(days=1); cs.updated_at = now
         session.add(cs); session.add(mailbox); session.commit()
         return {"status": "limited", "reason": "daily limit reached"}
-    step = steps_for(session, campaign, rcpt.sequence_version)[step_index]
-    ld = session.get(Lead, rcpt.lead_id) if rcpt.lead_id else None
-    subject = SG.sanitize_header(step.subject or f"Re: {getattr(ld, 'product', '')}")
-    body = SG.guard_buyer_text(session, step.body or "", campaign.tenant_id)   # buyers never learn the seller
-    from_text, from_html = _parts(body)
+    subject, body = msg["subject"], msg["text"]
     send = sender or _default_sender
     # our durable RFC Message-ID becomes the actual Message-ID header of the sent mail (reply-correlation key)
-    okk, err, provider_id = send(mailbox, rcpt.to_email, subject, from_text, html=from_html,
-                                 reply_to=mailbox.email, message_id=cs.rfc_message_id)
+    try:
+        okk, err, provider_id = send(mailbox, rcpt.to_email, subject, body, html=msg["html"],
+                                     reply_to=mailbox.email, message_id=cs.rfc_message_id, headers=msg["headers"])
+    except Exception as e:  # noqa: BLE001 — a sender that raises must never leave this row stuck in 'sending'
+        okk, err, provider_id = False, f"sender error: {e}"[:300], ""
+    kind = "" if okk else classify_mailbox_error(err)
+    if kind:
+        return _mailbox_failed(session, cs, mailbox, kind, err, now)
     cs.attempt_count += 1
     cs.updated_at = now
     prov = provider_id if (provider_id and provider_id != cs.rfc_message_id) else ""   # store provider id separately
@@ -349,18 +500,85 @@ def send_step(session, campaign, rcpt, mailbox, now=None, sender=None) -> dict:
         rcpt.updated_at = now; session.add(rcpt)
         if ld is not None and ld.first_response_at is None:
             ld.first_response_at = now; session.add(ld)
+        if (mailbox.last_send_error or "").startswith("transient"):
+            mailbox.last_send_error = ""          # the network hiccup is over
         session.add(cs); session.add(mailbox); session.commit()
+        # managed buyer's pipeline follows the real send — in its own transaction, so a sync failure can never
+        # undo the recorded send
+        try:
+            if pipeline.advance_stage(session, ld, "contacted", note=f"campaign {campaign.id} email {step_index + 1}"):
+                session.commit()
+        except Exception:  # noqa: BLE001
+            session.rollback()
         return {"status": "sent", "reason": "", "rfc_message_id": cs.rfc_message_id,
                 "provider_message_id": cs.provider_message_id}
     # provider REJECTED → retry policy
     cs.last_error = (err or "")[:400]
     if classify_send_error(err) == "permanent" or cs.attempt_count >= RETRY_MAX:
         cs.status = "permanently_failed"
+        rcpt.status = "skipped"; rcpt.next_action_at = None; rcpt.updated_at = now   # terminal: campaign can finish
+        session.add(rcpt)
     else:
         cs.status = "retryable"
         cs.next_attempt_at = now + timedelta(seconds=RETRY_BACKOFF_SEC * cs.attempt_count)
     session.add(cs); session.add(mailbox); session.commit()
     return {"status": cs.status, "reason": err}
+
+
+def _render_failed(session, campaign, rcpt, msg, now):
+    """A template-level problem pauses the whole campaign once (fix it, then resume); a recipient-level one skips
+    only that buyer. Nothing is claimed and no daily slot is used either way."""
+    if msg["scope"] == "template":
+        _pause_with_item(session, campaign, f"render: {msg['error']}"[:300])
+        return {"status": "render_failed", "scope": "template", "reason": msg["error"]}
+    rcpt.status = "skipped"; rcpt.next_action_at = None; rcpt.updated_at = now
+    session.add(rcpt); session.commit()
+    try:
+        from . import work_queue as WQ
+        WQ.create_work_item_safe(
+            session, type="failed_system_job", priority="normal",
+            title=f"Buyers skipped in campaign: {campaign.name[:50]}",
+            description=f"At least one buyer could not be emailed safely and was skipped: {msg['error']}"[:300],
+            tenant_id=campaign.tenant_id, idempotency_key=f"campaign_render_skip:{campaign.id}")
+        session.commit()
+    except Exception:  # noqa: BLE001
+        session.rollback()
+    return {"status": "render_failed", "scope": "recipient", "reason": msg["error"]}
+
+
+def _mailbox_failed(session, cs, mailbox, kind, err, now):
+    """The MAILBOX failed (auth / quota / config): every later send would fail the same way. Refund the slot, put
+    the send back in the queue untouched (no attempt counted — not the buyer's fault), pause the mailbox and raise
+    an urgent task. Resuming the mailbox re-sends with the same Message-ID."""
+    SG.mailbox_refund_slot(mailbox, now)
+    cs.status = "retryable"; cs.claim_token = ""
+    cs.last_error = (err or "")[:400]; cs.updated_at = now
+    mailbox.last_send_error = f"{kind}: {err}"[:200]
+    if kind == "transient":            # network hiccup: retry this send after the backoff; the mailbox keeps going
+        cs.next_attempt_at = now + timedelta(seconds=RETRY_BACKOFF_SEC)
+        session.add(cs); session.add(mailbox); session.commit()
+        return {"status": "mailbox_failed", "kind": kind, "reason": err}
+    cs.next_attempt_at = now
+    mailbox.paused = True
+    session.add(cs); session.add(mailbox); session.commit()
+    try:
+        from . import work_queue as WQ
+        if kind == "auth":        # same key/version as work_queue.sync_auth_failed_mailboxes
+            WQ.create_work_item_safe(
+                session, type="mailbox_auth_failure", priority="urgent",
+                title=f"Mailbox authentication failure: {mailbox.email}",
+                description="A Go4it mailbox failed authentication and was paused — update credentials.",
+                idempotency_key=f"mailbox_auth_failure:{mailbox.id}",
+                condition_version=mailbox.last_send_error.lower()[:60])
+        else:
+            WQ.create_work_item_safe(
+                session, type="failed_system_job", priority="urgent",
+                title=f"Mailbox paused ({kind}): {mailbox.email}",
+                description=f"Sending stopped: {err}"[:300], idempotency_key=f"mailbox_paused:{mailbox.id}")
+        session.commit()
+    except Exception:  # noqa: BLE001
+        session.rollback()
+    return {"status": "mailbox_failed", "kind": kind, "reason": err}
 
 
 def recover_stale_sends(session, now=None) -> dict:
@@ -406,11 +624,6 @@ def _next_delay(session, campaign, rcpt):
     return steps[rcpt.current_step].delay_days if rcpt.current_step < len(steps) else 0
 
 
-def _parts(body):
-    from .outreach import plain_parts
-    return plain_parts(body)
-
-
 def _make_message_id(mailbox):
     """A globally-unique, RFC-5322-compliant Message-ID (<uniq@domain>) using the mailbox's own domain."""
     from email.utils import make_msgid
@@ -420,10 +633,11 @@ def _make_message_id(mailbox):
 
 
 def _default_sender(mailbox, to_addr, subject, text, html=None, reply_to="", message_id="",
-                    in_reply_to="", references=""):
+                    in_reply_to="", references="", headers=None):
     from .outreach import send_via_account
     return send_via_account(mailbox, to_addr, subject, text, html=html, reply_to=reply_to,
-                            message_id=message_id, in_reply_to=in_reply_to, references=references)
+                            message_id=message_id, in_reply_to=in_reply_to, references=references,
+                            headers=headers)
 
 
 # --------------------------------------------------------------------- lifecycle + reply/bounce stop
@@ -451,6 +665,9 @@ def transition(session, campaign, to, actor=None, reason=""):
     if to not in CAMPAIGN_STATUSES:
         return False, "unknown status"
     now = datetime.utcnow()
+    if to == "running" and campaign.status != "running":      # (re)start: the bounce breaker judges from here on
+        hard, sent = _bounce_counts(session, campaign)
+        campaign.bounce_baseline = f"{hard}:{sent}"
     campaign.status = to
     if to == "scheduled":
         campaign.scheduled_at = now

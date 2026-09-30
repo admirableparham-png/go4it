@@ -1,5 +1,6 @@
 """go4it web app — catalog + leads + matching + quotation + team CRM."""
 import hmac
+import html as html_lib
 import json
 import logging
 import os
@@ -7,6 +8,7 @@ import secrets
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import List
+from urllib.parse import quote_plus
 
 from fastapi import (BackgroundTasks, FastAPI, File, Form, Header, Request,
                      UploadFile)
@@ -51,6 +53,7 @@ from . import request_service as RS
 from . import suppression as SUP
 from . import send_guard as SG
 from . import campaign_service as CAMP
+from . import campaign_render as CR
 from .models import (BounceRecord, Campaign, CampaignRecipient, CampaignStep, EmailTemplate, OutreachControl,
                      Suppression)
 from .outreach import (build_parts, default_message, honey_message, mail_decrypt, mail_encrypt,
@@ -758,10 +761,13 @@ def leads_bulk_email(request: Request, account_id: int = Form(0), subject: str =
             return RedirectResponse("/leads", status_code=303)
         leads = session.exec(scoped(select(Lead), Lead.owner_id, user).where(Lead.id.in_(ids or [0]))).all()
         # suppression check + seller-identity redaction, per recipient, immediately before sending
-        prepared, suppressed = [], 0
+        prepared, suppressed, managed, seen = [], 0, 0, set()
         for ld in leads:
             em = (ld.email or "").strip()
-            if not em:
+            if not em or em.lower() in seen:     # one email per address per batch
+                continue
+            if ld.managed:                       # confidential managed buyers are emailed through Campaigns
+                managed += 1                     # (footer, unsubscribe header, daily limit, pipeline sync)
                 continue
             if SUP.is_suppressed(session, em, tenant_id=ld.seller_id):
                 suppressed += 1
@@ -771,6 +777,7 @@ def leads_bulk_email(request: Request, account_id: int = Form(0), subject: str =
             guarded = SG.guard_buyer_text(session, body, ld.seller_id)   # buyers never learn the seller
             text, html = plain_parts(guarded)
             prepared.append((ld, em, guarded, text, html))
+            seen.add(em.lower())
         items = [(em, subject, text, html) for (_ld, em, _g, text, html) in prepared]
         results = {r[0]: r for r in send_bulk_via_account(acct, items, reply_to=acct.email)}
         sent = fail = 0
@@ -786,14 +793,16 @@ def leads_bulk_email(request: Request, account_id: int = Form(0), subject: str =
             if ok and ld.first_response_at is None:
                 ld.first_response_at = datetime.utcnow(); session.add(ld)
         session.commit()
-        skipped = len(leads) - len(prepared) - suppressed
+        skipped = len(leads) - len(prepared) - suppressed - managed
         note = f"Sent {sent} email(s) from {acct.email}."
         if fail:
             note += f" {fail} failed."
         if suppressed:
             note += f" {suppressed} skipped (on the do-not-contact list)."
+        if managed:
+            note += f" {managed} managed buyer(s) skipped — email them through Campaigns."
         if skipped:
-            note += f" {skipped} skipped (no email address, or over the 60-per-send cap)."
+            note += f" {skipped} skipped (no email address, a duplicate, or over the 60-per-send cap)."
         _flash(request, note, "emerald" if sent else "rose")
     return RedirectResponse("/leads", status_code=303)
 
@@ -811,9 +820,12 @@ def mail_accounts(request: Request):
             return _forbidden()
         accounts = session.exec(select(MailAccount).where(MailAccount.user_id == user.id)
                                 .order_by(MailAccount.is_default.desc(), MailAccount.id)).all()
+        can_manage = _outreach_admin(session, user)
+        missing = {a.id: CR.validate_sender(a) for a in accounts}
     flashes = request.session.pop("_flash", [])
     return templates.TemplateResponse("mail_accounts.html", {
-        "request": request, "user": user, "active": "mail", "accounts": accounts, "flashes": flashes})
+        "request": request, "user": user, "active": "mail", "accounts": accounts, "flashes": flashes,
+        "can_manage": can_manage, "missing": missing, "today": datetime.utcnow().strftime("%Y-%m-%d")})
 
 
 @app.post("/mail")
@@ -872,7 +884,87 @@ def mail_delete(request: Request, acct_id: int):
         acct = session.get(MailAccount, acct_id)
         if not user or not acct or acct.user_id != user.id:
             return _not_found()
+        in_use = session.exec(select(func.count()).where(
+            Campaign.mailbox_id == acct.id, Campaign.status.not_in(("archived", "cancelled", "completed")))).one()
+        if in_use:
+            _flash(request, f"{acct.email} is used by {in_use} campaign(s) — pause it here or re-enter its "
+                            "App Password instead of removing it.", "rose")
+            return RedirectResponse("/mail", status_code=303)
         session.delete(acct); session.commit()
+    return RedirectResponse("/mail", status_code=303)
+
+
+def _outreach_admin(session, user) -> bool:
+    """Founder / outreach-manager controls: internal staff holding outreach.campaign.manage."""
+    return is_admin(user) and authz.has_permission(session, user, "outreach.campaign.manage")
+
+
+@app.post("/mail/{acct_id}/controls")
+def mail_controls(request: Request, acct_id: int, admin_owned: str = Form(""), paused: str = Form(""),
+                  daily_limit: str = Form(""), from_name: str = Form(""), sender_company: str = Form(""),
+                  postal_address: str = Form("")):
+    """Go4it-owned flag, pause, daily limit and the buyer-facing footer (sender company + postal address)."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not _outreach_admin(session, user):
+            return _forbidden()
+        acct = session.get(MailAccount, acct_id)
+        if not acct or acct.user_id != user.id:
+            return _not_found()
+        before = {"admin_owned": acct.admin_owned, "paused": acct.paused, "daily_limit": acct.daily_limit}
+        acct.admin_owned = admin_owned == "1"
+        was_paused, acct.paused = acct.paused, paused == "1"
+        try:
+            acct.daily_limit = max(0, min(2000, int(daily_limit)))
+        except (TypeError, ValueError):
+            pass
+        acct.from_name = SG.sanitize_header(from_name)[:120]
+        acct.sender_company = SG.sanitize_header(sender_company)[:160]
+        acct.postal_address = "\n".join(SG.sanitize_header(ln) for ln in (postal_address or "").splitlines()
+                                        if ln.strip())[:400]
+        if was_paused and not acct.paused:                  # resumed → the failure that paused it is handled
+            acct.last_send_error = ""
+            for key in (f"mailbox_auth_failure:{acct.id}", f"mailbox_paused:{acct.id}"):
+                WQ.resolve_by_key(session, key, user, note="mailbox resumed")
+        acct.updated_at = datetime.utcnow()
+        session.add(acct)
+        pipeline.audit(session, user, "mailbox", acct.id, "controls",
+                       {"before": before, "after": {"admin_owned": acct.admin_owned, "paused": acct.paused,
+                                                    "daily_limit": acct.daily_limit}})
+        session.commit()
+        problems = CR.validate_sender(acct)
+        _flash(request, f"Saved {acct.email}." + (f" Still needed before sending: {'; '.join(problems)}."
+                                                  if problems else ""), "amber" if problems else "emerald")
+    return RedirectResponse("/mail", status_code=303)
+
+
+@app.post("/mail/{acct_id}/credentials")
+def mail_credentials(request: Request, acct_id: int, app_password: str = Form("")):
+    """Re-enter the App Password (e.g. after an auth failure) — verified before saving; resumes the mailbox."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not _outreach_admin(session, user):
+            return _forbidden()
+        acct = session.get(MailAccount, acct_id)
+        if not acct or acct.user_id != user.id:
+            return _not_found()
+        pw = (app_password or "").strip()
+        ok, err = verify_smtp(acct.smtp_host, acct.smtp_port, acct.email, pw) if pw else (False, "enter it first")
+        if not ok:
+            _flash(request, f"Couldn't connect {acct.email}: {err}", "rose")
+            return RedirectResponse("/mail", status_code=303)
+        acct.smtp_password_enc = mail_encrypt(pw)
+        acct.last_verified_at = datetime.utcnow()
+        resumed = acct.paused and (acct.last_send_error or "").startswith(("auth", "config"))
+        if resumed:                   # only a credential failure is fixed by new credentials; a deliberate or
+            acct.paused, acct.last_send_error = False, ""          # quota pause stays until lifted on purpose
+            WQ.resolve_by_key(session, f"mailbox_auth_failure:{acct.id}", user, note="credentials re-entered")
+        session.add(acct)
+        pipeline.audit(session, user, "mailbox", acct.id, "credentials_updated", {"resumed": resumed})
+        session.commit()
+        _flash(request, f"{acct.email} reconnected ✓" + (" and resumed." if resumed else
+                                                         (" It is still paused — resume it in its controls."
+                                                          if acct.paused else "")))
     return RedirectResponse("/mail", status_code=303)
 
 
@@ -1957,6 +2049,7 @@ def lead_detail(request: Request, lead_id: int):
         # newest buyer-safe quote link to drop into a message (approved/sent quotes only)
         share_q = next((q for q in quotes if q.status in ("approved", "sent") and q.share_token), None)
         latest_share_url = f"{BASE_URL}/p/{share_q.share_token}" if share_q else ""
+        can_send = SMTP_ENABLED and is_admin(user) and authz.has_permission(session, user, "outreach.email.send")
     return templates.TemplateResponse(
         "lead_detail.html",
         {"request": request, "user": user, "is_admin": is_admin(user), "lead": lead, "owner": owner,
@@ -1965,7 +2058,7 @@ def lead_detail(request: Request, lead_id: int):
          "quotes": quotes, "timeline": timeline, "outreach": outreach, "thread": thread,
          "default_subject": default_subject, "default_body": default_body,
          "latest_share_url": latest_share_url,
-         "smtp_enabled": SMTP_ENABLED, "today": datetime.utcnow().date(),
+         "smtp_enabled": can_send, "today": datetime.utcnow().date(),
          "next_stages": sorted(TRANSITIONS.get(lead.status, set()))},
     )
 
@@ -3015,6 +3108,9 @@ def lead_outreach(request: Request, lead_id: int, channel: str = Form("email"),
         status, error, mid = "logged", "", ""
         to = recipient or lead.email
         if send and channel == "email":
+            # logging a contact stays open to the lead's owner; actually EMAILING a buyer is internal-only
+            if not is_admin(user) or not authz.has_permission(session, user, "outreach.email.send"):
+                return _forbidden()
             if SG.outreach_paused(session):
                 _flash(request, "All outreach is paused — resume it before sending.", "rose")
                 return RedirectResponse(f"/leads/{lead_id}", status_code=303)
@@ -5284,7 +5380,7 @@ def update_fx(request: Request, base: str = Form(...), rate: float = Form(..., g
 # A trader submits a request (buyer search first); the founder is pinged, approves, fulfils, and the
 # result (delivered buyers) lands in the trader's OWN account (owner_id = requester). Fully isolated.
 
-# The concierge service catalog. buyer_hunt delivers leads (via scripts/deliver_request.py); the other
+# The concierge service catalog. buyer_hunt delivers leads (via scripts/load_managed_buyers.py); the other
 # services deliver a file/summary the founder uploads. All share the one request lifecycle.
 SERVICES = [
     {"key": "buyer_hunt", "icon": "\U0001F3AF", "label": "Find buyers",
@@ -6417,8 +6513,23 @@ def campaign_new(request: Request, name: str = Form(""), context_kind: str = For
     return RedirectResponse(f"/campaigns/{c.id}", status_code=303)
 
 
+_EXCLUDES = ("exclude_customers", "exclude_negative", "exclude_negotiating", "exclude_recent")
+
+
+def _audience_filter(c, product="", country="", engagement="", flags=()):
+    """The audience filter — ALWAYS scoped to the campaign's own request, so a broad (or empty) filter can never
+    enrol another seller's / request's buyers."""
+    f = {"product": (product or "").strip(), "country": (country or "").strip(),
+         "engagement": (engagement or "").strip(), "request_id": c.request_id or ""}
+    for k in _EXCLUDES:
+        f[k] = k in flags
+    return f
+
+
 @app.get("/campaigns/{cid}", response_class=HTMLResponse)
-def campaign_detail(request: Request, cid: int, product: str = "", country: str = "", engagement: str = ""):
+def campaign_detail(request: Request, cid: int, product: str = "", country: str = "", engagement: str = "",
+                    preview: str = "", exclude_customers: str = "", exclude_negative: str = "",
+                    exclude_negotiating: str = "", exclude_recent: str = ""):
     with Session(engine) as session:
         user = current_user(request, session)
         if not is_admin(user):
@@ -6431,23 +6542,27 @@ def campaign_detail(request: Request, cid: int, product: str = "", country: str 
                              .order_by(CampaignRecipient.id).limit(200)).all()
         from collections import Counter
         rc_status = Counter(r.status for r in rcpts)
-        f = {"product": product, "country": country, "engagement": engagement}
-        preview = CAMP.audience_preview(session, c, f) if (product or country or engagement) else None
+        flags = {k for k, v in zip(_EXCLUDES, (exclude_customers, exclude_negative, exclude_negotiating,
+                                               exclude_recent)) if v == "1"}
+        f = _audience_filter(c, product, country, engagement, flags)
+        want = preview == "1" or product or country or engagement
+        aud = CAMP.audience_preview(session, c, f) if want else None
         mailbox = session.get(MailAccount, c.mailbox_id) if c.mailbox_id else None
         mailboxes = session.exec(select(MailAccount).where(MailAccount.admin_owned == True)).all()  # noqa: E712
         hdr = _out_hdr("Campaign", c.name, f"{c.status} · {len(rcpts)} recipients · context {c.context_kind}")
         return templates.TemplateResponse("campaign_detail.html", {
             "request": request, "user": user, "active": "campaigns", "c": c, "steps": steps,
-            "rcpts": rcpts, "rc_status": dict(rc_status), "preview": preview, "f": f, "hdr": hdr,
+            "rcpts": rcpts, "rc_status": dict(rc_status), "preview": aud, "f": f, "hdr": hdr,
             "mailbox": mailbox, "mailboxes": mailboxes, "STATUSES": CAMP.CAMPAIGN_STATUSES,
-            "paused_all": SG.outreach_paused(session)})
+            "paused_all": SG.outreach_paused(session), "start_problems": CAMP.start_problems(session, c),
+            "can_manage": _outreach_admin(session, user)})
 
 
 @app.post("/campaigns/{cid}/audience")
 def campaign_audience(request: Request, cid: int, do: str = Form("preview"), product: str = Form(""),
                       country: str = Form(""), engagement: str = Form(""), exclude_customers: str = Form(""),
                       exclude_negative: str = Form(""), exclude_negotiating: str = Form(""),
-                      exclude_recent: str = Form("")):
+                      exclude_recent: str = Form(""), expected: str = Form("")):
     with Session(engine) as session:
         user = current_user(request, session)
         if not is_admin(user):
@@ -6455,26 +6570,39 @@ def campaign_audience(request: Request, cid: int, do: str = Form("preview"), pro
         c = session.get(Campaign, cid)
         if not c:
             return _not_found()
-        f = {"product": product.strip(), "country": country.strip(), "engagement": engagement.strip(),
-             "exclude_customers": exclude_customers == "1", "exclude_negative": exclude_negative == "1",
-             "exclude_negotiating": exclude_negotiating == "1", "exclude_recent": exclude_recent == "1"}
+        flags = {k for k, v in zip(_EXCLUDES, (exclude_customers, exclude_negative, exclude_negotiating,
+                                               exclude_recent)) if v == "1"}
+        f = _audience_filter(c, product, country, engagement, flags)
         if do == "enroll":
-            res = CAMP.enroll(session, c, user, f)     # requires the admin to have seen the preview
-            _flash(request, f"Enrolled {res['created']} recipient(s); {res['skipped_suppressed']} suppressed, "
-                            f"{res['skipped_existing']} already in.")
+            if not _outreach_admin(session, user):
+                return _forbidden()
+            if not c.request_id:          # an unscoped audience would be every lead in the database
+                _flash(request, "Link this campaign to a request first — only that request's buyers can be enrolled.",
+                       "rose")
+                return RedirectResponse(f"/campaigns/{cid}", status_code=303)
+            if not expected.isdigit():
+                _flash(request, "Preview the audience first, then confirm the count.", "rose")
+                return RedirectResponse(f"/campaigns/{cid}", status_code=303)
+            res = CAMP.enroll(session, c, user, f, expected=int(expected))
+            if res.get("error"):
+                _flash(request, res["error"], "rose")
+            else:
+                _flash(request, f"Enrolled {res['created']} recipient(s); {res['skipped_suppressed']} suppressed, "
+                                f"{res['skipped_existing']} already in.")
             return RedirectResponse(f"/campaigns/{cid}", status_code=303)
-        qs = "&".join(f"{k}={v}" for k, v in [("product", product), ("country", country),
-                                              ("engagement", engagement)] if v)
+        qs = "&".join([f"{k}={quote_plus(v)}" for k, v in [("product", product), ("country", country),
+                                                           ("engagement", engagement)] if v]
+                      + [f"{k}=1" for k in sorted(flags)] + ["preview=1"])
         return RedirectResponse(f"/campaigns/{cid}?{qs}", status_code=303)
 
 
 @app.post("/campaigns/{cid}/sequence")
 def campaign_sequence(request: Request, cid: int, subjects: List[str] = Form(default=[]),
-                      bodies: List[str] = Form(default=[]), delays: List[str] = Form(default=[]),
-                      confirm: str = Form("")):
+                      bodies: List[str] = Form(default=[]), bodies_html: List[str] = Form(default=[]),
+                      delays: List[str] = Form(default=[]), confirm: str = Form("")):
     with Session(engine) as session:
         user = current_user(request, session)
-        if not is_admin(user):
+        if not _outreach_admin(session, user):          # what buyers read is a campaign-manager decision
             return _forbidden()
         c = session.get(Campaign, cid)
         if not c:
@@ -6483,18 +6611,102 @@ def campaign_sequence(request: Request, cid: int, subjects: List[str] = Form(def
             _flash(request, "Editing a running campaign creates a new sequence version — confirm to proceed.",
                    "rose")
             return RedirectResponse(f"/campaigns/{cid}", status_code=303)
-        steps = []
+        steps, problems = [], []
         for i, subj in enumerate(subjects):
-            if not (subj or "").strip() and not (bodies[i] if i < len(bodies) else "").strip():
+            body = bodies[i] if i < len(bodies) else ""
+            html = bodies_html[i] if i < len(bodies_html) else ""
+            if not (subj or "").strip() and not body.strip() and not html.strip():
                 continue
-            steps.append({"subject": subj, "body": bodies[i] if i < len(bodies) else "",
+            # an HTML-only step gets its text part from the design (same rule as set_sequence)
+            text_part = body or (CR.html_to_text(CR.sanitize_html(html)) if html.strip() else "")
+            problems += [f"email {len(steps) + 1}: {e}" for e in CR.validate_step(subj, text_part, html)]
+            steps.append({"subject": subj, "body": body, "body_html": html,
                           "delay_days": (delays[i] if i < len(delays) else "0")})
         if not steps:
             _flash(request, "Add at least an initial email.", "rose")
             return RedirectResponse(f"/campaigns/{cid}", status_code=303)
+        if problems:
+            _flash(request, "Not saved — " + "; ".join(problems)[:600], "rose")
+            return RedirectResponse(f"/campaigns/{cid}", status_code=303)
         v = CAMP.set_sequence(session, c, steps, user)
         _flash(request, f"Saved sequence v{v} ({len(steps)} step(s)).")
     return RedirectResponse(f"/campaigns/{cid}", status_code=303)
+
+
+@app.post("/campaigns/{cid}/controls")
+def campaign_controls(request: Request, cid: int, daily_limit: str = Form(""), mailbox_id: str = Form(""),
+                      send_window_start: str = Form(""), send_window_end: str = Form(""),
+                      send_days: List[str] = Form(default=[])):
+    """Daily limit (the warm-up ramp), sending mailbox, and the UTC sending window/days."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not _outreach_admin(session, user):
+            return _forbidden()
+        c = session.get(Campaign, cid)
+        if not c:
+            return _not_found()
+        try:
+            c.daily_limit = max(0, min(500, int(daily_limit)))
+        except (TypeError, ValueError):
+            pass
+        if mailbox_id.isdigit():
+            mb = session.get(MailAccount, int(mailbox_id))
+            if mb and mb.admin_owned:
+                c.mailbox_id = mb.id
+        try:
+            ws, we = int(send_window_start), int(send_window_end)
+            if 0 <= ws < we <= 24:
+                c.send_window_start, c.send_window_end = ws, we
+        except (TypeError, ValueError):
+            pass
+        days = sorted({d for d in send_days if d in {"0", "1", "2", "3", "4", "5", "6"}})
+        if days:
+            c.send_days = ",".join(days)
+        c.updated_at = datetime.utcnow()
+        session.add(c)
+        pipeline.audit(session, user, "campaign", c.id, "controls",
+                       {"daily_limit": c.daily_limit, "mailbox_id": c.mailbox_id,
+                        "window": f"{c.send_window_start}-{c.send_window_end}", "days": c.send_days},
+                       tenant_id=c.tenant_id)
+        session.commit()
+        _flash(request, f"Saved: {c.daily_limit}/day, {c.send_window_start}:00–{c.send_window_end}:00 UTC.")
+    return RedirectResponse(f"/campaigns/{cid}", status_code=303)
+
+
+@app.get("/campaigns/{cid}/preview", response_class=HTMLResponse)
+def campaign_preview(request: Request, cid: int, step: int = 0):
+    """Exactly what a buyer receives — rendered by the SAME function the sender uses, for the first enrolled
+    buyer. Admin-only; the HTML is shown in a sandboxed frame (no scripts, no navigation)."""
+    with Session(engine) as session:
+        user = current_user(request, session)
+        if not is_admin(user):
+            return _forbidden()
+        c = session.get(Campaign, cid)
+        if not c:
+            return _not_found()
+        steps = CAMP.steps_for(session, c)
+        rc = session.exec(select(CampaignRecipient).where(CampaignRecipient.campaign_id == cid)
+                          .order_by(CampaignRecipient.id)).first()
+        ld = session.get(Lead, rc.lead_id) if rc and rc.lead_id else None
+        mb = session.get(MailAccount, c.mailbox_id) if c.mailbox_id else None
+        if not steps or step < 0 or step >= len(steps) or ld is None or mb is None:
+            _flash(request, "Preview needs a saved sequence, a mailbox and at least one enrolled buyer.", "rose")
+            return RedirectResponse(f"/campaigns/{cid}", status_code=303)
+        msg = CR.render_campaign_message(session, c, steps[step], ld, mb)
+        from_hdr = f"{mb.from_name} <{mb.email}>" if mb.from_name else mb.email
+    esc = html_lib.escape
+    head = "".join(f"<div><b>{esc(k)}:</b> {esc(v)}</div>" for k, v in
+                   [("From", from_hdr), ("To", rc.to_email), ("Subject", msg["subject"])]
+                   + list(msg["headers"].items()))
+    body = (f'<iframe sandbox="" srcdoc="{esc(msg["html"], quote=True)}" '
+            'style="width:100%;height:560px;border:1px solid #334155;background:#fff;border-radius:8px"></iframe>'
+            f'<pre style="white-space:pre-wrap;margin-top:12px">{esc(msg["text"])}</pre>'
+            if msg["ok"] else f'<div style="color:#fb7185">Blocked ({esc(msg["scope"])}): {esc(msg["error"])}</div>')
+    return HTMLResponse(f'<!DOCTYPE html><html><head><meta charset="utf-8"><title>Preview</title></head>'
+                        f'<body style="font-family:Arial,sans-serif;background:#0f172a;color:#e2e8f0;padding:16px">'
+                        f'<div style="margin-bottom:10px"><a href="/campaigns/{cid}" style="color:#93c5fd">← back</a>'
+                        f' · email {step + 1} of {len(steps)}</div><div style="font-size:13px;margin-bottom:10px">'
+                        f'{head}</div>{body}</body></html>')
 
 
 @app.post("/campaigns/{cid}/status")
@@ -6507,11 +6719,11 @@ def campaign_status(request: Request, cid: int, to: str = Form(""), reason: str 
         if not c:
             return _not_found()
         if to == "running":
-            if not c.mailbox_id or not (session.get(MailAccount, c.mailbox_id) or MailAccount()).admin_owned:
-                _flash(request, "Assign a Go4it admin mailbox before running.", "rose")
-                return RedirectResponse(f"/campaigns/{cid}", status_code=303)
-            if not CAMP.steps_for(session, c):
-                _flash(request, "Add a sequence before running.", "rose")
+            if not _outreach_admin(session, user):
+                return _forbidden()
+            problems = CAMP.start_problems(session, c)
+            if problems:
+                _flash(request, "Can't start yet — " + "; ".join(problems)[:600], "rose")
                 return RedirectResponse(f"/campaigns/{cid}", status_code=303)
         ok, err = CAMP.transition(session, c, to, user, reason)
         session.commit()
@@ -6877,13 +7089,10 @@ def admin_user_password(request: Request, user_id: int, password: str = Form(...
         u = session.get(User, user_id)
         if not u or len(password) < 6:
             return RedirectResponse("/admin/users?error=input", status_code=303)
-        u.password_hash = hash_password(password)
-        p = session.exec(select(UserProfile).where(UserProfile.user_id == u.id)).first()
-        if p:
-            p.password_changed_at = datetime.utcnow(); p.sessions_revoked_at = datetime.utcnow(); session.add(p)
-        authz.audit(session, actor, u.id, "password_reset", field="password_hash", reason="admin reset")
-        session.add(u); session.commit()
-    return RedirectResponse(f"/admin/users/{user_id}?ok=password", status_code=303)
+        ok, msg = ACCESS.reset_password(session, actor, u, password)   # Founder guard lives in the service
+        session.commit()
+    return RedirectResponse(f"/admin/users/{user_id}?{'ok=password' if ok else 'error=' + msg[:60]}",
+                            status_code=303)
 
 
 @app.get("/admin/users/{user_id}", response_class=HTMLResponse)

@@ -533,6 +533,9 @@ class MailAccount(SQLModel, table=True):
     dkim_status: str = ""
     dmarc_status: str = ""
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+    # --- Phase 11: the buyer-facing footer every campaign email carries (the legal sender behind this From) ---
+    sender_company: str = ""        # e.g. the registered company name shown to buyers
+    postal_address: str = ""        # physical postal address (required in commercial email: CASL / EU)
 
 
 class StageEvent(SQLModel, table=True):
@@ -809,6 +812,8 @@ class Campaign(SQLModel, table=True):
     stop_on_unsubscribe: bool = True
     source_slug: str = ""           # legacy Lead.source this campaign maps to (backfill bridge)
     pause_reason: str = ""
+    bounce_baseline: str = ""       # Phase 11: "hard:sent" counts when last (re)started — the bounce breaker judges
+                                    # only what was sent since, so a resumed campaign isn't re-paused by old bounces
     notes: str = ""                 # internal admin notes (never buyer/seller PII)
     inferred: bool = False          # True = backfill-seeded from legacy source grouping
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -834,6 +839,7 @@ class CampaignStep(SQLModel, table=True):
     manual_review: bool = False     # pause here for an admin to approve before sending
     status: str = "active"          # active|archived
     created_at: datetime = Field(default_factory=datetime.utcnow)
+    body_html: str = ""             # Phase 11: optional admin-authored HTML design (sanitized); `body` stays the text part
 
 
 class CampaignRecipient(SQLModel, table=True):
@@ -901,6 +907,17 @@ class Suppression(SQLModel, table=True):
     suppressed_by: Optional[int] = Field(default=None, foreign_key="user.id")
     review_at: Optional[datetime] = None
     active: bool = True
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class InboundSeen(SQLModel, table=True):
+    """Phase 11 — the IMAP poller's processed-message ledger. The poller reads the mailbox READ-ONLY (a person's
+    unread mail stays unread), so it remembers what it already handled by Message-ID instead of the \\Seen flag."""
+    __table_args__ = (UniqueConstraint("mailbox", "message_key", name="uq_inboundseen_mailbox_key"),)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    mailbox: str = Field(default="", index=True)
+    message_key: str = ""           # the Message-ID, or a hash of date|from|subject when there is none
+    outcome: str = ""               # threaded|unmatched|ignored|unsubscribed|duplicate|bounced|baseline|error
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 

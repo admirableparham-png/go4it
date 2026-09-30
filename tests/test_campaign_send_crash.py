@@ -41,8 +41,8 @@ def ctx():
         s.add(User(email="kim@t.local", name="Kim", role="agent", active=True, password_hash="x"))
         s.commit()
         ids = {u.email.split("@")[0]: u.id for u in s.exec(select(User)).all()}
-        mb = MailAccount(user_id=ids["admin"], email="hunt@go4it.vip", admin_owned=True, active=True,
-                         daily_limit=100)
+        mb = MailAccount(user_id=ids["admin"], email="hunt@sender.example", admin_owned=True, active=True,
+                         daily_limit=100, sender_company="Sender Trading LLC", postal_address="1 Test Street, Dubai")
         s.add(mb); s.commit(); s.refresh(mb)
         ids["mailbox"] = mb.id
     return engine, ids
@@ -73,19 +73,19 @@ def _mb(s, ids):
 
 
 # --- senders ---------------------------------------------------------------------------------------
-def ok(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references=""):
+def ok(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references="", **kw):
     return True, "", f"<mid-{to}>"
 
 
-def timeout(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references=""):
+def timeout(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references="", **kw):
     return False, "connection timed out", ""
 
 
-def retryable(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references=""):
+def retryable(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references="", **kw):
     return False, "451 4.7.1 greylisted, try again later", ""
 
 
-def permanent(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references=""):
+def permanent(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references="", **kw):
     return False, "550 5.1.1 user unknown", ""
 
 
@@ -210,7 +210,7 @@ def test_worker_continues_after_one_failure(ctx, monkeypatch):
         for em in ("good1@x.com", "bad@x.com", "good2@x.com"):
             _recipient(s, c, ids, email=em)
 
-    def picky(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references=""):
+    def picky(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references="", **kw):
         if to == "bad@x.com":
             return False, "550 5.1.1 user unknown", ""
         return True, "", f"<mid-{to}>"

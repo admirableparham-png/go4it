@@ -12,7 +12,7 @@ Reads   docs/research/anchors_buyers_by_country.json
 Writes  docs/prospects/trsharks_anchors_buyers.html         (ADMIN — full: sources + verdicts)
         docs/prospects/trsharks_anchors_buyers_client.html  (CLIENT — clean, no sources)
         docs/prospects/trsharks_anchors_buyers_ADMIN.csv     (admin CSV, keeps SOURCE_url)
-        docs/prospects/buyers_trsharks.json                  (normalized for scripts/deliver_request.py)
+        docs/prospects/buyers_trsharks.json                  (normalized for scripts/load_managed_buyers.py)
 
 Rules honoured: English chrome · 2 parts per market (Part 1 recent RFQ posters / Part 2 bulk buyers) ·
 BULK buyers highlighted in a different colour · website ALWAYS shown · SOURCE admin-only (client=clean) ·
@@ -327,7 +327,7 @@ def write_csv(data, path):
 
 
 def write_loader_json(data, path):
-    """Normalized to scripts/deliver_request.py's expected keys (dest_iso/buys/phones/source_url)."""
+    """Normalized to scripts/load_managed_buyers.py's expected keys (dest_iso/buys/phones/source_url)."""
     out = []
     for c in data.get("cells", []):
         iso = c.get("iso2", "")

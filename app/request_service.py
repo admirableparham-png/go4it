@@ -1,7 +1,7 @@
 """Requests + Work Queue (Phase 3) — request workflow helpers.
 
 The legacy `ServiceRequest.status` (submitted|approved|rejected|running|done) is UNCHANGED and stays the
-operational driver for `scripts/deliver_request.py`, `worker.run_request_reminders`, the pending badge, sort
+operational driver for `scripts/load_managed_buyers.py`, `worker.run_request_reminders`, the pending badge, sort
 and existing templates. This module adds the richer, additive **workflow_status** (11 states) that the admin
 Requests surface + Work Queue read, plus the authoritative status-change history. Legacy and workflow are kept
 loosely in sync via `advance_workflow` (called by the existing transition routes) so their meanings never

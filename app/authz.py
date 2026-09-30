@@ -120,6 +120,24 @@ def is_last_founder(session, user_id) -> bool:
     return fs == [user_id]
 
 
+def is_founder(session, user) -> bool:
+    """A Founder account: founder role template, or founder-level control via an override. A legacy admin with no
+    profile yet counts as one (that is the authority it holds before the backfill)."""
+    if not user or getattr(user, "id", None) is None:
+        return False
+    p = profile(session, user)
+    if p is None:
+        return is_admin(user)
+    return p.role_key == P.FOUNDER_ROLE or "founder.control" in effective_permissions(session, user)
+
+
+def founder_protected(session, actor, target) -> bool:
+    """True when `actor` must NOT change `target`'s password or access: the target is a Founder and the actor lacks
+    founder-level control. Stops an Admin/Manager (who holds users.manage) from taking a Founder account over via a
+    password reset, or neutralising it via disable / demote / permission-deny."""
+    return is_founder(session, target) and not has_permission(session, actor, "founder.control")
+
+
 def can_assign_role(session, actor, role_key: str) -> bool:
     """Only a founder may assign the founder role or any template carrying founder-level control."""
     if not has_permission(session, actor, "users.manage"):

@@ -1,0 +1,4 @@
+# Phase 11 — kept out of `git archive <tag>` deploy tarballs (buyer PII + ops notes never go to the server).
+docs/prospects/** export-ignore
+docs/HANDOFF.md export-ignore
+CLAUDE.md export-ignore

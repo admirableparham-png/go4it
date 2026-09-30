@@ -20,6 +20,39 @@ _AUTO_RE = re.compile(r"\b(out of office|auto-?reply|automatic reply|autorespond
 _UNSUB_RE = re.compile(r"\b(unsubscribe|opt[- ]?out|remove me|stop emailing|take me off|do not contact)\b", re.I)
 SOFT_BOUNCE_LIMIT = 3
 
+# Phase 11 — quoted history must never be read as the buyer's words: every campaign email ends with an opt-out
+# line, so a normal reply that quotes it ("send the price list" + our quoted footer) must NOT unsubscribe anyone.
+# "On … wrote:"-style lines introduce a '>'-quoted block: skip the line and keep reading (a buyer may write BELOW the
+# quote). "-----Original Message-----", a long rule or an Outlook From:/Sent: block introduce an UNMARKED copy of our
+# email: everything after it is ours, so reading stops there.
+_ATTRIBUTION = re.compile(
+    r"^\s*(?:On\b.{0,300}\bwrote:|wrote:|Le\b.{0,300}\ba [ée]crit\s*:|Am\b.{0,300}\bschrieb.{0,40}:|"
+    r"El\b.{0,300}\bescribi[óo]:|Il\b.{0,300}\bha scritto:|Op\b.{0,300}\bschreef.{0,40}:|.{0,300}\bpisze:|"
+    r".{0,300}\bskrev:|.{0,300}\bnapsal\(a\):|.{0,300}\b[íi]rta:)\s*$", re.I)
+_QUOTE_STOP = re.compile(r"^\s*(?:-{2,}\s*Original Message\s*-{2,}|_{8,})\s*$", re.I)
+_FROM_HDR = re.compile(r"^\s*\*?(?:From|Von|De|Da|Od|Van|Från)\s*:\*?\s", re.I)
+_SENT_HDR = re.compile(r"^\s*\*?(?:Sent|Date|Gesendet|Datum|Envoy[ée]|Enviado|Inviato|Wys[łl]ano|Verzonden|"
+                       r"Skickat)\s*:", re.I)
+
+
+def reply_text(body: str) -> str:
+    """The buyer's OWN words: '>' quoted lines and quote attributions are dropped (text written below a quote is
+    kept), reading stops at an unmarked copy of our email (Outlook From:/Sent: block, Original Message, a rule), and
+    any line carrying our footer's opt-out sentence or unsubscribe link is never read as the buyer's words."""
+    from .campaign_render import OPT_OUT_LINE
+    lines = (body or "").splitlines()
+    optout = " ".join(OPT_OUT_LINE.split()).lower()
+    out = []
+    for i, ln in enumerate(lines):
+        if _QUOTE_STOP.match(ln) or (_FROM_HDR.match(ln) and any(_SENT_HDR.match(x) for x in lines[i + 1:i + 5])):
+            break
+        flat = " ".join(ln.split()).lower()
+        if (_ATTRIBUTION.match(ln) or ln.lstrip().startswith(">") or optout in flat
+                or "subject=unsubscribe" in flat):
+            continue
+        out.append(ln)
+    return "\n".join(out).strip()
+
 
 def is_auto_reply(subject: str, body: str) -> bool:
     return bool(_AUTO_RE.search(f"{subject or ''} {body or ''}"))
@@ -59,11 +92,13 @@ def _wq(session, actor, **spec):
 
 
 def on_reply(session, lead, subject, body, actor=None) -> dict:
-    """Effects of an inbound buyer reply (already threaded + committed by the caller). Non-blocking."""
+    """Effects of an inbound buyer reply (already threaded + committed by the caller). Non-blocking. Classified on
+    the buyer's own words only (quoted history + our footer stripped — see reply_text)."""
     from . import campaign_service as CS
     result = {"kind": "human", "engaged": False}
-    auto = is_auto_reply(subject, body)
-    unsub = is_unsubscribe(subject, body)
+    own = reply_text(body)
+    auto = is_auto_reply(subject, own)
+    unsub = is_unsubscribe(subject, own)
     if unsub:
         result["kind"] = "unsubscribe"
         SUP.suppress(session, lead.email, "unsubscribe", actor, scope="platform",
@@ -87,6 +122,15 @@ def on_reply(session, lead, subject, body, actor=None) -> dict:
             idempotency_key=f"review_inbound_reply:lead:{lead.id}", condition_version=f"reply:{n}")
     session.add(lead)
     session.commit()
+    # a managed buyer who really answered our email moves forward in the seller's (anonymized) funnel — only when
+    # we actually emailed them, so a sender-address match onto some other buyer record can't advance it
+    if result["engaged"] and CS._last_out(session, lead.id):
+        try:
+            from . import pipeline
+            if pipeline.advance_stage(session, lead, "responded", actor, note="buyer replied by email"):
+                session.commit()
+        except Exception:  # noqa: BLE001
+            session.rollback()
     return result
 
 

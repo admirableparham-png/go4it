@@ -410,17 +410,32 @@ def plain_parts(body):
     return (body or ""), html
 
 
+_EXTRA_HEADERS = ("List-Unsubscribe", "List-Unsubscribe-Post")     # the only extra headers a caller may set
+
+
+def _from_header(from_name, addr):
+    """'Name <addr>' built by the email library, so a display name with a comma, quote or non-ASCII letters
+    ("Qmat Al Saha Co., LLC") stays ONE address instead of breaking the envelope sender."""
+    from email.headerregistry import Address
+    name = (from_name or "").replace("\r", " ").replace("\n", " ").strip()
+    return str(Address(display_name=name, addr_spec=addr)) if name else addr
+
+
 def send_via_account(account, to_addr, subject, body, html=None, reply_to="", in_reply_to="", references="",
-                     message_id=""):
+                     message_id="", headers=None):
     """Send an email from a trader's OWN connected MailAccount (its SMTP creds + From = its address).
     Independent of the shared SMTP_* env. If `message_id` is given (a durable RFC id generated + persisted by
     the caller before submission) it becomes the Message-ID header — enabling reply correlation that survives
-    a retry/restart. Returns (ok, error, message_id) — never raises."""
+    a retry/restart. `headers` may only carry the List-Unsubscribe pair. Returns (ok, error, message_id) —
+    never raises."""
     if not account:
         return False, "no sending account chosen", ""
     if not (to_addr or "").strip():
         return False, "no recipient email", ""
-    pw = mail_decrypt(getattr(account, "smtp_password_enc", ""))
+    try:
+        pw = mail_decrypt(getattr(account, "smtp_password_enc", ""))
+    except Exception as e:  # noqa: BLE001 — a key problem is a mailbox config failure, never an exception
+        return False, f"credential encryption unavailable: {e}"[:300], ""
     if not pw:
         return False, "mailbox not connected (no stored password)", ""
     try:
@@ -429,7 +444,7 @@ def send_via_account(account, to_addr, subject, body, html=None, reply_to="", in
         mid = message_id or make_msgid(domain=domain)
         msg = EmailMessage()
         msg["Message-ID"] = mid
-        msg["From"] = f"{account.from_name} <{addr}>" if account.from_name else addr
+        msg["From"] = _from_header(account.from_name, addr)
         msg["To"] = to_addr
         msg["Subject"] = subject or "(no subject)"
         if reply_to:
@@ -437,16 +452,37 @@ def send_via_account(account, to_addr, subject, body, html=None, reply_to="", in
         if in_reply_to:
             msg["In-Reply-To"] = in_reply_to
             msg["References"] = references or in_reply_to
+        for k, v in (headers or {}).items():
+            if k in _EXTRA_HEADERS and v:
+                msg[k] = str(v).replace("\r", " ").replace("\n", " ")
         msg.set_content(body or "")
         if html:
             msg.add_alternative(html, subtype="html")
-        with smtplib.SMTP(account.smtp_host or "smtp.gmail.com", int(account.smtp_port or 587), timeout=20) as s:
+    except Exception as e:  # noqa: BLE001
+        return False, str(e)[:300], ""
+    # Phase 11: a failure BEFORE the message is handed over (connect / STARTTLS / login) is the MAILBOX's problem —
+    # labelled so the campaign engine never charges it to a buyer (campaign_service.classify_mailbox_error).
+    try:
+        s = smtplib.SMTP(account.smtp_host or "smtp.gmail.com", int(account.smtp_port or 587), timeout=20)
+    except Exception as e:  # noqa: BLE001
+        return False, f"connect error: {e}"[:300], ""
+    try:
+        try:
             s.starttls(context=ssl.create_default_context())
             s.login(addr, pw)
-            s.send_message(msg)
+        except smtplib.SMTPAuthenticationError as e:
+            return False, f"login error: {e}"[:300], ""
+        except Exception as e:  # noqa: BLE001
+            return False, f"connect error: {e}"[:300], ""
+        s.send_message(msg)
         return True, "", mid
     except Exception as e:  # noqa: BLE001
         return False, str(e)[:300], ""
+    finally:
+        try:
+            s.quit()
+        except Exception:  # noqa: BLE001
+            pass
 
 
 def send_bulk_via_account(account, items, reply_to=""):
@@ -459,7 +495,7 @@ def send_bulk_via_account(account, items, reply_to=""):
     if not pw:
         return [(it[0], False, "mailbox not connected (no stored password)", "") for it in items]
     addr = (account.email or "").strip()
-    from_hdr = f"{account.from_name} <{addr}>" if account.from_name else addr
+    from_hdr = _from_header(account.from_name, addr)
     domain = addr.split("@")[-1] if "@" in addr else "go4it.local"
     try:
         server = smtplib.SMTP(account.smtp_host or "smtp.gmail.com", int(account.smtp_port or 587), timeout=30)

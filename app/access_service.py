@@ -62,6 +62,8 @@ def set_role(session, actor, target, role_key, *, scope=None, reason=""):
         return False, "unknown role"
     if P.ROLE_TEMPLATES[role_key]["account_class"] != p.account_class:
         return False, "role does not match the account class"
+    if authz.founder_protected(session, actor, target):
+        return False, "only a founder may change a founder's access"
     if not authz.can_assign_role(session, actor, role_key):
         return False, "only a founder may assign that role"
     # never demote the last founder away from founder
@@ -89,6 +91,8 @@ def set_override(session, actor, target, permission_key, effect, *, reason=""):
         ok, msg = authz.can_grant_permission(session, actor, target, permission_key)
         if not ok:
             return False, msg
+    if authz.founder_protected(session, actor, target):
+        return False, "only a founder may change a founder's access"
     existing = session.exec(select(PermissionOverride).where(
         PermissionOverride.user_id == target.id, PermissionOverride.permission_key == permission_key)).first()
     before = existing.effect if existing else "(none)"
@@ -116,6 +120,8 @@ def set_status(session, actor, target, status, *, reason=""):
     if status not in ("active", "disabled", "archived"):
         return False, "invalid status"
     p = _prof(session, target.id) or authz.ensure_profile(session, target)
+    if authz.founder_protected(session, actor, target):
+        return False, "only a founder may change a founder's access"
     if status != "active" and p.role_key == P.FOUNDER_ROLE and authz.is_last_founder(session, target.id):
         return False, "cannot disable/archive the last active Founder"
     if actor is not None and target.id == actor.id and status != "active":
@@ -130,6 +136,24 @@ def set_status(session, actor, target, status, *, reason=""):
     authz.audit(session, actor, target.id, f"account_{status}", field="account_status", before=before,
                 after=status, reason=reason)
     return True, f"account {status}"
+
+
+def reset_password(session, actor, target, password):
+    """Admin password reset. Only a Founder may reset a Founder's password — otherwise any holder of users.manage
+    could take the Founder account over. Revokes the target's sessions; the audit never stores the secret."""
+    if not authz.has_permission(session, actor, "users.manage"):
+        return False, "you cannot manage users"
+    if target is None or len(password or "") < 6:
+        return False, "a 6+ char password is required"
+    if authz.founder_protected(session, actor, target):
+        return False, "only a founder may reset a founder's password"
+    target.password_hash = hash_password(password)
+    p = _prof(session, target.id)
+    if p:
+        p.password_changed_at = datetime.utcnow(); p.sessions_revoked_at = datetime.utcnow(); session.add(p)
+    authz.audit(session, actor, target.id, "password_reset", field="password_hash", reason="admin reset")
+    session.add(target)
+    return True, "password reset"
 
 
 def update_profile(session, actor, target, fields: dict, *, self_edit=False):

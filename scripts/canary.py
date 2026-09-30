@@ -56,8 +56,8 @@ def _isolated():
         s.add(User(email="seller@canary.local", name="Seller", role="agent", active=True, password_hash="x"))
         s.commit()
         ids = {u.email.split("@")[0]: u.id for u in s.exec(select(User)).all()}
-        mb = MailAccount(user_id=ids["admin"], email="canary@go4it.vip", admin_owned=True, active=True,
-                         daily_limit=100)
+        mb = MailAccount(user_id=ids["admin"], email="canary@sender.example", admin_owned=True, active=True,
+                         daily_limit=100, sender_company="Sender Trading LLC", postal_address="1 Test Street, Dubai")
         s.add(mb); s.commit(); s.refresh(mb)
         ids["mailbox"] = mb.id
     return eng, ids
@@ -73,7 +73,7 @@ def _running_campaign(s, ids):
     return c
 
 
-def _ok(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references=""):
+def _ok(mb, to, subject, text, html=None, reply_to="", in_reply_to="", message_id="", references="", **kw):
     return True, "", f"<mid-{to}>"
 
 

@@ -14,10 +14,35 @@
   </form>
 </div>
 {% if paused_all %}<div class="alert-amber mb-3">All outreach is globally paused — no campaign will send until resumed.</div>{% endif %}
+{% if c.pause_reason and c.status == 'paused' %}<div class="alert-amber mb-3">Paused: {{ c.pause_reason }}</div>{% endif %}
+
+<div class="card mb-4">
+  <div class="eyebrow mb-2">Before it can run</div>
+  {% if start_problems %}
+    <ul class="text-[12px] text-rose-300 list-disc pl-5 space-y-0.5">{% for p in start_problems %}<li>{{ p }}</li>{% endfor %}</ul>
+  {% else %}
+    <div class="text-[12px] text-emerald-400">Ready: Go4it mailbox with footer, valid emails, daily limit set, reply reading on.</div>
+  {% endif %}
+  {% if steps %}<div class="text-[12px] mt-2">Preview exactly what a buyer receives:
+    {% for st in steps %}<a class="underline text-sky-300 ml-1" href="/campaigns/{{ c.id }}/preview?step={{ loop.index0 }}">email {{ loop.index }}</a>{% endfor %}</div>{% endif %}
+  {% if can_manage %}
+  <form method="post" action="/campaigns/{{ c.id }}/controls" class="flex flex-wrap items-end gap-2 mt-3 text-xs text-slate-300">
+    <label>daily limit <input name="daily_limit" value="{{ c.daily_limit }}" class="input" style="width:5rem"></label>
+    <label>mailbox <select name="mailbox_id" class="select" style="width:auto">{% for m in mailboxes %}<option value="{{ m.id }}" {% if mailbox and m.id==mailbox.id %}selected{% endif %}>{{ m.email }}</option>{% endfor %}</select></label>
+    <label>from <input name="send_window_start" value="{{ c.send_window_start }}" class="input" style="width:3.5rem"></label>
+    <label>to <input name="send_window_end" value="{{ c.send_window_end }}" class="input" style="width:3.5rem"> UTC</label>
+    {% set days = (c.send_days or '').split(',') %}
+    {% for d, lbl in [('0','Mon'),('1','Tue'),('2','Wed'),('3','Thu'),('4','Fri'),('5','Sat'),('6','Sun')] %}
+    <label><input type="checkbox" name="send_days" value="{{ d }}" {% if d in days %}checked{% endif %}> {{ lbl }}</label>
+    {% endfor %}
+    <button class="btn btn-secondary btn-sm">Save</button>
+  </form>
+  {% endif %}
+</div>
 
 <div class="grid lg:grid-cols-2 gap-4">
   <div class="card">
-    <div class="eyebrow mb-2">Audience (from the Trade Network)</div>
+    <div class="eyebrow mb-2">Audience (from the Trade Network{% if c.request_id %} · this request's buyers only{% endif %})</div>
     <form method="post" action="/campaigns/{{ c.id }}/audience" class="space-y-2">
       <input type="hidden" name="do" value="preview">
       <div class="grid grid-cols-3 gap-2">
@@ -26,10 +51,10 @@
         <select name="engagement" class="select"><option value="">any engagement</option>{% for e in ['prospect','engaged','qualified'] %}<option value="{{ e }}" {% if f.engagement==e %}selected{% endif %}>{{ e }}</option>{% endfor %}</select>
       </div>
       <div class="flex flex-wrap gap-3 text-xs text-slate-400">
-        <label><input type="checkbox" name="exclude_customers" value="1"> exclude customers</label>
-        <label><input type="checkbox" name="exclude_negative" value="1"> exclude negative</label>
-        <label><input type="checkbox" name="exclude_negotiating" value="1"> exclude active negotiations</label>
-        <label><input type="checkbox" name="exclude_recent" value="1"> exclude recently contacted</label>
+        <label><input type="checkbox" name="exclude_customers" value="1" {% if f.exclude_customers %}checked{% endif %}> exclude customers</label>
+        <label><input type="checkbox" name="exclude_negative" value="1" {% if f.exclude_negative %}checked{% endif %}> exclude negative</label>
+        <label><input type="checkbox" name="exclude_negotiating" value="1" {% if f.exclude_negotiating %}checked{% endif %}> exclude active negotiations</label>
+        <label><input type="checkbox" name="exclude_recent" value="1" {% if f.exclude_recent %}checked{% endif %}> exclude recently contacted</label>
       </div>
       <button class="btn btn-neutral btn-sm">Preview audience</button>
     </form>
@@ -38,17 +63,22 @@
       <span>Total companies: <b>{{ preview.total_companies }}</b></span>
       <span>Valid email: <b>{{ preview.valid_email }}</b></span>
       <span>Missing email: <b>{{ preview.missing_email }}</b></span>
+      <span>Invalid email: <b>{{ preview.invalid_email }}</b></span>
       <span>Suppressed: <b class="text-rose-400">{{ preview.suppressed }}</b></span>
       <span>Previously contacted: <b>{{ preview.previously_contacted }}</b></span>
       <span>Already in campaign: <b>{{ preview.already_in_campaign }}</b></span>
       <span>Duplicates: <b>{{ preview.duplicates }}</b></span>
       <span>Final eligible: <b class="text-emerald-400">{{ preview.final_eligible }}</b></span>
     </div>
+    {% if can_manage %}
     <form method="post" action="/campaigns/{{ c.id }}/audience" class="mt-2">
       <input type="hidden" name="do" value="enroll">
+      <input type="hidden" name="expected" value="{{ preview.final_eligible }}">
       <input type="hidden" name="product" value="{{ f.product }}"><input type="hidden" name="country" value="{{ f.country }}"><input type="hidden" name="engagement" value="{{ f.engagement }}">
+      {% for k in ['exclude_customers','exclude_negative','exclude_negotiating','exclude_recent'] %}{% if f[k] %}<input type="hidden" name="{{ k }}" value="1">{% endif %}{% endfor %}
       <button class="btn btn-primary btn-sm" onclick="return confirm('Create {{ preview.final_eligible }} recipient records?')">Confirm & enroll {{ preview.final_eligible }}</button>
     </form>
+    {% endif %}
     {% endif %}
   </div>
 
@@ -61,10 +91,12 @@
       <div class="card-soft space-y-1">
         <div class="text-[10px] text-slate-500">{{ 'Initial email' if i==0 else 'Follow-up ' ~ i }}</div>
         <input name="subjects" value="{{ st.subject if st else '' }}" placeholder="subject" class="input">
-        <textarea name="bodies" rows="2" placeholder="body (approved variables only)" class="input">{{ st.body if st else '' }}</textarea>
+        <textarea name="bodies" rows="3" placeholder="text version — merge fields {company} {country} {city}" class="input">{{ st.body if st else '' }}</textarea>
+        <textarea name="bodies_html" rows="2" placeholder="optional HTML design (images by https URL on the company site)" class="input font-mono text-[11px]">{{ st.body_html if st else '' }}</textarea>
         <input name="delays" value="{{ st.delay_days if st else (0 if i==0 else 3) }}" placeholder="delay days" class="input" style="width:8rem">
       </div>
       {% endfor %}
+      <div class="text-xs text-slate-400">Every email gets the mailbox's footer (company, postal address, "reply unsubscribe") and an unsubscribe header automatically.</div>
       <div class="text-xs text-slate-400" title="No file store / AV scan yet — see app/attachments.py">📎 Attachments are temporarily disabled for security.</div>
       <button class="btn btn-secondary btn-sm">Save sequence</button>
     </form>

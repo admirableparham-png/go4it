@@ -44,6 +44,8 @@ IMAP_USER = os.getenv("IMAP_USER", "").strip()
 IMAP_PASSWORD = os.getenv("IMAP_PASSWORD", "").strip()
 IMAP_ENABLED = bool(IMAP_HOST and IMAP_USER and IMAP_PASSWORD)
 IMAP_INTERVAL = int(os.getenv("IMAP_INTERVAL", "0"))        # seconds between inbox polls; 0 = disabled
+# Phase 11: the poller reads the last N days (read-only, never marks mail as read) and remembers what it handled
+IMAP_LOOKBACK_DAYS = int(os.getenv("IMAP_LOOKBACK_DAYS", "3"))
 
 # --- go4worldbusiness authenticated portal scraper (browser bot) ---
 # Credentials for YOUR OWN paid account. Set in .env (gitignored) — never in code.

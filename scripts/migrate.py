@@ -181,6 +181,13 @@ MIGRATIONS = [
     ("workitem", "related_conversation_id", "INTEGER"),
     ("workitem", "related_proposal_id", "INTEGER"),
     ("workitem", "related_automation_id", "INTEGER"),
+    # Outreach readiness (Phase 11) — the buyer-facing sender footer (legal entity + postal address) lives on the
+    # sending mailbox; a campaign step may carry an admin-authored HTML design. New Phase-11 tables are made by
+    # create_all + scripts/migrate_gate_p11.py.
+    ("mailaccount", "sender_company", "VARCHAR DEFAULT ''"),
+    ("mailaccount", "postal_address", "VARCHAR DEFAULT ''"),
+    ("campaignstep", "body_html", "VARCHAR DEFAULT ''"),
+    ("campaign", "bounce_baseline", "VARCHAR DEFAULT ''"),
 ]
 
 

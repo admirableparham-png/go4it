@@ -40,6 +40,12 @@ WORKITEM_SYNC_MAX_PER_RUN = int(os.getenv("WORKITEM_SYNC_MAX_PER_RUN", "200"))
 CAMPAIGN_SEND_INTERVAL = int(os.getenv("CAMPAIGN_SEND_INTERVAL", "300"))
 CAMPAIGN_SEND_MAX_PER_RUN = int(os.getenv("CAMPAIGN_SEND_MAX_PER_RUN", "200"))
 CAMPAIGN_SEND_DEADLINE_SEC = int(os.getenv("CAMPAIGN_SEND_DEADLINE_SEC", "60"))
+# Recipients looked at per campaign per cycle — independent of MAX_PER_RUN, so a small send cap (slow warm-up
+# pacing, e.g. MAX_PER_RUN=1) can't be starved by recipients that are waiting on a retry backoff.
+CAMPAIGN_SEND_SCAN_LIMIT = int(os.getenv("CAMPAIGN_SEND_SCAN_LIMIT", "1000"))
+# Phase 11: optional automatic DB backup (the same WAL-safe online backup + integrity check as scripts/backup_db.py,
+# keeping the newest 14). 0 = off (default); 86400 = daily. Needs ./backups mounted into the worker.
+BACKUP_INTERVAL = int(os.getenv("BACKUP_INTERVAL", "0"))
 from .models import ServiceRequest, User
 from .telegram import send_message
 from .sources.go4world_csv import Go4WorldCsvSource
@@ -135,7 +141,7 @@ def run_work_item_sync():
         return {"error": str(e), "total": 0}
 
 
-def run_campaign_send():
+def run_campaign_send(now=None):
     """Isolated campaign-send cycle (Phase 4). ISOLATION: one campaign or mailbox failure can never stop the
     others (per-item try/except + rollback) and the whole cycle never raises. BOUNDED: stops at both a count
     cap (CAMPAIGN_SEND_MAX_PER_RUN) and a wall-clock deadline (CAMPAIGN_SEND_DEADLINE_SEC). CURSOR/BATCH:
@@ -150,8 +156,9 @@ def run_campaign_send():
     summary = {"campaigns": 0, "sent": 0, "skipped": 0, "failed": 0, "errors": 0, "capped": False}
     start = time.time()
 
-    def _done():
-        return summary["sent"] >= CAMPAIGN_SEND_MAX_PER_RUN or (time.time() - start) >= CAMPAIGN_SEND_DEADLINE_SEC
+    def _done():   # every SMTP attempt counts toward the per-cycle cap, so failures can't bypass the pacing
+        return (summary["sent"] + summary["failed"] >= CAMPAIGN_SEND_MAX_PER_RUN
+                or (time.time() - start) >= CAMPAIGN_SEND_DEADLINE_SEC)
     try:
         with Session(engine) as s:
             if SG.outreach_paused(s):
@@ -159,7 +166,7 @@ def run_campaign_send():
                 return summary
             # crash recovery FIRST: reclaim abandoned claims, flag ambiguous mid-send rows for review
             try:
-                rec = CS.recover_stale_sends(s)
+                rec = CS.recover_stale_sends(s, now)
                 summary["recovered"] = rec.get("reclaimed", 0)
                 summary["needs_review"] = rec.get("needs_review", 0)
             except Exception:  # noqa: BLE001 — recovery must never stop the send cycle
@@ -174,30 +181,34 @@ def run_campaign_send():
                     ok, _why = SG.mailbox_ok(mb)
                     if not ok:
                         continue                       # unhealthy mailbox — skip this campaign, others go on
-                    now = datetime.utcnow()
+                    if CS.bounce_breaker(s, c):        # too many hard bounces → paused before sending more
+                        continue
+                    t = now or datetime.utcnow()
                     due = s.exec(select(CampaignRecipient).where(
                         CampaignRecipient.campaign_id == c.id,
                         CampaignRecipient.status.not_in(CS.TERMINAL_RECIPIENT),
                         _or(CampaignRecipient.next_action_at.is_(None),
-                            CampaignRecipient.next_action_at <= now))
-                        .order_by(CampaignRecipient.id).limit(CAMPAIGN_SEND_MAX_PER_RUN)).all()
+                            CampaignRecipient.next_action_at <= t))
+                        .order_by(CampaignRecipient.id)
+                        .limit(max(CAMPAIGN_SEND_MAX_PER_RUN, CAMPAIGN_SEND_SCAN_LIMIT))).all()
                     for r in due:
                         if _done():
                             summary["capped"] = True
                             break
                         try:
-                            res = CS.send_step(s, c, r, mb, now)
+                            res = CS.send_step(s, c, r, mb, t)
                             st = res.get("status")
                             if st == "sent":
                                 summary["sent"] += 1
-                            elif st == "failed":
+                            elif st == "mailbox_failed":       # auth/quota/config: mailbox already paused
                                 summary["failed"] += 1
-                                if any(k in (res.get("reason") or "").lower()
-                                       for k in ("auth", "login", "password", "535", "5.7.8")):
-                                    mb.paused = True                       # mailbox auth failure → pause it
-                                    mb.last_send_error = (res.get("reason") or "")[:200]
-                                    s.add(mb); s.commit()
-                                    break                                  # stop this mailbox; others continue
+                                break                          # stop this mailbox; other campaigns continue
+                            elif st in ("retryable", "permanently_failed"):
+                                summary["failed"] += 1
+                            elif st == "limited" or (st == "render_failed" and res.get("scope") == "template") \
+                                    or (st == "skipped" and CS.is_campaign_level_skip(res.get("reason"))):
+                                summary["skipped"] += 1
+                                break                          # holds for every recipient of this campaign
                             else:
                                 summary["skipped"] += 1
                         except Exception:  # noqa: BLE001 — one recipient can't stop the batch
@@ -207,7 +218,7 @@ def run_campaign_send():
                         CampaignRecipient.campaign_id == c.id,
                         CampaignRecipient.status.not_in(CS.TERMINAL_RECIPIENT))).one()
                     if remaining == 0 and c.status == "running":
-                        c.status, c.completed_at = "completed", datetime.utcnow()
+                        c.status, c.completed_at = "completed", now or datetime.utcnow()
                         s.add(c); s.commit()
                 except Exception:  # noqa: BLE001 — one campaign can't stop the others
                     summary["errors"] += 1
@@ -216,6 +227,22 @@ def run_campaign_send():
     except Exception as e:  # noqa: BLE001 — the cycle itself never propagates
         logger.exception("campaign-send failed (isolated; other worker jobs continue)")
         return {"error": str(e), **summary}
+
+
+def run_backup():
+    """Isolated automatic backup. A failure (incl. a failed integrity check) is logged + alerted, never stops the
+    worker."""
+    try:
+        from scripts import backup_db
+        backup_db.run()
+        return {"ok": True}
+    except (Exception, SystemExit) as e:  # noqa: BLE001 — backup_db raises SystemExit on a bad snapshot
+        logger.error("automatic backup FAILED: %s", e)
+        try:
+            send_message(f"⚠️ go4it automatic database backup FAILED: {str(e)[:200]}")
+        except Exception:  # noqa: BLE001
+            pass
+        return {"ok": False, "error": str(e)}
 
 
 def run_once():
@@ -279,7 +306,7 @@ def main():
                 else "disabled (set IMAP_*)")
     _heartbeat()      # first beat at startup so the container is healthy before the first full pass completes
     last_portal = last_enrich = last_imap = last_followup = last_reminder = last_worksync = 0.0
-    last_campaign = 0.0
+    last_campaign = last_backup = 0.0
     while True:
         try:
             init_db()
@@ -314,6 +341,9 @@ def main():
                 if cs.get("sent") or cs.get("error"):
                     logger.info("campaign-send %s", cs)
                 last_campaign = now
+            if BACKUP_INTERVAL > 0 and now - last_backup >= BACKUP_INTERVAL:
+                run_backup()
+                last_backup = now
         except Exception:
             logger.exception("worker pass failed")
         _heartbeat()      # mark the loop alive AFTER each pass (even a failed one) for the health check

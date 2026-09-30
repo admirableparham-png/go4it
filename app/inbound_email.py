@@ -8,18 +8,19 @@ auto-made into leads). OFF by default — nothing runs until IMAP_HOST/USER/PASS
 Sending stays in app/outreach.py (SMTP); this module is receive-only.
 """
 import email as emaillib
+import hashlib
 import imaplib
 import logging
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from email.utils import parseaddr
 
 from sqlmodel import Session, select
 
-from .config import (IMAP_ENABLED, IMAP_HOST, IMAP_PASSWORD, IMAP_PORT, IMAP_USER)
+from .config import (IMAP_ENABLED, IMAP_HOST, IMAP_LOOKBACK_DAYS, IMAP_PASSWORD, IMAP_PORT, IMAP_USER)
 from .enrich_service import enrich_lead
 from .lead_service import find_lead_by_contact
-from .models import IngestionRun, Lead, Outreach
+from .models import InboundSeen, IngestionRun, Lead, Outreach
 from .telegram import notify_bounce, notify_buyer_reply, send_message
 
 logger = logging.getLogger("go4it")
@@ -58,17 +59,25 @@ def _referenced_lead(session: Session, candidate_ids):
 
 
 def _plain_body(msg) -> str:
-    """Best-effort plain-text body (prefer text/plain, skip attachments)."""
-    parts = msg.walk() if msg.is_multipart() else [msg]
-    for part in parts:
-        if part.get_content_type() == "text/plain" \
-                and "attachment" not in str(part.get("Content-Disposition", "")):
-            try:
-                payload = part.get_payload(decode=True)
-                if payload is not None:
-                    return payload.decode(part.get_content_charset() or "utf-8", "ignore").strip()
-            except Exception:  # noqa: BLE001
-                continue
+    """Best-effort plain-text body (prefer text/plain, skip attachments). An HTML-only message (common from Outlook
+    and mobile clients) falls back to its HTML converted to text WITHOUT the quoted history, so a reply that only
+    says "please unsubscribe us" in HTML is still read."""
+    parts = list(msg.walk()) if msg.is_multipart() else [msg]
+    for want in ("text/plain", "text/html"):
+        for part in parts:
+            if part.get_content_type() == want \
+                    and "attachment" not in str(part.get("Content-Disposition", "")):
+                try:
+                    payload = part.get_payload(decode=True)
+                    if payload is None:
+                        continue
+                    text = payload.decode(part.get_content_charset() or "utf-8", "ignore")
+                    if want == "text/html":
+                        from .campaign_render import html_to_text
+                        text = html_to_text(text, drop_quotes=True)
+                    return text.strip()
+                except Exception:  # noqa: BLE001
+                    continue
     return ""
 
 
@@ -88,13 +97,17 @@ def parse_email(raw: bytes):
     return from_addr, subject, _plain_body(msg), message_id, _msgid(irt), references
 
 
+_REPLY_SUBJECT = re.compile(r"^\s*(?:re|aw|antw|odp|sv|vs|r|rif|res|ynt)\s*:", re.I)
+
+
 def handle_inbound(session: Session, from_addr: str, subject: str, body: str,
                    message_id: str = "", in_reply_to: str = "", references: str = "") -> str:
-    """Thread one parsed inbound email onto its lead. Returns 'threaded' | 'duplicate' | 'unmatched'.
-    Matches by In-Reply-To / References (the outbound Message-ID we persisted) first, then by sender email.
-    Pure of IMAP so it's unit-testable without a live mailbox."""
+    """Thread one parsed inbound email onto its lead. Returns 'threaded' | 'duplicate' | 'unmatched' | 'ignored' |
+    'unsubscribed'. Matches by In-Reply-To / References (the outbound Message-ID we persisted) first, then by
+    sender email. Pure of IMAP so it's unit-testable without a live mailbox."""
     from_addr = (from_addr or "").strip().lower()
     message_id = (message_id or "").strip()
+    reply_like = bool((in_reply_to or "").strip() or (references or "").strip() or _REPLY_SUBJECT.match(subject or ""))
     candidate_ids = _all_msgids(in_reply_to, references)     # In-Reply-To + every References token
     in_reply_to = candidate_ids[0] if candidate_ids else ""
     if message_id and session.exec(select(Outreach).where(
@@ -102,6 +115,29 @@ def handle_inbound(session: Session, from_addr: str, subject: str, body: str,
         return "duplicate"
     lead = _referenced_lead(session, candidate_ids) or find_lead_by_contact(session, email=from_addr)
     if lead is None:
+        from . import outreach_events as OE
+        # an unknown sender's opt-out counts when it is in the SUBJECT (what the List-Unsubscribe mailto sends) or in
+        # the sender's own words of a real REPLY — never because a newsletter contains the word "unsubscribe"
+        opt_out = OE.is_unsubscribe(subject, "") or (reply_like and OE.is_unsubscribe("", OE.reply_text(body)))
+        if from_addr and opt_out:
+            # an opt-out from an address we can't match (forwarded / alias): honour it anyway — suppressing an
+            # address that asked to be left alone is always right — and let a person check who it was
+            from . import suppression as SUP
+            SUP.suppress(session, from_addr, "unsubscribe", scope="platform", source_event="reply:unmatched")
+            session.commit()
+            try:
+                from . import work_queue as WQ
+                WQ.create_work_item_safe(session, actor=None, type="unmatched_inbound",
+                                         title="Unsubscribe request from an unmatched address",
+                                         description="The address was suppressed. Check whether it belongs to a buyer.",
+                                         idempotency_key=f"unmatched_inbound:{message_id or from_addr}",
+                                         condition_version="unsubscribe")
+                session.commit()
+            except Exception:  # noqa: BLE001
+                pass
+            return "unsubscribed"
+        if not reply_like:
+            return "ignored"          # a shared inbox gets newsletters/notifications — only reply-like mail is a task
         # ambiguous / no safe match → an Unmatched Inbox queue item, never auto-attached across tenants
         try:
             from . import work_queue as WQ
@@ -219,37 +255,114 @@ def handle_bounce(session: Session, failed_email: str, reason: str) -> str:
     return "bounced"
 
 
+_MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+_BASELINE = "__baseline__"
+IMAP_TIMEOUT = 30                  # a stalled IMAP socket must never hang the worker loop
+MAX_MESSAGE_FAILURES = 3           # a message that fails this many polls in a row is recorded 'error' (poison mail)
+_FAILS = {}                        # message_key -> consecutive failures in this worker process
+
+
+def _imap_since(days, now=None):
+    d = (now or datetime.utcnow()) - timedelta(days=max(1, days))
+    return f"{d.day}-{_MONTHS[d.month - 1]}-{d.year}"          # IMAP wants English month names, not the locale's
+
+
+def _message_key(header_bytes) -> str:
+    h = emaillib.message_from_bytes(header_bytes or b"")
+    mid = (h.get("Message-ID", "") or "").strip()
+    if mid:
+        return mid[:400]
+    basis = "|".join(str(h.get(k, "")).strip() for k in ("Date", "From", "Subject"))
+    return "sha1:" + hashlib.sha1(basis.encode("utf-8", "ignore")).hexdigest()
+
+
+def _seen_keys(session, mailbox):
+    return set(session.exec(select(InboundSeen.message_key).where(InboundSeen.mailbox == mailbox)).all())
+
+
+def _record(session, mailbox, key, outcome):
+    session.add(InboundSeen(mailbox=mailbox, message_key=key, outcome=outcome))
+    session.commit()
+
+
 def poll_inbox(session: Session, log=logger.info) -> dict:
-    """Pull UNSEEN mail over IMAP and thread each reply. No-op unless IMAP is configured."""
-    summary = {"seen": 0, "threaded": 0, "unmatched": 0, "duplicate": 0, "bounced": 0}
+    """Read the last IMAP_LOOKBACK_DAYS of the inbox and thread each NEW reply / bounce. The mailbox is opened
+    READ-ONLY and every fetch is a PEEK, so the poller never marks a person's mail as read; what it already handled
+    lives in the InboundSeen ledger (by Message-ID). The very first poll of a mailbox only records what is already
+    there (baseline) — old mail is never re-processed. No-op unless IMAP is configured."""
+    summary = {"seen": 0, "threaded": 0, "unmatched": 0, "ignored": 0, "unsubscribed": 0, "duplicate": 0,
+               "bounced": 0, "baseline": 0, "errors": 0}
     if not IMAP_ENABLED:
         return summary
     run = IngestionRun(source="email-inbound", status="running")
     session.add(run)
     session.commit()
     session.refresh(run)
+    box = IMAP_USER.lower()
+    had_errors = False
     try:
-        M = imaplib.IMAP4_SSL(IMAP_HOST, IMAP_PORT)
+        M = imaplib.IMAP4_SSL(IMAP_HOST, IMAP_PORT, timeout=IMAP_TIMEOUT)
         M.login(IMAP_USER, IMAP_PASSWORD)
-        M.select("INBOX")
-        _, data = M.search(None, "UNSEEN")
+        M.select("INBOX", readonly=True)
+        _, data = M.search(None, "SINCE", _imap_since(IMAP_LOOKBACK_DAYS))
         ids = data[0].split() if data and data[0] else []
+        known = _seen_keys(session, box)
+        first_run = _BASELINE not in known
         for num in ids:
-            _, msgdata = M.fetch(num, "(RFC822)")
-            if not msgdata or not msgdata[0]:
-                continue
-            summary["seen"] += 1
-            raw = msgdata[0][1]
-            bounce = detect_bounce(raw)               # delivery-failure notice?
-            if bounce:
-                handle_bounce(session, bounce[0], bounce[1])
-                summary["bounced"] += 1
-            else:
-                frm, subj, body, mid, irt, refs = parse_email(raw)
-                summary[handle_inbound(session, frm, subj, body, mid, irt, refs)] += 1
-            M.store(num, "+FLAGS", "\\Seen")
-        M.logout()
-        run.status = "ok"
+            key = ""
+            try:
+                _, hdr = M.fetch(num, "(BODY.PEEK[HEADER.FIELDS (MESSAGE-ID DATE FROM SUBJECT)])")
+                if not hdr or not isinstance(hdr[0], tuple):
+                    continue
+                key = _message_key(hdr[0][1])
+                if key in known:
+                    continue
+                known.add(key)
+                if first_run:
+                    _record(session, box, key, "baseline")
+                    summary["baseline"] += 1
+                    continue
+                _, msgdata = M.fetch(num, "(BODY.PEEK[])")
+                if not msgdata or not isinstance(msgdata[0], tuple):
+                    continue
+                summary["seen"] += 1
+                raw = msgdata[0][1]
+                bounce = detect_bounce(raw)               # delivery-failure notice?
+                if bounce:
+                    handle_bounce(session, bounce[0], bounce[1])
+                    outcome = "bounced"
+                else:
+                    frm, subj, body, mid, irt, refs = parse_email(raw)
+                    outcome = handle_inbound(session, frm, subj, body, mid, irt, refs)
+                summary[outcome] = summary.get(outcome, 0) + 1
+                _record(session, box, key, outcome)
+                _FAILS.pop(key, None)
+            except (imaplib.IMAP4.abort, OSError):   # the connection dropped: retry everything next poll
+                session.rollback()
+                summary["errors"] += 1
+                had_errors = True
+                logger.exception("inbound poll lost the connection — will retry next poll")
+                break
+            except Exception:  # noqa: BLE001 — one bad message never stops the poll
+                session.rollback()
+                summary["errors"] += 1
+                had_errors = True
+                logger.exception("inbound message failed")
+                if key:                      # retried next poll; recorded only if it keeps failing (poison mail)
+                    _FAILS[key] = _FAILS.get(key, 0) + 1
+                    if _FAILS[key] >= MAX_MESSAGE_FAILURES:
+                        try:
+                            _record(session, box, key, "error")
+                            _FAILS.pop(key, None)
+                        except Exception:  # noqa: BLE001
+                            session.rollback()
+        if first_run and not had_errors:     # a baseline with gaps would later re-process old mail
+            _record(session, box, _BASELINE, "baseline")
+        try:
+            M.logout()
+        except Exception:  # noqa: BLE001
+            pass
+        run.status = "ok" if not had_errors else "partial"
     except Exception as exc:  # noqa: BLE001
         run.status = "error"
         run.error = str(exc)[:400]

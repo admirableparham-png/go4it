@@ -113,6 +113,20 @@ def _ensure_outreach_indexes() -> None:
             conn.commit()
     except Exception:  # noqa: BLE001 — never block startup on the guard
         pass
+    # Phase 11: a buyer (and an address) is enrolled at most ONCE per campaign — a double-submitted enrol can never
+    # email anyone twice. Separate statements so pre-existing duplicates (reported by migrate_gate_p11) can't stop
+    # the other guard or the boot.
+    for ddl in ("CREATE UNIQUE INDEX IF NOT EXISTS uq_camprcpt_campaign_lead "
+                "ON campaignrecipient(campaign_id, lead_id) WHERE lead_id IS NOT NULL",
+                "CREATE UNIQUE INDEX IF NOT EXISTS uq_camprcpt_campaign_email "
+                "ON campaignrecipient(campaign_id, to_email) WHERE to_email != ''"):
+        try:
+            with engine.connect() as conn:
+                from sqlalchemy import text
+                conn.execute(text(ddl))
+                conn.commit()
+        except Exception:  # noqa: BLE001
+            pass
 
 
 def _ensure_product_indexes() -> None:

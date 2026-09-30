@@ -162,6 +162,22 @@ def set_pipeline_stage(session, lead, to_stage, actor, note=""):
     return True, ""
 
 
+def advance_stage(session, lead, to_stage, actor=None, note=""):
+    """Forward-only AUTOMATIC stage move for a managed buyer (campaign send → contacted, human reply → responded).
+    Never regresses (a buyer already at/after `to_stage`, or at a terminal, is left alone), never touches an
+    unmanaged lead, and never runs once the CRM status has left 'new' (the stage→status sync would otherwise walk
+    it backwards). Goes through set_pipeline_stage, so the StageEvent + audit are written. Returns True if moved."""
+    if lead is None or not getattr(lead, "managed", False) or to_stage not in _ORDER:
+        return False
+    cur = lead.pipeline_stage or "identified"
+    if cur in TERMINALS or cur not in _ORDER or _ORDER[cur] >= _ORDER[to_stage]:
+        return False
+    if (lead.status or "new") != "new":
+        return False
+    ok, _err = set_pipeline_stage(session, lead, to_stage, actor, note=note)
+    return ok
+
+
 # --------------------------------------------------------------------------- funnel (branch-correct)
 def reached_stages(session, lead_id):
     """The set of stages a buyer ACTUALLY visited, from StageEvent history — the basis of 'reached'."""
@@ -257,13 +273,16 @@ def sanitize_scan(text):
     return hits
 
 
-def strip_seller_identity(text, seller, seller_emails=()):
-    """Redact the SELLER's own identity (name/email + connected mailbox addresses) out of buyer-facing text —
-    the confidentiality is two-way."""
+def strip_seller_identity(text, seller, seller_emails=(), extra_names=()):
+    """Redact the SELLER's own identity (name/email + connected mailbox addresses + profile company/names) out of
+    buyer-facing text — the confidentiality is two-way. Names match as whole words only, so a short seller name
+    never mangles ordinary words (e.g. 'Ali' inside 'quality')."""
     t = text or ""
-    needles = [getattr(seller, "email", ""), getattr(seller, "name", "")] + list(seller_emails or [])
+    needles = ([getattr(seller, "email", ""), getattr(seller, "name", "")] + list(seller_emails or [])
+               + list(extra_names or []))
     for nd in needles:
         nd = (nd or "").strip()
         if nd and len(nd) > 2:
-            t = re.sub(re.escape(nd), "[redacted]", t, flags=re.I)
+            pat = re.escape(nd) if "@" in nd else r"(?<!\w)" + re.escape(nd) + r"(?!\w)"
+            t = re.sub(pat, "[redacted]", t, flags=re.I)
     return t
