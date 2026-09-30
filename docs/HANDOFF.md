@@ -37,7 +37,7 @@ Tags are immutable. New work = new commits + a new tag.
   both DISABLED with random passwords. SSH is key-only (one key: pstudio@mac-studio).
 - **Mac worker stopped:** launchd `com.kimiel.go4it.worker` (old code, live Gmail, follow-ups on) killed +
   `launchctl disable`d. Re-enable only after it is moved to the latest code.
-- **Phase 11 (outreach readiness)** built on this branch — 721 tests. Runbook + what changed: `docs/PHASE11_OUTREACH.md`.
+- **Phase 11 (outreach readiness)** built on this branch — 726 tests. Runbook + what changed: `docs/PHASE11_OUTREACH.md`.
 - **Founder rules:** g4it.vip is internal-only; buyer-facing = qmatalsaha.com. Founder pastes server commands (or says
   "you run it"). Never touch tradesitter; never `docker compose down`; never `docker image prune` (shared box).
 - `make run` is no longer used (no local ports); verify with `make test`.

@@ -68,8 +68,8 @@ def test_merge_fields_fill_and_country_reads_naturally(ctx):
     with Session(e) as s:
         m = _render(s, ids, _camp(s, ids), _lead(s, ids))
         assert m["ok"], m["error"]
-        assert m["subject"] == "Anchors for Acme Hardware Ltd"
-        assert m["text"].startswith("Hello Acme Hardware Ltd team in the Netherlands.")
+        assert m["subject"] == "Anchors for Acme Hardware"           # greeting name: legal form dropped
+        assert m["text"].startswith("Hello Acme Hardware team in the Netherlands.")
 
 
 def test_placeholder_rules_fail_closed():

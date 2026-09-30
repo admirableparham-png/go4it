@@ -80,11 +80,29 @@ def _clean(value, limit):
     return re.sub(r"\s+", " ", (value or "").replace("{", "").replace("}", "")).strip()[:limit]
 
 
+# trailing legal forms a person never says in a greeting ("Hi Inoxa team", not "Hi Inoxa Sp. z o.o. team")
+_LEGAL_TAIL = re.compile(
+    r"(?:[\s,]+(?:ltd\.?|limited|llc|l\.l\.c\.?|inc\.?|incorporated|corp\.?|corporation|co\.|company limited|"
+    r"gmbh(?:\s*&\s*co\.?\s*kg)?|kg|ag|ab|a/s|as|oy|oyj|plc|pty\.?(?:\s*ltd\.?)?|b\.?v\.?|n\.?v\.?|s\.?a\.?s?|"
+    r"s\.?a\.?r\.?l\.?|s\.?p\.?a\.?|s\.?r\.?l\.?|s\.?l\.?|s\.?l\.?u\.?|ltda\.?|sp\.?\s*z\s*o\.?\s*o\.?|sp\.?\s*j\.?|"
+    r"s\.?r\.?o\.?|a\.?s\.?|kft\.?|d\.?o\.?o\.?|fze|fzco|fz-llc|fzc|w\.?l\.?l\.?))+\s*$", re.I)
+
+
+def display_company(name) -> str:
+    """The company name as a person would write it in 'Hi … team': bracketed notes and trailing legal forms removed
+    ("IHL Canada (Investments Hardware Ltd.)" → "IHL Canada", "D.M.P. STEEL, s.r.o." → "D.M.P. STEEL"); the brand
+    itself is never re-cased or shortened. Falls back to the cleaned original if nothing sensible would remain."""
+    raw = _clean(name, 200)
+    n = re.sub(r"\s*\([^()]*\)", "", raw).strip()          # "(formerly …)", "(Gruppo …)", "(city, notes)"
+    n = _LEGAL_TAIL.sub("", n).strip(" ,-–—/|")
+    return (n if len(n) >= 2 else raw)[:80]
+
+
 def merge_values(lead) -> dict:
     city = _clean(getattr(lead, "dest_city", ""), 200)
     if "(" in city or len(city) > 24:           # addresses / notes stored as "city" never read as a city name
         city = ""
-    return {"company": _clean(getattr(lead, "buyer_company", ""), 80),
+    return {"company": display_company(getattr(lead, "buyer_company", "")),
             "country": country_name(getattr(lead, "dest_country", "")),
             "city": city}
 
@@ -110,12 +128,15 @@ def footer_text(mailbox) -> str:
     return "\n".join(lines)
 
 
-def footer_html(mailbox) -> str:
+def footer_html(mailbox, centered=False) -> str:
+    """centered=True for a designed email (the footer sits under the card); plain emails keep it left-aligned."""
     esc = _html.escape
     addr = "<br>".join(esc(ln.strip()) for ln in mailbox.postal_address.splitlines() if ln.strip())
     mailto = f"mailto:{esc(mailbox.email.strip())}?subject=unsubscribe"
+    box = ("max-width:600px;margin:0 auto 24px;padding:14px 28px 0;box-sizing:border-box;" if centered
+           else "max-width:620px;margin:24px 0 0;padding-top:12px;")
     return ('<div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.5;color:#6b7280;'
-            'margin:24px 0 0;padding-top:12px;border-top:1px solid #e5e7eb;max-width:620px;">'
+            f'{box}border-top:1px solid #e5e7eb;">'
             f'<div style="font-weight:bold;color:#374151;">{esc(mailbox.sender_company.strip())}</div>'
             f'<div>{addr}</div>'
             f'<div style="margin-top:8px;">{esc(OPT_OUT_LINE)} '
@@ -224,7 +245,7 @@ def render_campaign_message(session, campaign, step, lead, mailbox) -> dict:
     from .outreach import plain_parts
     text_full = text.rstrip() + "\n\n" + footer_text(mailbox)
     base = sanitize_html(html_body) if html_body else plain_parts(text)[1]
-    html_full = _with_footer(base, footer_html(mailbox))
+    html_full = _with_footer(base, footer_html(mailbox, centered=bool(html_body)))
     if len(html_full.encode("utf-8")) > MAX_HTML_BYTES:
         return fail("template", "the HTML is over 90 KB with the footer — Gmail would clip it")
     return {"ok": True, "scope": "", "error": "", "subject": subject, "text": text_full, "html": html_full,

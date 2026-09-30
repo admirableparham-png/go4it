@@ -180,6 +180,7 @@ def set_sequence(session, campaign, steps: list, actor=None) -> int:
     else:
         for st in steps_for(session, campaign, version):   # draft edit: clear the current version's steps
             session.delete(st)
+        session.flush()        # deletes must hit the DB before the re-inserted steps reuse their (version, index)
     for i, s in enumerate(steps):
         raw_html = (s.get("body_html") or "")[:100_000]
         body_html = CR.sanitize_html(raw_html) if raw_html.strip() else ""
