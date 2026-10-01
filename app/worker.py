@@ -5,6 +5,7 @@
     python -m app.worker --portal   # portal only (captures the login page to ./debug)
     python -m app.worker --enrich   # one web-enrich pass only (fill blank contacts from sites)
     python -m app.worker --inbound  # one inbound-email poll (thread buyer replies; needs IMAP_*)
+    python -m app.worker --daily-summary [--send]   # print today's ops summary ([--send] = Telegram now; no marker)
 
 Run it as ONE process (a separate worker, not inside gunicorn's web workers — that would double-fire
 every job). Idempotent dedup means a crash-and-restart never double-imports; the enrich pass skips
@@ -44,8 +45,12 @@ CAMPAIGN_SEND_DEADLINE_SEC = int(os.getenv("CAMPAIGN_SEND_DEADLINE_SEC", "60"))
 # pacing, e.g. MAX_PER_RUN=1) can't be starved by recipients that are waiting on a retry backoff.
 CAMPAIGN_SEND_SCAN_LIMIT = int(os.getenv("CAMPAIGN_SEND_SCAN_LIMIT", "1000"))
 # Phase 11: optional automatic DB backup (the same WAL-safe online backup + integrity check as scripts/backup_db.py,
-# keeping the newest 14). 0 = off (default); 86400 = daily. Needs ./backups mounted into the worker.
+# keeping the newest BACKUP_KEEP=14). 0 = off (default); 86400 = daily. Needs ./backups mounted into the worker.
 BACKUP_INTERVAL = int(os.getenv("BACKUP_INTERVAL", "0"))
+# Phase 12: one daily ops summary to the admin Telegram chat at/after this UTC time ("HH:MM"); "" = off (default).
+# Counts only — never a buyer's name or email. Set it on the server only (a second worker would send a second one).
+DAILY_SUMMARY_AT = os.getenv("DAILY_SUMMARY_AT", "").strip()
+_SUMMARY_MARKER = "daily_summary_last"      # in the shared control dir (prod: the DB volume) — survives restarts
 from .models import ServiceRequest, User
 from .telegram import send_message
 from .sources.go4world_csv import Go4WorldCsvSource
@@ -184,6 +189,15 @@ def run_campaign_send(now=None):
                     if CS.bounce_breaker(s, c):        # too many hard bounces → paused before sending more
                         continue
                     t = now or datetime.utcnow()
+                    if SG.within_window(c, t):         # Phase 12: the day's warm-up decision, before its first send
+                        try:
+                            wu = CS.apply_warmup(s, c, mb, t)
+                            if wu.get("action") in ("advance", "hold"):
+                                logger.info("warm-up campaign %s: %s %s→%s/day (%s)", c.id, wu["action"],
+                                            wu["from"], wu["to"], wu["why"])
+                        except Exception:  # noqa: BLE001 — the ramp must never stop the sending
+                            logger.exception("warm-up check failed (isolated; sending continues)")
+                            s.rollback()
                     due = s.exec(select(CampaignRecipient).where(
                         CampaignRecipient.campaign_id == c.id,
                         CampaignRecipient.status.not_in(CS.TERMINAL_RECIPIENT),
@@ -245,6 +259,105 @@ def run_backup():
         return {"ok": False, "error": str(e)}
 
 
+def _last_backup_time() -> float:
+    """When the newest data-*.db snapshot was written (0 = none) — the loop starts its backup cadence from it, so a
+    deploy or restart doesn't take an extra copy and eat into the BACKUP_KEEP retention."""
+    try:
+        import glob
+        from scripts import backup_db
+        return max((os.path.getmtime(p) for p in glob.glob(os.path.join(backup_db.OUT, "data-*.db"))), default=0.0)
+    except Exception:  # noqa: BLE001 — unknown → back up on the first pass, as before
+        return 0.0
+
+
+# --- Phase 12: daily ops summary -------------------------------------------------------------------------------
+def _marker_path(name):
+    from . import ai_provider as _p
+    return os.path.join(_p._control_dir(), name)
+
+
+def _read_marker(name) -> str:
+    try:
+        with open(_marker_path(name)) as fh:
+            return fh.read().strip()
+    except OSError:
+        return ""
+
+
+def _write_marker(name, value) -> bool:
+    """Atomic (temp file + rename): a crash never leaves a half-written marker. False if it can't be written."""
+    path = _marker_path(name)
+    try:
+        with open(path + ".tmp", "w") as fh:
+            fh.write(value)
+            fh.flush()
+            os.fsync(fh.fileno())
+        os.replace(path + ".tmp", path)
+        return True
+    except OSError:
+        return False
+
+
+def _summary_at(at):
+    """'HH:MM' → (hour, minute), or None when off/invalid."""
+    try:
+        hh, mm = (int(x) for x in (at or "").split(":"))
+    except ValueError:
+        return None
+    return (hh, mm) if 0 <= hh < 24 and 0 <= mm < 60 else None
+
+
+def _summary_since(now):
+    """The previous summary's time (the marker), else the last 24 h."""
+    try:
+        since = datetime.fromisoformat(_read_marker(_SUMMARY_MARKER))
+    except ValueError:
+        since = None
+    return since if since is not None and since < now else now - timedelta(hours=24)
+
+
+def run_daily_summary(now=None, at=None) -> dict:
+    """Once per UTC day at/after DAILY_SUMMARY_AT: the ops summary (app/ops_summary.py) to the admin Telegram chat.
+    The day's marker is written (atomically) BEFORE sending, so a restart can never send it twice; a summary that
+    fails to build writes no marker and is retried on the next pass; with nothing to report the day is just marked."""
+    hm = _summary_at(DAILY_SUMMARY_AT if at is None else at)
+    if hm is None:
+        return {"skipped": "off"}
+    now = now or datetime.utcnow()
+    if (now.hour, now.minute) < hm:
+        return {"skipped": "not due"}
+    if _read_marker(_SUMMARY_MARKER)[:10] == now.strftime("%Y-%m-%d"):
+        return {"skipped": "done today"}
+    try:
+        from . import ops_summary
+        with Session(engine) as s:
+            text, news = ops_summary.build(s, now, _summary_since(now))
+    except Exception as e:  # noqa: BLE001 — isolated; no marker, so the next pass retries
+        logger.exception("daily summary failed (isolated; retried next pass)")
+        return {"error": str(e)}
+    if not _write_marker(_SUMMARY_MARKER, now.isoformat(timespec="seconds")):
+        logger.error("daily summary NOT sent: its marker can't be written (it would repeat every pass)")
+        return {"error": "marker not writable"}
+    if not news:
+        return {"skipped": "nothing to report"}
+    try:
+        return {"sent": bool(send_message(text))}
+    except Exception as e:  # noqa: BLE001
+        return {"error": str(e)}
+
+
+def preview_daily_summary(send=False, now=None) -> str:
+    """The CLI: the summary as it would go out now (since the last one). Never touches the marker; send=True also
+    sends it to the admin chat."""
+    from . import ops_summary
+    now = now or datetime.utcnow()
+    with Session(engine) as s:
+        text, _news = ops_summary.build(s, now, _summary_since(now))
+    if send:
+        send_message(text)
+    return text
+
+
 def run_once():
     """One full pass: CSV inbox always, portal if creds set, enrich/inbound-email if enabled."""
     init_db()
@@ -292,6 +405,10 @@ def main():
         init_db()
         print(run_campaign_send())
         return
+    if "--daily-summary" in sys.argv:
+        init_db()
+        print(preview_daily_summary(send="--send" in sys.argv))
+        return
     if "--once" in sys.argv:
         for r in run_once():
             print(r)
@@ -304,9 +421,12 @@ def main():
                 else "disabled (set ENRICH_INTERVAL)",
                 f"every {IMAP_INTERVAL}s" if (IMAP_ENABLED and IMAP_INTERVAL > 0)
                 else "disabled (set IMAP_*)")
+    if DAILY_SUMMARY_AT and _summary_at(DAILY_SUMMARY_AT) is None:
+        logger.warning("DAILY_SUMMARY_AT=%r is not HH:MM (UTC) — the daily summary is off", DAILY_SUMMARY_AT)
     _heartbeat()      # first beat at startup so the container is healthy before the first full pass completes
     last_portal = last_enrich = last_imap = last_followup = last_reminder = last_worksync = 0.0
-    last_campaign = last_backup = 0.0
+    last_campaign = 0.0
+    last_backup = _last_backup_time() if BACKUP_INTERVAL > 0 else 0.0   # a restart keeps the backup cadence
     while True:
         try:
             init_db()
@@ -341,6 +461,10 @@ def main():
                 if cs.get("sent") or cs.get("error"):
                     logger.info("campaign-send %s", cs)
                 last_campaign = now
+            if DAILY_SUMMARY_AT:
+                ds = run_daily_summary()
+                if not ds.get("skipped"):
+                    logger.info("daily summary %s", ds)
             if BACKUP_INTERVAL > 0 and now - last_backup >= BACKUP_INTERVAL:
                 run_backup()
                 last_backup = now

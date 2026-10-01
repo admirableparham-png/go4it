@@ -16,7 +16,7 @@ from . import campaign_render as CR
 from . import pipeline
 from . import send_guard as SG
 from . import suppression as SUP
-from .models import Campaign, CampaignRecipient, CampaignSend, CampaignStep, Lead, Outreach
+from .models import Campaign, CampaignRecipient, CampaignSend, CampaignStep, IngestionRun, Lead, Outreach
 
 # --- crash-safe send lifecycle (Phase 4 hardening) ---
 RETRY_MAX = int(os.getenv("CAMPAIGN_SEND_RETRY_MAX", "5"))            # attempts before permanently_failed
@@ -350,22 +350,141 @@ def _bounce_counts(session, campaign):
     return sum(1 for st in rows if st == "hard_bounced"), sum(1 for st in rows if st in _COUNTED)
 
 
+def bounce_stats(session, campaign) -> tuple:
+    """(hard bounces, sent) since the campaign was last (re)started (bounce_baseline) — exactly what the bounce
+    breaker judges; the warm-up ramp and the daily summary use the same numbers."""
+    hard, sent = _bounce_counts(session, campaign)
+    try:
+        h0, s0 = (int(x) for x in (campaign.bounce_baseline or "0:0").split(":"))
+    except ValueError:
+        h0, s0 = 0, 0
+    return max(0, hard - h0), max(0, sent - s0)
+
+
 def bounce_breaker(session, campaign) -> bool:
     """Pause a running campaign whose hard-bounce rate is too high (a scraped list gone bad burns the sending
     domain). Judged on what was sent SINCE the campaign was last (re)started (bounce_baseline), so an admin who
     resumes after cleaning the list isn't re-paused by the old bounces. Returns True if it paused the campaign."""
     if campaign.status != "running":
         return False
-    hard, sent = _bounce_counts(session, campaign)
-    try:
-        h0, s0 = (int(x) for x in (campaign.bounce_baseline or "0:0").split(":"))
-    except ValueError:
-        h0, s0 = 0, 0
-    hard, sent = hard - h0, sent - s0
+    hard, sent = bounce_stats(session, campaign)
     if sent < BOUNCE_BREAKER_MIN_SENT or hard / sent < BOUNCE_BREAKER_RATE:
         return False
     _pause_with_item(session, campaign, f"bounce breaker: {hard} hard bounces in {sent} sent — check the list")
     return True
+
+
+# --- Phase 12: automatic warm-up ramp ---------------------------------------------------------------------------
+# A campaign with a warm-up plan ("10,20,35,50") moves its OWN daily limit one step up, once per UTC day before that
+# day's first send, only after a full sending day with a low hard-bounce rate while reply/bounce reading works. It
+# never lowers a limit, never goes above the mailbox's limit and never changes MailAccount.daily_limit.
+WARMUP_MAX_BOUNCE_RATE = float(os.getenv("CAMPAIGN_WARMUP_MAX_BOUNCE_RATE", "0.05"))
+WARMUP_IMAP_FRESH_SEC = int(os.getenv("CAMPAIGN_WARMUP_IMAP_FRESH_SEC", "7200"))
+
+
+def parse_warmup_plan(text) -> list:
+    """'10, 20,35;50' → [10, 20, 35, 50]: positive whole numbers (at most 500, the controls' cap), sorted, unique.
+    Anything else is ignored."""
+    return sorted({min(500, int(p)) for p in re.split(r"[\s,;]+", text or "")
+                   if re.fullmatch(r"[0-9]{1,6}", p) and int(p) > 0})
+
+
+def _sent_between(session, campaign, start, end) -> int:
+    return session.exec(select(func.count()).where(
+        CampaignSend.campaign_id == campaign.id, CampaignSend.status == "sent",
+        CampaignSend.sent_at >= start, CampaignSend.sent_at < end)).one()
+
+
+def last_inbox_success(session):
+    """When reply/bounce reading (the IMAP poll) last finished without failing, or None."""
+    return session.exec(select(IngestionRun.finished_at).where(
+        IngestionRun.source == "email-inbound", IngestionRun.status.in_(("ok", "partial")),
+        IngestionRun.finished_at.is_not(None)).order_by(IngestionRun.finished_at.desc())).first()
+
+
+def warmup_decision(session, campaign, mailbox, day_start, now=None) -> dict:
+    """Read-only: what the ramp does for the sending day starting at `day_start` (UTC midnight). Returns
+    {action, from, to, why, code, alert}: 'none' (no plan / plan done / limit 0), 'wait' (no full day yet — normal),
+    'hold' (a problem blocks the next step → alert) or 'advance' (to the next plan step, capped by the mailbox)."""
+    now = now or datetime.utcnow()
+    cur = max(0, campaign.daily_limit or 0)
+    plan = parse_warmup_plan(campaign.warmup_plan)
+
+    def out(action, why, code="", to=cur):
+        return {"action": action, "from": cur, "to": to, "why": why, "code": code, "alert": action == "hold"}
+    nxt = next((p for p in plan if p > cur), None)
+    if not plan or nxt is None or cur == 0:     # a limit of 0 is a deliberate stop; above the plan is a manual choice
+        return out("none", "no warm-up plan" if not plan else "daily limit is 0" if cur == 0 else "plan complete")
+    cap = max(0, mailbox.daily_limit) if mailbox is not None else nxt
+    target = min(nxt, cap)
+    if target <= cur:
+        return out("hold", f"the mailbox's own daily limit ({cap}) caps the ramp — raise it on /mail to go on to "
+                           f"{nxt}/day", "mailbox_cap")
+    last = session.exec(select(func.max(CampaignSend.sent_at)).where(
+        CampaignSend.campaign_id == campaign.id, CampaignSend.status == "sent",
+        CampaignSend.sent_at < day_start)).one()
+    if last is None:
+        return out("wait", "no sending day yet")
+    last_day = last.replace(hour=0, minute=0, second=0, microsecond=0)
+    sent_last, eff = _sent_between(session, campaign, last_day, last_day + timedelta(days=1)), min(cur, cap)
+    if sent_last < eff:
+        return out("wait", f"the last sending day ({last_day:%a %d %b}) sent {sent_last} of {eff}")
+    hard, sent = bounce_stats(session, campaign)
+    if sent < eff:
+        return out("wait", f"only {sent} sent since the campaign was last (re)started")
+    if hard / sent >= WARMUP_MAX_BOUNCE_RATE:
+        return out("hold", f"{hard} hard bounce(s) in {sent} sent since the last (re)start "
+                           f"({hard / sent:.0%}, warm-up limit {WARMUP_MAX_BOUNCE_RATE:.0%})", "bounce_rate")
+    ok_at = last_inbox_success(session)
+    if ok_at is None or (now - ok_at).total_seconds() > WARMUP_IMAP_FRESH_SEC:
+        return out("hold", f"reply/bounce reading (IMAP) has not succeeded in the last "
+                           f"{WARMUP_IMAP_FRESH_SEC // 60} min — bounces can't be counted", "imap_stale")
+    return out("advance", f"{sent_last} sent on {last_day:%a %d %b}, {hard} hard bounce(s) in {sent} since the last "
+                          f"(re)start, reply reading OK", to=target)
+
+
+def apply_warmup(session, campaign, mailbox, now=None) -> dict:
+    """The worker's once-per-UTC-day ramp step (called inside the sending window, before the day's first send): apply
+    warmup_decision, record the day, audit an advance, and raise/refresh one 'campaign_warmup_held' task on a hold."""
+    now = now or datetime.utcnow()
+    today = now.strftime("%Y-%m-%d")
+    if campaign.status != "running" or not (campaign.warmup_plan or "").strip() or campaign.warmup_checked_on == today:
+        return {"action": "skip"}
+    d = warmup_decision(session, campaign, mailbox, now.replace(hour=0, minute=0, second=0, microsecond=0), now)
+    from . import work_queue as WQ
+    key = f"campaign_warmup_held:{campaign.id}"
+    campaign.warmup_checked_on = today
+    if d["action"] == "advance" and d["to"] > (campaign.daily_limit or 0):      # never lowers
+        campaign.daily_limit, campaign.updated_at = d["to"], now
+        WQ.resolve_by_key(session, key, note=f"warm-up advanced to {d['to']}/day")
+        pipeline.audit(session, None, "campaign", campaign.id, "warmup_advance",
+                       {"from": d["from"], "to": d["to"], "why": d["why"][:200]}, tenant_id=campaign.tenant_id)
+    session.add(campaign)
+    session.commit()
+    if d["alert"]:
+        _warmup_held_item(session, campaign, d, key, now)
+    return d
+
+
+def _warmup_held_item(session, campaign, d, key, now):
+    """One open task per campaign; a new reason/limit refreshes it, a dismissed one stays dismissed. Best-effort."""
+    from . import work_queue as WQ
+    version = f"{d['from']}:{d['code']}"
+    title, desc = f"Warm-up held at {d['from']}/day: {campaign.name[:60]}", d["why"][:300]
+    try:
+        items = WQ.open_items_for_key(session, key)
+        if items:
+            wi = items[0]
+            if wi.condition_version != version:
+                wi.title, wi.description, wi.condition_version, wi.updated_at = title, desc, version, now
+                session.add(wi)
+        elif not WQ.already_handled(session, key, version):
+            WQ.create_work_item_safe(session, type="campaign_warmup_held", priority="high", title=title,
+                                     description=desc, tenant_id=campaign.tenant_id, idempotency_key=key,
+                                     condition_version=version)
+        session.commit()
+    except Exception:  # noqa: BLE001 — the hold itself is what matters; the task is best-effort
+        session.rollback()
 
 
 def _pause_with_item(session, campaign, reason):

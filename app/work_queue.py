@@ -27,6 +27,7 @@ TYPES = ["review_new_request", "follow_up_buyer", "follow_up_seller", "follow_up
          # Phase 4 (Outreach) work-item types
          "review_inbound_reply", "unmatched_inbound", "mailbox_auth_failure", "campaign_paused",
          "spam_complaint", "high_bounce_rate",
+         "campaign_warmup_held",          # Phase 12: the automatic warm-up ramp is held (see campaign_service)
          # Phase 5 (Products/Pricing) work-item types
          "product_incomplete", "product_uncategorized", "missing_hs_code", "missing_supplier",
          "missing_origin", "missing_unit", "missing_base_price", "stale_product_verification",
@@ -68,6 +69,7 @@ TYPE_LABELS = {
     "review_inbound_reply": "Review inbound reply", "unmatched_inbound": "Unmatched inbound message",
     "mailbox_auth_failure": "Mailbox authentication failure", "campaign_paused": "Campaign paused by failure",
     "spam_complaint": "Spam complaint", "high_bounce_rate": "High bounce-rate alert",
+    "campaign_warmup_held": "Campaign warm-up held",
     "product_incomplete": "Incomplete product", "product_uncategorized": "Uncategorized product",
     "missing_hs_code": "Missing HS code", "missing_supplier": "Missing supplier", "missing_origin": "Missing origin",
     "missing_unit": "Missing unit", "missing_base_price": "Missing base price",
@@ -126,7 +128,7 @@ PARTY_OF_TYPE = {"follow_up_buyer": "buyer", "follow_up_seller": "seller", "foll
                  "review_inbound_reply": "buyer", "replace_invalid_contact": "buyer",
                  "failed_system_job": "system", "unmatched_inbound": "system",
                  "mailbox_auth_failure": "system", "campaign_paused": "system",
-                 "spam_complaint": "system", "high_bounce_rate": "system",
+                 "spam_complaint": "system", "high_bounce_rate": "system", "campaign_warmup_held": "system",
                  "product_incomplete": "internal", "product_uncategorized": "internal",
                  "missing_hs_code": "internal", "missing_supplier": "supplier", "missing_origin": "internal",
                  "missing_unit": "internal", "missing_base_price": "internal",

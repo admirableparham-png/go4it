@@ -7,7 +7,7 @@ import os
 import secrets
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 from urllib.parse import quote_plus
 
 from fastapi import (BackgroundTasks, FastAPI, File, Form, Header, Request,
@@ -6636,8 +6636,10 @@ def campaign_sequence(request: Request, cid: int, subjects: List[str] = Form(def
 @app.post("/campaigns/{cid}/controls")
 def campaign_controls(request: Request, cid: int, daily_limit: str = Form(""), mailbox_id: str = Form(""),
                       send_window_start: str = Form(""), send_window_end: str = Form(""),
-                      send_days: List[str] = Form(default=[])):
-    """Daily limit (the warm-up ramp), sending mailbox, and the UTC sending window/days."""
+                      send_days: List[str] = Form(default=[]), warmup_plan: Optional[str] = Form(None),
+                      daily_limit_was: str = Form("")):
+    """Daily limit (+ the automatic warm-up plan), sending mailbox, and the UTC sending window/days. `daily_limit_was`
+    = the limit the page showed: an unchanged field never reverts a limit the warm-up raised while the page was open."""
     with Session(engine) as session:
         user = current_user(request, session)
         if not _outreach_admin(session, user):
@@ -6645,10 +6647,22 @@ def campaign_controls(request: Request, cid: int, daily_limit: str = Form(""), m
         c = session.get(Campaign, cid)
         if not c:
             return _not_found()
+        kept = False
         try:
-            c.daily_limit = max(0, min(500, int(daily_limit)))
+            new_limit = max(0, min(500, int(daily_limit)))
+            if daily_limit_was.strip().isdigit() and new_limit == int(daily_limit_was) and new_limit != c.daily_limit:
+                kept = True                     # a stale page: keep the current (e.g. automatically raised) limit
+            else:
+                c.daily_limit = new_limit
         except (TypeError, ValueError):
             pass
+        if warmup_plan is not None:
+            plan = ",".join(str(p) for p in CAMP.parse_warmup_plan(warmup_plan))
+            if plan != (c.warmup_plan or ""):
+                c.warmup_plan = plan
+                c.warmup_checked_on = datetime.utcnow().strftime("%Y-%m-%d")   # a new plan starts the next UTC day
+                if not plan:
+                    WQ.resolve_by_key(session, f"campaign_warmup_held:{c.id}", user, note="warm-up plan cleared")
         if mailbox_id.isdigit():
             mb = session.get(MailAccount, int(mailbox_id))
             if mb and mb.admin_owned:
@@ -6666,10 +6680,13 @@ def campaign_controls(request: Request, cid: int, daily_limit: str = Form(""), m
         session.add(c)
         pipeline.audit(session, user, "campaign", c.id, "controls",
                        {"daily_limit": c.daily_limit, "mailbox_id": c.mailbox_id,
-                        "window": f"{c.send_window_start}-{c.send_window_end}", "days": c.send_days},
+                        "window": f"{c.send_window_start}-{c.send_window_end}", "days": c.send_days,
+                        "warmup_plan": c.warmup_plan},
                        tenant_id=c.tenant_id)
         session.commit()
-        _flash(request, f"Saved: {c.daily_limit}/day, {c.send_window_start}:00–{c.send_window_end}:00 UTC.")
+        _flash(request, f"Saved: {c.daily_limit}/day, {c.send_window_start}:00–{c.send_window_end}:00 UTC"
+                        + (f", warm-up {c.warmup_plan}" if c.warmup_plan else "")
+                        + (" (the daily limit was changed while this page was open — kept)" if kept else "") + ".")
     return RedirectResponse(f"/campaigns/{cid}", status_code=303)
 
 
