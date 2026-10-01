@@ -6,9 +6,12 @@ next_action_note="followup-1" + next_action_at). It NEVER cold-emails a buyer on
   followup-2  -> send threaded FU#2, schedule "call" at +FOLLOWUP_GRACE_BDAYS business days
   call        -> alert the founder to phone the buyer, stop
 A buyer reply (inbound_email) clears next_action_at, so a replied lead never gets a follow-up.
+It never touches a confidential MANAGED buyer: those are emailed only by campaigns (from the Go4it mailbox), and
+their follow-ups are campaign steps (campaign_service) — never a KIMIEL email from the shared SMTP.
 """
 from datetime import datetime
 
+from sqlalchemy import or_
 from sqlmodel import Session, select
 
 from .config import FOLLOWUP_BDAYS_2, FOLLOWUP_GRACE_BDAYS
@@ -47,6 +50,7 @@ def process_followups(session: Session, now=None, log=print) -> dict:
         Lead.next_action_at != None,                       # noqa: E711
         Lead.next_action_at <= now,
         Lead.buyer_replied_at == None,                     # noqa: E711
+        or_(Lead.managed == False, Lead.managed.is_(None)),    # noqa: E712 — managed buyers: campaign steps only
         Lead.status.in_(["new", "quoted", "negotiating"]),
         Lead.next_action_note.in_(_STEPS))).all()
     for lead in due:

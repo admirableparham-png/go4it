@@ -5,6 +5,8 @@ SMOKE test (real sends to the founder's own inboxes, rendered with real buyer na
         --mailbox info@qmatalsaha.com \
         --smoke "you+1@gmail.com|IHL Canada (Investments Hardware Ltd.)|CA" \
         --smoke "you+2@gmail.com|Inoxa Sp. z o.o.|PL" --start
+    add --followup campaigns/trsharks-anchors-followup [--followup-delay 0] for a 2-email smoke: email 2 goes out as a
+    reply in each inbox's thread (with delay 0, on the worker's next cycle after email 1).
 
 REAL campaign for a request (first run shows the audience; add --enrol, then --start once approved):
     docker exec go4it-app python scripts/campaign_setup.py --template campaigns/trsharks-anchors \
@@ -13,7 +15,8 @@ REAL campaign for a request (first run shows the audience; add --enrol, then --s
 
 Smoke buyers live on their own inactive "smoke seller" request, so no real seller ever sees them. The smoke campaign
 may send at any hour; a real campaign sends Mon–Fri 08–18 UTC within its daily limit. Nothing is sent by this script:
-the worker sends once the campaign is running (and outreach Pause-All is off).
+the worker sends once the campaign is running (and outreach Pause-All is off). A campaign that is running or has
+already sent keeps its sequence untouched — a follow-up is added to it with scripts/campaign_followup.py.
 """
 import argparse
 import os
@@ -30,8 +33,8 @@ from app import campaign_service as CAMP                                       #
 from app import pipeline                                                       # noqa: E402
 from app.auth import hash_password                                             # noqa: E402
 from app.db import engine, init_db                                             # noqa: E402
-from app.models import (Campaign, CampaignRecipient, Lead, MailAccount, ServiceRequest, StageEvent, User,  # noqa: E402
-                        UserProfile)
+from app.models import (Campaign, CampaignRecipient, CampaignSend, Lead, MailAccount, ServiceRequest,  # noqa: E402
+                        StageEvent, User, UserProfile)
 
 SMOKE_SELLER = "smoke-seller@qmatalsaha.com"
 SMOKE_REQUEST = "SMOKE-TEST"
@@ -118,10 +121,21 @@ def main(argv=None):
     ap.add_argument("--daily-limit", type=int, default=10)
     ap.add_argument("--enrol", action="store_true", help="enrol the previewed audience")
     ap.add_argument("--start", action="store_true", help="start it if nothing blocks")
+    ap.add_argument("--followup", default="",
+                    help="SMOKE only: template folder of email 2, sent as a reply in the thread")
+    ap.add_argument("--followup-delay", type=int, default=0, help="days between the smoke's email 1 and email 2")
     a = ap.parse_args(argv)
     if bool(a.smoke) == bool(a.request):
         ap.error("use either --smoke (test) or --request (real campaign)")
+    if a.followup and not a.smoke:
+        ap.error("--followup is for smoke tests — add a follow-up to a real campaign with scripts/campaign_followup.py")
     step, errs = load_template(a.template)
+    seq = [step]
+    if a.followup:
+        fu, fu_errs = load_template(a.followup)
+        fu["delay_days"] = max(0, a.followup_delay)
+        errs += [f"follow-up: {e}" for e in fu_errs]
+        seq.append(fu)
     if errs:
         print("TEMPLATE PROBLEMS:\n  - " + "\n  - ".join(errs))
         return 2
@@ -158,12 +172,18 @@ def main(argv=None):
         if smoke:                                          # a test goes out now, whatever the hour or day
             c.send_window_start, c.send_window_end, c.send_days = 0, 24, "0,1,2,3,4,5,6"
         s.add(c); s.commit(); s.refresh(c)
-        if c.status != "running":
-            CAMP.set_sequence(s, c, [step], None)
+        # what was already sent stays as it was: re-running on a live campaign never resets (and so never deletes) its
+        # emails — a follow-up is appended with scripts/campaign_followup.py
+        if c.status == "running" or s.exec(select(func.count()).where(CampaignSend.campaign_id == c.id)).one():
+            print(f"sequence kept — campaign #{c.id} is {c.status} or has already sent "
+                  "(add a follow-up with scripts/campaign_followup.py)")
+        else:
+            CAMP.set_sequence(s, c, seq, None)
+        per_buyer = max(1, len(CAMP.steps_for(s, c)))     # a smoke sends every email of the sequence to each address
         f = {"request_id": sr.id}
         prev = CAMP.audience_preview(s, c, f)
         if smoke:                                          # every test address goes out in this one run
-            c.daily_limit = max(1, prev["final_eligible"])
+            c.daily_limit = max(1, prev["final_eligible"]) * per_buyer
             s.add(c); s.commit()
         print(f"campaign #{c.id} {c.name!r} · request {sr.tracking_code} · mailbox {mb.email} · "
               f"{c.daily_limit}/day · window {c.send_window_start}-{c.send_window_end} UTC days {c.send_days}")
@@ -175,7 +195,7 @@ def main(argv=None):
                 for r in s.exec(select(CampaignRecipient).where(CampaignRecipient.campaign_id == c.id)).all():
                     if r.to_email not in wanted:
                         s.delete(r); res["created"] -= 1
-                c.daily_limit = len(wanted)
+                c.daily_limit = len(wanted) * per_buyer
                 s.add(c); s.commit()
             print(f"enrolled: {res}")
         problems = CAMP.start_problems(s, c)
