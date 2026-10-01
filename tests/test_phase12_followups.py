@@ -505,9 +505,10 @@ def test_reply_bounce_and_unsubscribe_stop_the_followup(world, monkeypatch):
     mid = {m["To"]: m["Message-ID"] for m in FakeSMTP.sent}
     assert len(mid) == 7
 
-    def refill(session, lead):                                         # the buyer's site lists another address
+    def refill(session, lead, apply=True):          # the buyer's site lists another address — a review candidate only
         if lead.buyer_company == "Soft Ltd":
-            lead.email = "fresh@b4.example"; session.add(lead); session.commit()
+            return {"status": "enriched", "email": "fresh@b4.example", "site": "https://b4.example"}
+        return {"status": "nohit", "site": ""}
     monkeypatch.setattr(IE, "enrich_lead", refill)
     with Session(e) as s:
         IE.handle_inbound(s, "buyer0@b0.example", "Re: " + SUBJECT_1, "Interested — please send prices.",
@@ -518,7 +519,8 @@ def test_reply_bounce_and_unsubscribe_stop_the_followup(world, monkeypatch):
                           mid["buyer2@b2.example"])
         IE.handle_bounce(s, "buyer3@b3.example", "550 5.1.1 user unknown")
         IE.handle_bounce(s, "buyer4@b4.example", "451 4.7.1 try again later")          # soft, then refilled
-        assert s.exec(select(Lead).where(Lead.email == "fresh@b4.example")).first() is not None
+        # Phase 12 (enrichment): a bounce never re-arms an address — the candidate goes to review, not onto the lead
+        assert s.exec(select(Lead).where(Lead.email == "fresh@b4.example")).first() is None
         OE.on_bounce(s, s.exec(select(Lead).where(Lead.email == "buyer5@b5.example")).one(), "buyer5@b5.example",
                      "451 4.7.1 try again later")
     _cycle(MON + timedelta(days=7))
