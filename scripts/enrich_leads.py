@@ -9,7 +9,8 @@ Selects leads that have a website but no email, scrapes homepage + contact pages
 mailbox (info@/sales@/export@) and any tel: phone, and writes ONLY into blank fields — never
 overwriting a human-entered contact. Every fill is recorded as an Activity note and the batch as
 an IngestionRun (source=enrich-web) for observability. Dry-run by default so you can see the yield
-before spending time hitting sites.
+before spending time hitting sites. Confidential managed buyers are skipped: an address written onto one is
+campaign-eligible at once, so theirs go through the reviewed scripts/enrich_managed_buyers.py instead.
 """
 import argparse
 import sys

@@ -58,10 +58,10 @@ def test_emails_prefers_same_domain_then_role():
     host = "acme.ge"
     text = "reach personal@gmail.com or sales@acme.ge or noreply@acme.ge or info@acme.ge"
     ranked = _emails_from(text, host)
-    # a same-domain role mailbox wins; the gmail (off-domain) and noreply sink below it
+    # a same-domain role mailbox wins; the gmail (off-domain) sinks below it; noreply is dropped (Phase 12)
     assert ranked[0] == "sales@acme.ge"
     assert ranked.index("info@acme.ge") < ranked.index("personal@gmail.com")
-    assert ranked[-1] == "noreply@acme.ge"
+    assert "noreply@acme.ge" not in ranked
 
 
 def test_emails_drop_asset_and_noise_addresses():
