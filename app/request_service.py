@@ -106,10 +106,13 @@ def states_consistent(sr: ServiceRequest) -> bool:
     return sr.status in ("submitted", "approved", "running")
 
 
-def advance_workflow(session, sr: ServiceRequest, to: str, actor=None, reason: str = "") -> tuple[bool, str]:
+def advance_workflow(session, sr: ServiceRequest, to: str, actor=None, reason: str = "",
+                     legacy_before=None) -> tuple[bool, str]:
     """Move a request's additive workflow_status to `to`, recording an authoritative RequestStatusEvent,
     bumping last_activity_at, and writing an audit row. Does NOT touch the legacy `status` (the caller owns
-    that) — this only enriches the Phase-3 surface. Idempotent no-op when already at `to`. Returns (ok, err)."""
+    that) — this only enriches the Phase-3 surface. Idempotent no-op when already at `to`. Returns (ok, err).
+    Callers that change the legacy status FIRST pass `legacy_before` (the status before their change), so the
+    history row records the real legacy move (e.g. done → running) instead of the new status twice."""
     to = (to or "").strip()
     if to not in WORKFLOW_STATES:
         return False, f"unknown workflow status: {to}"
@@ -122,7 +125,8 @@ def advance_workflow(session, sr: ServiceRequest, to: str, actor=None, reason: s
     touch_activity(sr)
     session.add(sr)
     session.add(RequestStatusEvent(request_id=sr.id, from_status=frm, to_status=to,
-                                   from_legacy=sr.status, to_legacy=sr.status,
+                                   from_legacy=sr.status if legacy_before is None else legacy_before,
+                                   to_legacy=sr.status,
                                    actor_id=getattr(actor, "id", None), reason=(reason or "")[:500]))
     audit(session, actor, "request", sr.id, "request_status_change",
           {"from": frm, "to": to, "reason": (reason or "")[:200]}, tenant_id=sr.owner_id)

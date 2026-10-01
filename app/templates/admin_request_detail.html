@@ -77,7 +77,7 @@
       <a href="/admin/requests/{{ sr.id }}/pipeline" class="btn btn-ghost-sky btn-sm">Open pipeline board ↗</a>
     </div>
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-      <div><div class="text-2xl font-bold tabular-nums">{{ sr.leads_delivered }}</div><div class="text-slate-500 text-xs">buyers delivered</div></div>
+      <div><div class="text-2xl font-bold tabular-nums">{{ funnel.total_prospects if funnel else 0 }}</div><div class="text-slate-500 text-xs">managed buyers</div></div>
       <div><div class="text-2xl font-bold tabular-nums">{{ funnel.get('at_contacted', 0) + funnel.get('at_responded', 0) if funnel else 0 }}</div><div class="text-slate-500 text-xs">contacted / replied</div></div>
       <div><div class="text-2xl font-bold tabular-nums">{{ funnel.get('at_qualified', 0) if funnel else 0 }}</div><div class="text-slate-500 text-xs">qualified</div></div>
       <div><div class="text-2xl font-bold tabular-nums">{{ funnel.get('at_won', 0) if funnel else 0 }}</div><div class="text-slate-500 text-xs">won</div></div>
@@ -164,7 +164,7 @@
 {% elif tab == 'related' %}
   <div class="card space-y-2 text-sm">
     <div class="eyebrow mb-1">Related records</div>
-    <div><a href="/admin/requests/{{ sr.id }}/pipeline" class="link">Confidential buyer pipeline ({{ sr.leads_delivered }} buyers) ↗</a></div>
+    <div><a href="/admin/requests/{{ sr.id }}/pipeline" class="link">Confidential buyer pipeline ({{ funnel.total_prospects if funnel else 0 }} buyers) ↗</a></div>
     {% if company %}<div><a href="/companies/{{ company.id }}" class="link">Company: {{ company.name }} ↗</a></div>{% endif %}
     <div><a href="/admin/work-queue?view=all_open" class="link">Work items ↗</a></div>
     <div class="text-slate-500 text-xs">Quotes, deals and campaigns linked to delivered buyers appear on those buyers' records in the pipeline board.</div>

@@ -1,8 +1,13 @@
 {% set c = {'submitted':'#fbbf24','approved':'#22d3ee','running':'#818cf8','done':'#34d399','rejected':'#fb7185'}.get(r.status,'#94a3b8') %}
 {% set sm = {'submitted':'queued','approved':'approved','running':'running','done':'ok','rejected':'error'} %}
+{# admin_view: only the founder/admin sees request-level result links (they may predate the seller-safe flag) #}
+{% set _viewer = me if (me is defined and me) else (user if user is defined else none) %}
+{% set admin_view = _viewer is not none and _viewer.role == 'admin' %}
+{% set hunt = (r.request_type or 'buyer_hunt') == 'buyer_hunt' %}
+{# a running buyer hunt is a long outreach: no 5 s whole-card refresh (it would wipe a chat draft) #}
 <div id="req-{{ r.id }}" class="relative rounded-xl p-3.5 pl-4 overflow-hidden"
      style="border:1px solid {{ c }}55; background:linear-gradient(180deg, {{ c }}18, rgba(255,255,255,.02)); box-shadow:inset 0 1px 0 rgba(255,255,255,.07), 0 12px 34px -18px rgba(0,0,0,.85);"
-     {% if r.status in ('submitted','approved','running') %}hx-get="/requests/{{ r.id }}/status" hx-trigger="load delay:5s" hx-swap="outerHTML"{% endif %}>
+     {% if r.status in ('submitted','approved') or (r.status == 'running' and not hunt) %}hx-get="/requests/{{ r.id }}/status" hx-trigger="load delay:5s" hx-swap="outerHTML"{% endif %}>
   <span style="position:absolute; left:0; top:0; bottom:0; width:3px; background:{{ c }}; box-shadow:0 0 16px {{ c }};"></span>
 
   <div class="flex items-center justify-between gap-2">
@@ -16,9 +21,9 @@
     <span class="text-[12.5px] font-medium" style="color:{{ c }};">
       {% if r.status == 'submitted' %}Sent to admin &mdash; waiting for approval&hellip;
       {% elif r.status == 'approved' %}Approved &mdash; finding your buyers&hellip;
-      {% elif r.status == 'running' %}Research in progress&hellip;
+      {% elif r.status == 'running' %}{% if hunt %}Outreach in progress &mdash; we are contacting buyers for you{% else %}Research in progress&hellip;{% endif %}
       {% elif r.status == 'rejected' %}{{ r.admin_note or 'Not accepted.' }}
-      {% elif r.status == 'done' %}{{ r.result or 'Delivered' }}{% endif %}
+      {% elif r.status == 'done' %}{{ r.result or ('Completed' if hunt else 'Delivered') }}{% endif %}
     </span>
   </div>
 
@@ -34,8 +39,8 @@
           <span class="text-[10px] text-slate-500">{{ d.created_at.strftime('%b %d') }}</span>
         </div>
       {% endfor %}
-      {% if not deliverables and r.result_file_path %}<a href="/requests/{{ r.id }}/result/file" class="link font-medium">open deliverable &#8599;</a>{% endif %}
-      {% if not deliverables and r.result_url %}<a href="{{ r.result_url }}" target="_blank" rel="noopener" class="link font-medium">open link &#8599;</a>{% endif %}
+      {% if admin_view and not deliverables and r.result_file_path %}<a href="/requests/{{ r.id }}/result/file" class="link font-medium">open deliverable &#8599;</a>{% endif %}
+      {% if admin_view and not deliverables and r.result_url %}<a href="{{ r.result_url }}" target="_blank" rel="noopener" class="link font-medium">open link &#8599;</a>{% endif %}
     </div>
   {% endif %}
 

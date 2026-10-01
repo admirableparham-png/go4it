@@ -462,10 +462,24 @@ def dashboard(request: Request):
         my_requests = [] if is_admin(user) else session.exec(
             scoped(select(ServiceRequest), ServiceRequest.owner_id, user)
             .order_by(ServiceRequest.id.desc()).limit(6)).all()
+        # Confidential delivery: the buyers Go4it works for a seller are admin-owned managed leads, so the owner-scoped
+        # counts above stay 0 for them. Show the anonymized funnel totals instead (counts only — never a buyer row).
+        seller_funnel, my_deliv = None, {}
+        if not is_admin(user) and user is not None:
+            all_reqs = session.exec(scoped(select(ServiceRequest), ServiceRequest.owner_id, user)).all()
+            fs = [pipeline.request_funnel(session, r) for r in all_reqs]
+            seller_funnel = {"total": sum(f["total_prospects"] for f in fs),
+                             "contacted": sum(f["reached"]["contacted"] for f in fs),
+                             "in_conversation": sum(f["reached"]["responded"] for f in fs),
+                             "won": sum(f["reached"]["won"] for f in fs),
+                             "countries": len({c for f in fs for c in f["countries"]})}
+            my_deliv = {rid: [d for d in dvs if d.seller_safe]          # sellers only ever see PII-free files
+                        for rid, dvs in _deliverables_for(session, [r.id for r in my_requests]).items()}
 
         ctx = {
             "request": request, "user": user, "active": "dashboard", "is_admin": is_admin(user),
             "my_requests": my_requests, "request_types": REQUEST_TYPES,
+            "seller_funnel": seller_funnel, "deliv_map": my_deliv,
             "total": total, "contactable": total - needs_enrichment,
             "needs_enrichment": needs_enrichment,
             "open_pipeline": open_pipeline, "won": won, "lost": lost, "win_rate": win_rate,
@@ -5529,7 +5543,7 @@ def submit_request(request: Request, product: str = Form(""), market: str = Form
             notify_service_request(sr, user)
         except Exception:  # noqa: BLE001
             pass
-        _flash(request, f"Request {sr.tracking_code} sent to admin. Your buyers will appear here once it's done.")
+        _flash(request, f"Request {sr.tracking_code} sent to admin. You'll see anonymized progress and updates here.")
     return RedirectResponse("/requests", status_code=303)
 
 
@@ -5570,6 +5584,8 @@ def request_status(request: Request, req_id: int):
         if not sr or not owns(sr.owner_id, user):
             return HTMLResponse("", status_code=404)
         deliv_map, msg_map = _deliverables_for(session, [sr.id]), _messages_for(session, [sr.id])
+        if not is_admin(user):      # the poll target too: sellers only ever see files the admin marked PII-free
+            deliv_map = {rid: [d for d in dvs if d.seller_safe] for rid, dvs in deliv_map.items()}
         return templates.TemplateResponse("partials/request_card.html", {
             "request": request, "r": sr, "deliv_map": deliv_map, "msg_map": msg_map, "me": user})
 
@@ -5696,6 +5712,10 @@ def admin_requests(request: Request, view: str = "", q: str = "", direction: str
         wq_counts = (dict(session.exec(select(WorkItem.related_request_id, func.count()).where(
             WorkItem.related_request_id.in_(ids), WorkItem.status.in_(WQ.NONTERMINAL))
             .group_by(WorkItem.related_request_id)).all()) if ids else {})
+        # buyers per request = the managed funnel's total_prospects (leads_delivered stays the legacy hand-over count)
+        managed_counts = (dict(session.exec(select(Lead.request_id, func.count(Lead.id)).where(
+            Lead.request_id.in_(ids), Lead.managed == True).group_by(Lead.request_id)).all())  # noqa: E712
+            if ids else {})
         unread_ids = set()
         if ids:
             by_id = {r.id: r for r in reqs}
@@ -5715,6 +5735,7 @@ def admin_requests(request: Request, view: str = "", q: str = "", direction: str
         return templates.TemplateResponse("admin_requests.html", {
             "request": request, "user": user, "active": "requests", "reqs": reqs, "umap": umap,
             "deliv_map": deliv_map, "msg_map": msg_map, "me": user, "wq_counts": wq_counts,
+            "managed_counts": managed_counts,
             "unread_ids": unread_ids, "now": now, "f": f, "total": total, "page": page, "pages": pages,
             "hdr": hdr, "REQUEST_VIEWS": REQUEST_VIEWS, "REQUEST_TYPES": REQUEST_TYPES,
             "staff": _staff(session), "wf_label": RS.WORKFLOW_LABELS, "wf_badge": RS.WORKFLOW_BADGE,
@@ -5760,8 +5781,9 @@ def admin_request_detail(request: Request, req_id: int, tab: str = "summary"):
         hdr = {"section": "Request", "title": sr.tracking_code or f"Request {sr.id}",
                "desc": (f"{sr.product} → {sr.market}" if sr.market else sr.product),
                "breadcrumb": [{"label": "Requests", "href": "/admin/requests"}]}
+        flashes = request.session.pop("_flash", [])
         return templates.TemplateResponse("admin_request_detail.html", {
-            "request": request, "user": user, "active": "requests", "sr": sr,
+            "request": request, "user": user, "active": "requests", "sr": sr, "flashes": flashes,
             "tab": tab if tab in ("summary", "pipeline", "comms", "work", "files", "related") else "summary",
             "requester": requester, "assignee": assignee, "company": company, "history": history,
             "actor_map": actor_map, "deliverables": deliverables, "messages": messages, "updates": updates,
@@ -5816,9 +5838,11 @@ def admin_request_workflow(request: Request, req_id: int, to: str = Form(""), re
         sr = session.get(ServiceRequest, req_id)
         if not sr:
             return _not_found()
-        ok, err = RS.advance_workflow(session, sr, to, user, reason)
+        legacy_before = sr.status
+        RS.reconcile_legacy(sr, to)   # keep the seller-visible legacy status consistent (never contradict); BEFORE
+        # the history row, so it records the legacy status the request really moved to (not done→done)
+        ok, err = RS.advance_workflow(session, sr, to, user, reason, legacy_before=legacy_before)
         if ok:
-            RS.reconcile_legacy(sr, to)   # keep the seller-visible legacy status consistent (never contradict)
             session.add(sr)
             if to == "ready_for_delivery":
                 WQ.create_work_item_safe(session, actor=user, type="deliver_result",
@@ -5870,7 +5894,8 @@ def admin_request_approve(request: Request, req_id: int):
         sr = session.get(ServiceRequest, req_id)
         if sr and sr.status == "submitted":
             sr.status, sr.approved_by, sr.approved_at = "approved", user.email, datetime.utcnow()
-            RS.advance_workflow(session, sr, "approved", user)           # keep additive workflow in sync
+            RS.advance_workflow(session, sr, "approved", user,           # keep additive workflow in sync
+                                legacy_before="submitted")
             WQ.resolve_by_key(session, f"review_new_request:req:{sr.id}", user, "request reviewed")
             session.add(sr); session.commit(); session.refresh(sr)
             _notify_requester(session, sr)
@@ -5885,8 +5910,10 @@ def admin_request_reject(request: Request, req_id: int, reason: str = Form("")):
             return _forbidden()
         sr = session.get(ServiceRequest, req_id)
         if sr and sr.status in ("submitted", "approved"):
+            legacy_before = sr.status
             sr.status, sr.admin_note, sr.done_at = "rejected", (reason or "").strip()[:500], datetime.utcnow()
-            RS.advance_workflow(session, sr, "rejected", user, reason=(reason or "").strip())
+            RS.advance_workflow(session, sr, "rejected", user, reason=(reason or "").strip(),
+                                legacy_before=legacy_before)
             for k in (f"review_new_request:req:{sr.id}", f"deliver_result:req:{sr.id}", f"overdue:req:{sr.id}"):
                 WQ.resolve_by_key(session, k, user, "request rejected")
             session.add(sr); session.commit(); session.refresh(sr)
@@ -5903,7 +5930,7 @@ def admin_request_start(request: Request, req_id: int):
         sr = session.get(ServiceRequest, req_id)
         if sr and sr.status == "approved":
             sr.status, sr.started_at = "running", datetime.utcnow()
-            RS.advance_workflow(session, sr, "in_progress", user)
+            RS.advance_workflow(session, sr, "in_progress", user, legacy_before="approved")
             session.add(sr); session.commit()
     return RedirectResponse("/admin/requests", status_code=303)
 
@@ -5913,7 +5940,9 @@ def admin_request_done(request: Request, req_id: int, result: str = Form(""),
                        url: str = Form(""), seller_safe: str = Form(""), file: UploadFile = File(None)):
     """Deliver a request, with a result note + optional file/link. Can be called REPEATEDLY (even after
     'done') — each delivery APPENDS a RequestDeliverable, so re-sends stack instead of overwriting. Tick
-    seller_safe ONLY when the file carries no buyer PII (else sellers can't download it)."""
+    seller_safe ONLY when the file carries no buyer PII (else sellers can't download it). Only a seller-safe
+    delivery's note/link is copied onto the request card (result/result_url), and a seller-safe note/link that
+    carries contact details or names one of the request's buyers is refused."""
     with Session(engine) as session:
         user = current_user(request, session)
         if not is_admin(user):
@@ -5922,22 +5951,33 @@ def admin_request_done(request: Request, req_id: int, result: str = Form(""),
         if sr and sr.status in ("approved", "running", "done"):
             note = (result or "").strip()[:1000]
             link = (url or "").strip()[:500]
+            safe = seller_safe == "1"
             has_file = file is not None and (file.filename or "").strip()
+            if safe and (note or link):
+                needles = pipeline.request_denylist(session, sr)
+                hits = ((pipeline.seller_text_hits(session, sr, note, needles) if note else [])
+                        + (pipeline.link_hits(link, needles) if link else []))
+                if hits:
+                    kinds = ", ".join(sorted({h["kind"] for h in hits}))
+                    _flash(request, f"Delivery refused — the seller-safe note/link contains buyer contact details or "
+                                    f"identity ({kinds}). Remove them, or deliver it as internal only.", "rose")
+                    return RedirectResponse(f"/admin/requests/{req_id}?tab=files", status_code=303)
             if has_file or link or note:
                 dv = RequestDeliverable(request_id=sr.id, note=note, url=link, delivered_by=user.email,
-                                        seller_safe=(seller_safe == "1"))
+                                        seller_safe=safe)
                 session.add(dv); session.commit(); session.refresh(dv)
                 if has_file:
                     rel = _save_deliverable_file(sr.id, dv.id, file)
                     if rel:
                         dv.file_path, sr.result_file_path = rel, rel
-                if link:
+                if link and safe:          # the request card shows result/result_url to the seller
                     sr.result_url = link
                 session.add(dv)
+            legacy_before = sr.status
             sr.status, sr.done_at = "done", datetime.utcnow()
-            if note:
+            if note and safe:
                 sr.result = note
-            RS.advance_workflow(session, sr, "delivered", user)
+            RS.advance_workflow(session, sr, "delivered", user, legacy_before=legacy_before)
             for k in (f"deliver_result:req:{sr.id}", f"overdue:req:{sr.id}"):
                 WQ.resolve_by_key(session, k, user, "request delivered")
             session.add(sr); session.commit(); session.refresh(sr)
@@ -6034,6 +6074,20 @@ def admin_pipeline_fields(request: Request, req_id: int, lead_id: int,
     return RedirectResponse(f"/admin/requests/{req_id}/pipeline", status_code=303)
 
 
+def _update_problems(session, sr, anon_ref, *texts):
+    """(hits, lead) for a seller update: contact/PII + buyer-denylist hits over every seller-visible field (anon_ref
+    included), and the managed buyer anon_ref names — it must be '' (request-level) or a buyer of THIS request."""
+    ref = (anon_ref or "").strip()
+    hits = pipeline.seller_text_hits(session, sr, " ".join([ref, *texts]))
+    lead = None
+    if ref:
+        lead = session.exec(select(Lead).where(Lead.request_id == sr.id, Lead.managed == True,  # noqa: E712
+                                               Lead.anon_ref == ref)).first()
+        if lead is None:
+            hits.append({"kind": "buyer ref", "match": "not a buyer reference of this request"})
+    return hits, lead
+
+
 @app.post("/admin/requests/{req_id}/publish/preview", response_class=HTMLResponse)
 def admin_publish_preview(request: Request, req_id: int, anon_ref: str = Form(""),
                           public_status: str = Form(""), summary: str = Form(""),
@@ -6047,7 +6101,7 @@ def admin_publish_preview(request: Request, req_id: int, anon_ref: str = Form(""
         sr = session.get(ServiceRequest, req_id)
         if not sr:
             return _not_found()
-    hits = pipeline.sanitize_scan(" ".join([summary, next_action, seller_question, public_status]))
+        hits, _lead = _update_problems(session, sr, anon_ref, summary, next_action, seller_question, public_status)
     u = {"anon_ref": anon_ref.strip(), "public_status": public_status.strip(), "summary": summary.strip(),
          "next_action": next_action.strip(), "seller_question": seller_question.strip(),
          "deadline": deadline.strip()}
@@ -6059,7 +6113,8 @@ def admin_publish_preview(request: Request, req_id: int, anon_ref: str = Form(""
 def admin_publish(request: Request, req_id: int, anon_ref: str = Form(""), public_status: str = Form(""),
                   summary: str = Form(""), next_action: str = Form(""), seller_question: str = Form(""),
                   deadline: str = Form("")):
-    """Publish a SANITIZED seller-visible update. Refuses if any contact/PII slips through."""
+    """Publish a SANITIZED seller-visible update. Refuses if any contact/PII or buyer identity slips through, or if
+    anon_ref is not one of THIS request's buyers (re-checked here — the preview is never trusted)."""
     with Session(engine) as session:
         user = current_user(request, session)
         if not is_admin(user):
@@ -6067,8 +6122,10 @@ def admin_publish(request: Request, req_id: int, anon_ref: str = Form(""), publi
         sr = session.get(ServiceRequest, req_id)
         if not sr:
             return _not_found()
-        if pipeline.sanitize_scan(" ".join([summary, next_action, seller_question, public_status])):
-            _flash(request, "Blocked — the update still contains contact details / PII. Remove them and preview again.", "rose")
+        hits, lead = _update_problems(session, sr, anon_ref, summary, next_action, seller_question, public_status)
+        if hits:
+            _flash(request, "Blocked — the update still contains contact details / buyer-identifying data, or an "
+                            "unknown buyer reference. Remove them and preview again.", "rose")
             return RedirectResponse(f"/admin/requests/{req_id}/pipeline", status_code=303)
         dl = None
         if deadline:
@@ -6078,6 +6135,7 @@ def admin_publish(request: Request, req_id: int, anon_ref: str = Form(""), publi
                 dl = None
         q = seller_question.strip()[:300]
         su = SellerUpdate(request_id=req_id, seller_id=sr.owner_id, anon_ref=anon_ref.strip()[:40],
+                          lead_id=lead.id if lead else None,      # resolving its question clears the buyer's flag
                           public_status=public_status.strip()[:80], summary=summary.strip()[:2000],
                           next_action=next_action.strip()[:300], seller_question=q,
                           status="open" if q else "resolved",   # only a question is an outstanding action
@@ -6136,7 +6194,7 @@ def request_message(request: Request, req_id: int, body: str = Form("")):
             return _not_found()
         text = (body or "").strip()[:4000]
         if text and is_admin(user):        # admin -> seller: block buyer contact details/PII before it's saved
-            hits = pipeline.sanitize_scan(text)
+            hits = pipeline.seller_text_hits(session, sr, text)      # + the request's buyer names/sites/cities
             if hits:
                 kinds = ", ".join(sorted({h["kind"] for h in hits}))
                 _flash(request, f"Message blocked - it contains buyer contact details / PII ({kinds}). "
@@ -6184,7 +6242,7 @@ def resolve_seller_update(request: Request, req_id: int, update_id: int, answer:
             return _not_found()
         answer_text = (answer or "").strip()[:4000]
         if answer_text and is_admin(user):   # if an admin authors the reply, scan it (admin -> seller)
-            if pipeline.sanitize_scan(answer_text):
+            if pipeline.seller_text_hits(session, sr, answer_text):
                 _flash(request, "Answer blocked - it contains buyer contact details / PII. Remove them first.", "rose")
                 return RedirectResponse(request.headers.get("referer") or "/requests", status_code=303)
         if su.status != "resolved":
@@ -7092,6 +7150,23 @@ def admin_user_password(request: Request, user_id: int, password: str = Form(...
         ok, msg = ACCESS.reset_password(session, actor, u, password)   # Founder guard lives in the service
         session.commit()
     return RedirectResponse(f"/admin/users/{user_id}?{'ok=password' if ok else 'error=' + msg[:60]}",
+                            status_code=303)
+
+
+@app.post("/admin/users/{user_id}/email")
+def admin_user_email(request: Request, user_id: int, email: str = Form(""), reason: str = Form("")):
+    """Change a user's login email (users.manage; the Founder guard, format/duplicate checks, session revocation
+    and the audit row live in the service)."""
+    with Session(engine) as session:
+        actor = current_user(request, session)
+        if _require(session, actor, "users.manage"):
+            return _forbidden()
+        u = session.get(User, user_id)
+        if not u:
+            return _not_found()
+        ok, msg = ACCESS.change_email(session, actor, u, email, reason=reason)
+        session.commit()
+    return RedirectResponse(f"/admin/users/{user_id}?tab=security&{'ok' if ok else 'error'}={quote_plus(msg[:60])}",
                             status_code=303)
 
 

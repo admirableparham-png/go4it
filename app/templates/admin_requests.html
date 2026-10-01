@@ -53,7 +53,8 @@
       <tr>
         <td>
           <div class="font-medium"><a href="/admin/requests/{{ r.id }}" class="text-slate-100 hover:text-sky-300">{{ r.product }}</a>{% if r.market %} <span class="text-slate-500 font-normal">&rarr; {{ r.market }}</span>{% endif %}</div>
-          <div class="text-[10px] text-slate-600">{{ r.tracking_code }}{% if r.leads_delivered %} &middot; {{ r.leads_delivered }} buyers{% endif %}{% if dvs %} &middot; {{ dvs|length }} file(s){% endif %}</div>
+          {% set nb = managed_counts.get(r.id, 0) if managed_counts is defined else 0 %}
+          <div class="text-[10px] text-slate-600">{{ r.tracking_code }}{% if nb %} &middot; {{ nb }} buyers{% endif %}{% if dvs %} &middot; {{ dvs|length }} file(s){% endif %}</div>
           <div class="mt-0.5 flex gap-1 flex-wrap">
             {% if r.id in unread_ids %}<span class="badge badge-amber text-[9px]">unread</span>{% endif %}
             {% if r.action_required_admin %}<span class="badge badge-rose text-[9px]">needs you</span>{% endif %}
