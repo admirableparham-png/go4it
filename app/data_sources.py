@@ -87,6 +87,12 @@ def source_health(session, now=None) -> list:
                 if r.status == "error" and r.finished_at and (last_failure is None or r.finished_at > last_failure):
                     last_failure = r.finished_at
                     err = err or (r.error or "")[:200]
+            if last_success is None:
+                # a long outage pushed every success out of the 200-run window: anchor on the REAL last success, so
+                # the outage stays one episode (its Work Queue alert isn't raised again as 'never')
+                last_success = session.exec(select(IngestionRun.finished_at).where(
+                    IngestionRun.source.in_(src.ingest_sources), IngestionRun.status == "ok",
+                    IngestionRun.finished_at.is_not(None)).order_by(IngestionRun.id.desc()).limit(1)).first()
         if src.provenance_types:
             # provenance last_seen is the freshness anchor for sources that don't run through IngestionRun
             pv = session.exec(select(func.max(Provenance.last_seen_at), func.count())

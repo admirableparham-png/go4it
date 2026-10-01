@@ -1,6 +1,7 @@
 """Phase 11 — the IMAP poller never marks a person's mail as read (read-only mailbox + PEEK fetches + a processed-
 message ledger), baselines on its first run, still processes replies a person already opened, reads HTML-only
 replies, and never mistakes our quoted footer for an unsubscribe."""
+from datetime import datetime, timedelta
 from email.message import EmailMessage
 
 import pytest
@@ -12,7 +13,7 @@ from app import inbound_email as IE
 from app import outreach_events as OE
 from app import suppression as SUP
 from app.campaign_render import OPT_OUT_LINE
-from app.models import InboundSeen, Lead, Outreach, StageEvent, WorkItem
+from app.models import InboundSeen, IngestionRun, Lead, Outreach, StageEvent, WorkItem
 
 
 class FakeIMAP:
@@ -195,3 +196,75 @@ def test_password_comes_from_the_connected_mailbox_when_env_has_none(ctx, monkey
         assert IE.imap_password(s) == ""                               # nothing connected yet
         s.add(MailAccount(user_id=1, email="INFO@qmat.example", smtp_password_enc="enc", active=True)); s.commit()
         assert IE.imap_password(s) == "stored-app-pass"
+
+
+def test_after_an_outage_the_first_good_poll_reaches_back_to_the_last_good_one(ctx, monkeypatch):
+    e, _lid = ctx
+    asked = []
+    real = FakeIMAP.search
+
+    def search(self, charset, *criteria):
+        asked.append(criteria[1])
+        return real(self, charset, *criteria)
+    monkeypatch.setattr(FakeIMAP, "search", search)
+    now = datetime.utcnow()
+    with Session(e) as s:
+        assert IE._lookback_days(s, now) == IE.IMAP_LOOKBACK_DAYS            # never read yet: the normal window
+        s.add(IngestionRun(source="email-inbound", status="ok", started_at=now - timedelta(days=9),
+                           finished_at=now - timedelta(days=9)))
+        s.add(IngestionRun(source="email-inbound", status="error", started_at=now - timedelta(hours=1),
+                           finished_at=now - timedelta(hours=1)))                # down ever since
+        s.commit()
+        assert IE._lookback_days(s, now) == 11                               # back past the last good poll
+        IE.poll_inbox(s)
+        assert asked == [IE._imap_since(11)]
+        assert IE._lookback_days(s) == IE.IMAP_LOOKBACK_DAYS                 # caught up: the normal window again
+        for r in s.exec(select(IngestionRun).where(IngestionRun.status == "ok")).all():
+            r.status = "error"
+            s.add(r)
+        s.add(IngestionRun(source="email-inbound", status="ok", started_at=now - timedelta(days=60),
+                           finished_at=now - timedelta(days=60)))
+        s.commit()
+        assert IE._lookback_days(s, now) == IE.IMAP_CATCHUP_MAX_DAYS          # capped
+
+
+def test_an_interrupted_read_never_ends_the_catch_up(ctx):
+    e, _lid = ctx
+    now = datetime.utcnow()
+    with Session(e) as s:
+        s.add(IngestionRun(source="email-inbound", status="ok", started_at=now - timedelta(days=11),
+                           finished_at=now - timedelta(days=11)))
+        s.add(IngestionRun(source="email-inbound", status="partial", started_at=now - timedelta(hours=1),
+                           finished_at=now - timedelta(hours=1)))        # read some of the catch-up, then dropped
+        s.commit()
+        assert IE._lookback_days(s, now) == 13
+
+
+def test_a_message_with_an_8bit_message_id_never_leaves_reading_incomplete(ctx):
+    e, _lid = ctx
+    with Session(e) as s:
+        IE.poll_inbox(s)                                                     # baseline of an empty inbox
+    FakeIMAP.box = [b"From: x@y.cn\r\nTo: info@qmat.example\r\nSubject: hi\r\n"
+                    b"Message-ID: <abc@mail.\xe9\x82\xae\xe4\xbb\xb6.cn>\r\n\r\nhello\r\n"]
+    with Session(e) as s:
+        IE.poll_inbox(s)
+        IE.poll_inbox(s)
+        runs = s.exec(select(IngestionRun).order_by(IngestionRun.id)).all()
+        assert [r.status for r in runs] == ["ok", "ok", "ok"]               # read, recorded once, never retried
+        assert len([x for x in s.exec(select(InboundSeen)).all() if x.message_key.startswith("<abc@mail.")]) == 1
+
+
+@pytest.mark.parametrize("final_rcpt,diag", [
+    (b"rfc822; buyer@acme.example", b"smtp; 550 5.1.1 u\xc5\xbcytkownik nieznany"),     # 8-bit diagnostic
+    (b"utf-8; buyer@acme.example", b"smtp; 550 5.1.1 user unknown"),                    # plain fields
+])
+def test_a_bounce_report_with_8bit_fields_still_counts(final_rcpt, diag):
+    raw = (b"From: Mail Delivery Subsystem <mailer-daemon@googlemail.com>\r\nTo: info@qmat.example\r\n"
+           b"Subject: Delivery Status Notification (Failure)\r\nMIME-Version: 1.0\r\n"
+           b"Content-Type: multipart/report; boundary=\"B1\"; report-type=delivery-status\r\n\r\n"
+           b"--B1\r\nContent-Type: text/plain\r\n\r\nAddress not found.\r\n"
+           b"--B1\r\nContent-Type: message/delivery-status\r\n\r\nReporting-MTA: dns; googlemail.com\r\n\r\n"
+           b"Final-Recipient: " + final_rcpt + b"\r\nAction: failed\r\nStatus: 5.1.1\r\n"
+           b"Diagnostic-Code: " + diag + b"\r\n\r\n--B1--\r\n")
+    rcpt, reason = IE.detect_bounce(raw)
+    assert rcpt == "buyer@acme.example" and "5.1.1" in reason

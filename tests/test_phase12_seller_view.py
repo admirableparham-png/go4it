@@ -19,8 +19,8 @@ from app import campaign_render as CR
 from app import permissions as P
 from app import pipeline
 from app.auth import hash_password
-from app.models import (AccessAuditLog, Lead, RequestDeliverable, RequestMessage, RequestStatusEvent,
-                        SellerUpdate, ServiceRequest, StageEvent, User, UserProfile)
+from app.models import (AccessAuditLog, Company, Contact, Lead, RequestDeliverable, RequestMessage,
+                        RequestStatusEvent, SellerUpdate, ServiceRequest, StageEvent, User, UserProfile)
 
 _IDX = (
     "CREATE UNIQUE INDEX IF NOT EXISTS uq_lead_req_anonref ON lead(request_id, anon_ref) WHERE anon_ref != ''",
@@ -367,6 +367,138 @@ def test_denylist_needles_and_matching():
     assert not hit("They want fixings for drywall") and hit("Fixings Ltd replied")   # ... nor a whole name
     assert not hit("Reginald from our team")                 # whole words only
     assert not hit("Order of 5550 boxes, 199 pallets")       # short digit groups are not a phone
+
+
+def test_denylist_knows_contact_persons_and_blocks_less_routine_wording():
+    leads = [Lead(buyer_company="Richelieu Hardware Ltd", contact_name="Mr. Marc Tremblay (Purchasing)",
+                  website="richelieu.example", dest_city="Split", dest_country="HR"),
+             Lead(buyer_company="Plaster Wholesalers", contact_name="Sales Team", dest_city="Stone",
+                  dest_country="GB"),
+             Lead(buyer_company="Construction Accessories Ltd", dest_city="Ontario", dest_country="CA"),
+             Lead(buyer_company="Kenroc", dest_city="Dublin HQ", dest_country="IE")]
+    leads += [Lead(buyer_company=f"Gulf Fixings {i} LLC", dest_city="Dubai", dest_country="AE") for i in range(3)]
+    people = [Contact(company_id=1, name="Dr Anna Kowalska", email="anna@kowal.example", phone="+48 12 345 67 89")]
+    needles = pipeline.denylist_needles(leads, people)
+    hit = lambda t: pipeline.denylist_hits(t, needles)                       # noqa: E731
+    # contact persons — the lead's own field and the Trade Network contacts — full name any case, surname as a name
+    assert hit("Marc Tremblay asked for pricing") and hit("MARC TREMBLAY asked") and hit("Tremblay wants samples")
+    assert hit("Anna Kowalska confirmed") and hit("Kowalska confirmed") and hit("anna@kowal.example")
+    assert hit("her mobile is 345 67 89")
+    assert not hit("Our sales team replied") and not hit("Marc from our team")    # a role / a lone first name
+    # routine wording is no longer blocked …
+    assert not hit("Buyer requested pricing for 5,000 pcs under CIF Dubai.")    # 3+ of the buyers are in Dubai
+    assert not hit("Buyers across Ontario and Quebec")                          # a province is nobody's city
+    assert not hit("We can split the order") and not hit("anchors hold in stone")   # not written as a place
+    assert not hit("Plaster wholesalers and construction accessories distributors")   # all-generic names
+    # … while the places and names that do single a buyer out still are
+    assert hit("A buyer in Split replied") and hit("the Stone buyer") and hit("A buyer in Dublin")
+    assert hit("Construction Accessories Ltd replied")                          # the legal form keeps it
+    s = pipeline.hits_summary(pipeline.denylist_hits("Tremblay in Split", needles)
+                              + [{"kind": "email", "match": "x@y.example"}] * 2)
+    assert s == 'buyer city "Split", buyer surname "Tremblay", email "x@y.example"'
+
+
+def test_denylist_generic_names_distinct_buyers_and_place_spellings():
+    leads = [Lead(buyer_company="The Bolt Store", website="https://theboltstore.ie", dest_city="Whaley Bridge",
+                  request_id=1),
+             Lead(buyer_company="Plaster Wholesalers", dest_city="Whaley Bridge", request_id=1),
+             Lead(buyer_company="Fastener Agencies", email="sales@fa.co.za", dest_city="St. Gallen", request_id=1),
+             Lead(buyer_company="LOGIS Sp. z o.o.", email="biuro@logis.pl", dest_city="Kielce", request_id=1),
+             Lead(buyer_company="LOGIS", email="info@logis.pl", dest_city="Kielce", request_id=1),   # the same firm
+             Lead(buyer_company="EWIP", dest_city="Kielce", request_id=1),
+             Lead(buyer_company="Galyferr", dest_city="Culleredo, A Coruña", request_id=1),
+             Lead(buyer_company="Other A", dest_city="Culleredo", request_id=2),     # the seller's other request
+             Lead(buyer_company="Other B", dest_city="Culleredo", request_id=2),
+             Lead(buyer_company="FastenerForce", dest_city="Victoria, BC", dest_country="CA", request_id=1),
+             Lead(buyer_company="Ferreteria en Mayoreo", dest_city="Puebla, Puebla", dest_country="MX", request_id=1),
+             Lead(buyer_company="Rashid Co", contact_name="Mr. Al-Rashid", request_id=1),
+             Lead(buyer_company="Santos Co", contact_name="Junior Santos", request_id=1),
+             Lead(buyer_company="Tremblay Co", contact_name="TREMBLAY Marc", request_id=1)]
+    needles = pipeline.denylist_needles(leads, request_id=1)
+    hit = lambda t: pipeline.denylist_hits(t, needles)                       # noqa: E731
+    # an all-generic name that IS the buyer's own domain names them in any case (words run together, initials) …
+    assert hit("The Bolt Store asked") and hit("we spoke to the bolt store") and hit("fastener agencies called")
+    # … one that isn't counts when written as a name, never as prose
+    assert hit("Plaster Wholesalers confirmed the pallet") and not hit("plaster wholesalers in the UK")
+    # a city is shared only by 3+ DISTINCT buyers of THIS request (duplicate rows and other requests don't count)
+    assert hit("A buyer in Whaley Bridge asked") and hit("A buyer in Kielce asked")
+    # every other city, in any case and inside a link; 'St.' with or without the period
+    assert hit("the buyer in culleredo wants samples") and hit("https://drive.example/offers/culleredo-quote.pdf")
+    assert hit("The buyer in St. Gallen") and hit("The buyer in St Gallen")
+    # a region name that is also a city stays a city
+    assert hit("The buyer in Victoria wants a quote") and hit("a buyer in Puebla")
+    # contact persons however the field is written
+    assert hit("Mr. Al-Rashid confirmed") and hit("Al-Rashid confirmed") and hit("Junior Santos called")
+    assert hit("Tremblay wants samples") and not hit("we tremble")
+
+
+def test_a_shared_generic_name_keeps_the_strictest_protection_and_sentences_stay_apart():
+    twins = [Lead(buyer_company="NZ Ceiling & Drywall Supplies (Drywall Warehouse)", website="https://nzcds.co.nz"),
+             Lead(buyer_company="New Zealand Ceiling & Drywall Supplies (Drywall Warehouse)",
+                  website="https://drywallwarehouse.co.nz")]
+    for order in (twins, twins[::-1]):                   # whichever buyer comes first
+        assert pipeline.denylist_hits("we spoke with drywall warehouse today", pipeline.denylist_needles(order))
+    uk = pipeline.denylist_needles([Lead(buyer_company="Fixings Direct (UK Fixings Direct)",
+                                         website="https://ukfixingsdirect.com")])
+    assert pipeline.denylist_hits("spoke to fixings direct this morning", uk)      # its own domain, prefixed
+    needles = pipeline.denylist_needles([Lead(buyer_company="BOLT IT"), Lead(buyer_company="Bolt Products"),
+                                         Lead(buyer_company="P.H.U. Eurobolt", dest_city="St. Gallen")])
+    hit = lambda t: pipeline.denylist_hits(t, needles)                       # noqa: E731
+    assert not hit("Quote sent for the M8 anchor bolt. It ships in 30 days.")
+    assert not hit("They asked about the toggle bolt. Products must be CE marked.")
+    assert hit("BOLT IT replied") and hit("Bolt Products asked") and hit("P.H.U. Eurobolt asked")
+    assert hit("the buyer in St. Gallen.")
+    dotted = pipeline.denylist_needles([Lead(buyer_company="Brdr. A & O Johansen A/S (AO)", website="https://ao.dk"),
+                                        Lead(buyer_company="Ferros. Andina Ltda."), Lead(buyer_company="Gebr Müller")])
+    for text_ in ("Brdr A & O Johansen asked", "Brdr. A&O Johansen asked", "Ferros Andina wants samples",
+                  "Ferros. Andina wants samples", "Gebr. Müller asked"):
+        assert pipeline.denylist_hits(text_, dotted), text_            # a name's own period: written or not
+
+
+def test_each_update_field_is_checked_on_its_own(ctx):
+    e, ids = ctx
+    with Session(e) as s:
+        _buyer(s, s.get(ServiceRequest, ids["req"]), "Buyer-GB-002", ["identified"], buyer_company="BOLT IT",
+               dest_country="GB")
+        sr = s.get(ServiceRequest, ids["req"])
+        hits, _ = main._update_problems(s, sr, "", "We quoted the anchor bolt", "It ships next week")
+        assert hits == []
+        hits, _ = main._update_problems(s, sr, "", "BOLT IT wants a quote", "")
+        assert hits and hits[0]["match"] == "BOLT IT"
+
+
+def test_block_messages_name_what_to_remove_and_trade_network_contacts_count(ctx):
+    e, ids = ctx
+    with Session(e) as s:
+        co = Company(tenant_id=ids["seller"], name="Bauhaus Fachcentrum")
+        s.add(co); s.commit(); s.refresh(co)
+        s.add(Contact(company_id=co.id, tenant_id=ids["seller"], name="Jens Hoffmann", email="jh@bauhaus.de"))
+        ld = s.get(Lead, ids["l3"]); ld.company_id = co.id; s.add(ld); s.commit()
+        su = SellerUpdate(request_id=ids["req"], seller_id=ids["seller"], seller_question="Can you ship by May?",
+                          status="open", published=True)
+        s.add(su); s.commit(); s.refresh(su); sid = su.id
+    admin = _client("founder@t.local")
+    page = admin.post(f"/requests/{ids['req']}/messages", data={"body": "Jens Hoffmann wants samples"}).text
+    assert "Message blocked" in page and "buyer contact &#34;Jens Hoffmann&#34;" in page
+    page = admin.post(f"/requests/{ids['req']}/updates/{sid}/resolve", data={"answer": "Ask Montreal"}).text
+    assert "Answer blocked" in page and "buyer city &#34;Montreal&#34;" in page
+    page = admin.post(f"/admin/requests/{ids['req']}/publish",
+                      data={"public_status": "Update", "summary": "Hoffmann asked for a sample"}).text
+    assert "buyer surname &#34;Hoffmann&#34;" in page
+    with Session(e) as s:
+        assert s.exec(select(RequestMessage)).all() == [] and s.exec(select(SellerUpdate)).all()[-1].id == sid
+        assert s.get(SellerUpdate, sid).status == "open"
+
+
+def test_a_pending_admin_message_never_reaches_the_next_login_in_the_same_browser(ctx):
+    e, ids = ctx
+    c = _client("founder@t.local")
+    c.post(f"/requests/{ids['req']}/messages", data={"body": "Marc Tremblay asked for pricing"},
+           follow_redirects=False)                                      # blocked → a message waits in the session
+    assert c.post("/login", data={"email": "trsharks@t.local", "password": "pw"},
+                  follow_redirects=False).status_code == 303
+    body = c.get("/requests").text
+    assert "Message blocked" not in body and "Tremblay" not in body
 
 
 # ------------------------------------------------------------------ admin displays use the managed funnel

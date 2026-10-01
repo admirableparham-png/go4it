@@ -12,6 +12,8 @@ REAL campaign for a request (first run shows the audience; add --enrol, then --s
     docker exec go4it-app python scripts/campaign_setup.py --template campaigns/trsharks-anchors \
         --mailbox info@qmatalsaha.com --request SR-202608-0001 --name "TRSHARKS anchors" --daily-limit 10 \
         [--campaign <id>] [--enrol] [--start]
+    --daily-limit sets a NEW campaign's limit (default 10), or a draft's when given. A campaign that is running, has
+    sent or follows a warm-up plan keeps its limit — change that on the campaign page.
 
 Smoke buyers live on their own inactive "smoke seller" request, so no real seller ever sees them. The smoke campaign
 may send at any hour; a real campaign sends Mon–Fri 08–18 UTC within its daily limit. Nothing is sent by this script:
@@ -36,6 +38,7 @@ from app.db import engine, init_db                                             #
 from app.models import (Campaign, CampaignRecipient, CampaignSend, Lead, MailAccount, ServiceRequest,  # noqa: E402
                         StageEvent, User, UserProfile)
 
+DEFAULT_DAILY_LIMIT = 10
 SMOKE_SELLER = "smoke-seller@qmatalsaha.com"
 SMOKE_REQUEST = "SMOKE-TEST"
 
@@ -118,7 +121,8 @@ def main(argv=None):
     ap.add_argument("--request", default="", help="SR code or id (real campaign)")
     ap.add_argument("--name", default="")
     ap.add_argument("--campaign", type=int, default=0, help="update this existing campaign instead of creating one")
-    ap.add_argument("--daily-limit", type=int, default=10)
+    ap.add_argument("--daily-limit", type=int, default=None,
+                    help=f"a new campaign's daily limit (default {DEFAULT_DAILY_LIMIT}); a live one keeps its own")
     ap.add_argument("--enrol", action="store_true", help="enrol the previewed audience")
     ap.add_argument("--start", action="store_true", help="start it if nothing blocks")
     ap.add_argument("--followup", default="",
@@ -168,13 +172,26 @@ def main(argv=None):
                          owner_id=mb.user_id, mailbox_id=mb.id, status="draft")
             s.add(c); s.flush()
         c.mailbox_id = mb.id
-        c.daily_limit = max(1, len(a.smoke)) if smoke else max(0, a.daily_limit)
+        live = bool(a.campaign) and (c.status == "running" or s.exec(select(func.count()).where(
+            CampaignSend.campaign_id == c.id)).one() > 0)
+        if smoke:
+            c.daily_limit = max(1, len(a.smoke))
+        elif not a.campaign:
+            c.daily_limit = max(0, DEFAULT_DAILY_LIMIT if a.daily_limit is None else a.daily_limit)
+        elif a.daily_limit is not None:
+            # the warm-up ramp raises a live campaign's limit day by day: a re-run (e.g. to enrol a later wave) must
+            # never knock it back
+            if live or (c.warmup_plan or "").strip():
+                print(f"daily limit kept at {c.daily_limit}/day — campaign #{c.id} is {c.status}, has sent or follows "
+                      "a warm-up plan (change it on the campaign page)")
+            else:
+                c.daily_limit = max(0, a.daily_limit)
         if smoke:                                          # a test goes out now, whatever the hour or day
             c.send_window_start, c.send_window_end, c.send_days = 0, 24, "0,1,2,3,4,5,6"
         s.add(c); s.commit(); s.refresh(c)
         # what was already sent stays as it was: re-running on a live campaign never resets (and so never deletes) its
         # emails — a follow-up is appended with scripts/campaign_followup.py
-        if c.status == "running" or s.exec(select(func.count()).where(CampaignSend.campaign_id == c.id)).one():
+        if live:
             print(f"sequence kept — campaign #{c.id} is {c.status} or has already sent "
                   "(add a follow-up with scripts/campaign_followup.py)")
         else:

@@ -8,9 +8,9 @@ outreach flow built in app/outreach.py has someone to reach — with an Activity
 and an IngestionRun row for observability. No third-party credits: it reads each buyer's own site.
 
 Polite by construction (Phase 12): robots.txt is honoured, the User-Agent is neutral (it lands in BUYERS' web-server
-logs, so it never names the platform), an HTTP error is never asked twice and one site gets at most MAX_FETCHES page
-requests. Confidential managed buyers are never auto-filled from here — their addresses go through the reviewed flow
-in scripts/enrich_managed_buyers.py.
+logs, so it never names the platform), an HTTP error is never asked twice and one site gets at most MAX_FETCHES
+requests, robots.txt included. Confidential managed buyers are never auto-filled from here — their addresses go
+through the reviewed flow in scripts/enrich_managed_buyers.py.
 
 Used by scripts/enrich_leads.py (CLI/cron), the worker, the bounce path and a lead-detail button.
 """
@@ -42,7 +42,7 @@ EMAIL_RE = re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+")       # pages are scanned wit
 # /impressum; IT /contatti; ES/PT /contacto. We stop as soon as a same-domain role mailbox turns up.
 CONTACT_PATHS = ("", "/contact", "/contact-us", "/contacts", "/kontakt", "/kontakti", "/contatti", "/contacto",
                  "/impressum", "/contact.html", "/pages/contact", "/en/contact", "/about", "/about-us", "/company")
-MAX_FETCHES = 8                     # page requests per site however many 404 (robots.txt not counted)
+MAX_FETCHES = 8                     # requests per site however many 404 (robots.txt counted)
 MAX_CRAWL_DELAY = 30                # a robots.txt Crawl-delay above this (seconds): leave the site alone
 
 # Hosts that are never the buyer's own site (socials, marketplaces, B2B directories, asset/CDN hosts). A website field
@@ -413,8 +413,12 @@ def _phones_from(text: str) -> list:
 
 
 # --- page structure: titles, parked domains, contact links ----------------------------------
-_TITLE_RE = re.compile(r"<title[^>]*>(.*?)</title>", re.I | re.S)
-_OG_SITE_RE = re.compile(r"<meta\b[^>]*\bproperty\s*=\s*[\"']og:site_name[\"'][^>]*>", re.I)
+# bounded patterns, applied only where str.find located the tag: a huge or broken page can never make them quadratic
+_TITLE_RE = re.compile(r"<title\b[^>]{0,200}>([^<]{0,500})", re.I)
+_META_TAG_RE = re.compile(r"<meta\b[^>]{0,1000}>", re.I)
+_OG_SITE_RE = re.compile(r"\bproperty\s*=\s*[\"']og:site_name[\"']", re.I)
+_TAG_TRIES = 5                                        # occurrences of <title / og:site_name looked at, at most
+_ASCII_LOWER = str.maketrans("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz")
 _CONTENT_RE = re.compile(r"\bcontent\s*=\s*[\"']([^\"']*)[\"']", re.I)
 _PARKED_RE = re.compile(r"domain (?:name )?(?:is|may be) for sale|buy this domain|this domain (?:is|has been) "
                         r"(?:parked|registered)|parked (?:free|domain)|domain parking|hugedomains|sedoparking|"
@@ -436,11 +440,30 @@ def _fold(s: str) -> str:
 
 
 def _page_names(page: str) -> tuple:
-    """(<title>, og:site_name) of a page — what the site calls itself, for the buyer-name check."""
-    m = _TITLE_RE.search(page or "")
-    title = " ".join(htmllib.unescape(m.group(1)).split())[:200] if m else ""
-    og = _OG_SITE_RE.search(page or "")
-    c = _CONTENT_RE.search(og.group(0)) if og else None
+    """(<title>, og:site_name) of a page — what the site calls itself, for the buyer-name check. Linear on any page:
+    each tag is found with str.find and read with a bounded pattern, wherever it is (a long inline <style> first)."""
+    page = page or ""
+    low = page.translate(_ASCII_LOWER)                # same length as the page ('İ'.lower() is two characters)
+    title, i = "", low.find("<title")
+    for _ in range(_TAG_TRIES):                       # a real page has one; a broken one can't make this slow
+        if i < 0:
+            break
+        m = _TITLE_RE.match(page, i)
+        if m:
+            title = " ".join(htmllib.unescape(m.group(1)).split())[:200]
+            break
+        i = low.find("<title", i + 6)
+    og, j = "", low.find("og:site_name")
+    for _ in range(_TAG_TRIES):
+        if j < 0:
+            break
+        k = low.rfind("<meta", max(0, j - 1000), j)
+        m = _META_TAG_RE.match(page, k) if k >= 0 else None
+        if m and m.end() > j and _OG_SITE_RE.search(m.group(0)):
+            og = m.group(0)
+            break
+        j = low.find("og:site_name", j + 12)
+    c = _CONTENT_RE.search(og) if og else None
     return title, (" ".join(htmllib.unescape(c.group(1)).split())[:200] if c else "")
 
 
@@ -476,14 +499,24 @@ def _contact_links(page: str, page_url: str, hosts) -> list:
     except Exception:  # noqa: BLE001 - malformed markup: what was parsed so far is still usable
         pass
     best = {}
+    try:
+        own_port = urllib.parse.urlsplit(page_url).port    # a site that itself runs on :8080 links to :8080
+    except ValueError:
+        own_port = None
     for href, text in p.links:
         href = (href or "").strip()
         if not href or href.startswith(("#", "mailto:", "tel:", "javascript:")):
             continue
-        url = urllib.parse.urljoin(page_url, href).split("#")[0]
-        parts = urllib.parse.urlsplit(url)
+        try:                                          # a malformed link ('http://[broken/x') must never crash a scan
+            url = urllib.parse.urljoin(page_url, href).split("#")[0]
+            parts = urllib.parse.urlsplit(url)
+            port = parts.port
+        except ValueError:
+            continue
         if parts.scheme not in ("http", "https") or _bare_host(url) not in hosts or _FILE_RE.search(parts.path):
             continue
+        if port not in (None, 80, 443, own_port) or parts.username or parts.password:
+            continue                                  # another port / user-info = another service, not the site
         hay = urllib.parse.unquote(parts.path) + " " + text
         pri = next((i for i, rx in enumerate(_LINK_PRIORITY) if rx.search(hay) or rx.search(_fold(hay))), None)
         if pri is not None and pri < best.get(url, 99):
@@ -499,8 +532,9 @@ def _explicit_scheme(website: str) -> bool:
 def scrape_site(website: str, max_pages: int = 3, pause: float = 0.3, *, timeout: int = 8,
                 robots: bool = True) -> dict:
     """Fetch a buyer's own site and pull contacts: the homepage, then the contact/impressum/about links the homepage
-    names (same site only), then the guessed CONTACT_PATHS — at most `max_pages` loaded pages and MAX_FETCHES page
-    requests. robots.txt is honoured (its Crawl-delay too); `pause` seconds between page requests.
+    names (same site only), then the guessed CONTACT_PATHS — at most `max_pages` loaded pages and MAX_FETCHES
+    requests (robots.txt included). robots.txt is honoured (its Crawl-delay too); `pause` seconds between page
+    requests.
 
     Returns {site, final_url, email, emails, email_pages, obfuscated, phone, pages, fetches, title, site_name,
     parked, blocked}. `emails` is ranked across EVERY page fetched (same-domain first, then role mailbox), so an
@@ -518,9 +552,11 @@ def scrape_site(website: str, max_pages: int = 3, pause: float = 0.3, *, timeout
     rules = {}
     attempts = 0
 
-    def robots_for(url):                 # (rules, error) per scheme://host, read once
+    def robots_for(url):                 # (rules, error) per scheme://host, read once — counts toward MAX_FETCHES
+        nonlocal attempts
         key = _origin(url)
         if key not in rules:
+            attempts += 1
             result["fetches"] += 1
             rules[key] = _robots(key, timeout)
         return rules[key]
@@ -568,15 +604,17 @@ def scrape_site(website: str, max_pages: int = 3, pause: float = 0.3, *, timeout
     root = _origin(result["final_url"])
     links = _contact_links(page, result["final_url"], hosts)
     queue = links + [root + p for p in CONTACT_PATHS[1:]]
-    found, hidden, phones = {}, [], []
+    found, hidden, phones = {}, {}, {}             # insertion-ordered sets
 
     def take(url, html):
         result["pages"] += 1
         plain, obf = _page_emails(html, hosts)
         for e in plain:
             found.setdefault(e, url)
-        hidden.extend(e for e in obf if e not in hidden)
-        phones.extend(p for p in _phones_from(_plain_text(html)) if p not in phones)
+        for e in obf:
+            hidden.setdefault(e, None)
+        for ph in _phones_from(_plain_text(html)):
+            phones.setdefault(ph, None)
 
     def done():       # a same-domain role mailbox is all we came for
         return any(_ROLE_STOP_RE.match(e.partition("@")[0]) and any(_same_domain(e, h) for h in hosts)
@@ -593,13 +631,15 @@ def scrape_site(website: str, max_pages: int = 3, pause: float = 0.3, *, timeout
             rp = robots_for(url)[0]
             if rp is None or not rp.can_fetch(ROBOTS_AGENT, url):
                 continue
+            if attempts >= MAX_FETCHES:                   # that robots.txt was the last request this site gets
+                break
         time.sleep(delay)
         html, got, _err = get(url)
         if html:
             take(got or url, html)
     ranked = sorted(found, key=lambda e: _rank(e, host, hosts[1:]))
     result.update(emails=ranked, email=ranked[0] if ranked else "", email_pages={e: found[e] for e in ranked},
-                  obfuscated=[e for e in hidden if e not in found], phone=phones[0] if phones else "")
+                  obfuscated=[e for e in hidden if e not in found], phone=next(iter(phones), ""))
     return result
 
 
@@ -713,7 +753,14 @@ def run_web_enrichment(session: Session, *, source: Optional[str] = None,
 
     enriched = nohit = 0
     for i, lead in enumerate(leads, 1):
-        r = enrich_lead(session, lead, apply=apply, pause=pause)
+        try:
+            r = enrich_lead(session, lead, apply=apply, pause=pause)
+        except Exception as e:  # noqa: BLE001 — one broken site never stops the batch (and is not retried forever)
+            session.rollback()
+            r = {"status": "error"}
+            if apply:
+                session.add(Activity(lead_id=lead.id, kind="enrichment",
+                                     body=f"Web-enrich: error reading the site ({type(e).__name__})"))
         if apply:
             session.commit()                 # per lead, hit or miss — before the next site is scraped
         if r["status"] == "enriched":

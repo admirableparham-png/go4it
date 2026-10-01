@@ -1,4 +1,4 @@
-# go4it — Handoff (2026-09-29, updated 2026-09-30)
+# go4it — Handoff (2026-09-29, updated 2026-10-01)
 
 Written when go4it moved out of the PULSE-LOCALHOST (TradeSitter) workspace into its own VS Code window.
 Engineering facts below are as of **2026-08-31** (last go4it work). Anything about production is a month
@@ -22,9 +22,8 @@ Nothing needs cloning or installing: the repo, `.venv`, `.env` and `data.db` are
 |---|---|
 | Working branch | `work/phase-9-ai-command-automation` (Phases 7–10 + this handoff) |
 | `main` | `26f05cd` — 25 commits behind the working branch. Do not merge without a founder decision. |
-| Latest tag | `phase-10-profiles-roles-access-control` → `3bfebe0` |
-| Deployed tag | `phase-10-profiles-roles-access-control` → `3bfebe0` (deployed 2026-09-30) |
-| Next tag | `phase-11-outreach-readiness` — built + tested, NOT deployed (see docs/PHASE11_OUTREACH.md) |
+| Deployed tag | `phase-11-outreach-readiness-v7` → `4d6e7a8` (live since 2026-10-01) |
+| Next tag | `phase-12-ops-followups` — built, reviewed, tested; NOT deployed (see docs/PHASE12_OPERATIONS.md) |
 | Remote | `origin` = github.com/admirableparham-png/go4it (private). All branches + tags pushed 2026-09-29. |
 
 Tags are immutable. New work = new commits + a new tag.
@@ -41,6 +40,18 @@ Tags are immutable. New work = new commits + a new tag.
 - **Founder rules:** g4it.vip is internal-only; buyer-facing = qmatalsaha.com. Founder pastes server commands (or says
   "you run it"). Never touch tradesitter; never `docker compose down`; never `docker image prune` (shared box).
 - `make run` is no longer used (no local ports); verify with `make test`.
+
+## 2c. 2026-10-01 update
+
+- **Phase 11 live (v7)** — first real campaign: #33 "TRSHARKS anchors — wave 1", info@qmatalsaha.com, 406 buyers
+  enrolled (US/MX/CA excluded, best first), 10/day Mon–Fri 08–18 UTC. Day 1: 10 sent, 0 errors. Replies → Telegram.
+- **Phase 12 built** (follow-up email 2 held for approval, warm-up ramp, daily Telegram summary, safe seller login,
+  reviewed email enrichment for the 462 email-less buyers, Work Queue cleanup). Reviewed twice (13 + 12 findings, plus
+  sign-in now starts a clean session) — all fixed with tests. Runbook: `docs/PHASE12_OPERATIONS.md`.
+- **Founder decisions:** Canada (77) = a separate wave after all TRSHARKS emails, with a postal address in the email;
+  TRSHARKS gets a seller login (only after Phase 12 is live); the founder's test-reply tasks stay until he explains.
+- **Local creds parked:** `.env` TELEGRAM_*/SMTP_*/IMAP_* renamed `DISABLED_LOCAL_*` after a test script sent a false
+  Telegram alert — nothing on the Mac can send.
 
 ## 3. Production (https://g4it.vip) — as of 2026-08-31 (Phase 10 since deployed — see 2b)
 

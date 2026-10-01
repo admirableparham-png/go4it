@@ -26,8 +26,8 @@ from app import permissions as P
 from app import send_guard as SG
 from app import suppression as SUP
 from app.auth import hash_password
-from app.models import (Campaign, CampaignRecipient, CampaignSend, Lead, MailAccount, Outreach, ServiceRequest, User,
-                        UserProfile)
+from app.models import (Campaign, CampaignRecipient, CampaignSend, IngestionRun, Lead, MailAccount, Outreach,
+                        ServiceRequest, User, UserProfile)
 from scripts import campaign_dryrun as DRY
 from scripts import load_managed_buyers as LMB
 
@@ -198,6 +198,7 @@ def test_stress_full_pipeline(world):
             t = day + timedelta(minutes=minute)
             FakeSMTP.clock = t
             event = _events(e, d, minute)
+            _inbox_polled(e, t)                                           # the IMAP poller runs every cycle
             res = worker.run_campaign_send(now=t)
             assert "error" not in res and res.get("errors", 0) == 0, res
             if 8 * 60 <= minute < 18 * 60 and res["sent"] == 0 and not event and day.weekday() < 5:
@@ -259,6 +260,15 @@ def test_stress_full_pipeline(world):
     for path in ("/requests", "/leads", "/dashboard"):
         body = cl.get(path).text
         assert "Buyer Co 1" not in body and "b1.example" not in body and "Żelazna" not in body
+
+
+def _inbox_polled(e, t):
+    """Reply/bounce reading succeeded at `t` (one row, moved forward) — follow-ups only go while it is recent."""
+    with Session(e) as s:
+        run = s.exec(select(IngestionRun).where(IngestionRun.source == "email-inbound")).first()
+        run = run or IngestionRun(source="email-inbound", status="ok", started_at=t)
+        run.finished_at = t
+        s.add(run); s.commit()
 
 
 def _events(e, d, minute):

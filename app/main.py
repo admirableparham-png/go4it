@@ -375,6 +375,9 @@ def login(request: Request, email: str = Form(...), password: str = Form(...)):
                 _login_fail(key)
                 return RedirectResponse("/login?error=1", status_code=303)
             _LOGIN_FAILS.pop(key, None)
+            # a fresh session per sign-in: nothing of the previous user's (a pending message naming a buyer, an import
+            # preview) can carry into the next account opened in the same browser
+            request.session.clear()
             request.session["user_id"] = user.id
             request.session["login_at"] = datetime.utcnow().timestamp()
             if prof is not None:
@@ -5959,9 +5962,9 @@ def admin_request_done(request: Request, req_id: int, result: str = Form(""),
                 hits = ((pipeline.seller_text_hits(session, sr, note, needles) if note else [])
                         + (pipeline.link_hits(link, needles) if link else []))
                 if hits:
-                    kinds = ", ".join(sorted({h["kind"] for h in hits}))
                     _flash(request, f"Delivery refused — the seller-safe note/link contains buyer contact details or "
-                                    f"identity ({kinds}). Remove them, or deliver it as internal only.", "rose")
+                                    f"identity: {pipeline.hits_summary(hits)}. Remove them, or deliver it as internal "
+                                    f"only.", "rose")
                     return RedirectResponse(f"/admin/requests/{req_id}?tab=files", status_code=303)
             if has_file or link or note:
                 dv = RequestDeliverable(request_id=sr.id, note=note, url=link, delivered_by=user.email,
@@ -6079,7 +6082,9 @@ def _update_problems(session, sr, anon_ref, *texts):
     """(hits, lead) for a seller update: contact/PII + buyer-denylist hits over every seller-visible field (anon_ref
     included), and the managed buyer anon_ref names — it must be '' (request-level) or a buyer of THIS request."""
     ref = (anon_ref or "").strip()
-    hits = pipeline.seller_text_hits(session, sr, " ".join([ref, *texts]))
+    needles = pipeline.request_denylist(session, sr)
+    # each field on its own: a summary's last word and the next field's first word never read as one buyer name
+    hits = [h for x in (ref, *texts) if x for h in pipeline.seller_text_hits(session, sr, x, needles)]
     lead = None
     if ref:
         lead = session.exec(select(Lead).where(Lead.request_id == sr.id, Lead.managed == True,  # noqa: E712
@@ -6125,8 +6130,9 @@ def admin_publish(request: Request, req_id: int, anon_ref: str = Form(""), publi
             return _not_found()
         hits, lead = _update_problems(session, sr, anon_ref, summary, next_action, seller_question, public_status)
         if hits:
-            _flash(request, "Blocked — the update still contains contact details / buyer-identifying data, or an "
-                            "unknown buyer reference. Remove them and preview again.", "rose")
+            _flash(request, f"Blocked — the update still contains contact details / buyer-identifying data, or an "
+                            f"unknown buyer reference: {pipeline.hits_summary(hits)}. Remove them and preview again.",
+                   "rose")
             return RedirectResponse(f"/admin/requests/{req_id}/pipeline", status_code=303)
         dl = None
         if deadline:
@@ -6197,9 +6203,8 @@ def request_message(request: Request, req_id: int, body: str = Form("")):
         if text and is_admin(user):        # admin -> seller: block buyer contact details/PII before it's saved
             hits = pipeline.seller_text_hits(session, sr, text)      # + the request's buyer names/sites/cities
             if hits:
-                kinds = ", ".join(sorted({h["kind"] for h in hits}))
-                _flash(request, f"Message blocked - it contains buyer contact details / PII ({kinds}). "
-                                "Remove them before sending.", "rose")
+                _flash(request, f"Message blocked - it contains buyer contact details / PII: "
+                                f"{pipeline.hits_summary(hits)}. Remove them before sending.", "rose")
                 return RedirectResponse(request.headers.get("referer") or "/requests", status_code=303)
         if text:
             m = RequestMessage(request_id=sr.id, sender_id=user.id, sender_role=user.role, body=text)
@@ -6243,8 +6248,10 @@ def resolve_seller_update(request: Request, req_id: int, update_id: int, answer:
             return _not_found()
         answer_text = (answer or "").strip()[:4000]
         if answer_text and is_admin(user):   # if an admin authors the reply, scan it (admin -> seller)
-            if pipeline.seller_text_hits(session, sr, answer_text):
-                _flash(request, "Answer blocked - it contains buyer contact details / PII. Remove them first.", "rose")
+            hits = pipeline.seller_text_hits(session, sr, answer_text)
+            if hits:
+                _flash(request, f"Answer blocked - it contains buyer contact details / PII: "
+                                f"{pipeline.hits_summary(hits)}. Remove them first.", "rose")
                 return RedirectResponse(request.headers.get("referer") or "/requests", status_code=303)
         if su.status != "resolved":
             su.status = "resolved"

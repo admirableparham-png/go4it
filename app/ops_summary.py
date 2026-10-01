@@ -113,7 +113,7 @@ def collect(session, now, since) -> dict:
         and_(Campaign.status == "completed", Campaign.completed_at >= since))).order_by(Campaign.id)).all()
     last = session.exec(select(IngestionRun).where(IngestionRun.source == "email-inbound")
                         .order_by(IngestionRun.id.desc())).first()
-    ok_at = CS.last_inbox_success(session)
+    ok_at = CS.last_inbox_success(session, complete_only=True)     # what follow-ups wait for (complete reads only)
     seen = session.exec(select(InboundSeen.outcome, func.count()).where(
         InboundSeen.created_at >= since, InboundSeen.created_at < now, InboundSeen.outcome != "baseline")
         .group_by(InboundSeen.outcome)).all()

@@ -201,8 +201,9 @@ def _rule_product(s, wi, ctx):
     for model in (Quote, ProductPriceVersion, CatalogGenerationJob):
         if s.exec(select(model.id).where(model.product_id == p.id)).first() is not None:
             return "manual", "in use", ""
+    added = f" (added {p.created_at:%Y-%m})" if p.created_at else ""   # pre-Phase-5 products have no created_at
     return "dismiss", "unpriced listing", (
-        f"unpriced supplier listing (added {p.created_at:%Y-%m}): no supplier unit/EXW price yet; never quoted; "
+        f"unpriced supplier listing{added}: no supplier unit/EXW price yet; never quoted; "
         "not catalog-ready; re-alerts if a field changes")
 
 
@@ -314,7 +315,8 @@ def plan(s, only=None, flags=None):
 # --------------------------------------------------------------------------- apply + invariants
 def _prev(wi):
     return {"completed_at": wi.completed_at.isoformat() if wi.completed_at else None, "resolved_by": wi.resolved_by,
-            "resolution_note": (wi.resolution_note or "")[:200], "dismissed_reason": (wi.dismissed_reason or "")[:200]}
+            "resolution_note": (wi.resolution_note or "")[:200], "dismissed_reason": (wi.dismissed_reason or "")[:200],
+            "condition_version": wi.condition_version or ""}
 
 
 def _dt(v):
@@ -349,6 +351,8 @@ def apply(s, decisions, actor, batch):
         if d.action == "dismiss":
             WQ.dismiss_item(s, wi, tag + d.text, actor)
         else:
+            if wi.type == "product_incomplete" and d.code in ("product archived", "product removed"):
+                WQ.mark_closed_by_archive(wi)       # same as the scanner: a restored product alerts again
             WQ.complete_item(s, wi, None, tag + d.text)
         pipeline.audit(s, actor, "work_item", wi.id, "work_item_cleanup", meta, tenant_id=wi.tenant_id)
         touched.append(wi.id)
@@ -450,6 +454,8 @@ def revert(s, batch, actor):
         wi.resolved_by = prev.get("resolved_by")
         wi.resolution_note = prev.get("resolution_note") or ""
         wi.dismissed_reason = prev.get("dismissed_reason") or ""
+        if "condition_version" in prev:     # batches written before this field keep the version they have
+            wi.condition_version = prev["condition_version"] or ""
         wi.updated_at = datetime.utcnow()
         s.add(wi)
         s.flush()                       # a partial-unique clash surfaces here, before anything is committed

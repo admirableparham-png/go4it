@@ -303,7 +303,12 @@ def scan(session_factory, request, expect=None, offset=0, limit=None, max_pages=
     _err(f"{code}: {len(cands)} email-less buyer(s) with a website; scanning {len(chunk)} from offset {offset}")
     results = []
     for i, c in enumerate(chunk, 1):
-        r = ES.scrape_site(c["website"], max_pages=max_pages, pause=pause, timeout=timeout)
+        try:
+            r = ES.scrape_site(c["website"], max_pages=max_pages, pause=pause, timeout=timeout)
+        except Exception as e:  # noqa: BLE001 — one broken site becomes a 'reject' row, never a lost chunk
+            r = {"site": ES.clean_site(c["website"]), "final_url": "", "email": "", "emails": [], "email_pages": {},
+                 "obfuscated": [], "phone": "", "pages": 0, "fetches": 0, "title": "", "site_name": "",
+                 "parked": False, "blocked": f"scrape error ({type(e).__name__})"}
         results.append(r)
         _err(f"  [{i}/{len(chunk)}] lead {c['id']}: {len(r['emails'])} address(es) on {r['pages']} page(s)"
              + (f" — {r['blocked']}" if r["blocked"] else ""))
@@ -412,13 +417,22 @@ def apply_rows(s, sr, rows, include_auto=False, mark_misses=False, link=False) -
     picked = {lid: (_wanted(row, include_auto), SUP.normalize_email(row.get("email")))
               for lid, (ld, row) in leads.items() if _wanted(row, include_auto)}
     dup = Counter(em for _, em in picked.values() if em)
+    # one company = one address: the LIVE domain families already used by this seller's recipients / this request's
+    # buyers, grown as this run applies — a second auto-accepted address at the same company needs approve=y
+    taken = set(load_context(s, sr)["taken_domains"])
     res = {"applied": Counter(), "phones": 0, "skipped": Counter(), "misses": 0}
     for lid, (ld, row) in leads.items():          # 2. per row, against the live database
         problem = ""
         if lid in picked:
             how, em = picked[lid]
             problem = _apply_problem(s, sr, ld, em, dup)
+            dom = em.partition("@")[2] if em else ""
+            generic = dom in GENERIC_DOMAINS
+            if not problem and how == "auto-accept" and not generic and any(_family(dom, d) for d in taken):
+                problem = "this company's domain already has an address — set approve=y to use it anyway"
             if not problem:
+                if dom and not generic:
+                    taken.add(dom)
                 ld.email = em
                 added = f"email {em}"
                 ph = _clean_phone(row.get("phone"))

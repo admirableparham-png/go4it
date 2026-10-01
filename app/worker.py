@@ -205,12 +205,15 @@ def run_campaign_send(now=None):
                             CampaignRecipient.next_action_at <= t))
                         .order_by(CampaignRecipient.id)
                         .limit(max(CAMPAIGN_SEND_MAX_PER_RUN, CAMPAIGN_SEND_SCAN_LIMIT))).all()
+                    fresh = None                       # reply reading, worked out once per campaign per cycle
                     for r in due:
                         if _done():
                             summary["capped"] = True
                             break
                         try:
-                            res = CS.send_step(s, c, r, mb, t)
+                            if fresh is None and r.current_step > 0:
+                                fresh = CS.reply_reading_fresh(s, t)
+                            res = CS.send_step(s, c, r, mb, t, inbox_fresh=fresh)
                             st = res.get("status")
                             if st == "sent":
                                 summary["sent"] += 1

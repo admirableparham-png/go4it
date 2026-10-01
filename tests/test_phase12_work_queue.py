@@ -25,9 +25,9 @@ from app import outreach_events as OE
 from app import suppression as SUP
 from app import work_queue as WQ
 from app.auth import hash_password
-from app.models import (AuditLog, BounceRecord, Campaign, CampaignRecipient, Company, DuplicateCandidate, Lead,
-                        Opportunity, Outreach, Product, Provenance, Quote, QuoteStatusEvent, User, UserProfile,
-                        WorkItem)
+from app.models import (AuditLog, BounceRecord, Campaign, CampaignRecipient, Company, DuplicateCandidate,
+                        IngestionRun, Lead, Opportunity, Outreach, Product, Provenance, Quote, QuoteStatusEvent, User,
+                        UserProfile, WorkItem)
 from scripts import cleanup_work_queue as CWQ
 
 IDX = ("CREATE UNIQUE INDEX IF NOT EXISTS uq_workitem_idem_open ON workitem(idempotency_key) "
@@ -119,6 +119,26 @@ def test_archived_product_task_closes(db):
         assert s.exec(select(func.count(WorkItem.id))).one() == 2
 
 
+def test_a_restored_product_that_is_still_incomplete_alerts_again(db):
+    with Session(db) as s:
+        p = Product(name="Rubber tile", active=True)
+        s.add(p); s.commit(); s.refresh(p)
+        key = f"product_incomplete:product:{p.id}"
+        assert WQ.sync_incomplete_products(s) == 1; s.commit()
+        for rnd in (1, 2):                                             # archive → restore, twice
+            p.status, p.active = "archived", False; s.add(p); s.commit()
+            WQ.sync_incomplete_products(s); s.commit()
+            assert all(w.status == "completed" for w in _by_key(s, key))
+            assert _by_key(s, key)[-1].condition_version.endswith("|archived")
+            p.status, p.active = "active", True; s.add(p); s.commit()  # restored — the same fields still missing
+            assert WQ.sync_incomplete_products(s) == 1; s.commit()
+            assert [w.status for w in _by_key(s, key)] == ["completed"] * rnd + ["open"]
+            assert WQ.sync_incomplete_products(s) == 0; s.commit()      # …once
+        wi = _by_key(s, key)[-1]
+        WQ.dismiss_item(s, wi, "not selling it yet", None); s.commit()  # an ADMIN disposition still holds
+        assert WQ.sync_incomplete_products(s) == 0
+
+
 def test_opportunity_task_closes_after_the_decision_not_on_a_detour(db):
     with Session(db) as s:
         opps = [Opportunity(reference=f"OPP-{i}", status="new", score=45) for i in range(3)]
@@ -161,7 +181,7 @@ def test_stale_source_closes_when_fresh_and_a_new_episode_alerts_again(db):
         _command_harvest_seen(s, first)
         assert WQ.sync_stale_sources(s) == 1; s.commit()
         [wi] = _by_key(s, SRC_KEY)
-        assert wi.condition_version == f"Stale:{first:%Y%m%d}"
+        assert wi.condition_version == f"Stale:{first:%Y%m%d%H%M%S}"
         WQ.dismiss_item(s, wi, "command harvests are paused", None); s.commit()
         assert WQ.sync_stale_sources(s) == 0; s.commit()               # same episode: the dismissal holds
         _command_harvest_seen(s, now)                                   # a harvest ran → Current
@@ -170,11 +190,51 @@ def test_stale_source_closes_when_fresh_and_a_new_episode_alerts_again(db):
         assert WQ.sync_stale_sources(s) == 1; s.commit()
         items = _by_key(s, SRC_KEY)
         assert [w.status for w in items] == ["dismissed", "open"]
-        assert items[1].condition_version == f"Stale:{second:%Y%m%d}"
+        assert items[1].condition_version == f"Stale:{second:%Y%m%d%H%M%S}"
         _command_harvest_seen(s, now)                                   # fresh again → the open alert closes
         WQ.sync_stale_sources(s); s.commit()
         assert (_by_key(s, SRC_KEY)[1].status, _by_key(s, SRC_KEY)[1].resolution_note) == ("completed",
                                                                                            "source current")
+
+
+def test_reply_reading_failing_again_the_same_day_alerts_again(db, monkeypatch):
+    monkeypatch.setenv("IMAP_HOST", "imap.example")
+    key = "source_stale_failed:src:email_inbound"
+    base = datetime.utcnow() - timedelta(hours=3)
+    with Session(db) as s:
+        def poll(status, minute):
+            at = base + timedelta(minutes=minute)
+            s.add(IngestionRun(source="email-inbound", status=status, started_at=at, finished_at=at)); s.commit()
+        poll("ok", 0); poll("error", 5)                                 # a transient failure …
+        assert WQ.sync_stale_sources(s) == 1; s.commit()
+        poll("ok", 10)                                                  # … recovers: its alert closes
+        WQ.sync_stale_sources(s); s.commit()
+        assert [w.status for w in _by_key(s, key)] == ["completed"]
+        poll("ok", 60); poll("error", 65); poll("error", 70)            # the same day it breaks for good
+        assert WQ.sync_stale_sources(s) == 1; s.commit()
+        assert [w.status for w in _by_key(s, key)] == ["completed", "open"]
+        poll("error", 75)
+        assert WQ.sync_stale_sources(s) == 0                            # the same episode never re-raises
+
+
+def test_a_long_reply_reading_outage_stays_one_alert_after_its_dismissal(db, monkeypatch):
+    monkeypatch.setenv("IMAP_HOST", "imap.example")
+    key = "source_stale_failed:src:email_inbound"
+    base = datetime.utcnow() - timedelta(days=2)
+    with Session(db) as s:
+        s.add(IngestionRun(source="email-inbound", status="ok", started_at=base, finished_at=base))
+        s.add(IngestionRun(source="email-inbound", status="error", started_at=base + timedelta(minutes=2),
+                           finished_at=base + timedelta(minutes=2)))
+        s.commit()
+        assert WQ.sync_stale_sources(s) == 1; s.commit()
+        [wi] = _by_key(s, key)
+        WQ.dismiss_item(s, wi, "rotating the app password", None); s.commit()
+        for i in range(250):                                            # the 200-run window holds no success now
+            at = base + timedelta(minutes=4 + 2 * i)
+            s.add(IngestionRun(source="email-inbound", status="error", started_at=at, finished_at=at))
+        s.commit()
+        assert WQ.sync_stale_sources(s) == 0                            # still the same outage: the dismissal holds
+        assert [w.status for w in _by_key(s, key)] == ["dismissed"]
 
 
 def test_a_dismissed_pre_phase12_source_alert_is_not_re_raised(db):
@@ -205,6 +265,34 @@ def test_a_campaign_bounce_raises_one_task_not_two(db):
         types = [w.type for w in s.exec(select(WorkItem)).all()]
         assert types.count("replace_invalid_contact") == 1
         assert "failed_system_job" not in types
+
+
+def test_a_new_bounce_after_a_handled_replace_task_still_raises_a_task(db):
+    with Session(db) as s:
+        seller = User(email="sharks@t.local", role="agent", active=True)
+        s.add(seller); s.commit(); s.refresh(seller)
+        ld = Lead(product="Anchors", managed=True, seller_id=seller.id, request_id=1, email="hb@buyer.example")
+        s.add(ld); s.commit(); s.refresh(ld)
+        s.add(Outreach(lead_id=ld.id, direction="out", recipient="hb@buyer.example", status="sent",
+                       message_id="<m1@x>", created_at=datetime.utcnow() - timedelta(days=3)))
+        s.commit()
+        assert IE.handle_bounce(s, "hb@buyer.example", "550 5.1.1 user unknown") == "bounced"
+        WQ.run_all_sync(s, None); s.commit()
+        [rep] = [w for w in s.exec(select(WorkItem)).all() if w.type == "replace_invalid_contact"]
+        rep.created_at = datetime.utcnow() - timedelta(days=3)          # raised back then …
+        WQ.dismiss_item(s, rep, "will find another address", None); s.commit()   # … and handled
+        ld = s.get(Lead, ld.id)
+        ld.email, ld.next_action_note = "new@buyer.example", ""           # a reviewed replacement is applied …
+        s.add(ld)
+        s.add(Outreach(lead_id=ld.id, direction="out", recipient="new@buyer.example", status="sent",
+                       message_id="<m2@x>"))
+        s.commit()
+        assert IE.handle_bounce(s, "new@buyer.example", "550 5.1.1 user unknown") == "bounced"   # … and bounces too
+        WQ.run_all_sync(s, None); s.commit()
+        failed = [w for w in s.exec(select(WorkItem)).all() if w.type == "failed_system_job"]
+        assert len(failed) == 1 and failed[0].status == "open"           # surfaced, not swallowed
+        WQ.run_all_sync(s, None); s.commit()
+        assert len([w for w in s.exec(select(WorkItem)).all() if w.type == "failed_system_job"]) == 1
 
 
 def test_a_send_failure_that_is_not_a_bounce_still_raises_a_task(db):
@@ -501,6 +589,21 @@ def test_apply_dismisses_and_resolves_per_rule_with_batch_tags(world, capsys):
     assert "approve_quote · managed buyer" in out and "review_potential_duplicate · managed buyer" in out
 
 
+def test_products_from_before_phase5_without_a_created_date_are_handled(world, capsys):
+    e, k = world
+    with e.connect() as c:          # prod: migrate.py added product.created_at as a NULLABLE column, all NULL
+        c.execute(text("ALTER TABLE product RENAME COLUMN created_at TO created_at_model"))
+        c.execute(text("ALTER TABLE product ADD COLUMN created_at TIMESTAMP"))
+        c.commit()
+    assert CWQ.main([]) == 0
+    assert _row(capsys.readouterr().out, "product_incomplete") == (6, 1, 1, 4)
+    assert CWQ.main(["--apply", "--actor", FOUNDER, "--only", "product_incomplete"]) == 0
+    with Session(e) as s:
+        wi = _one(s, k["dismiss"]["p_unpriced"])
+        assert wi.status == "dismissed" and "unpriced supplier listing: no supplier unit/EXW price" in \
+            wi.dismissed_reason
+
+
 def test_after_apply_the_scanners_recreate_nothing(world):
     e, k = world
     assert CWQ.main(["--apply", "--actor", FOUNDER]) == 0
@@ -609,6 +712,27 @@ def test_revert_reopens_the_batch_and_skips_a_key_with_a_newer_open_task(world, 
         dc = s.get(DuplicateCandidate, k["dc_legacy"])
         assert (dc.status, dc.reviewer, dc.reviewed_at) == ("open", "", None)
         assert len(s.exec(select(AuditLog).where(AuditLog.action == "work_item_cleanup_revert")).all()) == 10
+
+
+def test_a_cleanup_closed_archived_product_alerts_again_once_restored(world, capsys):
+    e, k = world
+    key = k["resolve"]["p_archived"][0]
+    with Session(e) as s:
+        v0 = _one(s, key).condition_version
+        assert v0 == ",".join(sorted(WQ._missing_fields(s, s.get(Product, WQ.key_id(key)))))
+    assert CWQ.main(["--apply", "--actor", FOUNDER]) == 0
+    batch = _batch(capsys.readouterr().out)
+    with Session(e) as s:
+        assert (_one(s, key).status, _one(s, key).condition_version) == ("completed", v0 + "|archived")
+    assert CWQ.main(["--revert", batch, "--apply", "--actor", FOUNDER]) == 0
+    with Session(e) as s:
+        assert (_one(s, key).status, _one(s, key).condition_version) == ("open", v0)   # exactly as before
+    assert CWQ.main(["--apply", "--actor", FOUNDER, "--only", "product_incomplete"]) == 0
+    with Session(e) as s:
+        p = s.get(Product, WQ.key_id(key))
+        p.status, p.active = "active", True; s.add(p); s.commit()      # restored, still incomplete
+        WQ.sync_incomplete_products(s); s.commit()
+        assert [w.status for w in _by_key(s, key)] == ["completed", "open"]
 
 
 def test_an_invariant_violation_rolls_everything_back(world, monkeypatch, capsys):

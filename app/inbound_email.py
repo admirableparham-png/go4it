@@ -89,9 +89,9 @@ def parse_email(raw: bytes):
     msg = emaillib.message_from_bytes(raw)
     from_addr = (parseaddr(msg.get("From", ""))[1] or "").strip().lower()
     subject = str(msg.get("Subject", "")).strip()
-    message_id = (msg.get("Message-ID", "") or "").strip()
-    irt = (msg.get("In-Reply-To", "") or "").strip()
-    references = (msg.get("References", "") or "").strip()
+    message_id = str(msg.get("Message-ID", "") or "").strip()    # str(): an 8-bit header parses as a Header object
+    irt = str(msg.get("In-Reply-To", "") or "").strip()
+    references = str(msg.get("References", "") or "").strip()
     if not irt and references:                       # fall back to the most-recent ancestor
         toks = re.findall(r"<[^>]+>", references)
         irt = toks[-1] if toks else ""
@@ -182,10 +182,11 @@ def _dsn_details(msg):
     for part in (msg.walk() if msg.is_multipart() else [msg]):
         if part.get_content_type() == "message/delivery-status":
             for blk in (part.get_payload() if isinstance(part.get_payload(), list) else []):
-                fr = blk.get("Final-Recipient") or blk.get("Original-Recipient") or ""
+                # str(): a field with raw 8-bit bytes parses as a Header object — the bounce must still count
+                fr = str(blk.get("Final-Recipient") or blk.get("Original-Recipient") or "")
                 if ";" in fr:
                     recipient = fr.split(";", 1)[1].strip().lower()
-                dc = blk.get("Diagnostic-Code") or ""
+                dc = str(blk.get("Diagnostic-Code") or "")
                 if dc:
                     diag = " ".join(dc.split())
     return recipient, diag
@@ -280,9 +281,26 @@ def _imap_since(days, now=None):
     return f"{d.day}-{_MONTHS[d.month - 1]}-{d.year}"          # IMAP wants English month names, not the locale's
 
 
+IMAP_CATCHUP_MAX_DAYS = 30         # after an outage the poll reaches back to the last good poll — at most this far
+
+
+def _lookback_days(session, now=None) -> int:
+    """IMAP_LOOKBACK_DAYS, widened after an outage so the first good poll also reads what arrived while reading was
+    down (a reply sent then would otherwise never be seen, and its buyer would get the follow-up): back to a day before
+    the last complete poll, at most IMAP_CATCHUP_MAX_DAYS. The InboundSeen ledger keeps the wider window from
+    re-processing anything."""
+    now = now or datetime.utcnow()
+    last = session.exec(select(IngestionRun.started_at).where(       # a COMPLETE read ('partial' may have stopped
+        IngestionRun.source == "email-inbound", IngestionRun.status == "ok")   # half-way through the catch-up)
+        .order_by(IngestionRun.id.desc()).limit(1)).first()
+    if last is None:
+        return IMAP_LOOKBACK_DAYS
+    return max(IMAP_LOOKBACK_DAYS, min((now - last).days + 2, IMAP_CATCHUP_MAX_DAYS))
+
+
 def _message_key(header_bytes) -> str:
     h = emaillib.message_from_bytes(header_bytes or b"")
-    mid = (h.get("Message-ID", "") or "").strip()
+    mid = str(h.get("Message-ID", "") or "").strip()            # str(): an 8-bit id parses as a Header object
     if mid:
         return mid[:400]
     basis = "|".join(str(h.get(k, "")).strip() for k in ("Date", "From", "Subject"))
@@ -314,10 +332,11 @@ def imap_password(session) -> str:
 
 
 def poll_inbox(session: Session, log=logger.info) -> dict:
-    """Read the last IMAP_LOOKBACK_DAYS of the inbox and thread each NEW reply / bounce. The mailbox is opened
-    READ-ONLY and every fetch is a PEEK, so the poller never marks a person's mail as read; what it already handled
-    lives in the InboundSeen ledger (by Message-ID). The very first poll of a mailbox only records what is already
-    there (baseline) — old mail is never re-processed. No-op unless IMAP is configured."""
+    """Read the last IMAP_LOOKBACK_DAYS of the inbox (more after an outage — see _lookback_days) and thread each NEW
+    reply / bounce. The mailbox is opened READ-ONLY and every fetch is a PEEK, so the poller never marks a person's
+    mail as read; what it already handled lives in the InboundSeen ledger (by Message-ID). The very first poll of a
+    mailbox only records what is already there (baseline) — old mail is never re-processed. No-op unless IMAP is
+    configured."""
     summary = {"seen": 0, "threaded": 0, "unmatched": 0, "ignored": 0, "unsubscribed": 0, "duplicate": 0,
                "bounced": 0, "baseline": 0, "errors": 0}
     if not IMAP_ENABLED:
@@ -335,7 +354,7 @@ def poll_inbox(session: Session, log=logger.info) -> dict:
             raise RuntimeError(f"no password for {IMAP_USER}: set IMAP_PASSWORD or connect it on /mail")
         M.login(IMAP_USER, pw)
         M.select("INBOX", readonly=True)
-        _, data = M.search(None, "SINCE", _imap_since(IMAP_LOOKBACK_DAYS))
+        _, data = M.search(None, "SINCE", _imap_since(_lookback_days(session)))
         ids = data[0].split() if data and data[0] else []
         known = _seen_keys(session, box)
         first_run = _BASELINE not in known
@@ -345,7 +364,10 @@ def poll_inbox(session: Session, log=logger.info) -> dict:
                 _, hdr = M.fetch(num, "(BODY.PEEK[HEADER.FIELDS (MESSAGE-ID DATE FROM SUBJECT)])")
                 if not hdr or not isinstance(hdr[0], tuple):
                     continue
-                key = _message_key(hdr[0][1])
+                try:
+                    key = _message_key(hdr[0][1])
+                except Exception:  # noqa: BLE001 — an unreadable header still gets a key, so its failures are
+                    key = "raw:" + hashlib.sha1(hdr[0][1] or b"").hexdigest()   # counted and it is retired
                 if key in known:
                     continue
                 known.add(key)

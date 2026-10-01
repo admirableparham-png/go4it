@@ -542,11 +542,18 @@ def _failed_by_bounce(session, o) -> bool:
     from .models import BounceRecord
     from .suppression import normalize_email
     ld = session.get(Lead, o.lead_id) if o.lead_id else None
-    if ld is not None and ld.next_action_note == "bounced":
-        return True
     em = normalize_email(o.recipient)
     rec = session.exec(select(BounceRecord).where(BounceRecord.email_normalized == em)).first() if em else None
-    return bool(rec and rec.last_bounce_at and o.created_at and rec.last_bounce_at >= o.created_at)
+    bounced = (ld is not None and ld.next_action_note == "bounced") or bool(
+        rec and rec.last_bounce_at and o.created_at and rec.last_bounce_at >= o.created_at)
+    if not bounced:
+        return False
+    # covered only if a replace-contact task exists for THIS send (raised at/after it) — a later bounce on a lead whose
+    # earlier replace task was already handled must still surface as its own task
+    cover = select(WorkItem.id).where(WorkItem.idempotency_key == f"replace_contact:lead:{o.lead_id}")
+    if o.created_at:
+        cover = cover.where(WorkItem.created_at >= o.created_at)
+    return session.exec(cover).first() is not None
 
 
 def sync_failed_jobs(session, actor=None, inferred=False, budget=None) -> int:
@@ -711,6 +718,17 @@ def _missing_fields(session, p):
     return miss
 
 
+ARCHIVED_SUFFIX = "|archived"
+
+
+def mark_closed_by_archive(wi):
+    """An archived/removed product's task is closed by the system, not dispositioned by an admin: re-tag its version so
+    a restored, still-incomplete product alerts again (already_handled would otherwise match the old missing-field set
+    forever). Idempotent."""
+    if not (wi.condition_version or "").endswith(ARCHIVED_SUFFIX):
+        wi.condition_version = (wi.condition_version or "") + ARCHIVED_SUFFIX
+
+
 def sync_incomplete_products(session, actor=None, inferred=False, budget=None) -> int:
     """One 'incomplete product' task per product missing key fields; version = the sorted missing-field set so a
     re-broken field re-alerts and a fully-completed product auto-resolves. Skips archived products and closes the
@@ -737,6 +755,7 @@ def sync_incomplete_products(session, actor=None, inferred=False, budget=None) -
         pid = key_id(wi.idempotency_key)
         p = session.get(Product, pid) if pid else None
         if pid and (p is None or not p.active):
+            mark_closed_by_archive(wi)
             resolve_by_key(session, wi.idempotency_key, actor, "product archived" if p else "product removed")
     return n
 
@@ -1128,7 +1147,7 @@ def _legacy_source_handled(session, key, label, anchor) -> bool:
 
 def sync_stale_sources(session, actor=None, inferred=False, budget=None) -> int:
     """A stale/failed configured data source → a source_stale_failed task; it closes once the source is no longer
-    stale/failed. condition_version = label + the last-success date (the episode), so a later stale episode alerts
+    stale/failed. condition_version = label + the last-success time (the episode), so a later stale episode alerts
     again even after a dismissal, while the same episode never re-raises."""
     from . import data_sources as DS
     n = 0
@@ -1141,7 +1160,7 @@ def sync_stale_sources(session, actor=None, inferred=False, budget=None) -> int:
         if _capped(budget, n) or datetime.utcnow() > stop:
             continue
         anchor = h.get("last_success")
-        version = f"{h['freshness']}:{anchor:%Y%m%d}" if anchor else f"{h['freshness']}:never"
+        version = f"{h['freshness']}:{anchor:%Y%m%d%H%M%S}" if anchor else f"{h['freshness']}:never"
         if already_handled(session, key, version) or _legacy_source_handled(session, key, h["freshness"], anchor):
             continue
         if create_work_item_safe(session, actor=actor, type="source_stale_failed",

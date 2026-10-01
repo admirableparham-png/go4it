@@ -11,7 +11,9 @@ import csv
 import hashlib
 import io
 import re
+import time
 import urllib.error
+import urllib.parse
 from collections import Counter
 from datetime import datetime, timedelta
 
@@ -31,8 +33,8 @@ from app import permissions as P
 from app import pipeline
 from app import suppression as SUP
 from app.auth import hash_password
-from app.models import (Activity, AuditLog, BounceRecord, Campaign, CampaignRecipient, Lead, MailAccount, Outreach,
-                        SellerUpdate, ServiceRequest, StageEvent, User, UserProfile, WorkItem)
+from app.models import (Activity, AuditLog, BounceRecord, Campaign, CampaignRecipient, IngestionRun, Lead, MailAccount,
+                        Outreach, SellerUpdate, ServiceRequest, StageEvent, User, UserProfile, WorkItem)
 from scripts import campaign_dryrun as DRY
 from scripts import enrich_managed_buyers as EMB
 from scripts import migrate as MIG
@@ -219,8 +221,60 @@ def test_http_errors_are_never_asked_twice_and_a_site_gets_a_bounded_number_of_r
     web.pages["https://acme.com/"] = "<p>Welcome</p>"            # no address, no links; every guessed path 404s
     r = ES.scrape_site("https://acme.com", max_pages=5)
     assert len(web.urls()) == len(set(web.urls()))                # nothing requested twice
-    assert web.urls()[0] == "https://acme.com/robots.txt" and len(web.urls()) == 1 + ES.MAX_FETCHES
+    assert web.urls()[0] == "https://acme.com/robots.txt" and len(web.urls()) == ES.MAX_FETCHES  # robots counted
     assert r["pages"] == 1 and r["email"] == "" and r["fetches"] == len(web.urls())
+
+
+def test_a_malformed_link_on_the_homepage_never_crashes_the_scrape(web):
+    web.pages["https://acme.com/"] = ('<a href="http://[broken/kontakt">Kontakt</a>'
+                                      '<a href="https://[domain]/contact">Contact</a>'
+                                      '<a href="https://acme.com]/x">Contact us</a><a href="/kontakt">Kontakt</a>')
+    web.pages["https://acme.com/kontakt"] = "<p>info@acme.com</p>"
+    r = ES.scrape_site("https://acme.com", max_pages=5)
+    assert r["email"] == "info@acme.com" and not r["blocked"]
+
+
+def test_links_to_another_port_or_with_user_info_are_never_followed(web):
+    web.pages["https://acme.com/"] = ("".join(f'<a href="https://acme.com:{8000 + i}/contact">Contact</a>'
+                                              for i in range(60))
+                                      + '<a href="https://user:pw@acme.com/kontakt">Kontakt</a>')
+    ES.scrape_site("https://acme.com", max_pages=5)
+    parts = [urllib.parse.urlsplit(u) for u in web.urls()]
+    assert all(p.port is None and not p.username for p in parts) and len(parts) <= ES.MAX_FETCHES
+
+
+def test_a_site_never_gets_more_than_max_fetches_requests_even_on_a_new_origin(web):
+    links = "".join(f'<a href="/{p}">Contact</a>' for p in ("contact", "contact-us", "contacts", "kontakt", "contatti"))
+    web.pages["https://acme.com/"] = links + '<a href="https://www.acme.com/kontakti">Kontakti</a>'
+    ES.scrape_site("https://acme.com", max_pages=10)
+    assert len(web.urls()) <= ES.MAX_FETCHES
+
+
+def test_a_site_on_its_own_port_follows_its_own_contact_links(web):
+    web.pages["http://acme.com:8080/"] = '<a href="/firma/ansprechpartner">Kontakt</a>'
+    web.pages["http://acme.com:8080/firma/ansprechpartner"] = "<p>info@acme.com</p>"
+    assert ES.scrape_site("http://acme.com:8080", max_pages=3)["email"] == "info@acme.com"
+
+
+def test_the_title_is_found_after_a_long_inline_style():
+    page = "<html><head><style>" + "x{y:z}" * 15000 + "</style><title>Acme Fasteners Ltd</title>" \
+           "<meta property='og:site_name' content='Acme'></head>"
+    assert len(page) > 65536 and ES._page_names(page) == ("Acme Fasteners Ltd", "Acme")
+
+
+def test_page_names_survive_characters_whose_lower_case_is_longer():
+    page = ("<meta name='description' content='İstanbul İletişim'><title>Kuzey Yapı Market</title>"
+            "<meta property='og:description' content='İhracat'><meta property='og:site_name' content='Kuzey'>")
+    assert ES._page_names(page) == ("Kuzey Yapı Market", "Kuzey")
+
+
+def test_page_names_stay_fast_on_a_huge_broken_page():
+    page = "<title" * 120_000 + "<meta property='og:site_name' " * 40_000          # nothing ever closed
+    t0 = time.time()
+    ES._page_names(page)
+    assert time.time() - t0 < 1                       # the unbounded patterns needed minutes on such a page
+    assert ES._page_names("<head><title>Acme &amp; Co</title><meta name=x>"
+                          "<meta property='og:site_name' content='Acme'></head>") == ("Acme & Co", "Acme")
 
 
 def test_fetch_retries_a_network_error_once_but_never_a_4xx(web):
@@ -321,6 +375,31 @@ def test_run_web_enrichment_commits_every_lead_before_the_next_scrape(monkeypatc
             assert not pending, trace
     with Session(e) as s:
         assert len(s.exec(select(Activity).where(Activity.kind == "enrichment")).all()) == 4
+
+
+def test_one_broken_site_never_stops_the_enrichment_batch(monkeypatch):
+    e = create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
+    SQLModel.metadata.create_all(e)
+    with Session(e) as s:
+        for i in range(3):
+            s.add(Lead(product="x", website=f"https://b{i}.example", buyer_company=f"B{i}"))
+        s.commit()
+
+    def fake_scrape(website, max_pages=3, pause=0.3, **kw):
+        if website == "https://b1.example":
+            raise ValueError("Invalid IPv6 URL")
+        return {"site": website, "email": "info@b2.example" if "b2" in website else "", "phone": "", "emails": []}
+    monkeypatch.setattr(ES, "scrape_site", fake_scrape)
+    with Session(e) as s:
+        assert ES.run_web_enrichment(s, apply=True, log=lambda *a: None) == {"candidates": 3, "enriched": 1,
+                                                                            "nohit": 2}
+    with Session(e) as s:
+        b1 = s.exec(select(Lead).where(Lead.buyer_company == "B1")).one()
+        acts = {a.lead_id: a.body for a in s.exec(select(Activity).where(Activity.kind == "enrichment")).all()}
+        assert len(acts) == 3 and acts[b1.id] == "Web-enrich: error reading the site (ValueError)"
+        assert s.exec(select(IngestionRun).where(IngestionRun.source == "enrich-web")).one().status == "ok"
+    with Session(e) as s:                                     # attempted: the next pass doesn't start on it again
+        assert b1.id not in [ld.id for ld in ES.candidate_leads(s, skip_attempted=True)]
 
 
 @pytest.fixture
@@ -618,6 +697,22 @@ def test_scan_is_read_only_and_writes_the_csv_to_stdout_only(world, web, monkeyp
     assert all(ua == ES.UA for _, ua in web.calls)
 
 
+def test_scan_keeps_going_past_a_site_that_crashes(world, web, monkeypatch, capsys):
+    e, ids = world
+    web.pages.update(SITES)
+    real = ES.scrape_site
+
+    def flaky(website, **kw):
+        if "gamma" in website:
+            raise ValueError("Invalid IPv6 URL")
+        return real(website, **kw)
+    monkeypatch.setattr(ES, "scrape_site", flaky)
+    rc, out, err = _scan(monkeypatch, capsys, "--expect-candidates", "6")
+    rows = {int(r["lead_id"]): r for r in _rows(out)}
+    assert rc == 0 and len(rows) == 6 and rows[ids["acme"]]["decision"] == "accept"
+    assert rows[ids["gamma"]]["decision"] == "reject" and "scrape error (ValueError)" in rows[ids["gamma"]]["reasons"]
+
+
 def test_scan_refuses_on_an_unexpected_candidate_count_and_fetches_nothing(world, web, monkeypatch, capsys):
     rc, out, err = _scan(monkeypatch, capsys, "--expect-candidates", "462")
     assert rc == 2 and out == "" and "REFUSED" in err and web.calls == []
@@ -786,6 +881,20 @@ def test_apply_refuses_duplicates_suppressed_bounced_and_taken_addresses(world, 
     assert "apply 0 email(s)" in out
     with Session(e) as s:
         assert all(not s.get(Lead, ids[k]).email for k in ("acme", "beta", "gamma", "delta", "eps", "zeta", "gone"))
+
+
+def test_apply_takes_one_address_per_company_domain_unless_approved(world, monkeypatch, capsys):
+    e, ids = world
+    rows = [_row(e, "acme", ids, decision="accept", email="info@shared-co.pl"),
+            _row(e, "beta", ids, decision="accept", email="sales@shared-co.pl"),       # same company, auto
+            _row(e, "gamma", ids, decision="accept", email="office@old0.pl"),          # a queued buyer's domain
+            _row(e, "eps", ids, decision="review", email="export@shop.shared-co.pl", approve="y")]   # a person said yes
+    assert _apply(monkeypatch, _csv(rows), "--include-auto") == 0
+    assert "this company's domain already has an address — set approve=y to use it anyway: 2" in \
+        capsys.readouterr().out
+    with Session(e) as s:
+        assert [s.get(Lead, ids[k]).email for k in ("acme", "beta", "gamma", "eps")] == [
+            "info@shared-co.pl", "", "", "export@shop.shared-co.pl"]
 
 
 def test_apply_writes_nothing_else(world, monkeypatch):

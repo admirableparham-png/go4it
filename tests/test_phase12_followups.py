@@ -27,8 +27,8 @@ from app import permissions as P
 from app import suppression as SUP
 from app.auth import hash_password
 from app.followups import process_followups
-from app.models import (AuditLog, Campaign, CampaignRecipient, CampaignSend, CampaignStep, Lead, MailAccount, Outreach,
-                        ServiceRequest, User, UserProfile, WorkItem)
+from app.models import (AuditLog, Campaign, CampaignRecipient, CampaignSend, CampaignStep, IngestionRun, Lead, MailAccount,
+                        Outreach, ServiceRequest, User, UserProfile, WorkItem)
 from scripts import campaign_dryrun as DRY
 from scripts import campaign_followup as FU
 from scripts import campaign_setup as SETUP
@@ -155,7 +155,15 @@ def _templates(delay=7, hold=False):
     return one, two
 
 
-def _cycle(t):
+def _inbox_read(t, status="ok"):
+    """The IMAP poller (reply + bounce reading) finished at `t`. A follow-up only goes while this is recent."""
+    with Session(worker.engine) as s:
+        s.add(IngestionRun(source="email-inbound", status=status, started_at=t, finished_at=t)); s.commit()
+
+
+def _cycle(t, inbox=True):
+    if inbox:
+        _inbox_read(t)                     # the worker's IMAP poll runs every cycle in production
     res = worker.run_campaign_send(now=t)
     assert "error" not in res and res.get("errors", 0) == 0, res
     return res
@@ -284,6 +292,60 @@ def test_never_on_a_weekend_or_outside_the_hours(world):
     assert len(FakeSMTP.sent) == 1
     _cycle(MON + timedelta(days=7, hours=-1))                       # Monday 08:00 — the window opens
     assert len(FakeSMTP.sent) == 2 and str(FakeSMTP.sent[1]["Subject"]) == "Re: " + SUBJECT_1
+
+
+def test_no_followup_while_reply_reading_is_down_but_first_emails_go_on(world):
+    e, ids = world
+    with Session(e) as s:
+        _buyers(s, ids, ["Alpha Ltd", "Beta Ltd"])
+        cid = _campaign(s, ids, list(_templates(delay=7)))
+    _cycle(MON)                                                     # both email 1s
+    with Session(e) as s:                                           # a buyer enrolled later: email 1 still due
+        late, = _buyers(s, ids, ["Gamma Ltd"])
+        late_email = late.email
+        s.add(CampaignRecipient(campaign_id=cid, tenant_id=ids["seller"], lead_id=late.id, to_email=late_email,
+                                sequence_version=1, request_id=ids["request"]))
+        s.commit()
+    t = MON + timedelta(days=7, hours=1)                            # both follow-ups due; IMAP last OK 3 h ago
+    _inbox_read(t - timedelta(hours=3))
+    _inbox_read(t - timedelta(minutes=2), status="error")           # a failed poll is not reading
+    _cycle(t, inbox=False)
+    assert [str(m["Subject"]) for m in FakeSMTP.sent] == [SUBJECT_1] * 3 and FakeSMTP.sent[2]["To"] == late_email
+    with Session(e) as s:
+        c, mb = s.get(Campaign, cid), s.get(MailAccount, ids["mailbox"])
+        r = _rcpt(s, "buyer0@b0.example")
+        assert CAMP.can_send(s, c, r, mb, t) == (False, "reply reading stale")
+        assert not CAMP.is_campaign_level_skip("reply reading stale")
+        assert (r.status, r.current_step) == ("sent", 1)            # held, not settled — it goes once reading works
+        assert c.status == "running"
+    _cycle(t + timedelta(minutes=5))                                # the poll succeeds again
+    assert [str(m["Subject"]) for m in FakeSMTP.sent[3:]] == ["Re: " + SUBJECT_1] * 2
+
+
+def test_an_interrupted_inbox_read_does_not_release_a_follow_up(world):
+    e, ids = world
+    with Session(e) as s:
+        _buyers(s, ids, ["Alpha Ltd"])
+        _campaign(s, ids, list(_templates(delay=7)))
+    _cycle(MON)
+    t = MON + timedelta(days=7, hours=1)
+    _inbox_read(t - timedelta(minutes=1), status="partial")       # the connection dropped half-way
+    _cycle(t, inbox=False)
+    assert len(FakeSMTP.sent) == 1                                # held: that read may have missed the reply
+    _cycle(t + timedelta(minutes=5))                              # a complete read
+    assert len(FakeSMTP.sent) == 2
+
+
+def test_reply_reading_is_checked_once_per_cycle_not_once_per_buyer(world, monkeypatch):
+    e, ids = world
+    with Session(e) as s:
+        _buyers(s, ids, [f"Buyer {i} Ltd" for i in range(6)])
+        _campaign(s, ids, list(_templates(delay=7)))
+    _cycle(MON)                                                     # six email 1s
+    calls, real = [], CAMP.last_inbox_success
+    monkeypatch.setattr(CAMP, "last_inbox_success", lambda s, **kw: calls.append(1) or real(s, **kw))
+    _cycle(MON + timedelta(days=7, hours=1), inbox=False)           # six follow-ups due, reading a week old
+    assert len(calls) == 1 and len(FakeSMTP.sent) == 6
 
 
 # ---------------------------------------------------------------------------------------------- hold → approve
@@ -483,6 +545,7 @@ def test_a_followup_without_a_sent_email_1_is_never_sent(world):
         cid = _campaign(s, ids, list(_templates(delay=0)))
         r = s.exec(select(CampaignRecipient)).one()
         r.current_step, r.status = 1, "sent"; s.add(r); s.commit()        # at email 2, but email 1 never went out
+        _inbox_read(MON)
         out = CAMP.send_step(s, s.get(Campaign, cid), r, s.get(MailAccount, ids["mailbox"]), now=MON,
                              sender=lambda *a, **k: pytest.fail("must not send"))
         assert out == {"status": "render_failed", "scope": "recipient",
@@ -603,6 +666,39 @@ def test_setup_never_resets_a_campaign_that_has_sent(world, capsys):
     with Session(e) as s:
         steps = CAMP.steps_for(s, s.get(Campaign, cid))
         assert [st.subject for st in steps] == [SUBJECT_1, "Re: " + SUBJECT_1] and steps[1].manual_review
+
+
+def test_setup_never_lowers_a_live_campaigns_daily_limit(world, capsys):
+    e, ids = world
+    with Session(e) as s:
+        _buyers(s, ids, ["Alpha Ltd", "Beta Ltd"])
+    base = ["--template", TEMPLATE, "--mailbox", "info@qmatalsaha.com", "--request", "SR-202608-0001"]
+    assert SETUP.main(base) == 0
+    with Session(e) as s:
+        c = s.exec(select(Campaign)).one()
+        assert c.daily_limit == SETUP.DEFAULT_DAILY_LIMIT
+        cid = c.id
+    assert SETUP.main(base + ["--campaign", str(cid), "--daily-limit", "12"]) == 0    # a draft may still change
+    assert SETUP.main(base + ["--campaign", str(cid), "--enrol", "--start"]) == 0     # no flag → kept
+    with Session(e) as s:
+        assert (s.get(Campaign, cid).daily_limit, s.get(Campaign, cid).status) == (12, "running")
+    _cycle(MON)
+    with Session(e) as s:
+        c = s.get(Campaign, cid)
+        c.daily_limit, c.warmup_plan = 35, "10,20,35,50"                   # the warm-up ramp took it to 35
+        s.add(c); s.commit()
+    capsys.readouterr()
+    for extra in (["--daily-limit", "10"], ["--enrol"], ["--daily-limit", "10", "--enrol"]):
+        assert SETUP.main(base + ["--campaign", str(cid)] + extra) == 0
+        with Session(e) as s:
+            assert s.get(Campaign, cid).daily_limit == 35, extra
+    assert "daily limit kept at 35/day" in capsys.readouterr().out
+    with Session(e) as s:                                                  # paused, no plan, but it has sent
+        c = s.get(Campaign, cid)
+        CAMP.transition(s, c, "paused"); c.warmup_plan = ""; s.add(c); s.commit()
+    assert SETUP.main(base + ["--campaign", str(cid), "--daily-limit", "10"]) == 0
+    with Session(e) as s:
+        assert s.get(Campaign, cid).daily_limit == 35
 
 
 def test_followup_is_for_smoke_tests_only(world):

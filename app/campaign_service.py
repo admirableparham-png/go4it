@@ -483,8 +483,9 @@ def approve_step(session, campaign, step_index, actor=None, version=None) -> tup
 
 
 # --------------------------------------------------------------------- send safety + idempotent send
-def can_send(session, campaign, rcpt, mailbox, now=None) -> tuple:
-    """The full pre-send safety chain. Returns (ok, reason). Verified for EVERY send."""
+def can_send(session, campaign, rcpt, mailbox, now=None, inbox_fresh=None) -> tuple:
+    """The full pre-send safety chain. Returns (ok, reason). Verified for EVERY send. `inbox_fresh` = the cycle's
+    reply_reading_fresh() (the worker works it out once per campaign); None = check it here."""
     now = now or datetime.utcnow()
     if SG.outreach_paused(session):
         return False, "outreach paused"
@@ -525,6 +526,12 @@ def can_send(session, campaign, rcpt, mailbox, now=None) -> tuple:
         CampaignSend.sent_at >= day_start)).one()
     if mine >= max(0, campaign.daily_limit):
         return False, "daily limit reached"
+    if rcpt.current_step > 0:
+        # a follow-up only goes while reply/bounce reading is working: with IMAP down a buyer's reply or bounce isn't
+        # seen, and the follow-up would chase someone who already answered. Checked last, so the window/limit reasons
+        # still stop the whole cycle first; not campaign-level, so first emails go on.
+        if not (reply_reading_fresh(session, now) if inbox_fresh is None else inbox_fresh):
+            return False, "reply reading stale"
     return True, ""
 
 
@@ -642,11 +649,22 @@ def _sent_between(session, campaign, start, end) -> int:
         CampaignSend.sent_at >= start, CampaignSend.sent_at < end)).one()
 
 
-def last_inbox_success(session):
-    """When reply/bounce reading (the IMAP poll) last finished without failing, or None."""
+def last_inbox_success(session, complete_only=False):
+    """When reply/bounce reading (the IMAP poll) last finished without failing, or None. complete_only: only a poll
+    that read its whole window ('ok' — not 'partial', which may have stopped on a dropped connection). Newest row
+    first by primary key (one poller, so id order is finish order) — no sort of the whole, never-pruned table."""
     return session.exec(select(IngestionRun.finished_at).where(
-        IngestionRun.source == "email-inbound", IngestionRun.status.in_(("ok", "partial")),
-        IngestionRun.finished_at.is_not(None)).order_by(IngestionRun.finished_at.desc())).first()
+        IngestionRun.source == "email-inbound",
+        IngestionRun.status.in_(("ok",) if complete_only else ("ok", "partial")),
+        IngestionRun.finished_at.is_not(None)).order_by(IngestionRun.id.desc()).limit(1)).first()
+
+
+def reply_reading_fresh(session, now=None) -> bool:
+    """True while a COMPLETE read of the inbox finished within WARMUP_IMAP_FRESH_SEC — the condition for any
+    follow-up (an interrupted read may have missed the very reply that should stop it)."""
+    now = now or datetime.utcnow()
+    ok_at = last_inbox_success(session, complete_only=True)
+    return ok_at is not None and (now - ok_at).total_seconds() <= WARMUP_IMAP_FRESH_SEC
 
 
 def warmup_decision(session, campaign, mailbox, day_start, now=None) -> dict:
@@ -798,7 +816,7 @@ def claim_send(session, campaign, rcpt, step_index, now=None, lease_sec=None):
     return None                             # another worker re-claimed between our read and write
 
 
-def send_step(session, campaign, rcpt, mailbox, now=None, sender=None) -> dict:
+def send_step(session, campaign, rcpt, mailbox, now=None, sender=None, inbox_fresh=None) -> dict:
     """Send the recipient's CURRENT sequence step, crash-safely and at most once automatically.
 
     Lifecycle (durable in CampaignSend): claim → sending → (sent | retryable | permanently_failed). The row is
@@ -815,7 +833,7 @@ def send_step(session, campaign, rcpt, mailbox, now=None, sender=None) -> dict:
     the recipient. `sender` is injectable for tests.
     """
     now = now or datetime.utcnow()
-    ok, reason = can_send(session, campaign, rcpt, mailbox, now)
+    ok, reason = can_send(session, campaign, rcpt, mailbox, now, inbox_fresh)
     if not ok:
         _settle_skip(session, rcpt, reason, now)
         return {"status": "skipped", "reason": reason}
