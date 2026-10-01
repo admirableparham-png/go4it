@@ -30,7 +30,7 @@ from app import campaign_service as CAMP                                       #
 from app import pipeline                                                       # noqa: E402
 from app.auth import hash_password                                             # noqa: E402
 from app.db import engine, init_db                                             # noqa: E402
-from app.models import (Campaign, Lead, MailAccount, ServiceRequest, StageEvent, User,  # noqa: E402
+from app.models import (Campaign, CampaignRecipient, Lead, MailAccount, ServiceRequest, StageEvent, User,  # noqa: E402
                         UserProfile)
 
 SMOKE_SELLER = "smoke-seller@qmatalsaha.com"
@@ -170,6 +170,13 @@ def main(argv=None):
         print("audience: " + ", ".join(f"{k}={v}" for k, v in prev.items() if k != "eligible_lead_ids"))
         if a.enrol or smoke:
             res = CAMP.enroll(s, c, None, f, expected=prev["final_eligible"])
+            if smoke:                                      # a test goes ONLY to the addresses given this run
+                wanted = {sp.split("|")[0].strip().lower() for sp in a.smoke}
+                for r in s.exec(select(CampaignRecipient).where(CampaignRecipient.campaign_id == c.id)).all():
+                    if r.to_email not in wanted:
+                        s.delete(r); res["created"] -= 1
+                c.daily_limit = len(wanted)
+                s.add(c); s.commit()
             print(f"enrolled: {res}")
         problems = CAMP.start_problems(s, c)
         if problems:

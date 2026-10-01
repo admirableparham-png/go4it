@@ -265,10 +265,18 @@ def can_send(session, campaign, rcpt, mailbox, now=None) -> tuple:
         return False, "manual-review step"
     if not SG.within_window(campaign, now):
         return False, "outside sending window"
-    # daily-limit precheck (the slot is actually consumed in send_step)
+    # daily-limit precheck (the mailbox slot is actually consumed in send_step). The MAILBOX limit counts everything
+    # the mailbox sent today; the CAMPAIGN limit counts only this campaign's own sends today (so tests or another
+    # campaign never eat a campaign's warm-up quota).
     today = now.strftime("%Y-%m-%d")
     used = mailbox.sent_today if mailbox.sent_today_date == today else 0
-    if used >= max(0, min(mailbox.daily_limit, campaign.daily_limit)):
+    if used >= max(0, mailbox.daily_limit):
+        return False, "daily limit reached"
+    day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    mine = session.exec(select(func.count()).where(
+        CampaignSend.campaign_id == campaign.id, CampaignSend.status == "sent",
+        CampaignSend.sent_at >= day_start)).one()
+    if mine >= max(0, campaign.daily_limit):
         return False, "daily limit reached"
     return True, ""
 

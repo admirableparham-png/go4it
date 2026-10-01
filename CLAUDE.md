@@ -8,7 +8,7 @@ state, what is deployed, and the next tasks.
 
 ```bash
 make install        # venv + deps (Python 3.9 .venv already exists)
-make test           # ./.venv/bin/python -m pytest -q   (731 tests at Phase 11)
+make test           # ./.venv/bin/python -m pytest -q   (732 tests at Phase 11)
 # no `make run`: the founder wants no local ports (if one is ever needed: a free non-standard
 # 127.0.0.1 port, never 3300/8400, stopped afterwards)
 make db-migrate     # scripts/migrate.py (idempotent)

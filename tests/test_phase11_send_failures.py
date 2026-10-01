@@ -192,3 +192,18 @@ def test_bounce_breaker_needs_volume(ctx):
         rs = _add(s, ids, 5)
         rs[0].status = "hard_bounced"; s.add(rs[0]); s.commit()
         assert not CAMP.bounce_breaker(s, s.get(Campaign, ids["campaign"]))
+
+
+def test_campaign_limit_counts_only_its_own_sends(ctx, monkeypatch):
+    e, ids = ctx
+    with Session(e) as s:
+        mb = s.get(MailAccount, ids["mailbox"])
+        mb.sent_today, mb.sent_today_date = 7, NOW.strftime("%Y-%m-%d")   # e.g. this morning's test emails
+        c = s.get(Campaign, ids["campaign"]); c.daily_limit = 2
+        s.add(mb); s.add(c); s.commit()
+        _add(s, ids, 3)
+    calls = []
+    monkeypatch.setattr(CAMP, "_default_sender",
+                        lambda mb, to, subject, text, message_id="", **kw: (calls.append(to), (True, "", message_id))[1])
+    worker.run_campaign_send(now=NOW)
+    assert len(calls) == 2                                              # its own 2, despite 7 earlier mailbox sends

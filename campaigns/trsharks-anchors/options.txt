@@ -1,2 +1,2 @@
-plain_text_only=yes
+plain_text_only=no
 list_unsubscribe=no

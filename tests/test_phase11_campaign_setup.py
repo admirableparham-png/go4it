@@ -25,7 +25,7 @@ def tmp_repo(tmp_path, monkeypatch):
     real = pathlib.Path(__file__).resolve().parents[1] / TEMPLATE
     dst = tmp_path / TEMPLATE
     dst.mkdir(parents=True)
-    for f in ("subject.txt", "body.txt"):
+    for f in ("subject.txt", "body.txt", "body.html", "options.txt"):
         shutil.copy(real / f, dst / f)
     (dst / "pricelist.pdf").write_bytes(PDF)
     monkeypatch.setattr(CR, "_REPO", str(tmp_path))
@@ -92,8 +92,10 @@ def test_the_real_template_is_valid_and_reads_naturally(ctx):
         assert "sector in Poland," in got["PL"]["text"] and got["PL"]["text"].startswith("Hi Inoxa team,")
         assert "in the United Arab Emirates," in got["AE"]["text"] and "Hi Dani Trading team" in got["AE"]["text"]
         m = got["CA"]
-        assert m["text"].rstrip().endswith("Best regards,\nQmat Alsaha\nSales Department")    # no footer after it
-        assert CR.OPT_OUT_LINE not in m["text"] and m["headers"]["List-Unsubscribe"]          # header still sent
+        assert m["text"].rstrip().endswith("W  qmatalsaha.com")              # the founder's signature, no footer
+        assert CR.OPT_OUT_LINE not in m["text"] and m["headers"] == {}       # options.txt: no List-Unsubscribe
+        assert "https://qmatalsaha.com/assets/email/signature.gif" in m["html"] and "gmail_signature" in m["html"]
+        assert "Hi IHL Canada team," in m["html"]
         assert m["attachments"] == [("pricelist.pdf", PDF)]
 
 
@@ -187,6 +189,7 @@ def test_a_draft_sequence_can_be_saved_twice(ctx):
 
 def test_plain_text_option_sends_one_text_part_and_no_bulk_header(ctx, tmp_repo, monkeypatch):
     from email import message_from_bytes, policy
+    (tmp_repo / TEMPLATE / "body.html").unlink()                     # a text-only template
     (tmp_repo / TEMPLATE / "options.txt").write_text("plain_text_only=yes\nlist_unsubscribe=no\n")
     step, errs = SETUP.load_template(TEMPLATE)
     assert errs == [] and step["plain_text_only"] is True and step["list_unsubscribe"] is False
