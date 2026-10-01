@@ -184,3 +184,14 @@ def test_newsletters_make_no_task_but_unmatched_optouts_are_honoured(ctx):
 def test_reply_text_keeps_only_the_buyers_words(body):
     assert OE.reply_text(body) == "Yes, interested."
     assert not OE.is_unsubscribe("Re: Offer", OE.reply_text(body))
+
+
+def test_password_comes_from_the_connected_mailbox_when_env_has_none(ctx, monkeypatch):
+    from app.models import MailAccount
+    e, _lid = ctx
+    monkeypatch.setattr(IE, "IMAP_PASSWORD", "")
+    monkeypatch.setattr("app.outreach.mail_decrypt", lambda enc: "stored-app-pass" if enc == "enc" else "")
+    with Session(e) as s:
+        assert IE.imap_password(s) == ""                               # nothing connected yet
+        s.add(MailAccount(user_id=1, email="INFO@qmat.example", smtp_password_enc="enc", active=True)); s.commit()
+        assert IE.imap_password(s) == "stored-app-pass"

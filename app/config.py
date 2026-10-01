@@ -42,7 +42,9 @@ IMAP_HOST = os.getenv("IMAP_HOST", "").strip()
 IMAP_PORT = int(os.getenv("IMAP_PORT", "993"))
 IMAP_USER = os.getenv("IMAP_USER", "").strip()
 IMAP_PASSWORD = os.getenv("IMAP_PASSWORD", "").strip()
-IMAP_ENABLED = bool(IMAP_HOST and IMAP_USER and IMAP_PASSWORD)
+# Phase 11: the password may be left out — the poller then uses the App Password already stored (encrypted) on the
+# connected mailbox with that address, so the secret never has to be typed into .env.
+IMAP_ENABLED = bool(IMAP_HOST and IMAP_USER)
 IMAP_INTERVAL = int(os.getenv("IMAP_INTERVAL", "0"))        # seconds between inbox polls; 0 = disabled
 # Phase 11: the poller reads the last N days (read-only, never marks mail as read) and remembers what it handled
 IMAP_LOOKBACK_DAYS = int(os.getenv("IMAP_LOOKBACK_DAYS", "3"))

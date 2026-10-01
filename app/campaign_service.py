@@ -230,6 +230,8 @@ def start_problems(session, campaign) -> list:
         probs.append("reply reading (IMAP) is off — the footer promises 'reply unsubscribe', so it must be on")
     elif mb is not None and (mb.email or "").strip().lower() != (config.IMAP_USER or "").strip().lower():
         probs.append(f"replies to {mb.email} are not read — IMAP polls {config.IMAP_USER or 'another mailbox'}")
+    elif mb is not None and not config.IMAP_PASSWORD and not mb.smtp_password_enc:
+        probs.append("reply reading has no password — connect the mailbox on /mail (or set IMAP_PASSWORD)")
     return probs
 
 

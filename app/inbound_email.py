@@ -285,6 +285,21 @@ def _record(session, mailbox, key, outcome):
     session.commit()
 
 
+def imap_password(session) -> str:
+    """IMAP_PASSWORD from .env, else the App Password stored (encrypted) on the connected mailbox IMAP_USER."""
+    if IMAP_PASSWORD:
+        return IMAP_PASSWORD
+    from sqlalchemy import func
+    from .models import MailAccount
+    from .outreach import mail_decrypt
+    mb = session.exec(select(MailAccount).where(func.lower(MailAccount.email) == IMAP_USER.strip().lower(),
+                                                MailAccount.active == True)).first()     # noqa: E712
+    try:
+        return mail_decrypt(mb.smtp_password_enc) if mb else ""
+    except Exception:  # noqa: BLE001
+        return ""
+
+
 def poll_inbox(session: Session, log=logger.info) -> dict:
     """Read the last IMAP_LOOKBACK_DAYS of the inbox and thread each NEW reply / bounce. The mailbox is opened
     READ-ONLY and every fetch is a PEEK, so the poller never marks a person's mail as read; what it already handled
@@ -302,7 +317,10 @@ def poll_inbox(session: Session, log=logger.info) -> dict:
     had_errors = False
     try:
         M = imaplib.IMAP4_SSL(IMAP_HOST, IMAP_PORT, timeout=IMAP_TIMEOUT)
-        M.login(IMAP_USER, IMAP_PASSWORD)
+        pw = imap_password(session)
+        if not pw:
+            raise RuntimeError(f"no password for {IMAP_USER}: set IMAP_PASSWORD or connect it on /mail")
+        M.login(IMAP_USER, pw)
         M.select("INBOX", readonly=True)
         _, data = M.search(None, "SINCE", _imap_since(IMAP_LOOKBACK_DAYS))
         ids = data[0].split() if data and data[0] else []
