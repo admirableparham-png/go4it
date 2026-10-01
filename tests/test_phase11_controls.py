@@ -43,6 +43,7 @@ def ctx(monkeypatch):
     monkeypatch.setattr(config, "IMAP_ENABLED", True)
     monkeypatch.setattr(config, "IMAP_INTERVAL", 120)
     monkeypatch.setattr(config, "IMAP_USER", "info@qmat.example")
+    monkeypatch.setattr(config, "IMAP_PASSWORD", "app-password")     # hermetic: never the developer's .env
     ids = {}
     with Session(e) as s:
         f = _mk(s, "founder@t", "admin", "internal", "founder")
