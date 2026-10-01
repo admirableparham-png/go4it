@@ -50,3 +50,7 @@ logs/
 
 # delivered service files (real trade docs) — never commit
 request_files/
+
+# Claude Code: local permissions + temporary agent worktrees (never commit)
+.claude/settings.local.json
+.claude/worktrees/
