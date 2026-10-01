@@ -17,10 +17,11 @@ from email.utils import parseaddr
 
 from sqlmodel import Session, select
 
+from . import suppression as SUP
 from .config import (IMAP_ENABLED, IMAP_HOST, IMAP_LOOKBACK_DAYS, IMAP_PASSWORD, IMAP_PORT, IMAP_USER)
 from .enrich_service import enrich_lead
 from .lead_service import find_lead_by_contact
-from .models import InboundSeen, IngestionRun, Lead, Outreach
+from .models import Activity, InboundSeen, IngestionRun, Lead, Outreach
 from .telegram import notify_bounce, notify_buyer_reply, send_message
 
 logger = logging.getLogger("go4it")
@@ -241,13 +242,25 @@ def handle_bounce(session: Session, failed_email: str, reason: str) -> str:
         OE.on_bounce(session, lead, failed_email, reason)
     except Exception:  # noqa: BLE001
         session.rollback()
+    # Scrape the buyer's own site for a fresh mailbox — a CANDIDATE for the founder to review, never written onto
+    # the lead here: re-arming the address that just bounced (or an unchecked one) would send to it again.
     new_email = ""
     try:
-        enrich_lead(session, lead)                   # scrape the buyer's own site for a fresh mailbox
-        session.refresh(lead)
-        new_email = lead.email or ""
+        found = enrich_lead(session, lead, apply=False)
+        cand = SUP.normalize_email(found.get("email"))
+        tenant = lead.seller_id if lead.managed else lead.owner_id
+        if cand and cand != SUP.normalize_email(failed_email) \
+                and not SUP.is_suppressed(session, cand, tenant_id=tenant):
+            new_email = cand
+        if found.get("status") in ("nohit", "enriched"):     # the site was actually read
+            session.add(Activity(lead_id=lead.id, kind="enrichment", body=(
+                f"Web-enrich after bounce: candidate {new_email} found on {found.get('site')} — for review, "
+                "not applied" if new_email else
+                f"Web-enrich after bounce: no new address found on {found.get('site')}")))
+            session.commit()
     except Exception:  # noqa: BLE001
-        pass
+        session.rollback()
+        new_email = ""
     try:
         notify_bounce(lead, failed_email, reason, new_email=new_email)
     except Exception:  # noqa: BLE001
