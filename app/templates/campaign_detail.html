@@ -28,6 +28,8 @@
   {% if can_manage %}
   <form method="post" action="/campaigns/{{ c.id }}/controls" class="flex flex-wrap items-end gap-2 mt-3 text-xs text-slate-300">
     <label>daily limit <input name="daily_limit" value="{{ c.daily_limit }}" class="input" style="width:5rem"></label>
+    <input type="hidden" name="daily_limit_was" value="{{ c.daily_limit }}">
+    <label title="Daily limits by sending day, e.g. 10,20,35,50. Empty = manual.">warm-up plan <input name="warmup_plan" value="{{ c.warmup_plan or '' }}" placeholder="10,20,35,50" class="input" style="width:7rem"></label>
     <label>mailbox <select name="mailbox_id" class="select" style="width:auto">{% for m in mailboxes %}<option value="{{ m.id }}" {% if mailbox and m.id==mailbox.id %}selected{% endif %}>{{ m.email }}</option>{% endfor %}</select></label>
     <label>from <input name="send_window_start" value="{{ c.send_window_start }}" class="input" style="width:3.5rem"></label>
     <label>to <input name="send_window_end" value="{{ c.send_window_end }}" class="input" style="width:3.5rem"> UTC</label>
@@ -38,6 +40,7 @@
     <button class="btn btn-secondary btn-sm">Save</button>
   </form>
   {% endif %}
+  {% if c.warmup_plan %}<div class="text-[11px] text-slate-400 mt-2">Automatic warm-up {{ c.warmup_plan }}/day: once per UTC day, before the first send, the limit moves up one step after a full sending day with few hard bounces and reply reading working — never above the mailbox's own limit, never down. A held step opens a "Campaign warm-up held" task.{% if c.warmup_checked_on %} Last decided {{ c.warmup_checked_on }}.{% endif %}</div>{% endif %}
 </div>
 
 <div class="grid lg:grid-cols-2 gap-4">

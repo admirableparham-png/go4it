@@ -191,6 +191,9 @@ MIGRATIONS = [
     ("campaignstep", "attachment_path", "VARCHAR DEFAULT ''"),
     ("campaignstep", "plain_text_only", "BOOLEAN DEFAULT 0"),
     ("campaignstep", "list_unsubscribe", "BOOLEAN DEFAULT 1"),
+    # Phase 12 — the campaign's automatic warm-up ramp (plan + the day of its last decision); re-checked by the gate.
+    ("campaign", "warmup_plan", "VARCHAR DEFAULT ''"),
+    ("campaign", "warmup_checked_on", "VARCHAR DEFAULT ''"),
 ]
 
 

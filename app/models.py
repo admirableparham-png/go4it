@@ -814,6 +814,8 @@ class Campaign(SQLModel, table=True):
     pause_reason: str = ""
     bounce_baseline: str = ""       # Phase 11: "hard:sent" counts when last (re)started — the bounce breaker judges
                                     # only what was sent since, so a resumed campaign isn't re-paused by old bounces
+    warmup_plan: str = ""           # Phase 12: daily limits by sending day, e.g. "10,20,35,50" ("" = manual limit)
+    warmup_checked_on: str = ""     # Phase 12: YYYY-MM-DD (UTC) of the warm-up ramp's last daily decision
     notes: str = ""                 # internal admin notes (never buyer/seller PII)
     inferred: bool = False          # True = backfill-seeded from legacy source grouping
     created_at: datetime = Field(default_factory=datetime.utcnow)
