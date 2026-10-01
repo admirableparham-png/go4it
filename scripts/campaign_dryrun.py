@@ -141,11 +141,12 @@ def check(session, campaign, preview=False, exclude_countries=(), samples=0, see
                 errors[f"email {st.step_index + 1} blocked ({msg['scope']}): {msg['error'][:120]}"].append(lid)
                 continue
             html_text = CR.html_to_text(msg["html"])
-            if CR.has_footer(mb) and (CR.OPT_OUT_LINE not in msg["text"] or CR.OPT_OUT_LINE not in html_text):
+            if CR.has_footer(mb) and (CR.OPT_OUT_LINE not in msg["text"] or (msg["html"] and CR.OPT_OUT_LINE not in html_text)):
                 errors["footer missing from a part"].append(lid)
             if getattr(st, "attachment_path", "") and not msg.get("attachments"):
                 errors["attachment missing"].append(lid)
-            if not msg["headers"].get("List-Unsubscribe", "").startswith("<mailto:"):
+            if getattr(st, "list_unsubscribe", True) and \
+                    not msg["headers"].get("List-Unsubscribe", "").startswith("<mailto:"):
                 errors["List-Unsubscribe header missing"].append(lid)
             if len(msg["subject"]) > 120:
                 warnings.append(f"lead {lid}: email {st.step_index + 1} subject is {len(msg['subject'])} chars")

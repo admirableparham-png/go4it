@@ -841,6 +841,8 @@ class CampaignStep(SQLModel, table=True):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     body_html: str = ""             # Phase 11: optional admin-authored HTML design (sanitized); `body` stays the text part
     attachment_path: str = ""       # Phase 11: a PDF shipped under campaigns/ (e.g. the price list), attached to the email
+    plain_text_only: bool = False   # Phase 11: send like a hand-typed email (no HTML part) — fewer "Promotions" tabs
+    list_unsubscribe: bool = True   # Phase 11: send the List-Unsubscribe header (Gmail reads it as bulk mail)
 
 
 class CampaignRecipient(SQLModel, table=True):

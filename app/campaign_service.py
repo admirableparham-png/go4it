@@ -190,6 +190,8 @@ def set_sequence(session, campaign, steps: list, actor=None) -> int:
                                  subject=SG.sanitize_header((s.get("subject") or "")[:200]),
                                  body=body, body_html=body_html, template_id=s.get("template_id"),
                                  attachment_path=(s.get("attachment_path") or "")[:300],
+                                 plain_text_only=bool(s.get("plain_text_only")),
+                                 list_unsubscribe=bool(s.get("list_unsubscribe", True)),
                                  delay_days=int(s.get("delay_days") or 0),
                                  manual_review=bool(s.get("manual_review"))))
     session.commit()
@@ -468,7 +470,7 @@ def send_step(session, campaign, rcpt, mailbox, now=None, sender=None) -> dict:
     send = sender or _default_sender
     # our durable RFC Message-ID becomes the actual Message-ID header of the sent mail (reply-correlation key)
     try:
-        okk, err, provider_id = send(mailbox, rcpt.to_email, subject, body, html=msg["html"],
+        okk, err, provider_id = send(mailbox, rcpt.to_email, subject, body, html=msg["html"] or None,
                                      reply_to=mailbox.email, message_id=cs.rfc_message_id, headers=msg["headers"],
                                      attachments=msg.get("attachments") or None)
     except Exception as e:  # noqa: BLE001 — a sender that raises must never leave this row stuck in 'sending'

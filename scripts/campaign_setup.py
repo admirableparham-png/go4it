@@ -45,6 +45,10 @@ def load_template(folder):
         return open(p, encoding="utf-8").read() if os.path.exists(p) else ""
     step = {"subject": read("subject.txt").strip().splitlines()[0] if read("subject.txt").strip() else "",
             "body": read("body.txt").strip(), "body_html": read("body.html").strip(), "delay_days": 0}
+    for line in read("options.txt").splitlines():      # e.g. plain_text_only=yes / list_unsubscribe=no
+        k, _, v = line.partition("=")
+        if k.strip() in ("plain_text_only", "list_unsubscribe"):
+            step[k.strip()] = v.strip().lower() in ("yes", "true", "1", "on")
     pdfs = sorted(f for f in os.listdir(path) if f.lower().endswith(".pdf")) if os.path.isdir(path) else []
     errs = CR.validate_step(step["subject"], step["body"], step["body_html"])
     if pdfs:

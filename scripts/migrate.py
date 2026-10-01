@@ -189,6 +189,8 @@ MIGRATIONS = [
     ("campaignstep", "body_html", "VARCHAR DEFAULT ''"),
     ("campaign", "bounce_baseline", "VARCHAR DEFAULT ''"),
     ("campaignstep", "attachment_path", "VARCHAR DEFAULT ''"),
+    ("campaignstep", "plain_text_only", "BOOLEAN DEFAULT 0"),
+    ("campaignstep", "list_unsubscribe", "BOOLEAN DEFAULT 1"),
 ]
 
 

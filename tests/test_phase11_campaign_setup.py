@@ -183,3 +183,34 @@ def test_a_draft_sequence_can_be_saved_twice(ctx):
         CAMP.set_sequence(s, c, [{"subject": "A", "body": "a"}])
         CAMP.set_sequence(s, c, [{"subject": "B", "body": "b"}])
         assert [st.subject for st in CAMP.steps_for(s, c)] == ["B"]
+
+
+def test_plain_text_option_sends_one_text_part_and_no_bulk_header(ctx, tmp_repo, monkeypatch):
+    from email import message_from_bytes, policy
+    (tmp_repo / TEMPLATE / "options.txt").write_text("plain_text_only=yes\nlist_unsubscribe=no\n")
+    step, errs = SETUP.load_template(TEMPLATE)
+    assert errs == [] and step["plain_text_only"] is True and step["list_unsubscribe"] is False
+    sent = {}
+
+    class Fake:
+        def __init__(self, *a, **k): pass
+        def starttls(self, **k): pass
+        def login(self, *a): pass
+        def quit(self): pass
+        def send_message(self, msg): sent["raw"] = msg.as_bytes()
+    monkeypatch.setattr(OUT.smtplib, "SMTP", Fake)
+    with Session(ctx) as s:
+        c = Campaign(name="P", tenant_id=2, request_id=1, mailbox_id=1, status="draft")
+        s.add(c); s.commit(); s.refresh(c)
+        CAMP.set_sequence(s, c, [step])
+        st, mb = CAMP.steps_for(s, c)[0], s.get(MailAccount, 1)
+        mb.sender_company = mb.postal_address = ""
+        m = CR.render_campaign_message(s, c, st, s.exec(select(Lead)).first(), mb)
+        assert m["ok"] and m["html"] == "" and m["headers"] == {}
+        ok, err, _ = OUT.send_via_account(mb, "b@x.example", m["subject"], m["text"], html=m["html"] or None,
+                                          headers=m["headers"], attachments=m["attachments"])
+        assert ok, err
+    msg = message_from_bytes(sent["raw"], policy=policy.default)
+    assert msg["List-Unsubscribe"] is None
+    types = [p.get_content_type() for p in msg.walk()]
+    assert "text/html" not in types and "text/plain" in types and "application/pdf" in types

@@ -288,8 +288,11 @@ def render_campaign_message(session, campaign, step, lead, mailbox) -> dict:
     if len(html_full.encode("utf-8")) > MAX_HTML_BYTES:
         return fail("template", "the HTML is over 90 KB — Gmail would clip it")
     name, data, _err = load_attachment(getattr(step, "attachment_path", "") or "")
+    if getattr(step, "plain_text_only", False) and not html_body:
+        html_full = ""                               # a hand-typed-looking email: one text/plain part only
+    headers = {"List-Unsubscribe": list_unsubscribe(mailbox)} if getattr(step, "list_unsubscribe", True) else {}
     return {"ok": True, "scope": "", "error": "", "subject": subject, "text": text_full, "html": html_full,
-            "headers": {"List-Unsubscribe": list_unsubscribe(mailbox)},
+            "headers": headers,
             "attachments": [(name, data)] if name else []}
 
 
