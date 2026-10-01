@@ -1,4 +1,4 @@
-.PHONY: install run prod seed test save backup db-migrate clean worker enrich ingest ingest-portal build deploy logs down
+.PHONY: install run prod seed test save backup pull-backup db-migrate clean worker enrich ingest ingest-portal build deploy logs down
 
 # One-time setup: create a virtualenv and install dependencies.
 install:
@@ -52,6 +52,11 @@ db-migrate:
 # Timestamped SQLite backup into ./backups (online-consistent, keeps last 14).
 backup:
 	./.venv/bin/python scripts/backup_db.py
+
+# Off-server copy: the newest production backup -> ./backups/prod-<name> on this Mac (gitignored)
+pull-backup:
+	@mkdir -p backups && f=$$(ssh root@167.233.138.214 'ls -t /opt/go4it/backups/data-*.db | head -1') && \
+	scp -q root@167.233.138.214:$$f backups/prod-$$(basename $$f) && ls -l backups/prod-$$(basename $$f)
 
 # Remove the local database (start fresh).
 clean:

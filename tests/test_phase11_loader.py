@@ -145,3 +145,10 @@ def test_old_deliver_script_refuses(capsys):
     from scripts import deliver_request
     deliver_request.run(1, "whatever.json")
     assert "REFUSED" in capsys.readouterr().out
+
+
+def test_only_countries_loads_a_single_country_wave(ctx, monkeypatch):
+    e, rid, _ = ctx
+    assert _run(monkeypatch, "--only-countries", "CA") == 0
+    with Session(e) as s:
+        assert {ld.dest_country for ld in s.exec(select(Lead)).all()} == {"CA"}

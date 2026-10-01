@@ -69,10 +69,11 @@ def _text(v):
     return ", ".join(str(x) for x in v) if isinstance(v, list) else str(v or "")
 
 
-def plan(session, sr, buyers, exclude_countries=(), exclude_regex="", require_email=False):
+def plan(session, sr, buyers, exclude_countries=(), exclude_regex="", require_email=False, only_countries=()):
     """Pure read: the Lead rows that WOULD be created + a per-country report. Nothing is added to the session."""
     tag = sr.result_source_tag or f"req-{sr.id}"
     excluded = {c.strip().upper() for c in exclude_countries if c.strip()}
+    only = {c.strip().upper() for c in only_countries if c.strip()}       # e.g. a later Canada-only wave
     rx = re.compile(exclude_regex, re.I) if exclude_regex else None
     existing = session.exec(select(Lead).where(Lead.request_id == sr.id)).all()
     have_email = {(ld.email or "").lower() for ld in existing if ld.email}
@@ -87,7 +88,7 @@ def plan(session, sr, buyers, exclude_countries=(), exclude_regex="", require_em
         if not company:
             c["no_company"] += 1
             continue
-        if iso in excluded or (rx and rx.search(" ".join([company, _text(b.get("tier")), _text(b.get("product")),
+        if iso in excluded or (only and iso not in only) or (rx and rx.search(" ".join([company, _text(b.get("tier")), _text(b.get("product")),
                                                           _text(b.get("buys") or b.get("wants"))]))):
             c["excluded"] += 1
             continue
@@ -166,6 +167,7 @@ def main(argv=None):
     ap.add_argument("--request", required=True, help="SR-YYYYMM-NNNN tracking code or request id")
     ap.add_argument("--stdin", action="store_true", help="read buyers.json from stdin")
     ap.add_argument("--exclude-countries", default="", help="comma-separated ISO codes, e.g. US,MX")
+    ap.add_argument("--only-countries", default="", help="load ONLY these ISO codes, e.g. CA (a later wave)")
     ap.add_argument("--exclude-regex", default="", help="skip buyers whose company/tier/product/buys match")
     ap.add_argument("--require-email", action="store_true", help="only load buyers with a usable email")
     ap.add_argument("--dry-run", action="store_true", help="plan + report only, write nothing")
@@ -181,7 +183,8 @@ def main(argv=None):
         if why:
             print(f"REFUSED: {why}")
             return 2
-        rows, report = plan(s, sr, buyers, a.exclude_countries.split(","), a.exclude_regex, a.require_email)
+        rows, report = plan(s, sr, buyers, a.exclude_countries.split(","), a.exclude_regex, a.require_email,
+                            a.only_countries.split(","))
         print(f"{sr.tracking_code} · {sr.product} · seller #{sr.owner_id} · {len(buyers)} rows in file")
         total = print_report(report)
         if a.dry_run:
