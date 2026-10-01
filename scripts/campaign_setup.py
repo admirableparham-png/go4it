@@ -45,7 +45,14 @@ def load_template(folder):
         return open(p, encoding="utf-8").read() if os.path.exists(p) else ""
     step = {"subject": read("subject.txt").strip().splitlines()[0] if read("subject.txt").strip() else "",
             "body": read("body.txt").strip(), "body_html": read("body.html").strip(), "delay_days": 0}
-    return step, CR.validate_step(step["subject"], step["body"], step["body_html"])
+    pdfs = sorted(f for f in os.listdir(path) if f.lower().endswith(".pdf")) if os.path.isdir(path) else []
+    errs = CR.validate_step(step["subject"], step["body"], step["body_html"])
+    if pdfs:
+        step["attachment_path"] = os.path.relpath(os.path.join(path, pdfs[0]), BASE)
+        errs += [e for e in [CR.load_attachment(step["attachment_path"])[2]] if e]
+    elif "attached" in step["body"].lower():
+        errs.append("the text says a file is attached, but there is no PDF in the template folder")
+    return step, errs
 
 
 def find_mailbox(session, email):

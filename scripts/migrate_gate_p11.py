@@ -26,7 +26,8 @@ _NEW_TABLES = [InboundSeen]
 _COLUMNS = [("mailaccount", "sender_company", "VARCHAR DEFAULT ''"),
             ("mailaccount", "postal_address", "VARCHAR DEFAULT ''"),
             ("campaignstep", "body_html", "VARCHAR DEFAULT ''"),
-            ("campaign", "bounce_baseline", "VARCHAR DEFAULT ''")]
+            ("campaign", "bounce_baseline", "VARCHAR DEFAULT ''"),
+            ("campaignstep", "attachment_path", "VARCHAR DEFAULT ''")]
 _GATE_INDEXES = [
     ("uq_camprcpt_campaign_lead", "campaignrecipient", "campaign_id, lead_id", "lead_id IS NOT NULL"),
     ("uq_camprcpt_campaign_email", "campaignrecipient", "campaign_id, to_email", "to_email != ''"),

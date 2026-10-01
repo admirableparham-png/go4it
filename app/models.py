@@ -840,6 +840,7 @@ class CampaignStep(SQLModel, table=True):
     status: str = "active"          # active|archived
     created_at: datetime = Field(default_factory=datetime.utcnow)
     body_html: str = ""             # Phase 11: optional admin-authored HTML design (sanitized); `body` stays the text part
+    attachment_path: str = ""       # Phase 11: a PDF shipped under campaigns/ (e.g. the price list), attached to the email
 
 
 class CampaignRecipient(SQLModel, table=True):

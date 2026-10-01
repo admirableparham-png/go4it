@@ -5,8 +5,8 @@ exactly what goes out.
 Fail-closed rules — a message that breaks one is never sent:
   * merge fields are an allow-list ({company} {country} {city}); an unknown or unfilled placeholder, a stray brace
     or another tool's merge tag ({{x}}, *|X|*, %%x%%) never reaches a buyer;
-  * every message carries the sender footer (legal company + postal address + opt-out line) in BOTH parts and a
-    mailto List-Unsubscribe header — the easiest opt-out that stays on the sender's own domain;
+  * every message carries a mailto List-Unsubscribe header (and, when configured on the mailbox, a footer with
+    company + postal address + opt-out line in BOTH parts) — the easiest opt-out that stays on the sender's own domain;
   * the seller's identity never reaches a buyer (two-way confidentiality) — a hit BLOCKS the send, it is never
     sent as "[redacted]";
   * the internal platform brand (g4it / go4it) never appears in anything a buyer sees.
@@ -64,10 +64,13 @@ def validate_sender(mailbox) -> list:
     if mailbox is None:
         return ["no sending mailbox"]
     errs = []
-    if not (getattr(mailbox, "sender_company", "") or "").strip():
-        errs.append("the mailbox has no sender company for the footer")
-    if not (getattr(mailbox, "postal_address", "") or "").strip():
-        errs.append("the mailbox has no postal address for the footer")
+    # the visible footer (company + postal address + opt-out line) is OPTIONAL — founder's choice (2026-10-01): the
+    # email's own sign-off is the signature; the List-Unsubscribe header is always sent. If one footer field is set,
+    # both must be, so a footer is never half-filled.
+    has_co = bool((getattr(mailbox, "sender_company", "") or "").strip())
+    has_addr = bool((getattr(mailbox, "postal_address", "") or "").strip())
+    if has_co != has_addr:
+        errs.append("the footer needs both the sender company and the postal address (or neither)")
     for label, v in (("from name", mailbox.from_name), ("sender company", getattr(mailbox, "sender_company", "")),
                      ("postal address", getattr(mailbox, "postal_address", "")), ("mailbox address", mailbox.email)):
         if v and INTERNAL_BRAND.search(v):
@@ -144,6 +147,36 @@ def footer_html(mailbox, centered=False) -> str:
             '</div></div>')
 
 
+def has_footer(mailbox) -> bool:
+    return bool((getattr(mailbox, "sender_company", "") or "").strip()
+                and (getattr(mailbox, "postal_address", "") or "").strip())
+
+
+# --------------------------------------------------------------------- template attachment (founder's own file)
+MAX_ATTACHMENT_BYTES = 3 * 1024 * 1024
+_REPO = __import__("os").path.dirname(__import__("os").path.dirname(__import__("os").path.abspath(__file__)))
+
+
+def load_attachment(rel_path):
+    """(filename, bytes, error) for a campaign template's attachment. ONLY a PDF that ships with the code under
+    campaigns/ (the founder's own price list) — never a user upload, which stays blocked (app/attachments.py)."""
+    import os
+    if not rel_path:
+        return "", b"", ""
+    base = os.path.realpath(os.path.join(_REPO, "campaigns"))
+    full = os.path.realpath(os.path.join(_REPO, rel_path))
+    if not full.startswith(base + os.sep) or not full.lower().endswith(".pdf"):
+        return "", b"", "the attachment must be a PDF inside the campaigns/ folder"
+    if not os.path.isfile(full):
+        return "", b"", f"the attachment {rel_path} is missing on this server"
+    data = open(full, "rb").read()
+    if not data.startswith(b"%PDF"):
+        return "", b"", "the attachment is not a real PDF"
+    if len(data) > MAX_ATTACHMENT_BYTES:
+        return "", b"", "the attachment is over 3 MB"
+    return os.path.basename(full), data, ""
+
+
 def list_unsubscribe(mailbox) -> str:
     return f"<mailto:{mailbox.email.strip()}?subject=unsubscribe>"
 
@@ -200,6 +233,9 @@ def template_problems(session, campaign, step, mailbox) -> list:
     subject_t, body_t = step.subject or "", step.body or ""
     html_t = getattr(step, "body_html", "") or ""
     errs = validate_step(subject_t, body_t, html_t) + validate_sender(mailbox)
+    _n, _d, att_err = load_attachment(getattr(step, "attachment_path", "") or "")
+    if att_err:
+        errs.append(att_err)
     needles = _seller_needles(session, campaign.tenant_id)
     if needles:
         for label, part in (("subject", subject_t), ("text", body_t),
@@ -218,7 +254,7 @@ def render_campaign_message(session, campaign, step, lead, mailbox) -> dict:
     once, the campaign should pause); scope='recipient' = only this buyer can't be rendered (skip them). Reads only."""
     def fail(scope, error):
         return {"ok": False, "scope": scope, "error": error[:400], "subject": "", "text": "", "html": "",
-                "headers": {}}
+                "headers": {}, "attachments": []}
     errs = template_problems(session, campaign, step, mailbox)
     if errs:
         return fail("template", "; ".join(errs))
@@ -243,13 +279,18 @@ def render_campaign_message(session, campaign, step, lead, mailbox) -> dict:
         if part.strip() and INTERNAL_BRAND.search(part):
             return fail("recipient", f"the {label} mentions the internal platform name after merging")
     from .outreach import plain_parts
-    text_full = text.rstrip() + "\n\n" + footer_text(mailbox)
     base = sanitize_html(html_body) if html_body else plain_parts(text)[1]
-    html_full = _with_footer(base, footer_html(mailbox, centered=bool(html_body)))
+    if has_footer(mailbox):
+        text_full = text.rstrip() + "\n\n" + footer_text(mailbox)
+        html_full = _with_footer(base, footer_html(mailbox, centered=bool(html_body)))
+    else:
+        text_full, html_full = text.rstrip() + "\n", base
     if len(html_full.encode("utf-8")) > MAX_HTML_BYTES:
-        return fail("template", "the HTML is over 90 KB with the footer — Gmail would clip it")
+        return fail("template", "the HTML is over 90 KB — Gmail would clip it")
+    name, data, _err = load_attachment(getattr(step, "attachment_path", "") or "")
     return {"ok": True, "scope": "", "error": "", "subject": subject, "text": text_full, "html": html_full,
-            "headers": {"List-Unsubscribe": list_unsubscribe(mailbox)}}
+            "headers": {"List-Unsubscribe": list_unsubscribe(mailbox)},
+            "attachments": [(name, data)] if name else []}
 
 
 # --------------------------------------------------------------------- HTML sanitizer (stdlib only)

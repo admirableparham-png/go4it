@@ -14,6 +14,23 @@ from scripts import campaign_dryrun as DRY
 from scripts import campaign_setup as SETUP
 
 TEMPLATE = "campaigns/trsharks-anchors"
+PDF = b"%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF\n"
+
+
+@pytest.fixture(autouse=True)
+def tmp_repo(tmp_path, monkeypatch):
+    """The real template text (subject/body) + a sample price-list PDF, in a throwaway repo root."""
+    import pathlib
+    import shutil
+    real = pathlib.Path(__file__).resolve().parents[1] / TEMPLATE
+    dst = tmp_path / TEMPLATE
+    dst.mkdir(parents=True)
+    for f in ("subject.txt", "body.txt"):
+        shutil.copy(real / f, dst / f)
+    (dst / "pricelist.pdf").write_bytes(PDF)
+    monkeypatch.setattr(CR, "_REPO", str(tmp_path))
+    monkeypatch.setattr(SETUP, "BASE", str(tmp_path))
+    return tmp_path
 
 
 @pytest.fixture
@@ -58,12 +75,14 @@ def ctx(monkeypatch):
 def test_the_real_template_is_valid_and_reads_naturally(ctx):
     step, errs = SETUP.load_template(TEMPLATE)
     assert errs == [] and step["subject"] == "Metal Wall Plugs & Butterfly Anchors | Supply Enquiry"
+    assert step["attachment_path"] == "campaigns/trsharks-anchors/pricelist.pdf"
     with Session(ctx) as s:
         c = Campaign(name="T", tenant_id=s.exec(select(User).where(User.email == "trsharks@t")).one().id,
                      request_id=1, mailbox_id=1, status="draft")
         s.add(c); s.commit(); s.refresh(c)
         CAMP.set_sequence(s, c, [step])
         st, mb = CAMP.steps_for(s, c)[0], s.get(MailAccount, 1)
+        mb.sender_company = mb.postal_address = ""          # founder's choice: no visible footer
         got = {}
         for ld in s.exec(select(Lead)).all():
             m = CR.render_campaign_message(s, c, st, ld, mb)
@@ -73,11 +92,43 @@ def test_the_real_template_is_valid_and_reads_naturally(ctx):
         assert "sector in Poland," in got["PL"]["text"] and got["PL"]["text"].startswith("Hi Inoxa team,")
         assert "in the United Arab Emirates," in got["AE"]["text"] and "Hi Dani Trading team" in got["AE"]["text"]
         m = got["CA"]
-        assert "$1,080.00" in m["text"] and "$1,080.00" in m["html"]            # prices in both parts
-        assert "https://qmatalsaha.com/assets/brand/wordmark-dark.png" in m["html"]
-        assert m["html"].index("Qmat Alsaha Goods Wholesalers") > m["html"].index("Best regards")   # footer last
-        assert "attached" not in m["text"].lower()                               # no promise of an attachment
-        assert len(m["html"].encode()) < 20_000
+        assert m["text"].rstrip().endswith("Best regards,\nQmat Alsaha\nSales Department")    # no footer after it
+        assert CR.OPT_OUT_LINE not in m["text"] and m["headers"]["List-Unsubscribe"]          # header still sent
+        assert m["attachments"] == [("pricelist.pdf", PDF)]
+
+
+def test_the_pdf_really_goes_out_as_an_attachment(ctx, monkeypatch):
+    from email import message_from_bytes, policy
+    sent = {}
+
+    class Fake:
+        def __init__(self, *a, **k): pass
+        def starttls(self, **k): pass
+        def login(self, *a): pass
+        def quit(self): pass
+        def send_message(self, msg): sent["raw"] = msg.as_bytes()
+    monkeypatch.setattr(OUT.smtplib, "SMTP", Fake)
+    with Session(ctx) as s:
+        ok, err, _ = OUT.send_via_account(s.get(MailAccount, 1), "b@x.example", "S", "hello", html="<p>hello</p>",
+                                          attachments=[("pricelist.pdf", PDF)])
+        assert ok, err
+    msg = message_from_bytes(sent["raw"], policy=policy.default)
+    att = [p for p in msg.iter_attachments()]
+    assert [a.get_filename() for a in att] == ["pricelist.pdf"] and att[0].get_content() == PDF
+    assert msg.get_body(("plain",)).get_content().strip() == "hello"
+
+
+def test_text_promising_an_attachment_without_a_pdf_is_refused(tmp_repo):
+    (tmp_repo / TEMPLATE / "pricelist.pdf").unlink()
+    _step, errs = SETUP.load_template(TEMPLATE)
+    assert any("no PDF" in e for e in errs)
+
+
+def test_only_real_pdfs_inside_campaigns_can_be_attached(tmp_repo):
+    (tmp_repo / TEMPLATE / "fake.pdf").write_bytes(b"MZ not a pdf")
+    assert "not a real PDF" in CR.load_attachment(f"{TEMPLATE}/fake.pdf")[2]
+    assert "inside the campaigns/ folder" in CR.load_attachment("app/main.py")[2]
+    assert "inside the campaigns/ folder" in CR.load_attachment("campaigns/../.env.pdf")[2]
 
 
 def test_smoke_setup_sends_only_to_the_founder(ctx, capsys):

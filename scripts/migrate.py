@@ -188,6 +188,7 @@ MIGRATIONS = [
     ("mailaccount", "postal_address", "VARCHAR DEFAULT ''"),
     ("campaignstep", "body_html", "VARCHAR DEFAULT ''"),
     ("campaign", "bounce_baseline", "VARCHAR DEFAULT ''"),
+    ("campaignstep", "attachment_path", "VARCHAR DEFAULT ''"),
 ]
 
 

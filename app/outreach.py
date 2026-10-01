@@ -422,7 +422,7 @@ def _from_header(from_name, addr):
 
 
 def send_via_account(account, to_addr, subject, body, html=None, reply_to="", in_reply_to="", references="",
-                     message_id="", headers=None):
+                     message_id="", headers=None, attachments=None):
     """Send an email from a trader's OWN connected MailAccount (its SMTP creds + From = its address).
     Independent of the shared SMTP_* env. If `message_id` is given (a durable RFC id generated + persisted by
     the caller before submission) it becomes the Message-ID header — enabling reply correlation that survives
@@ -458,6 +458,8 @@ def send_via_account(account, to_addr, subject, body, html=None, reply_to="", in
         msg.set_content(body or "")
         if html:
             msg.add_alternative(html, subtype="html")
+        for name, data in (attachments or []):          # campaign template PDFs only (campaign_render.load_attachment)
+            msg.add_attachment(data, maintype="application", subtype="pdf", filename=name)
     except Exception as e:  # noqa: BLE001
         return False, str(e)[:300], ""
     # Phase 11: a failure BEFORE the message is handed over (connect / STARTTLS / login) is the MAILBOX's problem —

@@ -189,6 +189,7 @@ def set_sequence(session, campaign, steps: list, actor=None) -> int:
         session.add(CampaignStep(campaign_id=campaign.id, version=version, step_index=i,
                                  subject=SG.sanitize_header((s.get("subject") or "")[:200]),
                                  body=body, body_html=body_html, template_id=s.get("template_id"),
+                                 attachment_path=(s.get("attachment_path") or "")[:300],
                                  delay_days=int(s.get("delay_days") or 0),
                                  manual_review=bool(s.get("manual_review"))))
     session.commit()
@@ -466,7 +467,8 @@ def send_step(session, campaign, rcpt, mailbox, now=None, sender=None) -> dict:
     # our durable RFC Message-ID becomes the actual Message-ID header of the sent mail (reply-correlation key)
     try:
         okk, err, provider_id = send(mailbox, rcpt.to_email, subject, body, html=msg["html"],
-                                     reply_to=mailbox.email, message_id=cs.rfc_message_id, headers=msg["headers"])
+                                     reply_to=mailbox.email, message_id=cs.rfc_message_id, headers=msg["headers"],
+                                     attachments=msg.get("attachments") or None)
     except Exception as e:  # noqa: BLE001 — a sender that raises must never leave this row stuck in 'sending'
         okk, err, provider_id = False, f"sender error: {e}"[:300], ""
     kind = "" if okk else classify_mailbox_error(err)
@@ -634,11 +636,11 @@ def _make_message_id(mailbox):
 
 
 def _default_sender(mailbox, to_addr, subject, text, html=None, reply_to="", message_id="",
-                    in_reply_to="", references="", headers=None):
+                    in_reply_to="", references="", headers=None, attachments=None):
     from .outreach import send_via_account
     return send_via_account(mailbox, to_addr, subject, text, html=html, reply_to=reply_to,
                             message_id=message_id, in_reply_to=in_reply_to, references=references,
-                            headers=headers)
+                            headers=headers, attachments=attachments)
 
 
 # --------------------------------------------------------------------- lifecycle + reply/bounce stop
