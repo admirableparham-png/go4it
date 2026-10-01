@@ -6863,6 +6863,9 @@ def inbox_outcome(request: Request, lead_id: int, outcome: str = Form("")):
                           "follow_up_later": "follow_up_later"}.get(outcome, "replied"), user)
         pipeline.audit(session, user, "lead", lead_id, "reply_outcome", {"outcome": outcome},
                        tenant_id=lead.seller_id)
+        if outcome in ("positive", "negative", "neutral", "auto_reply", "follow_up_later", "wrong_contact",
+                       "unsubscribed"):           # the reply is reviewed → its Work Queue task is done
+            WQ.resolve_by_key(session, f"review_inbound_reply:lead:{lead_id}", user, f"outcome: {outcome}")
         session.commit()
         _flash(request, "Outcome recorded.")
     return RedirectResponse(f"/inbox/{lead_id}", status_code=303)

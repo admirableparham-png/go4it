@@ -254,6 +254,19 @@ def open_items_for_key(session, key):
                                                WorkItem.status.in_(NONTERMINAL))).all()
 
 
+def open_items_by_prefix(session, prefix):
+    """Non-terminal work items whose idempotency_key starts with `prefix`. A scanner's auto-resolve side walks its own
+    OPEN tasks (few) instead of every record that might once have raised one."""
+    return session.exec(select(WorkItem).where(WorkItem.idempotency_key.startswith(prefix, autoescape=True),
+                                               WorkItem.status.in_(NONTERMINAL))).all()
+
+
+def key_id(key):
+    """The record id at the end of an idempotency_key ('review_dup:cand:12' → 12); None if there is none."""
+    tail = (key or "").rsplit(":", 1)[-1]
+    return int(tail) if tail.isdigit() else None
+
+
 def resolve_by_key(session, key, actor=None, note="") -> int:
     """Complete every OPEN work item with this idempotency_key (the triggering condition is resolved).
     Returns how many were closed. Never raises fatally."""
@@ -482,14 +495,23 @@ def sync_open_duplicates(session, actor=None, inferred=False, budget=None) -> in
         if _capped(budget, n):
             break
         key = f"review_dup:cand:{dc.id}"
-        if already_handled(session, key, dc.status):
+        # a pair re-opened by an unmerge carries its review date → a new instance of the condition, so it re-alerts
+        version = f"open:{dc.reviewed_at:%Y%m%d%H%M%S}" if dc.reviewed_at else dc.status
+        if already_handled(session, key, version):
             continue
         if create_work_item_safe(session, actor=actor, type="review_potential_duplicate",
                                  title="Review potential duplicate",
                                  description=f"Duplicate candidate #{dc.id} ({dc.match_type}) awaiting review.",
                                  tenant_id=dc.tenant_id, related_company_id=dc.left_id, inferred=inferred,
-                                 idempotency_key=key, condition_version=dc.status, source="automatic"):
+                                 idempotency_key=key, condition_version=version, source="automatic"):
             n += 1
+    # an admin disposed of the pair (not a duplicate / merged / linked / deferred) → the review is done.
+    # 'confirmed' stays open: it still needs the merge.
+    for wi in open_items_by_prefix(session, "review_dup:cand:"):
+        cid = key_id(wi.idempotency_key)
+        dc = session.get(DuplicateCandidate, cid) if cid else None
+        if cid and (dc is None or dc.status not in ("open", "confirmed")):
+            resolve_by_key(session, wi.idempotency_key, actor, f"candidate {dc.status if dc else 'removed'}")
     return n
 
 
@@ -511,6 +533,20 @@ def sync_bounced_contacts(session, actor=None, inferred=False, budget=None) -> i
     return n
 
 
+def _failed_by_bounce(session, o) -> bool:
+    """True when handle_bounce marked this outbound failed (the lead was flagged 'bounced', or the address has a bounce
+    recorded at/after this send). replace_invalid_contact (+ high_bounce_rate) already covers a bounce, so it must not
+    raise a second 'Failed outreach' task."""
+    from .models import BounceRecord
+    from .suppression import normalize_email
+    ld = session.get(Lead, o.lead_id) if o.lead_id else None
+    if ld is not None and ld.next_action_note == "bounced":
+        return True
+    em = normalize_email(o.recipient)
+    rec = session.exec(select(BounceRecord).where(BounceRecord.email_normalized == em)).first() if em else None
+    return bool(rec and rec.last_bounce_at and o.created_at and rec.last_bounce_at >= o.created_at)
+
+
 def sync_failed_jobs(session, actor=None, inferred=False, budget=None) -> int:
     n = 0
     sources = [
@@ -525,6 +561,8 @@ def sync_failed_jobs(session, actor=None, inferred=False, budget=None) -> int:
             key = f"{prefix}:{row.id}"
             if already_handled(session, key, "failed"):
                 continue
+            if model is Outreach and _failed_by_bounce(session, row):
+                continue                      # one task per bounce: its replace_invalid_contact
             spec = {"related_outreach_id": row.id, "related_lead_id": row.lead_id} if model is Outreach else {}
             if create_work_item_safe(session, actor=actor, type="failed_system_job",
                                      title=f"{title} #{row.id}", inferred=inferred,
@@ -673,7 +711,8 @@ def _missing_fields(session, p):
 
 def sync_incomplete_products(session, actor=None, inferred=False, budget=None) -> int:
     """One 'incomplete product' task per product missing key fields; version = the sorted missing-field set so a
-    re-broken field re-alerts and a fully-completed product auto-resolves. Skips archived products."""
+    re-broken field re-alerts and a fully-completed product auto-resolves. Skips archived products and closes the
+    open task of an archived (or removed) one."""
     from .models import Product
     n = 0
     for p in session.exec(select(Product).where(Product.active == True)).all():  # noqa: E712
@@ -692,6 +731,11 @@ def sync_incomplete_products(session, actor=None, inferred=False, budget=None) -
                                  description=f"Missing: {', '.join(miss)}.", related_product_id=p.id,
                                  idempotency_key=key, condition_version=version, inferred=inferred):
             n += 1
+    for wi in open_items_by_prefix(session, "product_incomplete:product:"):
+        pid = key_id(wi.idempotency_key)
+        p = session.get(Product, pid) if pid else None
+        if pid and (p is None or not p.active):
+            resolve_by_key(session, wi.idempotency_key, actor, "product archived" if p else "product removed")
     return n
 
 
@@ -1005,9 +1049,15 @@ def sync_settlements_review(session, actor=None, inferred=False, budget=None) ->
 
 
 # --- Phase 8 intelligence scanners (bounded by count + wall-clock; condition-versioned) ---------------
+# an opportunity in these statuses still awaits the review decision (research/supply are detours on the way)
+_OPP_UNDECIDED = ("new", "needs_research", "needs_supply", "ready_for_review")
+
+
 def sync_opportunities_needing_review(session, actor=None, inferred=False, budget=None) -> int:
     """A new/ready opportunity → a review task. condition_version is a score bucket so a materially changed
-    score regenerates the task, while an unchanged one never does."""
+    score regenerates the task, while an unchanged one never does. Once decided (approved / monitoring / rejected /
+    archived / ...) the task closes; a research or supply detour keeps it open, so an opportunity that comes back to
+    ready_for_review still has its task."""
     from .models import Opportunity
     n = 0
     stop = _deadline()
@@ -1024,6 +1074,11 @@ def sync_opportunities_needing_review(session, actor=None, inferred=False, budge
                                  tenant_id=o.tenant_id, related_opportunity_id=o.id,
                                  idempotency_key=key, condition_version=bucket, inferred=inferred):
             n += 1
+    for wi in open_items_by_prefix(session, "opportunity_needs_review:opp:"):
+        oid = key_id(wi.idempotency_key)
+        o = session.get(Opportunity, oid) if oid else None
+        if oid and (o is None or o.status not in _OPP_UNDECIDED):
+            resolve_by_key(session, wi.idempotency_key, actor, f"opportunity {o.status if o else 'removed'}")
     return n
 
 
@@ -1060,23 +1115,37 @@ def sync_demand_signals(session, actor=None, inferred=False, budget=None) -> int
     return n
 
 
+def _legacy_source_handled(session, key, label, anchor) -> bool:
+    """Tasks raised before the episode-dated version carry the bare label. One raised during THIS episode (on/after its
+    last success) still counts as handled, so the version change never re-raises an alert an admin dismissed."""
+    stmt = select(WorkItem.id).where(WorkItem.idempotency_key == key, WorkItem.condition_version == label)
+    if anchor is not None:
+        stmt = stmt.where(WorkItem.created_at >= anchor)
+    return session.exec(stmt).first() is not None
+
+
 def sync_stale_sources(session, actor=None, inferred=False, budget=None) -> int:
-    """A stale/failed configured data source → a source_stale_failed task."""
+    """A stale/failed configured data source → a source_stale_failed task; it closes once the source is no longer
+    stale/failed. condition_version = label + the last-success date (the episode), so a later stale episode alerts
+    again even after a dismissal, while the same episode never re-raises."""
     from . import data_sources as DS
     n = 0
     stop = _deadline()
     for h in DS.source_health(session):
-        if _capped(budget, n) or datetime.utcnow() > stop:
-            break
-        if h["freshness"] not in ("Stale", "Failed"):
-            continue
         key = f"source_stale_failed:src:{h['key']}"
-        if already_handled(session, key, h["freshness"]):
+        if h["freshness"] not in ("Stale", "Failed"):
+            resolve_by_key(session, key, actor, f"source {h['freshness'].lower()}")
+            continue
+        if _capped(budget, n) or datetime.utcnow() > stop:
+            continue
+        anchor = h.get("last_success")
+        version = f"{h['freshness']}:{anchor:%Y%m%d}" if anchor else f"{h['freshness']}:never"
+        if already_handled(session, key, version) or _legacy_source_handled(session, key, h["freshness"], anchor):
             continue
         if create_work_item_safe(session, actor=actor, type="source_stale_failed",
                                  title=f"Data source {h['label']} is {h['freshness'].lower()}",
                                  description=(h.get("error") or "")[:300],
-                                 idempotency_key=key, condition_version=h["freshness"], inferred=inferred):
+                                 idempotency_key=key, condition_version=version, inferred=inferred):
             n += 1
     return n
 
