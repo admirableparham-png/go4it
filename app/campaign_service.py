@@ -237,6 +237,249 @@ def start_problems(session, campaign) -> list:
     return probs
 
 
+# --------------------------------------------------------------------- follow-ups (Phase 12)
+# A follow-up is the NEXT step of the SAME sequence version, sent as a reply in the thread of the emails the buyer
+# really got. Adding one to a live campaign never re-versions it (set_sequence on a running campaign makes a version
+# no enrolled buyer is on): append_step adds the email in place while the campaign is paused, reopen_completed gives
+# it to the buyers who had already finished, and a held step (manual_review) waits — using no send slot — until
+# approve_step releases it. Ops entry point: scripts/campaign_followup.py.
+FINAL_CAMPAIGN = ("cancelled", "archived")
+
+
+def thread_anchor(session, campaign, rcpt) -> dict:
+    """The thread a follow-up replies in: every email of this campaign the recipient was really sent (any version),
+    oldest first. {} when there is none — a follow-up then has nothing to reply to and is never sent.
+    {in_reply_to: the newest Message-ID, references: all of them, subject: the first email's subject as sent,
+    last_sent_at: when the newest went out}."""
+    rows = session.exec(select(CampaignSend).where(
+        CampaignSend.campaign_id == campaign.id, CampaignSend.recipient_id == rcpt.id,
+        CampaignSend.status == "sent", CampaignSend.rfc_message_id != "")
+        .order_by(CampaignSend.sent_at, CampaignSend.id)).all()
+    if not rows:
+        return {}
+    ids = [cs.rfc_message_id for cs in rows]
+    first = session.exec(select(Outreach).where(Outreach.message_id == ids[0], Outreach.direction == "out")).first()
+    return {"in_reply_to": ids[-1], "references": " ".join(ids), "subject": first.subject if first else "",
+            "last_sent_at": rows[-1].sent_at or rows[-1].updated_at}
+
+
+def _followup_block(session, campaign, rcpt, lead) -> str:
+    """Why this recipient may get NO further email (the recipient-level part of can_send), or ''."""
+    if rcpt.suppressed or SUP.is_suppressed(session, rcpt.to_email, tenant_id=campaign.tenant_id):
+        return "suppressed"
+    if rcpt.reply_outcome or (lead is not None and lead.buyer_replied_at is not None):
+        return "replied"
+    if rcpt.soft_bounce_count > 0:
+        return "soft-bounced"
+    if lead is None:
+        return "no buyer record"
+    if not (lead.email or "").strip():
+        return "no active contact email"
+    return ""
+
+
+def build_step(campaign, version, index, s) -> CampaignStep:
+    """A CampaignStep (not added to the session) from a step dict, normalized exactly as set_sequence stores one."""
+    raw_html = (s.get("body_html") or "")[:100_000]
+    body_html = CR.sanitize_html(raw_html) if raw_html.strip() else ""
+    body = (s.get("body") or "")[:8000] or (CR.html_to_text(body_html)[:8000] if body_html else "")
+    return CampaignStep(campaign_id=campaign.id, version=version, step_index=index,
+                        subject=SG.sanitize_header((s.get("subject") or "")[:200]), body=body, body_html=body_html,
+                        template_id=s.get("template_id"), attachment_path=(s.get("attachment_path") or "")[:300],
+                        plain_text_only=bool(s.get("plain_text_only")),
+                        list_unsubscribe=bool(s.get("list_unsubscribe", True)),
+                        delay_days=max(0, int(s.get("delay_days") or 0)), manual_review=bool(s.get("manual_review")))
+
+
+def same_email(steps, row):
+    """The step among `steps` with exactly row's subject + text + HTML (a re-run adding the same email), or None."""
+    return next((st for st in steps if (st.subject, st.body, st.body_html) == (row.subject, row.body, row.body_html)),
+                None)
+
+
+def _step_tried(session, campaign, version, index) -> int:
+    """How many sends of this step exist at all (sent, failed or in flight) — 0 = it never went to anyone."""
+    return session.exec(select(func.count()).where(CampaignSend.campaign_id == campaign.id,
+                                                   CampaignSend.sequence_version == version,
+                                                   CampaignSend.step_index == index)).one()
+
+
+def append_step(session, campaign, step: dict, actor=None, apply=True) -> dict:
+    """Add ONE email to the END of the campaign's CURRENT sequence version, in place. The emails already there are never
+    touched and recipients stay on their version, so the per-version duplicate guard keeps covering what was sent.
+    Refused while the campaign is running (pause it first), for a cancelled/archived campaign, one without a first
+    email, when the next index is taken, or behind a held email that never went out (replace that draft instead);
+    validated like the send path (merge fields, internal brand, seller names, the PDF, the mailbox).
+    step['manual_review']=True holds it until approve_step. Idempotent: the same email (subject + text + HTML) already
+    in the sequence is not added again. apply=False only checks. Returns {step_index, added, error}."""
+    out = {"step_index": None, "added": False, "error": ""}
+    if apply and campaign.status == "running":
+        out["error"] = "pause the campaign first — a running campaign's sequence is never edited in place"
+        return out
+    if campaign.status in FINAL_CAMPAIGN:
+        out["error"] = f"the campaign is {campaign.status}"
+        return out
+    v = campaign.sequence_version
+    existing = steps_for(session, campaign, v)
+    if not existing:
+        out["error"] = "the campaign has no first email yet — set its sequence first"
+        return out
+    row = build_step(campaign, v, len(existing), step)
+    same = same_email(existing, row)
+    if same is not None:                                  # a re-run with the same email: nothing to add
+        out["step_index"] = same.step_index
+        return out
+    if any(st.step_index >= row.step_index for st in existing):
+        out["error"] = f"email {row.step_index + 1} already exists in sequence v{v}"
+        return out
+    last = existing[-1]
+    if last.manual_review and not _step_tried(session, campaign, v, last.step_index):
+        # a revised draft must REPLACE the held one — never queue behind it (approving it would send the old text)
+        out["error"] = (f"email {last.step_index + 1} is still held and never sent — approve it first, or change its "
+                        "text with replace_held_step (campaign_followup.py add … --replace)")
+        return out
+    from .models import MailAccount
+    mb = session.get(MailAccount, campaign.mailbox_id) if campaign.mailbox_id else None
+    errs = CR.template_problems(session, campaign, row, mb)
+    if errs:
+        out["error"] = "; ".join(errs)
+        return out
+    out["step_index"] = row.step_index
+    if not apply:
+        return out
+    session.add(row)
+    try:
+        pipeline.audit(session, actor, "campaign", campaign.id, "append_step",
+                       {"version": v, "step_index": row.step_index, "delay_days": row.delay_days,
+                        "manual_review": row.manual_review}, tenant_id=campaign.tenant_id)
+    except Exception:  # noqa: BLE001
+        pass
+    session.commit()
+    out["added"] = True
+    return out
+
+
+def replace_held_step(session, campaign, step: dict, actor=None, apply=True) -> dict:
+    """Change the text of the LAST email while it is still HELD and has never gone to anyone (a draft revised before
+    its approval). It stays held — new text, new approval — and keeps its delay, which every waiting buyer's due date
+    already counts. Not while the campaign is running; validated like append_step. apply=False only checks.
+    Returns {step_index, replaced, error}."""
+    out = {"step_index": None, "replaced": False, "error": ""}
+    v = campaign.sequence_version
+    steps = steps_for(session, campaign, v)
+    last = steps[-1] if len(steps) > 1 else None
+    if apply and campaign.status == "running":
+        out["error"] = "pause the campaign first — a running campaign's sequence is never edited in place"
+    elif campaign.status in FINAL_CAMPAIGN:
+        out["error"] = f"the campaign is {campaign.status}"
+    elif last is None:
+        out["error"] = "there is no follow-up to replace"
+    elif not last.manual_review:
+        out["error"] = f"email {last.step_index + 1} is approved — its text no longer changes"
+    elif _step_tried(session, campaign, v, last.step_index):
+        out["error"] = f"email {last.step_index + 1} already went out — its text no longer changes"
+    if out["error"]:
+        return out
+    row = build_step(campaign, v, last.step_index, dict(step, manual_review=True))
+    if row.delay_days != last.delay_days:
+        out["error"] = (f"email {last.step_index + 1} keeps its {last.delay_days}-day delay — every waiting buyer's "
+                        "due date already counts it")
+        return out
+    from .models import MailAccount
+    mb = session.get(MailAccount, campaign.mailbox_id) if campaign.mailbox_id else None
+    errs = CR.template_problems(session, campaign, row, mb)
+    if errs:
+        out["error"] = "; ".join(errs)
+        return out
+    out["step_index"] = last.step_index
+    if not apply:
+        return out
+    for k in ("subject", "body", "body_html", "attachment_path", "plain_text_only", "list_unsubscribe"):
+        setattr(last, k, getattr(row, k))
+    session.add(last)
+    try:
+        pipeline.audit(session, actor, "campaign", campaign.id, "replace_held_step",
+                       {"version": v, "step_index": last.step_index}, tenant_id=campaign.tenant_id)
+    except Exception:  # noqa: BLE001
+        pass
+    session.commit()
+    out["replaced"] = True
+    return out
+
+
+def reopen_completed(session, campaign, apply=False, actor=None, steps=None) -> dict:
+    """Give an appended follow-up to the buyers who had already FINISHED the sequence: each 'completed' recipient with
+    a next email in its version becomes 'sent' again, due at the time of the last email it really got + that email's
+    delay_days (the same per-buyer timing as a normal step). Never a buyer that replied, bounced (hard or soft),
+    unsubscribed or is suppressed, and never one without a sent email to reply to. Dry run unless apply=True;
+    idempotent (a re-opened recipient is no longer 'completed'). `steps` previews the current version with an email
+    that is not added yet (dry run only).
+    Returns {eligible, reopened, due: [(recipient_id, due_at)], left: {why: count}}."""
+    if apply and steps is not None:
+        raise ValueError("apply re-opens against the stored sequence only")
+    out = {"eligible": 0, "reopened": 0, "due": [], "left": {}}
+    if campaign.status in FINAL_CAMPAIGN:
+        out["error"] = f"the campaign is {campaign.status}"
+        return out
+    by_version = {campaign.sequence_version: list(steps)} if steps is not None else {}
+    due, left = [], {}
+    for r in session.exec(select(CampaignRecipient).where(CampaignRecipient.campaign_id == campaign.id,
+                          CampaignRecipient.status == "completed").order_by(CampaignRecipient.id)).all():
+        if r.sequence_version not in by_version:
+            by_version[r.sequence_version] = steps_for(session, campaign, r.sequence_version)
+        seq = by_version[r.sequence_version]
+        why = "no next email" if r.current_step >= len(seq) else \
+            _followup_block(session, campaign, r, session.get(Lead, r.lead_id) if r.lead_id else None)
+        anchor = {} if why else thread_anchor(session, campaign, r)
+        why = why or ("" if anchor else "no sent email to reply to")
+        if why:
+            left[why] = left.get(why, 0) + 1
+            continue
+        due.append((r, anchor["last_sent_at"] + timedelta(days=max(0, seq[r.current_step].delay_days))))
+    out.update(eligible=len(due), due=[(r.id, at) for r, at in due], left=left)
+    if apply and due:
+        now = datetime.utcnow()
+        for r, at in due:
+            r.status, r.next_action_at, r.updated_at = "sent", at, now
+            session.add(r)
+        try:
+            pipeline.audit(session, actor, "campaign", campaign.id, "reopen_completed",
+                           {"reopened": len(due)}, tenant_id=campaign.tenant_id)
+        except Exception:  # noqa: BLE001
+            pass
+        session.commit()
+        out["reopened"] = len(due)
+    return out
+
+
+def approve_step(session, campaign, step_index, actor=None, version=None) -> tuple:
+    """Release a HELD email (manual_review): the worker sends it from its next cycle, to each buyer when due.
+    Idempotent (an approved email stays approved, audited once). Refuses an email that does not exist, one that would
+    not render safely, and a cancelled/archived campaign. Returns (ok, message)."""
+    if campaign.status in FINAL_CAMPAIGN:
+        return False, f"the campaign is {campaign.status}"
+    v = campaign.sequence_version if version is None else version
+    st = next((x for x in steps_for(session, campaign, v) if x.step_index == step_index), None)
+    if st is None:
+        return False, f"there is no email {step_index + 1} in sequence v{v}"
+    if not st.manual_review:
+        return True, f"email {step_index + 1} is already approved"
+    from .models import MailAccount
+    mb = session.get(MailAccount, campaign.mailbox_id) if campaign.mailbox_id else None
+    errs = CR.template_problems(session, campaign, st, mb)
+    if errs:
+        return False, "; ".join(errs)
+    st.manual_review = False
+    session.add(st)
+    try:
+        pipeline.audit(session, actor, "campaign", campaign.id, "approve_step",
+                       {"version": v, "step_index": step_index}, tenant_id=campaign.tenant_id)
+    except Exception:  # noqa: BLE001
+        pass
+    session.commit()
+    return True, f"email {step_index + 1} approved"
+
+
 # --------------------------------------------------------------------- send safety + idempotent send
 def can_send(session, campaign, rcpt, mailbox, now=None) -> tuple:
     """The full pre-send safety chain. Returns (ok, reason). Verified for EVERY send."""
@@ -260,6 +503,8 @@ def can_send(session, campaign, rcpt, mailbox, now=None) -> tuple:
     steps = steps_for(session, campaign, rcpt.sequence_version)
     if rcpt.current_step >= len(steps):
         return False, "sequence complete"
+    if rcpt.current_step > 0 and rcpt.soft_bounce_count > 0:
+        return False, "soft-bounced"        # an email to this address already bounced — no follow-up chases it
     step = steps[rcpt.current_step]
     if step.manual_review:
         return False, "manual-review step"
@@ -322,7 +567,7 @@ CAMPAIGN_LEVEL_SKIPS = ("outreach paused", "campaign not running", "no mailbox",
                         "mailbox paused or disabled", "outside sending window", "daily limit reached")
 # can_send reasons that are permanent for the recipient — settled to a terminal status so the campaign can finish
 _TERMINAL_SKIP = {"suppressed": "suppressed", "already replied": "replied", "no active contact email": "skipped",
-                  "sequence complete": "completed"}
+                  "sequence complete": "completed", "soft-bounced": "skipped"}
 
 
 def is_campaign_level_skip(reason) -> bool:
@@ -575,7 +820,12 @@ def send_step(session, campaign, rcpt, mailbox, now=None, sender=None) -> dict:
     step_index = rcpt.current_step
     step = steps_for(session, campaign, rcpt.sequence_version)[step_index]
     ld = session.get(Lead, rcpt.lead_id) if rcpt.lead_id else None
-    msg = CR.render_campaign_message(session, campaign, step, ld, mailbox)
+    # Phase 12: a follow-up is ALWAYS a reply in the buyer's own thread — never a "Re:" to an email they never got
+    thread = thread_anchor(session, campaign, rcpt) if step_index > 0 else {}
+    if step_index > 0 and not thread:
+        return _render_failed(session, campaign, rcpt, {"scope": "recipient",
+                                                        "error": "follow-up has no sent email to reply to"}, now)
+    msg = CR.render_campaign_message(session, campaign, step, ld, mailbox, thread_subject=thread.get("subject", ""))
     if not msg["ok"]:
         return _render_failed(session, campaign, rcpt, msg, now)
     cs = claim_send(session, campaign, rcpt, step_index, now)
@@ -595,11 +845,13 @@ def send_step(session, campaign, rcpt, mailbox, now=None, sender=None) -> dict:
         return {"status": "limited", "reason": "daily limit reached"}
     subject, body = msg["subject"], msg["text"]
     send = sender or _default_sender
-    # our durable RFC Message-ID becomes the actual Message-ID header of the sent mail (reply-correlation key)
+    # our durable RFC Message-ID becomes the actual Message-ID header of the sent mail (reply-correlation key); a
+    # follow-up carries In-Reply-To/References to the emails this buyer already got, so it lands in the same thread
     try:
         okk, err, provider_id = send(mailbox, rcpt.to_email, subject, body, html=msg["html"] or None,
                                      reply_to=mailbox.email, message_id=cs.rfc_message_id, headers=msg["headers"],
-                                     attachments=msg.get("attachments") or None)
+                                     attachments=msg.get("attachments") or None,
+                                     in_reply_to=thread.get("in_reply_to", ""), references=thread.get("references", ""))
     except Exception as e:  # noqa: BLE001 — a sender that raises must never leave this row stuck in 'sending'
         okk, err, provider_id = False, f"sender error: {e}"[:300], ""
     kind = "" if okk else classify_mailbox_error(err)

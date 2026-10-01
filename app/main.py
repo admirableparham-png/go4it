@@ -3127,8 +3127,9 @@ def lead_outreach(request: Request, lead_id: int, channel: str = Form("email"),
             recipient=(recipient or lead.email or lead.phone or "")[:200],
             subject=subject[:200], body=body[:4000], status=status, error=error,
             message_id=mid, user_id=user.id if user else None))
-        # arm the auto follow-up on the FIRST successful email (worker sends FU#1 at +FOLLOWUP_DAYS_1)
-        if status == "sent" and prior_sent == 0 and FOLLOWUP_ENABLED:
+        # arm the auto follow-up on the FIRST successful email (worker sends FU#1 at +FOLLOWUP_DAYS_1) — never for a
+        # managed buyer, whose follow-ups are campaign steps (app/followups.py skips managed leads too)
+        if status == "sent" and prior_sent == 0 and FOLLOWUP_ENABLED and not lead.managed:
             lead.next_action_at = datetime.utcnow() + timedelta(days=FOLLOWUP_DAYS_1)
             lead.next_action_note = "followup-1"
             session.add(lead)

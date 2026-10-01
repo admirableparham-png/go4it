@@ -1,0 +1,2 @@
+plain_text_only=no
+list_unsubscribe=no

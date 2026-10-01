@@ -28,6 +28,8 @@ MAX_SUBJECT = 200
 _PLACEHOLDER = re.compile(r"\{\s*([A-Za-z_]\w*)\s*\}")
 _FOREIGN_TAG = re.compile(r"\{\{.*?\}\}|\*\|.*?\|\*|%%[^%\s]+%%|\[\[.*?\]\]", re.S)
 INTERNAL_BRAND = re.compile(r"(?<![a-z0-9])go?-?4-?it(?![a-z0-9])", re.I)
+_REPLY_SUBJECT = re.compile(r"\s*re\s*:", re.I)                    # a follow-up step written as "Re: …"
+_REPLY_PREFIXES = re.compile(r"^(?:\s*(?:re|fwd?)\s*:)+\s*", re.I)  # "Re: Fwd: RE:" in front of a thread subject
 
 
 # --------------------------------------------------------------------- template + sender validation
@@ -249,9 +251,12 @@ def template_problems(session, campaign, step, mailbox) -> list:
 
 
 # --------------------------------------------------------------------- the render
-def render_campaign_message(session, campaign, step, lead, mailbox) -> dict:
+def render_campaign_message(session, campaign, step, lead, mailbox, thread_subject="") -> dict:
     """{ok, scope, error, subject, text, html, headers}. scope='template' = the step/mailbox itself is wrong (fix it
-    once, the campaign should pause); scope='recipient' = only this buyer can't be rendered (skip them). Reads only."""
+    once, the campaign should pause); scope='recipient' = only this buyer can't be rendered (skip them). Reads only.
+    thread_subject = the subject this buyer's first email really went out with (campaign_service.thread_anchor): a
+    follow-up step whose subject starts with "Re:" becomes "Re: <that subject>", so it reads as a reply in the same
+    conversation even if the buyer's details changed since."""
     def fail(scope, error):
         return {"ok": False, "scope": scope, "error": error[:400], "subject": "", "text": "", "html": "",
                 "headers": {}, "attachments": []}
@@ -269,6 +274,9 @@ def render_campaign_message(session, campaign, step, lead, mailbox) -> dict:
     missing = m1 | m2 | m3
     if missing:
         return fail("recipient", "no value for " + ", ".join("{%s}" % k for k in sorted(missing)))
+    thread = _REPLY_PREFIXES.sub("", thread_subject or "").strip()
+    if thread and _REPLY_SUBJECT.match(subject_t):     # the length / seller / brand checks below see the final subject
+        subject = "Re: " + thread
     subject = SG.sanitize_header(subject)
     if len(subject) > MAX_SUBJECT:
         return fail("recipient", "the subject is over 200 characters after merging")
