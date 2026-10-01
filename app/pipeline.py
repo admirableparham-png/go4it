@@ -8,11 +8,13 @@ inferring "reached" from the current stage — so a Lost/Disqualified buyer is n
 """
 import json
 import re
+import unicodedata
 from datetime import datetime
 
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
 
+from .countries import _NAMES as _COUNTRY_NAMES
 from .models import AuditLog, Lead, SellerUpdate, StageEvent
 
 # --------------------------------------------------------------------------- stages
@@ -87,13 +89,12 @@ def can_transition(from_stage, to_stage):
 # --------------------------------------------------------------------------- anonymization
 def anon_prospect(lead):
     """The ONLY per-buyer data a seller may receive. No company/contact/email/phone/website/source_url/
-    notes/tracking_code/db-id — ever."""
+    notes/tracking_code/db-id — ever. No city either: in a niche market, city + country can name the buyer."""
     return {
         "anon_ref": lead.anon_ref or "",
         "stage": PUBLIC_STAGE_LABEL.get(lead.pipeline_stage, "In progress"),
         "stage_key": lead.pipeline_stage,
         "country": lead.dest_country or "",
-        "region": lead.dest_city or "",
         "category": lead.buyer_category or "",
         "size_band": lead.company_size_band or "",
         "fit_score": int(lead.fit_score or 0),
@@ -248,12 +249,17 @@ def request_funnel(session, sr):
 
 
 # --------------------------------------------------------------------------- sanitization
+# bare domains: ANY 2-letter country ending (.pl .de .it .ca .nz .se .ch …) plus the common generic ones. Legal
+# forms (.ltd/.llc/.gmbh) are left out on purpose: "Co.Ltd" in a company name is not a website.
+_GENERIC_TLDS = ("com|net|org|info|biz|shop|store|online|site|website|xyz|app|dev|tech|pro|group|global|trade|"
+                 "company|business|email|world|asia|mobi|services|solutions|supply|tools|center|centre|systems|"
+                 "industries|international")
 _PII_PATTERNS = [
     ("email", re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")),
     ("mailto/tel", re.compile(r"\b(?:mailto|tel):", re.I)),
     ("whatsapp", re.compile(r"(?:wa\.me/|whatsapp)", re.I)),
     ("url", re.compile(r"\b(?:https?://|www\.)\S+", re.I)),
-    ("domain", re.compile(r"\b[a-z0-9][a-z0-9-]{1,}\.(?:com|net|org|io|co|ir|iq|ge|tr|uz|ae|ru|info|biz|me|shop|store)\b", re.I)),
+    ("domain", re.compile(r"\b[a-z0-9][a-z0-9-]{1,}\.(?:[a-z]{2}|" + _GENERIC_TLDS + r")\b", re.I)),
     ("phone", re.compile(r"(?:\+|00)\d[\d\s().\-]{6,}\d|\b\d[\d\s().\-]{8,}\d\b")),
 ]
 
@@ -271,6 +277,138 @@ def sanitize_scan(text):
                 seen.add(key)
                 hits.append({"kind": kind, "match": frag})
     return hits
+
+
+# --------------------------------------------------------------------------- request-scoped buyer denylist
+# The pattern scan cannot know a buyer's NAME or CITY. Every admin-authored text that can reach a seller (published
+# updates, chat, answers, seller-safe deliveries) is also matched against the request's own buyers: company names
+# (4+ chars, legal form dropped), emails, website hosts, cities and phone digits.
+_FOLD_CHARS = str.maketrans({"ł": "l", "ø": "o", "æ": "ae", "œ": "oe", "ß": "ss", "đ": "d", "ð": "d", "þ": "th",
+                             "ı": "i"})
+
+
+def _fold(s):
+    """Lower-case, accent-free, whitespace-collapsed — the one form needles and text are compared in, so 'Kraków',
+    'KRAKOW' and 'krakow' all match."""
+    s = unicodedata.normalize("NFKD", str(s or "").lower().translate(_FOLD_CHARS))
+    return " ".join("".join(ch for ch in s if not unicodedata.combining(ch)).split())
+
+
+# a country (the seller already sees it) or a generic place word in a buyer's name/city field identifies nobody
+_NOT_A_NEEDLE = ({_fold(n) for n in _COUNTRY_NAMES.values()} | {_fold(n) for n in _NAME_ISO}
+                 | {"usa", "uk", "ksa", "england", "scotland", "wales", "northern ireland", "great britain", "czechia",
+                    "holland", "america", "europe", "middle east", "gcc", "asia", "africa", "north america",
+                    "south america", "latin america", "nationwide", "national", "worldwide", "international",
+                    "global", "online", "multiple", "various", "several", "head office", "headquarters", "branches",
+                    "multi-location", "countrywide", "unknown"})
+# trade words that are also some buyer's brand ('Fastener Agencies' on fastener.co.nz) or whole name ('Fixings') —
+# never a needle on their own, or every update about the product would be blocked
+_TRADE_WORDS = {"fastener", "fasteners", "fastening", "fixing", "fixings", "anchor", "anchors", "bolt", "bolts",
+                "screw", "screws", "tool", "tools", "hardware", "supply", "supplies", "building", "trade", "trading",
+                "steel", "metal", "metals", "industrial", "direct", "express", "group", "global", "home", "house",
+                "drywall", "plaster", "wholesale", "united", "general", "power", "prime", "star", "best", "royal"}
+_EMAIL_RE = _PII_PATTERNS[0][1]
+_DIGIT_RUN = re.compile(r"\d[\d\s().\-/]*\d")
+_MIN_NEEDLE = 4                 # shorter names/cities ('ACE', 'ON') would match ordinary text
+_MIN_PHONE_DIGITS = 7           # a phone matches on its last 7 digits, however it is written
+
+
+def _host_label(host):
+    """'richelieu.com' -> 'richelieu', 'shop.toolbank.co.uk' -> 'toolbank'."""
+    parts = (host or "").split(".")
+    if len(parts) >= 3 and parts[-2] in ("co", "com", "org", "net", "ac", "gov", "edu") and len(parts[-1]) == 2:
+        return parts[-3]
+    return parts[-2] if len(parts) >= 2 else ""
+
+
+def denylist_needles(leads):
+    """[(kind, folded needle, shown)] for the given buyers — what a seller-visible text must never contain."""
+    from .campaign_render import display_company       # lazy: keeps this module dependency-light (no cycles)
+    from .company_service import normalize_domain
+    out, seen = [], set()
+
+    def add(kind, value):
+        shown = " ".join(str(value or "").split()).strip(" ,.;:-")
+        folded = _fold(shown)
+        if kind == "buyer phone":
+            ok = len(folded) >= _MIN_PHONE_DIGITS
+        else:
+            ok = (len(folded) >= _MIN_NEEDLE and folded not in _NOT_A_NEEDLE
+                  and not folded.replace(" ", "").isdigit()
+                  and not (kind == "buyer name" and folded in _TRADE_WORDS))
+        if ok and (kind, folded) not in seen:
+            seen.add((kind, folded))
+            out.append((kind, folded, shown))
+
+    for ld in leads:
+        name = getattr(ld, "buyer_company", "") or ""
+        brand = display_company(name)                           # "Richelieu Hardware Ltd" -> "Richelieu Hardware"
+        add("buyer name", name)
+        add("buyer name", brand)
+        for inner in re.findall(r"\(([^()]*)\)", name):         # "IHL Canada (Investments Hardware Ltd.)"
+            add("buyer name", display_company(inner))
+        emails = [em.lower() for em in _EMAIL_RE.findall(getattr(ld, "email", "") or "")]
+        hosts = {normalize_domain(em) for em in emails} | {normalize_domain(getattr(ld, "website", "") or "")}
+        hosts.discard("")                                       # '' = gmail & co (never a buyer identity)
+        for em in emails:
+            add("buyer email", em)
+        for host in sorted(hosts):
+            add("buyer website", host)
+        # the brand alone ("Richelieu") when it IS the buyer's own web/mail domain — strong evidence it names them
+        first = re.sub(r"[^\w-]+", "", (brand.split() or [""])[0])
+        if len(brand.split()) > 1 and _fold(first) in {_host_label(h) for h in hosts}:
+            add("buyer name", first)
+        city = re.sub(r"\([^()]*\)", " ", getattr(ld, "dest_city", "") or "")   # "(14 branches across …)"
+        for part in re.split(r"[,/;&|+]+|\s-\s|\band\b|\bor\b", city, flags=re.I):
+            add("buyer city", re.sub(r"\S*\d\S*", " ", part))   # postcodes / districts ("Dublin 22")
+        for run in _DIGIT_RUN.findall(getattr(ld, "phone", "") or ""):
+            add("buyer phone", re.sub(r"\D", "", run)[-_MIN_PHONE_DIGITS:])
+    return out
+
+
+def denylist_hits(text, needles):
+    """Hits of `needles` (from denylist_needles) in `text`: names/cities as whole words, emails/hosts as whole
+    addresses, phones by digits whatever the separators."""
+    t = text or ""
+    hay = _fold(t)
+    runs = [re.sub(r"\D", "", r) for r in _DIGIT_RUN.findall(t)]
+    hits = []
+    for kind, needle, shown in needles:
+        if kind == "buyer phone":
+            found = any(needle in r for r in runs)
+        elif needle not in hay:
+            found = False
+        elif kind in ("buyer email", "buyer website"):
+            found = re.search(r"(?<![\w-])" + re.escape(needle) + r"(?![\w-])", hay) is not None
+        else:
+            found = re.search(r"(?<!\w)" + re.escape(needle) + r"(?!\w)", hay) is not None
+        if found:
+            hits.append({"kind": kind, "match": shown[:80]})
+    return hits
+
+
+def request_denylist(session, sr):
+    """Needles for every buyer a text about request `sr` must never name: the request's own buyers plus the seller's
+    other managed buyers (still scoped to that one seller — never the whole database)."""
+    cond = Lead.request_id == sr.id
+    if sr.owner_id:
+        cond = cond | ((Lead.managed == True) & (Lead.seller_id == sr.owner_id))  # noqa: E712
+    return denylist_needles(session.exec(select(Lead).where(cond)).all())
+
+
+def seller_text_hits(session, sr, text, needles=None):
+    """Everything an admin must remove before `text` may reach the seller of `sr`: contact/PII patterns + the
+    request's buyer denylist. Empty list = safe to show."""
+    if needles is None:
+        needles = request_denylist(session, sr)
+    return sanitize_scan(text) + denylist_hits(text, needles)
+
+
+def link_hits(link, needles):
+    """A delivered link is a URL by nature, so only contact schemes, addresses and the buyers' own identifiers
+    (website host, name, …) count against it."""
+    return ([h for h in sanitize_scan(link) if h["kind"] in ("email", "mailto/tel", "whatsapp")]
+            + denylist_hits(link, needles))
 
 
 def strip_seller_identity(text, seller, seller_emails=(), extra_names=()):

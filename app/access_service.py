@@ -1,6 +1,6 @@
 """Phase 10 — access-management operations (create user, set role, grant/deny permission, change status,
-update profile). Every mutation runs the safety controls + writes an immutable AccessAuditLog. Routes AND tests
-call these, so authorization can't be bypassed by a UI path. Returns (ok, message).
+update profile, change login email). Every mutation runs the safety controls + writes an immutable AccessAuditLog.
+Routes AND tests call these, so authorization can't be bypassed by a UI path. Returns (ok, message).
 
 Safety controls enforced here (server-side, default-deny):
   * only a holder of `users.manage` may change anyone's access;
@@ -11,8 +11,10 @@ Safety controls enforced here (server-side, default-deny):
   * a SELLER can never be granted a seller-forbidden (buyer-PII/internal) permission — the hard rule wins;
   * secrets (passwords/keys/tokens) are never written to the audit log.
 """
+import re
 from datetime import datetime
 
+from sqlalchemy import func
 from sqlmodel import select
 
 from . import authz
@@ -156,15 +158,53 @@ def reset_password(session, actor, target, password):
     return True, "password reset"
 
 
+_EMAIL_FORMAT = re.compile(r"^[a-z0-9._%+'-]+@[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,}$")
+
+
+def change_email(session, actor, target, new_email, *, reason=""):
+    """Change a login email (the login ID). Same guards as a password reset: users.manage, and only a Founder may
+    change a Founder's. Lower-cased + format-checked, never a duplicate (any case); revokes the target's sessions so
+    the change takes effect everywhere at once; audited (the address is not a secret)."""
+    if not authz.has_permission(session, actor, "users.manage"):
+        return False, "you cannot manage users"
+    if target is None:
+        return False, "unknown user"
+    if authz.founder_protected(session, actor, target):
+        return False, "only a founder may change a founder's login email"
+    email = (new_email or "").strip().lower()
+    if not _EMAIL_FORMAT.match(email) or len(email) > 254:
+        return False, "enter a valid email address"
+    before = (target.email or "").strip().lower()
+    if email == before:
+        return False, "that is already the login email"
+    if session.exec(select(User).where(func.lower(User.email) == email, User.id != target.id)).first():
+        return False, "a user with that email already exists"
+    target.email = email
+    session.add(target)
+    p = _prof(session, target.id) or authz.ensure_profile(session, target)
+    p.sessions_revoked_at = datetime.utcnow(); p.updated_at = datetime.utcnow(); session.add(p)
+    authz.audit(session, actor, target.id, "email_changed", field="email", before=before, after=email,
+                reason=reason)
+    return True, "login email changed"
+
+
+# identity fields a SELLER may not self-edit: the campaign render guard matches them inside buyer emails, so a
+# generic word typed here ('Anchor', 'Hardware') would pause a running campaign or skip buyers. Go4it sets them.
+SELLER_LOCKED_FIELDS = {"company", "full_name", "display_name"}
+
+
 def update_profile(session, actor, target, fields: dict, *, self_edit=False):
     """Self-service or manager profile edit. Never changes role/scope/status/account_class here (those are the
-    access routes). Seller-provided fields never grant access to buyer data."""
+    access routes). Seller-provided fields never grant access to buyer data, and a seller's self-edit never changes
+    SELLER_LOCKED_FIELDS."""
     if not self_edit and not authz.has_permission(session, actor, "users.manage"):
         return False, "you cannot edit this profile"
     p = _prof(session, target.id) or authz.ensure_profile(session, target)
     allowed = {"full_name", "display_name", "job_title", "department", "company", "country", "timezone",
                "preferred_language", "phone", "avatar_url", "notification_prefs", "trading_interests",
                "preferred_markets"}
+    if self_edit and p.account_class == "seller":
+        allowed -= SELLER_LOCKED_FIELDS
     changed = []
     for k, v in (fields or {}).items():
         if k in allowed and getattr(p, k, None) != v:

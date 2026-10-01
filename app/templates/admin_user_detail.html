@@ -115,6 +115,16 @@
       </dl>
       <p class="text-slate-500 text-xs mt-2">MFA is not implemented in this phase.</p>
     </div>
+    <div class="card">
+      <h3 class="text-sm font-semibold mb-2">Login email</h3>
+      <div class="text-sm mb-2">Current: <span class="font-mono">{{ u.email }}</span></div>
+      <form method="post" action="/admin/users/{{ u.id }}/email" class="flex gap-2 items-center flex-wrap">
+        <input class="input" type="email" name="email" required placeholder="new login email" style="max-width:14rem">
+        <input class="input" name="reason" placeholder="Reason (audited)" style="max-width:10rem">
+        <button class="btn btn-neutral btn-sm">Change</button>
+      </form>
+      <p class="text-slate-500 text-xs mt-2">The user signs in with the new address from now on; their open sessions are signed out. Only a Founder can change a Founder's email.</p>
+    </div>
   </div>
 {% endif %}
 {% endblock %}

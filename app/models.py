@@ -452,6 +452,9 @@ class ServiceRequest(SQLModel, table=True):
     result_source_tag: str = ""         # Lead.source tag used to attach delivered buyers (req-<id>)
     result_file_path: str = ""          # a delivered file (contract PDF, remittance confirmation, ...)
     result_url: str = ""                # or a delivered link
+    # LEGACY: buyer identities handed INTO the seller's own account (retired scripts/deliver_request.py). It stays 0
+    # under confidential delivery — the buyers Go4it works for a seller are counted by
+    # pipeline.request_funnel(...)["total_prospects"]; load_managed_buyers.py must never set this.
     leads_delivered: int = 0
     approved_by: str = ""
     approved_at: Optional[datetime] = None

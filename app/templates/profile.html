@@ -10,9 +10,15 @@
   <div class="card md:col-span-2">
     <h3 class="text-sm font-semibold mb-3">Profile</h3>
     <form method="post" action="/me/profile" class="grid sm:grid-cols-2 gap-3">
+      {% if is_seller %}{# identity fields are set by Go4it for sellers (the outreach guard matches them) — read-only #}
+      <div><label class="field-label">Full name</label><input class="input" value="{{ p.full_name }}" disabled></div>
+      <div><label class="field-label">Display name</label><input class="input" value="{{ p.display_name }}" disabled></div>
+      <div><label class="field-label">Company</label><input class="input" value="{{ p.company }}" disabled></div>
+      {% else %}
       <div><label class="field-label">Full name</label><input class="input" name="full_name" value="{{ p.full_name }}"></div>
       <div><label class="field-label">Display name</label><input class="input" name="display_name" value="{{ p.display_name }}"></div>
       <div><label class="field-label">Company</label><input class="input" name="company" value="{{ p.company }}"></div>
+      {% endif %}
       <div><label class="field-label">Country</label><input class="input" name="country" value="{{ p.country }}"></div>
       <div><label class="field-label">Timezone</label><input class="input" name="timezone" value="{{ p.timezone }}"></div>
       <div><label class="field-label">Preferred language</label><input class="input" name="preferred_language" value="{{ p.preferred_language }}"></div>
@@ -26,7 +32,7 @@
       {% endif %}
       <div class="sm:col-span-2"><button class="btn btn-primary" data-busy="Saving">Save profile</button></div>
     </form>
-    {% if is_seller %}<p class="text-slate-500 text-xs mt-3">Your profile is about you and your business — it never grants access to buyer data.</p>{% endif %}
+    {% if is_seller %}<p class="text-slate-500 text-xs mt-3">Your profile is about you and your business — it never grants access to buyer data. To change your name or company, message Go4it.</p>{% endif %}
   </div>
   <div class="card h-fit">
     <h3 class="text-sm font-semibold mb-2">Account</h3>
