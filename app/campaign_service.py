@@ -57,7 +57,9 @@ def audience_leads(session, tenant_id, f: dict):
         stmt = stmt.where(Lead.assigned_admin_id == int(f["assigned_admin"]))
     if f.get("request_id") and str(f["request_id"]).isdigit():
         stmt = stmt.where(Lead.request_id == int(f["request_id"]))
-    rows = session.exec(stmt).all()
+    if f.get("lead_ids") is not None:      # an exact set (scripts only — the builder UI never sets it); [] = none
+        stmt = stmt.where(Lead.id.in_([int(i) for i in f["lead_ids"]]))
+    rows = session.exec(stmt.order_by(Lead.id)).all()
     # exclusions (evidence-based)
     now = datetime.utcnow()
     recent_days = int(f.get("recent_days", 14) or 14)
