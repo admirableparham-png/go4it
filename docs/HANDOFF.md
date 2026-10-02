@@ -22,8 +22,8 @@ Nothing needs cloning or installing: the repo, `.venv`, `.env` and `data.db` are
 |---|---|
 | Working branch | `work/phase-9-ai-command-automation` (Phases 7–10 + this handoff) |
 | `main` | `26f05cd` — 25 commits behind the working branch. Do not merge without a founder decision. |
-| Deployed tag | `phase-11-outreach-readiness-v7` → `4d6e7a8` (live since 2026-10-01) |
-| Next tag | `phase-12-ops-followups` — built, reviewed, tested; NOT deployed (see docs/PHASE12_OPERATIONS.md) |
+| Deployed tag | `phase-13-local-hours` → `bc4285a` (2026-10-02 09:25 UTC; Phase 12 went live 06:15 UTC the same day) |
+| Rollback images | `go4it:pre-p13-rollback`, `go4it:pre-p12-rollback` (+ backups data-20261002-092036.db / -061335.db) |
 | Remote | `origin` = github.com/admirableparham-png/go4it (private). All branches + tags pushed 2026-09-29. |
 
 Tags are immutable. New work = new commits + a new tag.
@@ -52,6 +52,17 @@ Tags are immutable. New work = new commits + a new tag.
   TRSHARKS gets a seller login (only after Phase 12 is live); the founder's test-reply tasks stay until he explains.
 - **Local creds parked:** `.env` TELEGRAM_*/SMTP_*/IMAP_* renamed `DISABLED_LOCAL_*` after a test script sent a false
   Telegram alert — nothing on the Mac can send.
+
+## 2d. 2026-10-02 update
+
+- **Phase 12 + 13 deployed.** #33 now sends in each buyer's own hours (09:00–11:00, 14:00–16:00 their time, their
+  working week) best-ranked first; warm-up 10→20 (Fri) → 35 (Sun) → 50; daily Telegram summary 18:05 UTC.
+- **Enrichment:** 462 email-less buyers scanned → 133 company addresses added to #33 (end of queue); 75 personal
+  addresses + 26 weak ones wait for the founder (`debug/enrich_req1_[a-d].csv`, local only).
+- **Work Queue:** 162 legacy tasks dismissed (batch wqc-20261002-061915, revertible); 39 left incl. the founder's
+  test-reply items (untouched until he explains them).
+- **Founder:** admin login stays admin@go4it.local; sets user passwords himself (Users → user → Security); the
+  follow-up text comes after all first emails of this product are out (don't add email 2 before that).
 
 ## 3. Production (https://g4it.vip) — as of 2026-08-31 (Phase 10 since deployed — see 2b)
 
