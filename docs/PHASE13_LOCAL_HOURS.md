@@ -32,3 +32,9 @@ Sunday 06:00 UTC, UAE Monday 05:00, NZ Sunday 20:00, AU Sunday 22:00) simply exp
 
 Also in this release: the campaign page shows its save messages; Admin → Users → user → **Security** tab → set a
 password (masked, typed twice; the user is signed out everywhere).
+
+## Follow-up after every first email (founder's choice, 2 Oct)
+`campaign_followup.py approve 33 --email 2 --when-earlier-done --apply` keeps email 2 held and lets the worker start
+it by itself once no buyer can still get email 1 (opted-out / replied / bounced buyers and sends held for review don't
+count); a Telegram message announces it. A later `--replace` of the text keeps that rule; a plain `approve` refuses to
+override it without `--now`. The daily summary shows "Email 2: held — starts by itself once every earlier email is out".

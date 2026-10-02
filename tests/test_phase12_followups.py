@@ -764,7 +764,7 @@ def test_script_dry_run_changes_nothing_and_shows_the_threaded_email(world, caps
     assert _add(cid) == 0
     out = capsys.readouterr().out
     assert _snapshot(e) == before
-    assert "DRY RUN — nothing changed" in out and "HELD until approve" in out
+    assert "DRY RUN — nothing changed" in out and " · HELD · " in out
     assert "re-open: 2 buyer(s) who had finished get it, each 7 day(s) after their own last email" in out
     assert "1 buyer(s) still before it get it 7 day(s) after their own email 1" in out
     with Session(e) as s:
@@ -947,3 +947,24 @@ def test_a_send_held_for_review_never_keeps_the_followup_from_starting(world):
     _cycle(MON + timedelta(minutes=5))
     with Session(e) as s:
         assert not CAMP.steps_for(s, s.get(Campaign, cid))[1].manual_review          # started anyway
+
+
+def test_a_text_change_keeps_the_auto_start_and_a_plain_approve_never_overrides_it(world, capsys):
+    e, ids = world
+    with Session(e) as s:
+        _buyers(s, ids, ["Alpha Ltd", "Beta Ltd"])
+        cid = _campaign(s, ids, list(_templates(delay=7, hold=True)), daily_limit=1)
+    assert FU.main(["approve", str(cid), "--email", "2", "--when-earlier-done", "--apply"]) == 0
+    capsys.readouterr()
+    assert FU.main(["add", str(cid), "--template", FOLLOWUP, "--delay-days", "7", "--hold", "--replace",
+                    "--apply"]) == 0
+    out = capsys.readouterr().out
+    assert "starts by itself once every earlier email is out (the rule is kept" in out and "waits for:" not in out
+    assert FU.main(["approve", str(cid), "--email", "2", "--apply"]) == 0           # no --now: nothing released
+    assert "add --now" in capsys.readouterr().out
+    with Session(e) as s:
+        st = CAMP.steps_for(s, s.get(Campaign, cid))[1]
+        assert st.manual_review and st.release_when == CAMP.RELEASE_EARLIER_DONE
+    assert FU.main(["approve", str(cid), "--email", "2", "--now", "--apply"]) == 0   # explicit override
+    with Session(e) as s:
+        assert not CAMP.steps_for(s, s.get(Campaign, cid))[1].manual_review

@@ -160,7 +160,7 @@ def cmd_add(s, c, a) -> int:
         att = f"attachment {os.path.basename(shown.attachment_path)}" if shown.attachment_path else "no attachment"
         print(f"\n{'replace the text of' if a.replace else 'add'} email {shown.step_index + 1}: {shown.subject!r} · "
               f"{shown.delay_days} day(s) after email {shown.step_index} · "
-              f"{'HELD until approve' if held else 'NOT held'} · {att} · "
+              f"{'HELD' if held else 'NOT held'} · {att} · "
               f"List-Unsubscribe {'yes' if shown.list_unsubscribe else 'no'}")
         if not held:
             print("WARNING: not held — it goes out automatically when due. Add --hold to keep it until 'approve'.")
@@ -199,7 +199,7 @@ def cmd_add(s, c, a) -> int:
             if res["error"]:
                 return _stopped(c, was_running, f"not changed: {res['error']}")
             print(f"{'REPLACED the text of' if a.replace else 'ADDED'} email {res['step_index'] + 1} in sequence "
-                  f"v{c.sequence_version}" + (" — HELD until approve" if held else ""))
+                  f"v{c.sequence_version}" + (" — HELD" if held else ""))
         reo = CAMP.reopen_completed(s, c, apply=True)
         print(f"re-opened {reo['reopened']} buyer(s) who had finished")
     except Exception as e:  # noqa: BLE001 — whatever happened, the campaign must not be resumed blind
@@ -214,9 +214,18 @@ def cmd_add(s, c, a) -> int:
     CAMP.transition(s, c, "running", None, "resumed by campaign_followup")
     c.bounce_baseline = baseline                    # a technical pause: the bounce breaker keeps judging from the start
     s.add(c); s.commit()
-    print(f"RESUMED campaign #{c.id}." + (" The new email waits for: campaign_followup.py approve "
-                                         f"{c.id} --email {shown.step_index + 1} --apply" if held else ""))
+    print(f"RESUMED campaign #{c.id}." + (" " + _held_hint(s, c, shown.step_index) if held else ""))
     return 0
+
+
+def _held_hint(s, c, idx) -> str:
+    """What starts the held email: its automatic rule (kept through a text change), or an approval to choose."""
+    st = next((x for x in CAMP.steps_for(s, c) if x.step_index == idx), None)
+    if st is not None and (st.release_when or "") == CAMP.RELEASE_EARLIER_DONE:
+        return (f"Email {idx + 1} stays HELD and starts by itself once every earlier email is out (the rule is kept; "
+                f"'approve {c.id} --email {idx + 1} --now --apply' would release it immediately instead).")
+    return (f"Email {idx + 1} waits: 'campaign_followup.py approve {c.id} --email {idx + 1} --apply' releases it now; "
+            f"add --when-earlier-done to start it by itself once every earlier email is out.")
 
 
 def cmd_reopen(s, c, a) -> int:
@@ -269,6 +278,12 @@ def cmd_approve(s, c, a) -> int:
         print(f"SET: email {a.email} starts by itself once every earlier email is out (the worker checks every cycle "
               "and sends a Telegram message when it starts)")
         return 0
+    if (st.release_when or "") == CAMP.RELEASE_EARLIER_DONE and not a.now:
+        left = CAMP.earlier_emails_left(s, c, idx)
+        print(f"\nemail {a.email} already starts by itself once every earlier email is out "
+              f"({left if left <= 50 else 'more than 50'} buyer(s) still before it). To release it NOW instead, "
+              "add --now.")
+        return 0
     if not a.apply:
         print("\nDRY RUN — nothing changed. Re-run with --apply to release it.")
         return 0
@@ -298,6 +313,8 @@ def main(argv=None):
     p.add_argument("--email", type=int, required=True, help="which email (2 = the first follow-up)")
     p.add_argument("--when-earlier-done", action="store_true",
                    help="don't release now: start it by itself once every earlier email (e.g. every first email) is out")
+    p.add_argument("--now", action="store_true",
+                   help="release now even though it is set to start by itself once every earlier email is out")
     p.add_argument("--apply", action="store_true")
     a = ap.parse_args(argv)
     with Session(engine) as s:
