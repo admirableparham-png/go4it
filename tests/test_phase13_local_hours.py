@@ -323,3 +323,18 @@ def test_the_daily_summary_names_the_next_local_sending_day(world):
         c, mb = s.get(Campaign, ids["campaign"]), s.get(MailAccount, ids["mailbox"])
         assert OS._next_send_day(c, datetime(2026, 10, 2, 6, 0), s, mb).isoformat() == "2026-10-02"   # today
         assert OS._next_send_day(c, datetime(2026, 10, 2, 20, 0), s, mb).isoformat() == "2026-10-04"  # the Gulf's Sunday
+
+
+def test_a_held_send_is_still_settled_once_the_buyer_opts_out(world):
+    e, ids = world
+    with Session(e) as s:
+        c = s.get(Campaign, ids["campaign"])
+        nz = s.exec(select(CampaignRecipient).where(CampaignRecipient.to_email == "buyer0@b0.example")).one()
+        s.add(CampaignSend(campaign_id=c.id, recipient_id=nz.id, sequence_version=nz.sequence_version, step_index=0,
+                           status="unknown_needs_review"))                      # a crash mid-send …
+        SUP.suppress(s, "buyer0@b0.example", "unsubscribe")                     # … then the buyer opts out
+        s.commit()
+    _run(e, datetime(2026, 10, 4, 19, 55), datetime(2026, 10, 4, 20, 5))     # Auckland's Monday morning
+    with Session(e) as s:
+        assert s.exec(select(CampaignRecipient).where(CampaignRecipient.to_email == "buyer0@b0.example")).one() \
+            .status == "suppressed"

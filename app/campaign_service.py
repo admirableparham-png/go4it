@@ -587,8 +587,11 @@ def local_slots(session, campaign, mailbox, now=None, inbox_fresh=None, settle=F
         cs = sends.get((rcpt.id, rcpt.sequence_version, rcpt.current_step))
         due = rcpt.next_action_at
         if cs is not None:
-            if cs.status in SEND_TERMINAL:
-                continue                     # done, or held for an admin's review after a crash — never a slot
+            if cs.status in SEND_TERMINAL:   # done, or held for an admin's review after a crash — never a slot …
+                why = _recipient_problem(session, campaign, rcpt) if settle else ""
+                if why:
+                    _settle_skip(session, rcpt, why, now)    # … but still settled once it can never be sent
+                continue
             if cs.status in ("claimed", "sending") and cs.lease_expires_at and cs.lease_expires_at > now:
                 continue                     # another cycle is sending it right now
             if cs.status in ("pending", "retryable") and cs.next_attempt_at and cs.next_attempt_at > now:
