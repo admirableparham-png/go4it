@@ -32,6 +32,7 @@ from sqlmodel import Session, func, select                                     #
 
 from app import campaign_render as CR                                          # noqa: E402
 from app import campaign_service as CAMP                                       # noqa: E402
+from app import local_time as LT                                               # noqa: E402
 from app import pipeline                                                       # noqa: E402
 from app.auth import hash_password                                             # noqa: E402
 from app.db import engine, init_db                                             # noqa: E402
@@ -123,6 +124,8 @@ def main(argv=None):
     ap.add_argument("--campaign", type=int, default=0, help="update this existing campaign instead of creating one")
     ap.add_argument("--daily-limit", type=int, default=None,
                     help=f"a new campaign's daily limit (default {DEFAULT_DAILY_LIMIT}); a live one keeps its own")
+    ap.add_argument("--local-hours", default=None,
+                    help='send in each buyer\'s local hours, e.g. "09:00-11:00,14:00-16:00" ("" = the UTC window)')
     ap.add_argument("--enrol", action="store_true", help="enrol the previewed audience")
     ap.add_argument("--start", action="store_true", help="start it if nothing blocks")
     ap.add_argument("--followup", default="",
@@ -186,8 +189,15 @@ def main(argv=None):
                       "a warm-up plan (change it on the campaign page)")
             else:
                 c.daily_limit = max(0, a.daily_limit)
+        if a.local_hours is not None and not smoke:       # timing only — safe on a live campaign too
+            hours = LT.parse_hours(a.local_hours)
+            if a.local_hours.strip() and not hours:
+                print('REFUSED: --local-hours must look like "09:00-11:00,14:00-16:00"')
+                return 2
+            c.local_hours = LT.format_hours(hours)
         if smoke:                                          # a test goes out now, whatever the hour or day
             c.send_window_start, c.send_window_end, c.send_days = 0, 24, "0,1,2,3,4,5,6"
+            c.local_hours = ""
         s.add(c); s.commit(); s.refresh(c)
         # what was already sent stays as it was: re-running on a live campaign never resets (and so never deletes) its
         # emails — a follow-up is appended with scripts/campaign_followup.py
@@ -202,8 +212,10 @@ def main(argv=None):
         if smoke:                                          # every test address goes out in this one run
             c.daily_limit = max(1, prev["final_eligible"]) * per_buyer
             s.add(c); s.commit()
+        timing = (f"buyer-local hours {c.local_hours}" if c.local_hours
+                  else f"window {c.send_window_start}-{c.send_window_end} UTC days {c.send_days}")
         print(f"campaign #{c.id} {c.name!r} · request {sr.tracking_code} · mailbox {mb.email} · "
-              f"{c.daily_limit}/day · window {c.send_window_start}-{c.send_window_end} UTC days {c.send_days}")
+              f"{c.daily_limit}/day · {timing}")
         print("audience: " + ", ".join(f"{k}={v}" for k, v in prev.items() if k != "eligible_lead_ids"))
         if a.enrol or smoke:
             res = CAMP.enroll(s, c, None, f, expected=prev["final_eligible"])

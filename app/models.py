@@ -819,6 +819,8 @@ class Campaign(SQLModel, table=True):
                                     # only what was sent since, so a resumed campaign isn't re-paused by old bounces
     warmup_plan: str = ""           # Phase 12: daily limits by sending day, e.g. "10,20,35,50" ("" = manual limit)
     warmup_checked_on: str = ""     # Phase 12: YYYY-MM-DD (UTC) of the warm-up ramp's last daily decision
+    local_hours: str = ""           # Phase 13: e.g. "09:00-11:00,14:00-16:00" = send in each BUYER's local hours
+    #                                 (country/city time zone + working days); "" = the UTC window/days above
     notes: str = ""                 # internal admin notes (never buyer/seller PII)
     inferred: bool = False          # True = backfill-seeded from legacy source grouping
     created_at: datetime = Field(default_factory=datetime.utcnow)

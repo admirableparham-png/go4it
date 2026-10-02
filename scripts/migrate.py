@@ -194,6 +194,8 @@ MIGRATIONS = [
     # Phase 12 — the campaign's automatic warm-up ramp (plan + the day of its last decision); re-checked by the gate.
     ("campaign", "warmup_plan", "VARCHAR DEFAULT ''"),
     ("campaign", "warmup_checked_on", "VARCHAR DEFAULT ''"),
+    # Phase 13 — send in each buyer's local business hours ("" = the campaign's UTC window).
+    ("campaign", "local_hours", "VARCHAR DEFAULT ''"),
 ]
 
 

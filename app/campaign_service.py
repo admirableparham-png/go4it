@@ -13,6 +13,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlmodel import func, select
 
 from . import campaign_render as CR
+from . import local_time as LT
 from . import pipeline
 from . import send_guard as SG
 from . import suppression as SUP
@@ -483,9 +484,44 @@ def approve_step(session, campaign, step_index, actor=None, version=None) -> tup
 
 
 # --------------------------------------------------------------------- send safety + idempotent send
-def can_send(session, campaign, rcpt, mailbox, now=None, inbox_fresh=None) -> tuple:
+def _recipient_problem(session, campaign, rcpt) -> str:
+    """The recipient-level rules (not timing, not quotas): '' when this recipient may get its current email."""
+    if rcpt.suppressed or rcpt.status in TERMINAL_RECIPIENT:
+        return f"recipient {rcpt.status}"
+    if SUP.is_suppressed(session, rcpt.to_email, tenant_id=campaign.tenant_id):
+        return "suppressed"
+    ld = session.get(Lead, rcpt.lead_id) if rcpt.lead_id else None
+    if ld is not None and ld.buyer_replied_at is not None:
+        return "already replied"
+    if ld is not None and not (ld.email or "").strip():
+        return "no active contact email"
+    steps = steps_for(session, campaign, rcpt.sequence_version)
+    if rcpt.current_step >= len(steps):
+        return "sequence complete"
+    if rcpt.current_step > 0 and rcpt.soft_bounce_count > 0:
+        return "soft-bounced"               # an email to this address already bounced — no follow-up chases it
+    if steps[rcpt.current_step].manual_review:
+        return "manual-review step"
+    return ""
+
+
+def _remaining_today(session, campaign, mailbox, now) -> int:
+    """How many more emails this campaign may send today (UTC day): its own limit minus its own sends today, never
+    more than the mailbox has left. The MAILBOX limit counts everything the mailbox sent today; the CAMPAIGN limit
+    counts only this campaign's sends (so tests or another campaign never eat a campaign's warm-up quota)."""
+    today = now.strftime("%Y-%m-%d")
+    used = mailbox.sent_today if mailbox.sent_today_date == today else 0
+    day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    mine = session.exec(select(func.count()).where(
+        CampaignSend.campaign_id == campaign.id, CampaignSend.status == "sent",
+        CampaignSend.sent_at >= day_start)).one()
+    return min(max(0, mailbox.daily_limit) - used, max(0, campaign.daily_limit) - mine)
+
+
+def can_send(session, campaign, rcpt, mailbox, now=None, inbox_fresh=None, local_ok=None) -> tuple:
     """The full pre-send safety chain. Returns (ok, reason). Verified for EVERY send. `inbox_fresh` = the cycle's
-    reply_reading_fresh() (the worker works it out once per campaign); None = check it here."""
+    reply_reading_fresh() (the worker works it out once per campaign); None = check it here. For a campaign with
+    buyer-local hours, `local_ok` = the recipient is in this cycle's local_plan as 'now' (None = work it out here)."""
     now = now or datetime.utcnow()
     if SG.outreach_paused(session):
         return False, "outreach paused"
@@ -494,38 +530,20 @@ def can_send(session, campaign, rcpt, mailbox, now=None, inbox_fresh=None) -> tu
     ok, why = SG.mailbox_ok(mailbox)
     if not ok:
         return False, why
-    if rcpt.suppressed or rcpt.status in TERMINAL_RECIPIENT:
-        return False, f"recipient {rcpt.status}"
-    if SUP.is_suppressed(session, rcpt.to_email, tenant_id=campaign.tenant_id):
-        return False, "suppressed"
-    ld = session.get(Lead, rcpt.lead_id) if rcpt.lead_id else None
-    if ld is not None and ld.buyer_replied_at is not None:
-        return False, "already replied"
-    if ld is not None and not (ld.email or "").strip():
-        return False, "no active contact email"
-    steps = steps_for(session, campaign, rcpt.sequence_version)
-    if rcpt.current_step >= len(steps):
-        return False, "sequence complete"
-    if rcpt.current_step > 0 and rcpt.soft_bounce_count > 0:
-        return False, "soft-bounced"        # an email to this address already bounced — no follow-up chases it
-    step = steps[rcpt.current_step]
-    if step.manual_review:
-        return False, "manual-review step"
-    if not SG.within_window(campaign, now):
+    why = _recipient_problem(session, campaign, rcpt)
+    if why:
+        return False, why
+    local = bool(LT.parse_hours(getattr(campaign, "local_hours", "")))
+    if not local and not SG.within_window(campaign, now):
         return False, "outside sending window"
-    # daily-limit precheck (the mailbox slot is actually consumed in send_step). The MAILBOX limit counts everything
-    # the mailbox sent today; the CAMPAIGN limit counts only this campaign's own sends today (so tests or another
-    # campaign never eat a campaign's warm-up quota).
-    today = now.strftime("%Y-%m-%d")
-    used = mailbox.sent_today if mailbox.sent_today_date == today else 0
-    if used >= max(0, mailbox.daily_limit):
+    # daily-limit precheck (the mailbox slot is actually consumed in send_step)
+    if _remaining_today(session, campaign, mailbox, now) <= 0:
         return False, "daily limit reached"
-    day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    mine = session.exec(select(func.count()).where(
-        CampaignSend.campaign_id == campaign.id, CampaignSend.status == "sent",
-        CampaignSend.sent_at >= day_start)).one()
-    if mine >= max(0, campaign.daily_limit):
-        return False, "daily limit reached"
+    if local:
+        # each buyer in THEIR business hours, in ranked order (not campaign-level: other buyers' hours may be open)
+        if not (local_plan(session, campaign, mailbox, now, inbox_fresh).get(rcpt.id) == "now"
+                if local_ok is None else local_ok):
+            return False, "outside the buyer's local hours"
     if rcpt.current_step > 0:
         # a follow-up only goes while reply/bounce reading is working: with IMAP down a buyer's reply or bounce isn't
         # seen, and the follow-up would chase someone who already answered. Checked last, so the window/limit reasons
@@ -533,6 +551,67 @@ def can_send(session, campaign, rcpt, mailbox, now=None, inbox_fresh=None) -> tu
         if not (reply_reading_fresh(session, now) if inbox_fresh is None else inbox_fresh):
             return False, "reply reading stale"
     return True, ""
+
+
+def local_plan(session, campaign, mailbox, now=None, inbox_fresh=None, settle=False) -> dict:
+    """{recipient id: 'now' | 'later'} — see local_slots."""
+    return {rid: state for rid, (state, _end) in local_slots(session, campaign, mailbox, now, inbox_fresh,
+                                                             settle).items()}
+
+
+def local_slots(session, campaign, mailbox, now=None, inbox_fresh=None, settle=False) -> dict:
+    """For a campaign with buyer-local hours: {recipient id: ('now' | 'later', window end)} — the rest of today's (UTC
+    day) quota, reserved for the best-ranked recipients (lowest id first) that may get their next email and whose
+    local hours still come today (or are open now); 'now' = inside one of its windows and due. So a top-ranked buyer in
+    Auckland keeps its place even though Europe's mornings come first in the UTC day. A recipient whose current email
+    can't go out now (already sent, waiting for an admin's review after a crash, being sent by another cycle, or in a
+    retry back-off past its window) never takes a slot. With `settle` (the worker) a recipient that can never be sent
+    again is settled to its terminal status, so the campaign can finish. Read-only otherwise."""
+    now = now or datetime.utcnow()
+    hours = LT.parse_hours(getattr(campaign, "local_hours", ""))
+    if not hours or mailbox is None:
+        return {}
+    remaining = _remaining_today(session, campaign, mailbox, now)
+    if remaining <= 0:
+        return {}
+    day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    sends = {(cs.recipient_id, cs.sequence_version, cs.step_index): cs for cs in session.exec(
+        select(CampaignSend).where(CampaignSend.campaign_id == campaign.id)).all()}
+    fresh, plan = inbox_fresh, {}
+    rows = session.exec(select(CampaignRecipient, Lead.dest_country, Lead.dest_city)
+                        .join(Lead, Lead.id == CampaignRecipient.lead_id, isouter=True)
+                        .where(CampaignRecipient.campaign_id == campaign.id,
+                               CampaignRecipient.status.not_in(TERMINAL_RECIPIENT))
+                        .order_by(CampaignRecipient.id)).all()
+    for rcpt, country, city in rows:
+        cs = sends.get((rcpt.id, rcpt.sequence_version, rcpt.current_step))
+        due = rcpt.next_action_at
+        if cs is not None:
+            if cs.status in SEND_TERMINAL:
+                continue                     # done, or held for an admin's review after a crash — never a slot
+            if cs.status in ("claimed", "sending") and cs.lease_expires_at and cs.lease_expires_at > now:
+                continue                     # another cycle is sending it right now
+            if cs.status in ("pending", "retryable") and cs.next_attempt_at and cs.next_attempt_at > now:
+                due = max(due, cs.next_attempt_at) if due else cs.next_attempt_at   # in retry back-off
+        tz, _zone, weekend = LT.buyer_zone(country, city)
+        slot = next(((s, e) for d in (day_start - timedelta(days=1), day_start)
+                     for s, e in LT.windows_on_utc_day(tz, weekend, hours, d)
+                     if e > now and (due is None or due < e)), None)
+        if slot is None:
+            continue
+        why = _recipient_problem(session, campaign, rcpt)
+        if why:
+            if settle:
+                _settle_skip(session, rcpt, why, now)
+            continue
+        if rcpt.current_step > 0:
+            fresh = reply_reading_fresh(session, now) if fresh is None else fresh
+            if not fresh:
+                continue
+        plan[rcpt.id] = ("now" if slot[0] <= now and (due is None or due <= now) else "later", slot[1])
+        if len(plan) >= remaining:
+            break
+    return plan
 
 
 def classify_send_error(err) -> str:
@@ -634,6 +713,7 @@ def bounce_breaker(session, campaign) -> bool:
 # never lowers a limit, never goes above the mailbox's limit and never changes MailAccount.daily_limit.
 WARMUP_MAX_BOUNCE_RATE = float(os.getenv("CAMPAIGN_WARMUP_MAX_BOUNCE_RATE", "0.05"))
 WARMUP_IMAP_FRESH_SEC = int(os.getenv("CAMPAIGN_WARMUP_IMAP_FRESH_SEC", "7200"))
+WARMUP_LOOKBACK_DAYS = 3            # how many recent SENDING days the ramp checks for a full one at the current limit
 
 
 def parse_warmup_plan(text) -> list:
@@ -690,10 +770,27 @@ def warmup_decision(session, campaign, mailbox, day_start, now=None) -> dict:
         CampaignSend.sent_at < day_start)).one()
     if last is None:
         return out("wait", "no sending day yet")
-    last_day = last.replace(hour=0, minute=0, second=0, microsecond=0)
-    sent_last, eff = _sent_between(session, campaign, last_day, last_day + timedelta(days=1)), min(cur, cap)
-    if sent_last < eff:
+    eff = min(cur, cap)
+    # a FULL day at the current limit among the last WARMUP_LOOKBACK_DAYS sending days — not just the last one: with
+    # buyer-local hours a weekend UTC day can be short (only Gulf / Monday-morning Asia-Pacific buyers) without anything
+    # being wrong
+    full, sending_days = None, 0
+    for back in range(1, 15):
+        d0 = day_start - timedelta(days=back)
+        n = _sent_between(session, campaign, d0, d0 + timedelta(days=1))
+        if not n:
+            continue
+        sending_days += 1
+        if n >= eff:
+            full = (d0, n)
+            break
+        if sending_days >= WARMUP_LOOKBACK_DAYS:
+            break
+    if full is None:
+        last_day = last.replace(hour=0, minute=0, second=0, microsecond=0)
+        sent_last = _sent_between(session, campaign, last_day, last_day + timedelta(days=1))
         return out("wait", f"the last sending day ({last_day:%a %d %b}) sent {sent_last} of {eff}")
+    last_day, sent_last = full
     hard, sent = bounce_stats(session, campaign)
     if sent < eff:
         return out("wait", f"only {sent} sent since the campaign was last (re)started")
@@ -816,7 +913,7 @@ def claim_send(session, campaign, rcpt, step_index, now=None, lease_sec=None):
     return None                             # another worker re-claimed between our read and write
 
 
-def send_step(session, campaign, rcpt, mailbox, now=None, sender=None, inbox_fresh=None) -> dict:
+def send_step(session, campaign, rcpt, mailbox, now=None, sender=None, inbox_fresh=None, local_ok=None) -> dict:
     """Send the recipient's CURRENT sequence step, crash-safely and at most once automatically.
 
     Lifecycle (durable in CampaignSend): claim → sending → (sent | retryable | permanently_failed). The row is
@@ -833,7 +930,7 @@ def send_step(session, campaign, rcpt, mailbox, now=None, sender=None, inbox_fre
     the recipient. `sender` is injectable for tests.
     """
     now = now or datetime.utcnow()
-    ok, reason = can_send(session, campaign, rcpt, mailbox, now, inbox_fresh)
+    ok, reason = can_send(session, campaign, rcpt, mailbox, now, inbox_fresh, local_ok)
     if not ok:
         _settle_skip(session, rcpt, reason, now)
         return {"status": "skipped", "reason": reason}

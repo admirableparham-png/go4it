@@ -104,10 +104,12 @@
     </div>
     <div class="card">
       <h3 class="text-sm font-semibold mb-2">Password &amp; sessions</h3>
-      <form method="post" action="/admin/users/{{ u.id }}/password" class="flex gap-2 items-center">
-        <input class="input" name="password" placeholder="new password" minlength="6" style="max-width:11rem">
+      <form method="post" action="/admin/users/{{ u.id }}/password" class="flex gap-2 items-center flex-wrap">
+        <input class="input" type="password" name="password" placeholder="new password" minlength="6" autocomplete="new-password" style="max-width:10rem">
+        <input class="input" type="password" name="confirm" placeholder="type it again" minlength="6" autocomplete="new-password" style="max-width:10rem">
         <button class="btn btn-neutral btn-sm">Set</button>
       </form>
+      <p class="text-slate-500 text-xs mt-1">Sets a new password for this user (6+ characters) and signs them out everywhere. Tell them the new password yourself.</p>
       <dl class="grid grid-cols-2 gap-y-1 text-xs mt-3">
         <dt class="text-slate-500">Last login</dt><dd>{{ p.last_login_at.strftime('%Y-%m-%d %H:%M') if p.last_login_at else '—' }}</dd>
         <dt class="text-slate-500">Password changed</dt><dd>{{ p.password_changed_at.strftime('%Y-%m-%d') if p.password_changed_at else '—' }}</dd>

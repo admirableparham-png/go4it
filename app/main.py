@@ -53,6 +53,7 @@ from . import request_service as RS
 from . import suppression as SUP
 from . import send_guard as SG
 from . import campaign_service as CAMP
+from . import local_time as LT
 from . import campaign_render as CR
 from .models import (BounceRecord, Campaign, CampaignRecipient, CampaignStep, EmailTemplate, OutreachControl,
                      Suppression)
@@ -6621,7 +6622,7 @@ def campaign_detail(request: Request, cid: int, product: str = "", country: str 
             "rcpts": rcpts, "rc_status": dict(rc_status), "preview": aud, "f": f, "hdr": hdr,
             "mailbox": mailbox, "mailboxes": mailboxes, "STATUSES": CAMP.CAMPAIGN_STATUSES,
             "paused_all": SG.outreach_paused(session), "start_problems": CAMP.start_problems(session, c),
-            "can_manage": _outreach_admin(session, user)})
+            "can_manage": _outreach_admin(session, user), "flashes": request.session.pop("_flash", [])})
 
 
 @app.post("/campaigns/{cid}/audience")
@@ -6703,9 +6704,10 @@ def campaign_sequence(request: Request, cid: int, subjects: List[str] = Form(def
 def campaign_controls(request: Request, cid: int, daily_limit: str = Form(""), mailbox_id: str = Form(""),
                       send_window_start: str = Form(""), send_window_end: str = Form(""),
                       send_days: List[str] = Form(default=[]), warmup_plan: Optional[str] = Form(None),
-                      daily_limit_was: str = Form("")):
-    """Daily limit (+ the automatic warm-up plan), sending mailbox, and the UTC sending window/days. `daily_limit_was`
-    = the limit the page showed: an unchanged field never reverts a limit the warm-up raised while the page was open."""
+                      daily_limit_was: str = Form(""), local_hours: Optional[str] = Form(None)):
+    """Daily limit (+ the automatic warm-up plan), sending mailbox, the UTC sending window/days, and (Phase 13) the
+    buyer-local hours that replace that window when set. `daily_limit_was` = the limit the page showed: an unchanged
+    field never reverts a limit the warm-up raised while the page was open."""
     with Session(engine) as session:
         user = current_user(request, session)
         if not _outreach_admin(session, user):
@@ -6729,6 +6731,13 @@ def campaign_controls(request: Request, cid: int, daily_limit: str = Form(""), m
                 c.warmup_checked_on = datetime.utcnow().strftime("%Y-%m-%d")   # a new plan starts the next UTC day
                 if not plan:
                     WQ.resolve_by_key(session, f"campaign_warmup_held:{c.id}", user, note="warm-up plan cleared")
+        bad_hours = False
+        if local_hours is not None:
+            hours = LT.parse_hours(local_hours)
+            if local_hours.strip() and not hours:
+                bad_hours = True                # malformed: keep what was there, say so
+            else:
+                c.local_hours = LT.format_hours(hours)
         if mailbox_id.isdigit():
             mb = session.get(MailAccount, int(mailbox_id))
             if mb and mb.admin_owned:
@@ -6747,11 +6756,14 @@ def campaign_controls(request: Request, cid: int, daily_limit: str = Form(""), m
         pipeline.audit(session, user, "campaign", c.id, "controls",
                        {"daily_limit": c.daily_limit, "mailbox_id": c.mailbox_id,
                         "window": f"{c.send_window_start}-{c.send_window_end}", "days": c.send_days,
-                        "warmup_plan": c.warmup_plan},
+                        "warmup_plan": c.warmup_plan, "local_hours": c.local_hours},
                        tenant_id=c.tenant_id)
         session.commit()
-        _flash(request, f"Saved: {c.daily_limit}/day, {c.send_window_start}:00–{c.send_window_end}:00 UTC"
+        _flash(request, f"Saved: {c.daily_limit}/day, "
+                        + (f"each buyer's local hours {c.local_hours.replace(',', ' + ')}" if c.local_hours
+                           else f"{c.send_window_start}:00–{c.send_window_end}:00 UTC")
                         + (f", warm-up {c.warmup_plan}" if c.warmup_plan else "")
+                        + (" — local hours NOT changed: write them like 09:00-11:00,14:00-16:00" if bad_hours else "")
                         + (" (the daily limit was changed while this page was open — kept)" if kept else "") + ".")
     return RedirectResponse(f"/campaigns/{cid}", status_code=303)
 
@@ -7167,7 +7179,8 @@ def admin_user_create(request: Request, email: str = Form(...), name: str = Form
 
 
 @app.post("/admin/users/{user_id}/password")
-def admin_user_password(request: Request, user_id: int, password: str = Form(...)):
+def admin_user_password(request: Request, user_id: int, password: str = Form(...),
+                        confirm: Optional[str] = Form(None)):
     with Session(engine) as session:
         actor = current_user(request, session)
         if _require(session, actor, "users.manage"):
@@ -7175,10 +7188,14 @@ def admin_user_password(request: Request, user_id: int, password: str = Form(...
         u = session.get(User, user_id)
         if not u or len(password) < 6:
             return RedirectResponse("/admin/users?error=input", status_code=303)
+        if confirm is not None and confirm != password:     # the page asks twice: a typo never locks anyone out
+            return RedirectResponse(f"/admin/users/{user_id}?tab=security&error="
+                                    + quote_plus("the two passwords differ"), status_code=303)
         ok, msg = ACCESS.reset_password(session, actor, u, password)   # Founder guard lives in the service
         session.commit()
-    return RedirectResponse(f"/admin/users/{user_id}?{'ok=password' if ok else 'error=' + msg[:60]}",
-                            status_code=303)
+    return RedirectResponse(f"/admin/users/{user_id}?tab=security&"
+                            + ("ok=" + quote_plus("Password set — the user was signed out everywhere") if ok
+                               else "error=" + quote_plus(msg[:60])), status_code=303)
 
 
 @app.post("/admin/users/{user_id}/email")

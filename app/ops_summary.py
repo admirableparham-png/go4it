@@ -13,11 +13,12 @@ from sqlalchemy import and_, or_
 from sqlmodel import func, select
 
 from . import campaign_service as CS
+from . import local_time as LT
 from . import outreach_events as OE
 from . import send_guard as SG
 from .config import BASE_URL
-from .models import (BounceRecord, Campaign, CampaignRecipient, CampaignSend, InboundSeen, IngestionRun, MailAccount,
-                     Outreach, WorkItem)
+from .models import (BounceRecord, Campaign, CampaignRecipient, CampaignSend, InboundSeen, IngestionRun, Lead,
+                     MailAccount, Outreach, WorkItem)
 from .telegram import _esc
 
 MAX_LEN = 3900                      # Telegram caps a message at 4096 characters
@@ -37,9 +38,25 @@ def _error_kind(err) -> str:
     return kind if kind in ("auth", "quota", "config", "transient") else ("other" if err else "")
 
 
-def _next_send_day(campaign, now):
+def _next_send_day(campaign, now, session=None, mailbox=None):
     """The next date the campaign sends on (the same weekday rule as send_guard.within_window): today while its
-    window hasn't opened yet, else the first sending day after today."""
+    window hasn't opened yet, else the first sending day after today. With buyer-local hours: today while today's
+    plan still has a buyer to send, else the next UTC day on which any pending buyer has local hours."""
+    hours = LT.parse_hours(getattr(campaign, "local_hours", ""))
+    if hours and session is not None:
+        if mailbox is not None and CS.local_plan(session, campaign, mailbox, now):
+            return now.date()
+        places = session.exec(
+            select(Lead.dest_country, Lead.dest_city).join(CampaignRecipient, CampaignRecipient.lead_id == Lead.id)
+            .where(CampaignRecipient.campaign_id == campaign.id,
+                   CampaignRecipient.status.not_in(CS.TERMINAL_RECIPIENT)).distinct()).all()
+        zones = {(tz, weekend) for tz, _name, weekend in (LT.buyer_zone(c, city) for c, city in places)}
+        day0 = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        for i in range(1, 8):
+            day = day0 + timedelta(days=i)
+            if any(LT.windows_on_utc_day(tz, weekend, hours, day) for tz, weekend in zones):
+                return day.date()
+        return None
     days = {int(d) for d in (campaign.send_days or "").split(",") if d.strip().isdigit()}
     for i in range(0 if now.hour < campaign.send_window_start else 1, 8):
         d = now.date() + timedelta(days=i)
@@ -93,7 +110,7 @@ def _campaign(session, c, now, since, day0) -> dict:
                           "error": _error_kind(mb.last_send_error)}
         out["next_limit"] = min(c.daily_limit, max(0, mb.daily_limit))
     if c.status == "running":
-        nd = _next_send_day(c, now)
+        nd = _next_send_day(c, now, session, mb)
         out["next_day"] = nd
         decided = nd == now.date() and c.warmup_checked_on == now.strftime("%Y-%m-%d")   # today's step is taken
         if nd is not None and (c.warmup_plan or "").strip() and not decided:

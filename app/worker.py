@@ -156,6 +156,7 @@ def run_campaign_send(now=None):
     recovered at the top of the cycle. Refuses everything while Pause-all is on."""
     from sqlalchemy import func as _func, or_ as _or
     from . import campaign_service as CS
+    from . import local_time as LT
     from . import send_guard as SG
     from .models import Campaign, CampaignRecipient, MailAccount
     summary = {"campaigns": 0, "sent": 0, "skipped": 0, "failed": 0, "errors": 0, "capped": False}
@@ -189,7 +190,8 @@ def run_campaign_send(now=None):
                     if CS.bounce_breaker(s, c):        # too many hard bounces → paused before sending more
                         continue
                     t = now or datetime.utcnow()
-                    if SG.within_window(c, t):         # Phase 12: the day's warm-up decision, before its first send
+                    local = bool(LT.parse_hours(c.local_hours))    # Phase 13: buyer-local hours
+                    if local or SG.within_window(c, t):  # Phase 12: the day's warm-up decision, before its first send
                         try:
                             wu = CS.apply_warmup(s, c, mb, t)
                             if wu.get("action") in ("advance", "hold"):
@@ -198,14 +200,26 @@ def run_campaign_send(now=None):
                         except Exception:  # noqa: BLE001 — the ramp must never stop the sending
                             logger.exception("warm-up check failed (isolated; sending continues)")
                             s.rollback()
-                    due = s.exec(select(CampaignRecipient).where(
-                        CampaignRecipient.campaign_id == c.id,
-                        CampaignRecipient.status.not_in(CS.TERMINAL_RECIPIENT),
-                        _or(CampaignRecipient.next_action_at.is_(None),
-                            CampaignRecipient.next_action_at <= t))
-                        .order_by(CampaignRecipient.id)
-                        .limit(max(CAMPAIGN_SEND_MAX_PER_RUN, CAMPAIGN_SEND_SCAN_LIMIT))).all()
                     fresh = None                       # reply reading, worked out once per campaign per cycle
+                    if local:
+                        # each buyer in THEIR business hours, best-ranked first: only this cycle's plan members whose
+                        # local window is open now (the plan keeps today's quota for better-ranked buyers whose hours
+                        # come later today)
+                        fresh = CS.reply_reading_fresh(s, t)
+                        slots = CS.local_slots(s, c, mb, t, inbox_fresh=fresh, settle=True)
+                        ids = [rid for rid, (when, _end) in slots.items() if when == "now"]
+                        rows = {r.id: r for r in s.exec(select(CampaignRecipient).where(
+                            CampaignRecipient.id.in_(ids))).all()} if ids else {}
+                        # the window that closes first goes first (then rank), so every planned buyer fits its day
+                        due = [rows[rid] for rid in sorted(rows, key=lambda rid: (slots[rid][1], rid))]
+                    else:
+                        due = s.exec(select(CampaignRecipient).where(
+                            CampaignRecipient.campaign_id == c.id,
+                            CampaignRecipient.status.not_in(CS.TERMINAL_RECIPIENT),
+                            _or(CampaignRecipient.next_action_at.is_(None),
+                                CampaignRecipient.next_action_at <= t))
+                            .order_by(CampaignRecipient.id)
+                            .limit(max(CAMPAIGN_SEND_MAX_PER_RUN, CAMPAIGN_SEND_SCAN_LIMIT))).all()
                     for r in due:
                         if _done():
                             summary["capped"] = True
@@ -213,7 +227,7 @@ def run_campaign_send(now=None):
                         try:
                             if fresh is None and r.current_step > 0:
                                 fresh = CS.reply_reading_fresh(s, t)
-                            res = CS.send_step(s, c, r, mb, t, inbox_fresh=fresh)
+                            res = CS.send_step(s, c, r, mb, t, inbox_fresh=fresh, local_ok=True if local else None)
                             st = res.get("status")
                             if st == "sent":
                                 summary["sent"] += 1

@@ -7,7 +7,7 @@ Run AFTER scripts/migrate.py (which adds mailaccount.sender_company / postal_add
 boot; this gate re-checks them). Take a dated backup first. Creates the InboundSeen ledger table and the two
 "enrolled at most once per campaign" unique indexes. Existing duplicate enrolments are REPORTED (exit 4), never
 deleted — a person decides. Operational counts are asserted invariant. Phase 12 adds the campaign warm-up columns
-(campaign.warmup_plan / warmup_checked_on) to the same column list.
+(campaign.warmup_plan / warmup_checked_on) to the same column list; Phase 13 adds campaign.local_hours.
 """
 import os
 import sys
@@ -33,7 +33,9 @@ _COLUMNS = [("mailaccount", "sender_company", "VARCHAR DEFAULT ''"),
             ("campaignstep", "list_unsubscribe", "BOOLEAN DEFAULT 1"),
             # Phase 12: the campaign warm-up ramp
             ("campaign", "warmup_plan", "VARCHAR DEFAULT ''"),
-            ("campaign", "warmup_checked_on", "VARCHAR DEFAULT ''")]
+            ("campaign", "warmup_checked_on", "VARCHAR DEFAULT ''"),
+            # Phase 13: buyer-local sending hours
+            ("campaign", "local_hours", "VARCHAR DEFAULT ''")]
 _GATE_INDEXES = [
     ("uq_camprcpt_campaign_lead", "campaignrecipient", "campaign_id, lead_id", "lead_id IS NOT NULL"),
     ("uq_camprcpt_campaign_email", "campaignrecipient", "campaign_id, to_email", "to_email != ''"),
