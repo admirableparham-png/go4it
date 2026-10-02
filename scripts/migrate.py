@@ -196,6 +196,7 @@ MIGRATIONS = [
     ("campaign", "warmup_checked_on", "VARCHAR DEFAULT ''"),
     # Phase 13 — send in each buyer's local business hours ("" = the campaign's UTC window).
     ("campaign", "local_hours", "VARCHAR DEFAULT ''"),
+    ("campaignstep", "release_when", "VARCHAR DEFAULT ''"),
 ]
 
 

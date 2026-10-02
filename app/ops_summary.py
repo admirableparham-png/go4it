@@ -91,6 +91,8 @@ def _campaign(session, c, now, since, day0) -> dict:
         "remaining": _n(session, select(func.count()).where(
             CampaignRecipient.campaign_id == c.id, CampaignRecipient.status.not_in(CS.TERMINAL_RECIPIENT))),
         "replies": {k: replies[k] for k in ("human", "auto", "unsubscribe")},
+        "held": [(st.step_index + 1, (st.release_when or "") == CS.RELEASE_EARLIER_DONE)
+                 for st in CS.steps_for(session, c) if st.manual_review],
         "hard_new": _n(session, select(func.count()).where(
             BounceRecord.bounce_type.in_(HARD_BOUNCES), BounceRecord.last_bounce_at >= since,
             BounceRecord.last_bounce_at < now, BounceRecord.email_normalized.in_(emails))),
@@ -189,6 +191,9 @@ def _campaign_block(c) -> str:
                         "hold": f" (⚠️ warm-up held: {_esc(w['why'])})",
                         "wait": f" (warm-up waits: {_esc(w['why'])})"}.get(w["action"], f" (warm-up: {_esc(w['why'])})")
             lines.append(nxt)
+    for n, auto in c.get("held", []):
+        lines.append(f"Email {n}: held — starts by itself once every earlier email is out" if auto
+                     else f"Email {n}: held — waits for your approval")
     lines.append(f"{BASE_URL}/campaigns/{c['id']}")
     return "\n".join(lines)
 

@@ -850,6 +850,8 @@ class CampaignStep(SQLModel, table=True):
     attachment_path: str = ""       # Phase 11: a PDF shipped under campaigns/ (e.g. the price list), attached to the email
     plain_text_only: bool = False   # Phase 11: send like a hand-typed email (no HTML part) — fewer "Promotions" tabs
     list_unsubscribe: bool = True   # Phase 11: send the List-Unsubscribe header (Gmail reads it as bulk mail)
+    release_when: str = ""          # Phase 13: "earlier_emails_done" = a HELD email starts by itself once no buyer can
+    #                                 still get an earlier email (e.g. a follow-up that waits for every first email)
 
 
 class CampaignRecipient(SQLModel, table=True):

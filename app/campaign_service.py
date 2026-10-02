@@ -483,6 +483,52 @@ def approve_step(session, campaign, step_index, actor=None, version=None) -> tup
     return True, f"email {step_index + 1} approved"
 
 
+RELEASE_EARLIER_DONE = "earlier_emails_done"
+
+
+def earlier_emails_left(session, campaign, step_index, limit=50) -> int:
+    """How many buyers of the current sequence version could still get an email BEFORE `step_index`. Buyers that can
+    never be sent again (opted out, replied, bounced …) and sends held for an admin's review after a crash don't count
+    — they must never keep a follow-up from starting. Exact up to `limit`; above it, just more than `limit`."""
+    rows = session.exec(select(CampaignRecipient).where(
+        CampaignRecipient.campaign_id == campaign.id, CampaignRecipient.sequence_version == campaign.sequence_version,
+        CampaignRecipient.status.not_in(TERMINAL_RECIPIENT), CampaignRecipient.current_step < step_index)
+        .order_by(CampaignRecipient.id).limit(limit + 1)).all()
+    if len(rows) > limit:
+        return len(rows)
+    left = 0
+    for r in rows:
+        cs = _send_row(session, campaign, r, r.current_step)
+        if (cs is not None and cs.status in SEND_TERMINAL) or _recipient_problem(session, campaign, r):
+            continue
+        left += 1
+    return left
+
+
+def maybe_release(session, campaign, now=None) -> dict:
+    """Start a HELD email whose release_when is 'earlier_emails_done' once no buyer can still get an earlier one — e.g.
+    a follow-up that must wait until every first email is out. Called by the worker every cycle; cheap while buyers
+    remain. Returns {} or {step_index, message} (released) / {step_index, error} (it would not render safely)."""
+    if campaign.status != "running":
+        return {}
+    for st in steps_for(session, campaign):
+        if not (st.manual_review and (st.release_when or "") == RELEASE_EARLIER_DONE):
+            continue
+        if earlier_emails_left(session, campaign, st.step_index):
+            return {}
+        ok, msg = approve_step(session, campaign, st.step_index)
+        if not ok:
+            return {"step_index": st.step_index, "error": msg}
+        try:
+            pipeline.audit(session, None, "campaign", campaign.id, "auto_release",
+                           {"step_index": st.step_index, "rule": RELEASE_EARLIER_DONE}, tenant_id=campaign.tenant_id)
+            session.commit()
+        except Exception:  # noqa: BLE001
+            session.rollback()
+        return {"step_index": st.step_index, "message": msg}
+    return {}
+
+
 # --------------------------------------------------------------------- send safety + idempotent send
 def _recipient_problem(session, campaign, rcpt) -> str:
     """The recipient-level rules (not timing, not quotas): '' when this recipient may get its current email."""

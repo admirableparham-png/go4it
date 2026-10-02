@@ -33,6 +33,7 @@ from sqlmodel import Session, func, select                                     #
 
 from app import campaign_render as CR                                          # noqa: E402
 from app import campaign_service as CAMP                                       # noqa: E402
+from app import pipeline                                                       # noqa: E402
 from app import send_guard as SG                                               # noqa: E402
 from app.db import engine                                                      # noqa: E402
 from app.models import Campaign, CampaignRecipient, CampaignSend, Lead, MailAccount  # noqa: E402
@@ -50,8 +51,9 @@ def _in_flight(s, cid) -> int:
 
 
 def _settle(s, c) -> bool:
-    """After the pause: let a worker cycle already under way finish, then require that nothing is mid-send."""
-    if SETTLE_SECONDS > 0 and SG.within_window(c, datetime.utcnow()):
+    """After the pause: let a worker cycle already under way finish, then require that nothing is mid-send. A campaign
+    in buyer-local hours may be sending at any UTC hour, so it always waits."""
+    if SETTLE_SECONDS > 0 and ((c.local_hours or "").strip() or SG.within_window(c, datetime.utcnow())):
         print(f"inside the sending window — waiting {SETTLE_SECONDS}s for the worker's current cycle to end …")
         time.sleep(SETTLE_SECONDS)
     for _ in range(30):
@@ -62,11 +64,14 @@ def _settle(s, c) -> bool:
 
 
 def _header(s, c):
-    print(f"campaign #{c.id} {c.name!r} · {c.status} · sequence v{c.sequence_version} · {c.daily_limit}/day · "
-          f"window {c.send_window_start}-{c.send_window_end} UTC days {c.send_days}")
+    timing = (f"buyer-local hours {c.local_hours}" if (c.local_hours or "").strip()
+              else f"window {c.send_window_start}-{c.send_window_end} UTC days {c.send_days}")
+    print(f"campaign #{c.id} {c.name!r} · {c.status} · sequence v{c.sequence_version} · {c.daily_limit}/day · {timing}")
     for st in CAMP.steps_for(s, c):
+        held = ("HELD — starts by itself once every earlier email is out"
+                if (st.release_when or "") == CAMP.RELEASE_EARLIER_DONE else "HELD")
         print(f"  email {st.step_index + 1}: {st.subject!r} · {st.delay_days} day(s) after the previous · "
-              f"{'HELD' if st.manual_review else 'approved'}"
+              f"{held if st.manual_review else 'approved'}"
               + (f" · attachment {os.path.basename(st.attachment_path)}" if st.attachment_path else ""))
 
 
@@ -76,7 +81,7 @@ def _plan_report(plan, delay_days=None):
     if plan["due"]:
         ats = sorted(at for _rid, at in plan["due"])
         print(f"  first due {ats[0]:%a %Y-%m-%d %H:%M} UTC · last due {ats[-1]:%a %Y-%m-%d %H:%M} UTC "
-              f"(it goes out inside the sending window, within the daily limit)")
+              f"(it goes out in the sending hours, within the daily limit)")
     for why, n in sorted(plan["left"].items()):
         print(f"  left alone: {n} × {why}")
     if plan.get("error"):
@@ -249,6 +254,21 @@ def cmd_approve(s, c, a) -> int:
     if not st.manual_review:
         print(f"email {a.email} is already approved — nothing to do")
         return 0
+    if a.when_earlier_done:
+        left = CAMP.earlier_emails_left(s, c, idx)
+        print(f"\nemail {a.email} stays HELD and starts by itself once no buyer can still get an earlier email "
+              f"({left if left <= 50 else 'more than 50'} buyer(s) still before it now)")
+        if not a.apply:
+            print("\nDRY RUN — nothing changed. Re-run with --apply.")
+            return 0
+        st.release_when = CAMP.RELEASE_EARLIER_DONE
+        s.add(st)
+        pipeline.audit(s, None, "campaign", c.id, "release_rule",
+                       {"step_index": idx, "release_when": st.release_when}, tenant_id=c.tenant_id)
+        s.commit()
+        print(f"SET: email {a.email} starts by itself once every earlier email is out (the worker checks every cycle "
+              "and sends a Telegram message when it starts)")
+        return 0
     if not a.apply:
         print("\nDRY RUN — nothing changed. Re-run with --apply to release it.")
         return 0
@@ -276,6 +296,8 @@ def main(argv=None):
     p = sub.add_parser("approve", help="release a held email")
     p.add_argument("campaign_id", type=int)
     p.add_argument("--email", type=int, required=True, help="which email (2 = the first follow-up)")
+    p.add_argument("--when-earlier-done", action="store_true",
+                   help="don't release now: start it by itself once every earlier email (e.g. every first email) is out")
     p.add_argument("--apply", action="store_true")
     a = ap.parse_args(argv)
     with Session(engine) as s:

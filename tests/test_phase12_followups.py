@@ -199,7 +199,7 @@ def test_the_followup_is_a_reply_in_the_buyers_own_thread(world):
     assert [a.get_filename() for a in m1.iter_attachments()] == ["pricelist.pdf"]
     assert list(m2.iter_attachments()) == []                      # the follow-up carries no PDF
     txt, html = m2.get_body(("plain",)).get_content(), m2.get_body(("html",)).get_content()
-    assert txt.startswith("Hi IHL Canada team,\n\nI wanted to follow up on the product information I sent last week")
+    assert txt.startswith("Hi IHL Canada team,\n\nI wanted to follow up on the product information I sent recently")
     assert txt.rstrip().endswith("W  qmatalsaha.com") and "gmail_signature" in html and "Hi IHL Canada team," in html
     for part in (str(m2["Subject"]), txt, html, m2["From"]):
         assert not CR.INTERNAL_BRAND.search(part) and "TRSHARKS" not in part and "{" not in part
@@ -892,3 +892,58 @@ def test_script_reopen_and_approve_refuse_safely(world, capsys):
     assert FU.main(["approve", "999", "--email", "2"]) == 2
     assert FU.main(["add", str(cid), "--template", FOLLOWUP, "--delay-days", "0", "--hold", "--apply"]) == 2
     assert "--delay-days must be at least 1" in capsys.readouterr().out
+
+
+# ---------------------------------------------------------------------------------------------- Phase 13: auto-start
+def test_a_held_followup_starts_by_itself_once_every_first_email_is_out(world, monkeypatch, capsys):
+    from app import ops_summary as OS
+    e, ids = world
+    pings = []
+    monkeypatch.setattr(worker, "send_message", lambda text, *a, **k: pings.append(text))
+    with Session(e) as s:
+        _buyers(s, ids, ["Alpha Ltd", "Beta Ltd", "Gamma Ltd", "Delta Ltd"])
+        cid = _campaign(s, ids, list(_templates(delay=7, hold=True)), daily_limit=1)    # one first email a day
+        SUP.suppress(s, "buyer3@b3.example", "unsubscribe"); s.commit()               # Delta can never be sent
+    assert FU.main(["approve", str(cid), "--email", "2", "--when-earlier-done"]) == 0  # dry run …
+    with Session(e) as s:
+        assert CAMP.steps_for(s, s.get(Campaign, cid))[1].release_when == ""
+    assert FU.main(["approve", str(cid), "--email", "2", "--when-earlier-done", "--apply"]) == 0
+    assert "starts by itself" in capsys.readouterr().out
+    for d in range(2):                                              # Mon: Alpha, Tue: Beta
+        _cycle(MON + timedelta(days=d))
+        _cycle(MON + timedelta(days=d, minutes=5))
+    with Session(e) as s:
+        c = s.get(Campaign, cid)
+        assert CAMP.earlier_emails_left(s, c, 1) == 1 and CAMP.steps_for(s, c)[1].manual_review    # Gamma waits
+        held = OS._campaign(s, c, MON + timedelta(days=1, hours=2), MON, MON.replace(hour=0))["held"]
+        assert held == [(2, True)]
+    _cycle(MON + timedelta(days=2))                                 # Wed: Gamma's email 1 — the last one
+    assert pings == []
+    _cycle(MON + timedelta(days=2, minutes=5))                      # the next cycle starts email 2 by itself
+    assert len(pings) == 1 and "follow-up email 2 has started" in pings[0] and "Buyer" not in pings[0]
+    with Session(e) as s:
+        c = s.get(Campaign, cid)
+        assert not CAMP.steps_for(s, c)[1].manual_review
+        assert s.exec(select(AuditLog).where(AuditLog.action == "auto_release")).one()
+    _cycle(MON + timedelta(days=7))                                 # Alpha: email 1 + 7 days → email 2
+    assert [str(m["Subject"]) for m in FakeSMTP.sent] == [SUBJECT_1] * 3 + ["Re: " + SUBJECT_1]
+    _cycle(MON + timedelta(days=7, minutes=5))
+    assert len(pings) == 1                                          # announced once
+
+
+def test_a_send_held_for_review_never_keeps_the_followup_from_starting(world):
+    e, ids = world
+    with Session(e) as s:
+        _buyers(s, ids, ["Alpha Ltd", "Beta Ltd"])
+        cid = _campaign(s, ids, list(_templates(delay=7, hold=True)), daily_limit=1)
+        c = s.get(Campaign, cid)
+        st = CAMP.steps_for(s, c)[1]
+        st.release_when = CAMP.RELEASE_EARLIER_DONE; s.add(st); s.commit()
+        beta = _rcpt(s, "buyer1@b1.example")
+        s.add(CampaignSend(campaign_id=cid, recipient_id=beta.id, sequence_version=beta.sequence_version,
+                           step_index=0, status="unknown_needs_review"))               # a crash mid-send
+        s.commit()
+    _cycle(MON)                                                     # Alpha's email 1; Beta's is held for review
+    _cycle(MON + timedelta(minutes=5))
+    with Session(e) as s:
+        assert not CAMP.steps_for(s, s.get(Campaign, cid))[1].manual_review          # started anyway

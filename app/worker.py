@@ -200,6 +200,20 @@ def run_campaign_send(now=None):
                         except Exception:  # noqa: BLE001 — the ramp must never stop the sending
                             logger.exception("warm-up check failed (isolated; sending continues)")
                             s.rollback()
+                    try:                               # Phase 13: a follow-up held "until every first email is out"
+                        rel = CS.maybe_release(s, c, t)
+                        if rel.get("message"):
+                            logger.info("campaign %s: email %s started by itself (every earlier email is out)", c.id,
+                                        rel["step_index"] + 1)
+                            send_message(f"✉️ Campaign #{c.id} {c.name}: every first email is out — follow-up email "
+                                         f"{rel['step_index'] + 1} has started. Each buyer gets it in their own hours, "
+                                         "never after a reply, bounce or unsubscribe.")
+                        elif rel.get("error"):
+                            logger.warning("campaign %s: held email %s not started: %s", c.id, rel["step_index"] + 1,
+                                           rel["error"])
+                    except Exception:  # noqa: BLE001 — the release check must never stop the sending
+                        logger.exception("auto-release check failed (isolated)")
+                        s.rollback()
                     fresh = None                       # reply reading, worked out once per campaign per cycle
                     if local:
                         # each buyer in THEIR business hours, best-ranked first: only this cycle's plan members whose
