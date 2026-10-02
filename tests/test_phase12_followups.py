@@ -199,7 +199,7 @@ def test_the_followup_is_a_reply_in_the_buyers_own_thread(world):
     assert [a.get_filename() for a in m1.iter_attachments()] == ["pricelist.pdf"]
     assert list(m2.iter_attachments()) == []                      # the follow-up carries no PDF
     txt, html = m2.get_body(("plain",)).get_content(), m2.get_body(("html",)).get_content()
-    assert txt.startswith("Hi IHL Canada team,\n\nJust following up on my note last week")
+    assert txt.startswith("Hi IHL Canada team,\n\nI wanted to follow up on the product information I sent last week")
     assert txt.rstrip().endswith("W  qmatalsaha.com") and "gmail_signature" in html and "Hi IHL Canada team," in html
     for part in (str(m2["Subject"]), txt, html, m2["From"]):
         assert not CR.INTERNAL_BRAND.search(part) and "TRSHARKS" not in part and "{" not in part
