@@ -22,7 +22,7 @@ Nothing needs cloning or installing: the repo, `.venv`, `.env` and `data.db` are
 |---|---|
 | Working branch | `work/phase-9-ai-command-automation` (Phases 7–10 + this handoff) |
 | `main` | `26f05cd` — 25 commits behind the working branch. Do not merge without a founder decision. |
-| Deployed tag | `phase-13-local-hours` → `bc4285a` (2026-10-02 09:25 UTC; Phase 12 went live 06:15 UTC the same day) |
+| Deployed tag | `phase-13-local-hours-v3` → `6e374d7` (2026-10-02 ~11:40 UTC; Phase 12 06:15, Phase 13 09:25 UTC) |
 | Rollback images | `go4it:pre-p13-rollback`, `go4it:pre-p12-rollback` (+ backups data-20261002-092036.db / -061335.db) |
 | Remote | `origin` = github.com/admirableparham-png/go4it (private). All branches + tags pushed 2026-09-29. |
 
@@ -61,8 +61,10 @@ Tags are immutable. New work = new commits + a new tag.
   addresses + 26 weak ones wait for the founder (`debug/enrich_req1_[a-d].csv`, local only).
 - **Work Queue:** 162 legacy tasks dismissed (batch wqc-20261002-061915, revertible); 39 left incl. the founder's
   test-reply items (untouched until he explains them).
-- **Founder:** admin login stays admin@go4it.local; sets user passwords himself (Users → user → Security); the
-  follow-up text comes after all first emails of this product are out (don't add email 2 before that).
+- **Founder:** admin login stays admin@go4it.local; sets user passwords himself (Users → user → Security).
+- **Follow-up (email 2):** the founder's text (wording "sent recently") is on #33, HELD with the rule "starts by itself
+  once every earlier email is out" (founder chose: only after all first emails). Telegram announces the start.
+- **Enrichment round 2:** 99 reviewed addresses (personal ones OK per founder) added → #33 = 638 buyers.
 
 ## 3. Production (https://g4it.vip) — as of 2026-08-31 (Phase 10 since deployed — see 2b)
 
